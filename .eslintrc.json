@@ -1,0 +1,91 @@
+{
+  "extends": "airbnb-typescript",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["jsx-a11y", "react", "import"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "globals": {
+    "__DEV__": true
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+
+        // Choose from one of the "project" configs below or omit to use <root>/tsconfig.json by default
+      }
+    }
+  },
+  "rules": {
+    "@typescript-eslint/semi": ["warn", "never"],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "format": ["camelCase", "PascalCase", "snake_case"],
+        "leadingUnderscore": "allow"
+      }
+    ],
+    "semi": ["warn", "never"],
+    "linebreak-style": 0,
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "curly": ["error", "multi-line"],
+    "new-cap": [
+      "error",
+      {
+        "capIsNewExceptions": ["Map", "OrderedMap", "List", "Set", "OrderedSet", "Record", "Connect"]
+      }
+    ],
+    "array-bracket-spacing": ["error", "always"],
+    "indent": [2, 2, { "SwitchCase": 1 }],
+    "comma-dangle": ["error", "always-multiline"],
+    "max-len": ["error", 200, 2],
+    "one-var": ["error", "never"],
+    "no-param-reassign": "off",
+    "no-continue": "off",
+    "arrow-body-style": ["error", "as-needed"],
+    "prefer-arrow-callback": [ "error", { "allowNamedFunctions": true } ],
+    "arrow-parens": [ 2, "as-needed", { "requireForBlockBody": true }],
+    "no-mixed-operators": "off",
+    "prefer-destructuring": "off",
+    "object-curly-newline": ["error", { "consistent": true }],
+    "no-bitwise": "off",
+    "no-underscore-dangle": "off",
+    "no-plusplus": "off",
+    "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+    "import/extensions": ["error", "never"],
+    "import/no-unresolved": 2,
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true, "optionalDependencies": false, "peerDependencies": false }],
+    "import/prefer-default-export": "off",
+    "react/jsx-indent-props": [1, 2],
+    "react/sort-comp": [1],
+    "react/prop-types": [2, { "ignore": ["dispatch", "params"] }],
+    "react/prefer-stateless-function": 0,
+    "react/jsx-indent": [2, 2],
+    "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
+    "react/no-children-prop": "off",
+    "react/require-default-props": "off",
+    "react/forbid-prop-types": [2, { "forbid": ["any"] }],
+    "react/no-multi-comp": "off",
+    "jsx-a11y/alt-text": "off",
+    "jsx-a11y/href-no-hash": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/mouse-events-have-key-events": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/iframe-has-title": "off",
+    "jsx-a11y/anchor-is-valid": ["error", { "components": ["Link"], "specialLink": ["to"] }],
+    "jsx-a11y/label-has-for": [2, { "required": "id", "allowChildren": true }],
+    "function-paren-newline": ["error", "consistent"],
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }]
+  }
+}

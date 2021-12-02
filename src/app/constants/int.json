@@ -1,0 +1,56 @@
+{
+  "auth_form": {
+    "login_tab": {
+      "ru": "Войти",
+      "eng": "Login"
+    },
+    "signup_tab": {
+      "ru": "Регистрация",
+      "eng": "Signup"
+    },
+    "email": {
+      "ru": "Почта",
+      "eng": "Email"
+    },
+    "password": {
+      "ru": "Пароль",
+      "eng": "Password"
+    },
+    "confirm_password": {
+      "ru": "Подтвердите пароль",
+      "eng": "Confirm password"
+    },
+    "login_submit_label": {
+      "ru": "Войти",
+      "eng": "Log in"
+    },
+    "signup_submit_label": {
+      "ru": "Зарегистрироваться",
+      "eng": "Sign up"
+    },
+    "error_message": {
+      "email": {
+        "required": {
+          "ru": "Email обязателен для заполнения",
+          "eng": "Email is required"
+        }
+      },
+      "password": {
+        "required": {
+          "ru": "Пароль обязателен для заполнения",
+          "eng": "Password is required"
+        },
+        "len": {
+          "ru": "Пароль слишком короткий",
+          "eng": "Password is too short"
+        }
+      },
+      "confirm_password": {
+        "required": {
+          "ru": "Повторите пароль",
+          "eng": "Repeat your password"
+        }
+      }
+    }
+  }
+}
