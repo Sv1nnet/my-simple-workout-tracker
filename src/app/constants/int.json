@@ -52,5 +52,35 @@
         }
       }
     }
+  },
+  "header": {
+    "exercises": {
+      "ru": "Упражнения",
+      "eng": "Exercises",
+      "short": {
+        "ru": "Упр-ния",
+        "eng": "Exer's"
+      }
+    },
+    "workouts": {
+      "ru": "Тренировки",
+      "eng": "Workouts",
+      "short": {
+        "ru": "Трен-ки",
+        "eng": "Workouts"
+      }
+    },
+    "activities": {
+      "ru": "Активность",
+      "eng": "Activities",
+      "short": {
+        "ru": "Акт-сть",
+        "eng": "Activ's"
+      }
+    },
+    "profile": {
+      "ru": "Профиль",
+      "eng": "Profile"
+    }
   }
 }
