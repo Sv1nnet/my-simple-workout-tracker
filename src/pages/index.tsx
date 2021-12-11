@@ -1,26 +1,26 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
+import Main from './[main]'
 
-const IndexPage: NextPage = () => (
-  <div>
-    <Head>
-      <title>Redux Toolkit</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
-    <h2>Index page</h2>
-  </div>
-)
+export default Main
 
-export default IndexPage
+export const getServerSideProps = (_ctx) => {
+  if (typeof window !== 'undefined') return { props: {} }
 
-export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
-  if (ctx.req.session) {
-    return {
-      props: {
-        token: ctx.req.session.token,
-      },
+  const { req } = _ctx
+  if (!req) return {}
+
+  return withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
+    if (ctx.req.session) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/activities',
+        },
+        props: {
+          token: ctx.req.session.token,
+        },
+      }
     }
-  }
-  return ({ props: {} })
-})
+    return ({ props: {} })
+  })(_ctx)
+}

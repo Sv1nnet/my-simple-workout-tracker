@@ -1,3 +1,3 @@
-import AuthLayout from './layout/AuthLayout'
+import AuthLayout from './template/AuthTemplate'
 
 export { AuthLayout }

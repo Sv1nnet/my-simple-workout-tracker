@@ -1,12 +1,9 @@
-export const BASE_URL = 'http://192.168.0.14:3005/api'
+// eslint-disable-next-line @typescript-eslint/naming-convention
+// export const BASE_URL = 'http://192.168.0.14:3005/api'
+export const BASE_URL = 'http://192.168.43.28:3005/api'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-let _global
-try {
-  _global = window
-} catch {
-  _global = global
-}
+let _global = typeof window !== 'undefined' ? window : global
 _global.__API__ = _global.__API__ ?? {}
 _global.__API__.BASE_URL = _global.__API__.BASE_URL ?? BASE_URL
 
