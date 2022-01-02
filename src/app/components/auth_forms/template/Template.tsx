@@ -14,7 +14,7 @@ import { useRouter } from 'next/router'
 const { TabPane } = Tabs
 
 const Container = styled.div`
-  position: fixed;
+  position: relative;
   display: flex;
   height: 100%;
   width: 100%;

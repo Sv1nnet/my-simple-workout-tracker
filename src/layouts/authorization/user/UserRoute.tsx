@@ -16,7 +16,6 @@ const UserRoute: FC = ({ children }) => {
   return (
     <>
       {children}
-      <button onClick={onClick}>Logout</button>
     </>
   )
 }

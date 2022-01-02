@@ -36,7 +36,7 @@ const Main: NextPage & { Layout: FC } = () => {
     if (!routes.includes(typeof router.query?.main === 'string' ? router.query.main : '/404')) {
       router.replace('/404')
     }
-  }, [])
+  })
 
   return (
     <div>

@@ -14,7 +14,7 @@ export interface GetServerSidePropsContextWithSession extends GetServerSideProps
 
 const withAuth = (cb: GetServerSideProps): GetServerSideProps => async (ctx: GetServerSidePropsContextWithSession) => {
   try {
-    if (!ctx.req.cookies.logout && ctx.req.cookies.refresh_token) {
+    if (!ctx.req?.cookies?.logout && ctx.req?.cookies?.refresh_token) {
       const res = await fetch(
         routes.auth.v1.refresh.full,
         {
@@ -26,14 +26,16 @@ const withAuth = (cb: GetServerSideProps): GetServerSideProps => async (ctx: Get
         },
       )
         .then(_res => _res.json())
-        .catch(err => console.warn('catch err', err))
+        .catch((err) => console.log('catch err', err))
 
       if (res.token) {
         ctx.req.session = { token: res.token }
       }
+    } else {
+      // res
     }
   } catch (error) {
-    console.warn('withAuth error', error)
+    console.log('withAuth error', error)
   } finally {
     return cb(ctx)
   }

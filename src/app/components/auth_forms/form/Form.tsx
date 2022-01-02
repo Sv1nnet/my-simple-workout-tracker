@@ -102,7 +102,7 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
           <Input.Password size="large" type="password" name="confirm_password" />
         </AntForm.Item>
       )}
-      
+
       <AntForm.Item>
         <StyledButton size="large" type="primary" htmlType="submit" block loading={isFetching}>
           {submitLabel}
