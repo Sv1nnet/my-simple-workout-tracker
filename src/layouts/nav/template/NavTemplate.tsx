@@ -2,11 +2,9 @@ import { FC, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Tabs } from 'antd'
 import { useRouter } from 'next/router'
-import { useAppSelector } from 'app/hooks'
-import int from 'constants/int.json'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import TabLabel from '../tab_label/TabLabel'
-import { selectLang } from '@/src/app/store/slices/config'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 const { TabPane } = Tabs
 
@@ -22,8 +20,6 @@ const StyledTabs = styled(Tabs)`
   }
 `
 
-const { exercises, workouts, activities } = int.header
-
 export type TabRoutes = 'exercises' | 'workouts' | 'activities'
 
 interface INavTemplate {
@@ -32,7 +28,7 @@ interface INavTemplate {
 
 const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const router = useRouter()
-  const lang = useAppSelector(selectLang)
+  const { intl } = useContext(IntlContext)
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
 
@@ -47,9 +43,9 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
 
   const isScreenSmall = width === 'sm'
   const labels = {
-    exercises: (isScreenSmall ? exercises.short : exercises)[lang].toUpperCase(),
-    workouts: (isScreenSmall ? workouts.short : workouts)[lang].toUpperCase(),
-    activities: (isScreenSmall ? activities.short : activities)[lang].toUpperCase(),
+    exercises: ((isScreenSmall ? intl.header.exercises.short : (intl.header.exercises)) || '').toUpperCase(),
+    workouts: ((isScreenSmall ? intl.header.workouts.short : (intl.header.workouts)) || '').toUpperCase(),
+    activities: ((isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '').toUpperCase(),
   }
 
   return (

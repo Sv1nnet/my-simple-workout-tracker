@@ -1,8 +1,7 @@
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Form as AntForm, Input, Button, notification } from 'antd'
-import int from 'constants/int.json'
-import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { useAppDispatch } from 'app/hooks'
 import styled from 'styled-components'
 import { Login, LoginSuccess, Signup, SignupSuccess } from 'store/slices/auth/types'
 import { useForm } from 'antd/lib/form/Form'
@@ -10,7 +9,7 @@ import { Rule } from 'antd/lib/form'
 import { updateToken } from 'store/slices/auth'
 import { ApiSignupError } from '../signup/Signup'
 import { ApiLoginError } from '../login/Login'
-import { selectLang } from '@/src/app/store/slices/config'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -28,7 +27,7 @@ interface IFormProps {
 }
 
 const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resData = {}, isFetching, isError, error }) => {
-  const lang = useAppSelector(selectLang)
+  const { intl } = useContext(IntlContext)
   const dispatch = useAppDispatch()
   const [ form ] = useForm()
   const { data } = resData
@@ -73,19 +72,19 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
       onFinish={onSubmit}
       layout="vertical"
     >
-      <AntForm.Item label={int.auth_form.email[lang]} name="email" rules={[
-        { required: true, message: int.auth_form.error_message.email.required[lang] },
+      <AntForm.Item label={intl.auth_form.email} name="email" rules={[
+        { required: true, message: intl.auth_form.error_message.email.required },
         validate as Rule,
       ]}>
         <Input size="large" type="email" name="email" />
       </AntForm.Item>
 
       <AntForm.Item 
-        label={int.auth_form.password[lang]}
+        label={intl.auth_form.password}
         name="password"
         rules={[
-          { min: 6, message: int.auth_form.error_message.password.len[lang] },
-          { required: true, message: int.auth_form.error_message.password.required[lang] },
+          { min: 6, message: intl.auth_form.error_message.password.len },
+          { required: true, message: intl.auth_form.error_message.password.required },
         ]}
       >
         <Input.Password size="large" type="password" name="password" />
@@ -93,10 +92,10 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
 
       {type === 'signup' && (
         <AntForm.Item
-          label={int.auth_form.confirm_password[lang]}
+          label={intl.auth_form.confirm_password}
           name="confirm_password"
           rules={[
-            { required: true, message: int.auth_form.error_message.confirm_password.required[lang] },
+            { required: true, message: intl.auth_form.error_message.confirm_password.required },
             validate as Rule,
           ]}
         >
