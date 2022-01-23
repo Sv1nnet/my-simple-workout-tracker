@@ -94,6 +94,16 @@
         "ru": "Сохранить",
         "eng": "Save"
       },
+      "validation_error": {
+        "password_matching": {
+          "ru": "Пароли не совпадают",
+          "eng": "Passwords do not match"
+        },
+        "confirm_password": {
+          "ru": "Подтвердите пароль",
+          "eng": "Please confirm your password"
+        }
+      },
       "error": {
         "message": {
           "ru": "Произошла ошибка при сохранения данных",

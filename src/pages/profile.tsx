@@ -32,12 +32,12 @@ const Profile = () => {
     async validator({ field }, value) {
       if (field === 'new_password' && value) {
         if (getFieldValue('confirm_password') === value) return
-        throw new Error('Passwords do not match')
+        throw new Error(intl.pages.profile.validation_error.password_matching)
       }
       if (field === 'confirm_password') {
-        if (!value && getFieldValue('new_password')) throw new Error('Please confirm your password')
+        if (!value && getFieldValue('new_password')) throw new Error(intl.pages.profile.validation_error.confirm_password)
         if (getFieldValue('new_password') === value) return
-        throw new Error('Passwords do not match')
+        throw new Error(intl.pages.profile.validation_error.password_matching)
       }
     },
   })

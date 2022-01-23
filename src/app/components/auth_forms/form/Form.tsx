@@ -36,9 +36,9 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
     validator: async ({ field }, value) => {
       const isFieldName = name => name === field
 
-      if (isFieldName('confirm-password')) {
+      if (isFieldName('confirm_password')) {
         if (!value || getFieldValue('password') === value) return
-        throw new Error('Passwords do not match!')
+        throw new Error(intl.auth_form.error_message.confirm_password.password_matching)
       }
     },
   })
