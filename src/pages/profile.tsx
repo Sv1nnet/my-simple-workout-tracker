@@ -1,17 +1,16 @@
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import { HeaderWithoutNav } from 'layouts/header'
 import { Form, Input, Button, notification } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import int from 'constants/int.json'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { Rule } from 'antd/lib/form'
 import { useAppSelector } from 'app/hooks'
 import { profileApi } from 'store/slices/profile/api'
 import { selectToken } from 'store/slices/auth'
-import { selectLang } from 'store/slices/config'
 import { selectCredentials } from 'store/slices/profile'
 import { CustomBaseQueryError } from '../app/store/utils/baseQueryWithReauth'
+import { IntlContext } from '../app/contexts/intl/IntContextProvider'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -22,7 +21,7 @@ const FormWrapper = styled(Form)`
 `
 
 const Profile = () => {
-  const lang = useAppSelector(selectLang)
+  const { intl } = useContext(IntlContext)
   const token = useAppSelector(selectToken)
   const credentials = useAppSelector(selectCredentials)
   const [ form ] = useForm()
@@ -58,7 +57,7 @@ const Profile = () => {
           description,
         })
       }
-      openNotification({ message: 'Error!', description: int.pages.profile.error.message[lang] })
+      openNotification({ message: 'Error!', description: intl.pages.profile.error.message })
       form.setFields([
         {
           name: 'password',
@@ -85,32 +84,32 @@ const Profile = () => {
       layout="vertical"
     >
       <Form.Item
-        label={int.auth_form.email[lang]}
+        label={intl.auth_form.email}
         name="email"
         rules={[
-          { required: true, message: int.auth_form.error_message.email.required[lang] },
+          { required: true, message: intl.auth_form.error_message.email.required },
         ]}
       >
         <Input size="large" type="email" />
       </Form.Item>
 
       <Form.Item 
-        label={int.auth_form.password[lang]}
+        label={intl.auth_form.password}
         name="password"
         rules={[
-          { min: 6, message: int.auth_form.error_message.password.len[lang] },
-          { required: true, message: int.auth_form.error_message.password.required[lang] },
+          { min: 6, message: intl.auth_form.error_message.password.len },
+          { required: true, message: intl.auth_form.error_message.password.required },
         ]}
       >
         <Input.Password size="large" />
       </Form.Item>
 
       <Form.Item 
-        label={int.auth_form.new_password[lang]}
+        label={intl.auth_form.new_password}
         name="new_password"
         dependencies={[ 'confirm_password' ]}
         rules={[
-          { min: 6, message: int.auth_form.error_message.password.len[lang] },
+          { min: 6, message: intl.auth_form.error_message.password.len },
           validate as Rule,
         ]}
         validateFirst
@@ -119,7 +118,7 @@ const Profile = () => {
       </Form.Item>
 
       <Form.Item 
-        label={int.auth_form.confirm_password[lang]}
+        label={intl.auth_form.confirm_password}
         name="confirm_password"
         dependencies={[ 'new_password' ]}
         rules={[
@@ -138,7 +137,7 @@ const Profile = () => {
           block
           loading={isLoading || isFetching || isUpdating}
         >
-          {int.pages.profile.save_button[lang]}
+          {intl.pages.profile.save_button}
         </StyledButton>
       </Form.Item>
     </FormWrapper>

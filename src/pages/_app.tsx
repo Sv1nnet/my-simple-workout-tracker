@@ -9,6 +9,7 @@ import { NextComponentType } from 'next'
 import { AuthLayout } from 'layouts/authorization'
 import { selectToken, updateToken } from 'app/store/slices/auth'
 import RouterContextProvider from 'app/contexts/router/RouterContextProvider'
+import IntlContextProvider from 'app/contexts/intl/IntContextProvider'
 
 type ComponentWithLayout = NextComponentType & {
   Layout?: NextComponentType
@@ -28,13 +29,15 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <Provider store={store}>
-      <RouterContextProvider>
-        <AuthLayout>
-          <Layout {...(layoutExists ? pageProps : {})}>
-            <Component {...(layoutExists ? {} : pageProps)} />
-          </Layout>
-        </AuthLayout>
-      </RouterContextProvider>
+      <IntlContextProvider>
+        <RouterContextProvider>
+          <AuthLayout>
+            <Layout {...(layoutExists ? pageProps : {})}>
+              <Component {...(layoutExists ? {} : pageProps)} />
+            </Layout>
+          </AuthLayout>
+        </RouterContextProvider>
+      </IntlContextProvider>
     </Provider>
   )
 }

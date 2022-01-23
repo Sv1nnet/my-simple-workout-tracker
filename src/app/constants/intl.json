@@ -1,4 +1,5 @@
 {
+  "langs": ["ru", "eng"],
   "auth_form": {
     "login_tab": {
       "ru": "Войти",

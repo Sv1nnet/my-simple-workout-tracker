@@ -3,13 +3,13 @@ import Link from 'next/link'
 import { Tabs, Card } from 'antd'
 import type { TabsProps } from 'antd'
 import styled from 'styled-components'
-import int from 'constants/int.json'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Login from '../login/Login'
 import Signup from '../signup/Signup'
-import { FC, SyntheticEvent, useLayoutEffect, useState } from 'react'
+import { FC, SyntheticEvent, useContext, useLayoutEffect, useState } from 'react'
 import { changeLang, selectLang } from '@/src/app/store/slices/config'
 import { useRouter } from 'next/router'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 const { TabPane } = Tabs
 
@@ -64,6 +64,7 @@ const ResetPasswordLink = styled.span`
 
 const AuthTemplate = () => {
   const lang = useAppSelector(selectLang)
+  const { intl } = useContext(IntlContext)
   const dispatch = useAppDispatch()
   const [ tab, setTab ] = useState('login')
   const router = useRouter()
@@ -93,10 +94,10 @@ const AuthTemplate = () => {
 
         <Card bordered={false} size="small">
           <StyledTabs onChange={setTab} size="large" defaultActiveKey="login">
-            <TabPane tab={int.auth_form.login_tab[lang]} key="login">
+            <TabPane tab={intl.auth_form.login_tab} key="login">
               <Login active={tab === 'login'} />
             </TabPane>
-            <TabPane tab={int.auth_form.signup_tab[lang]} key="signup">
+            <TabPane tab={intl.auth_form.signup_tab} key="signup">
               <Signup active={tab === 'signup'} />
             </TabPane>
           </StyledTabs>

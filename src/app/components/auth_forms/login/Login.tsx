@@ -1,11 +1,9 @@
-import int from 'constants/int.json'
 import PropTypes from 'prop-types'
-import { useAppSelector } from 'app/hooks'
 import Form from '../form/Form'
-import { FC } from 'react'
+import { FC, useContext } from 'react'
 import { authApi } from 'store/slices/auth/api'
 import { LoginError } from 'store/slices/auth/types'
-import { selectLang } from '@/src/app/store/slices/config'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface IProps {
   active: boolean
@@ -17,7 +15,7 @@ export type ApiLoginError = {
 }
 
 const Login: FC<IProps> = ({ active }) => {
-  const lang = useAppSelector(selectLang)
+  const { intl } = useContext(IntlContext)
   const [ login, stateResult ] = authApi.useLazyLoginQuery()
 
   return (
@@ -29,7 +27,7 @@ const Login: FC<IProps> = ({ active }) => {
       active={active}
       type="login"
       onSubmit={login}
-      submitLabel={int.auth_form.login_submit_label[lang]}
+      submitLabel={intl.auth_form.login_submit_label as string}
     />
   )
 }
