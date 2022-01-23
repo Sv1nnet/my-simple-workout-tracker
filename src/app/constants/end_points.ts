@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
-// export const BASE_URL = 'http://192.168.0.14:3005/api'
-export const BASE_URL = 'http://192.168.43.28:3005/api'
+export const BASE_URL = 'http://192.168.0.10:3005/api'
+// export const BASE_URL = 'http://192.168.43.28:3005/api'
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 let _global = typeof window !== 'undefined' ? window : global
@@ -51,8 +51,24 @@ const routes = {
       },
       get refresh() {
         return {
-          full: `${routes.base}${this.base.path}/token/access`,
-          path: `${this.base.path}/token/access`,
+          full: `${routes.base}${this.base.path}/token/refresh`,
+          path: `${this.base.path}/token/refresh`,
+        }
+      },
+    },
+  },
+  profile: {
+    v1: {
+      get base() {
+        return {
+          full: `${_global.__API__.BASE_URL}/v1/profile`,
+          path: '/v1/profile',
+        }
+      },
+      get update() {
+        return {
+          full: `${routes.base}${this.base.path}/update`,
+          path: `${this.base.path}/update`,
         }
       },
     },

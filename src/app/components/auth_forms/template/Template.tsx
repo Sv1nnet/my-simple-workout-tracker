@@ -8,13 +8,13 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Login from '../login/Login'
 import Signup from '../signup/Signup'
 import { FC, SyntheticEvent, useLayoutEffect, useState } from 'react'
-import { changeLang } from '@/src/app/store/slices/config'
+import { changeLang, selectLang } from '@/src/app/store/slices/config'
 import { useRouter } from 'next/router'
 
 const { TabPane } = Tabs
 
 const Container = styled.div`
-  position: fixed;
+  position: relative;
   display: flex;
   height: 100%;
   width: 100%;
@@ -63,7 +63,7 @@ const ResetPasswordLink = styled.span`
 `
 
 const AuthTemplate = () => {
-  const { lang }  = useAppSelector(state => state.config)
+  const lang = useAppSelector(selectLang)
   const dispatch = useAppDispatch()
   const [ tab, setTab ] = useState('login')
   const router = useRouter()

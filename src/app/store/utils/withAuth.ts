@@ -8,17 +8,19 @@ import { Token } from 'store/slices/auth/types'
 export interface GetServerSidePropsContextWithSession extends GetServerSidePropsContext<ParsedUrlQuery, PreviewData> {
   req: IncomingMessage & {
     cookies: NextApiRequestCookies
-    session: Token
+    session: {
+      token: Token
+    }
   }
 }
 
 const withAuth = (cb: GetServerSideProps): GetServerSideProps => async (ctx: GetServerSidePropsContextWithSession) => {
   try {
-    if (!ctx.req.cookies.logout && ctx.req.cookies.refresh_token) {
+    if (!ctx.req?.cookies?.logout && !ctx.req?.cookies?.access_token) {
       const res = await fetch(
         routes.auth.v1.refresh.full,
         {
-          method: 'POST',
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             cookie: `refresh_token=${ctx.req.cookies.refresh_token}`,
@@ -26,14 +28,16 @@ const withAuth = (cb: GetServerSideProps): GetServerSideProps => async (ctx: Get
         },
       )
         .then(_res => _res.json())
-        .catch(err => console.warn('catch err', err))
+        .catch((err) => console.log('catch err', err))
 
-      if (res.token) {
-        ctx.req.session = { token: res.token }
+      if (res.data.token) {
+        ctx.req.session = { token: res.data.token }
       }
+    } else if (!ctx.req?.cookies?.logout) {
+      ctx.req.session = { token: ctx.req?.cookies?.access_token }
     }
   } catch (error) {
-    console.warn('withAuth error', error)
+    console.log('withAuth error', error)
   } finally {
     return cb(ctx)
   }

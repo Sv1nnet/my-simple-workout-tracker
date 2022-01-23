@@ -17,9 +17,4 @@ module.exports = withAntdLess({
   webpack(config) {
     return config;
   },
-
-  // ONLY for Next.js 10, if you use Next.js 11, delete this block
-  future: {
-    webpack5: true,
-  },
 });

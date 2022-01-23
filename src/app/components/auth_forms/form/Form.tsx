@@ -10,6 +10,7 @@ import { Rule } from 'antd/lib/form'
 import { updateToken } from 'store/slices/auth'
 import { ApiSignupError } from '../signup/Signup'
 import { ApiLoginError } from '../login/Login'
+import { selectLang } from '@/src/app/store/slices/config'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -27,7 +28,7 @@ interface IFormProps {
 }
 
 const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resData = {}, isFetching, isError, error }) => {
-  const { lang }  = useAppSelector(state => state.config)
+  const lang = useAppSelector(selectLang)
   const dispatch = useAppDispatch()
   const [ form ] = useForm()
   const { data } = resData
@@ -57,7 +58,7 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
 
   useEffect(() => {
     if (!isError && data?.token) {
-      dispatch(updateToken(data?.token))
+      dispatch(updateToken(data.token))
     }
   }, [ data?.token ])
 
@@ -102,7 +103,7 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
           <Input.Password size="large" type="password" name="confirm_password" />
         </AntForm.Item>
       )}
-      
+
       <AntForm.Item>
         <StyledButton size="large" type="primary" htmlType="submit" block loading={isFetching}>
           {submitLabel}

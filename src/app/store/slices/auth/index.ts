@@ -3,9 +3,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import Cookie from 'js-cookie'
 import type { AppState } from 'app/store'
 import { authApi } from './api'
+import { Token } from './types'
+import * as actions from './actions'
 
 export interface IAuthState {
-  token: null | string
+  token: null | Token
   status: 'initial' | 'loading' | 'error' | 'loaded'
 }
 
@@ -18,13 +20,27 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    updateToken: (state, action: PayloadAction<string>) => {
+    updateToken: (state, action: PayloadAction<Token>) => {
       state.token = action.payload
       state.status = 'loaded'
     },
+    // logout: (state) => {
+    //   Cookie.set('logout', Date.now())
+    //   state.token = null
+    //   state.status = 'loaded'
+    // },
   },
   extraReducers: (builder) => {
     builder
+    // logout
+      .addCase(
+        actions.logout.pending,
+        (state) => {
+          Cookie.set('logout', Date.now())
+          state.token = null
+          state.status = 'loaded'
+        },
+      )
       // refresh token
       .addMatcher(
         authApi.endpoints.refreshToken.matchPending,
@@ -42,23 +58,16 @@ export const authSlice = createSlice({
       .addMatcher(
         authApi.endpoints.refreshToken.matchRejected,
         (state, { payload }) => {
-          state.token = (payload as unknown as ResponseError).appCode === 4032 ? '' : state.token
+          state.token = (payload as unknown as ResponseError).appCode === 4032 ? null : state.token
           state.status = 'error'
-        },
-      )
-    // logout
-      .addMatcher(
-        authApi.endpoints.logout.matchPending,
-        (state) => {
-          Cookie.set('logout', Date.now())
-          state.token = null
-          state.status = 'loaded'
         },
       )
   },
 })
 
+// export const { updateToken, logout } = authSlice.actions
 export const { updateToken } = authSlice.actions
+export const { logout } = actions
 
 export const selectToken = (state: AppState) => state.auth.token
 
