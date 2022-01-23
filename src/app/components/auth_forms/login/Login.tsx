@@ -5,6 +5,7 @@ import Form from '../form/Form'
 import { FC } from 'react'
 import { authApi } from 'store/slices/auth/api'
 import { LoginError } from 'store/slices/auth/types'
+import { selectLang } from '@/src/app/store/slices/config'
 
 interface IProps {
   active: boolean
@@ -16,7 +17,7 @@ export type ApiLoginError = {
 }
 
 const Login: FC<IProps> = ({ active }) => {
-  const { lang } = useAppSelector(state => state.config)
+  const lang = useAppSelector(selectLang)
   const [ login, stateResult ] = authApi.useLazyLoginQuery()
 
   return (

@@ -16,6 +16,10 @@
       "ru": "Пароль",
       "eng": "Password"
     },
+    "new_password": {
+      "ru": "Новый пароль",
+      "eng": "New password"
+    },
     "confirm_password": {
       "ru": "Подтвердите пароль",
       "eng": "Confirm password"
@@ -81,6 +85,20 @@
     "profile": {
       "ru": "Профиль",
       "eng": "Profile"
+    }
+  },
+  "pages": {
+    "profile": {
+      "save_button": {
+        "ru": "Сохранить",
+        "eng": "Save"
+      },
+      "error": {
+        "message": {
+          "ru": "Произошла ошибка при сохранения данных",
+          "eng": "Error occurred while saving data"
+        }
+      }
     }
   }
 }

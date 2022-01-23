@@ -2,7 +2,7 @@ export type ResponseError<V = void> = {
   code: number;
   appCode: number;
   message: {
-    text: string;
+    text: string
     validation?: V;
   }
 }

@@ -1,8 +1,6 @@
 import { IResponse } from '@/src/app/constants/response_types'
 
-export type Token = {
-  token: string
-}
+export type Token = string
 
 export type UserForm = {
   email: string;
@@ -18,10 +16,10 @@ export type Refresh = Pick<UserForm, 'email'>
 export type Login = Pick<UserForm, 'email' | 'password'>
 export type Signup = Pick<UserForm, 'email' | 'password'>
 
-export type LoginSuccess = IResponse<Token>
+export type LoginSuccess = IResponse<{ token: Token }>
 export type LoginError = IResponse
 
-export type SignupSuccess = IResponse<Token>
+export type SignupSuccess = IResponse<{ token: Token }>
 export type SignupError = IResponse<null, { email?: string, password?: string }>
 
 export type ResetSuccess = IResponse
@@ -30,7 +28,7 @@ export type ResetError = IResponse<null, { email?: string }>
 export type RestoreSuccess = IResponse
 export type RestoreError = IResponse<null, { password?: string }>
 
-export type RefreshSuccess = IResponse<Token>
+export type RefreshSuccess = IResponse<{ token: Token }>
 export type RefreshError = IResponse
 
 export type LogoutSuccess = IResponse

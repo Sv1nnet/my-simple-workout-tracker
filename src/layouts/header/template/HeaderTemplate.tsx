@@ -8,6 +8,7 @@ import { useAppSelector } from 'app/hooks'
 import { theme } from 'src/styles/vars'
 import { NavTemplate } from 'layouts/nav'
 import UserMenu from '../user_menu/UserMenu'
+import { selectLang } from '@/src/app/store/slices/config'
 
 const StyledPageHeader = styled(PageHeader)`
   background-color: ${theme.primaryColor};
@@ -32,7 +33,7 @@ const StyledPageHeader = styled(PageHeader)`
 
 
 const Header = ({ title, onBack, children }) => {
-  const { lang }  = useAppSelector(state => state.config)
+  const lang = useAppSelector(selectLang)
 
   return (
     <>

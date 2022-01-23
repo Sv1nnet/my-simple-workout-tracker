@@ -6,6 +6,7 @@ import { useAppSelector } from 'app/hooks'
 import int from 'constants/int.json'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import TabLabel from '../tab_label/TabLabel'
+import { selectLang } from '@/src/app/store/slices/config'
 
 const { TabPane } = Tabs
 
@@ -31,7 +32,7 @@ interface INavTemplate {
 
 const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const router = useRouter()
-  const { lang }  = useAppSelector(state => state.config)
+  const lang = useAppSelector(selectLang)
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
 

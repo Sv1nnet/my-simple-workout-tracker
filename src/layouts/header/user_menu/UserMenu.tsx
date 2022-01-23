@@ -4,9 +4,10 @@ import { useRouter } from 'next/router'
 import { Avatar, Button, Dropdown, Menu } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
-import { authApi } from 'store/slices/auth/api'
 import style from './UserMenu.module.scss'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
+import { logout } from '@/src/app/store/slices/auth'
+import { useAppDispatch } from '@/src/app/hooks'
 
 
 const StyledAvatar = styled(Avatar)`
@@ -15,17 +16,17 @@ const StyledAvatar = styled(Avatar)`
 `
 
 const UserMenu = () => {
-  const [ logout ] = authApi.useLazyLogoutQuery()
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
   const { loading, loadingRoute } = useContext(RouterContext)
   const { route } = useRouter()
+  const dispatch = useAppDispatch()
   const avatarFirstClicked = useRef(false)
 
   const profileLoading = loading && loadingRoute === '/profile'
   const mainLoading = loading && loadingRoute === '/'
 
   const menu = useMemo(function MenuItself() {
-    const handleClick = () => logout()
+    const handleClick = () => dispatch(logout())
     const closeMenu = () => setIsOpen(false)
 
     return (
