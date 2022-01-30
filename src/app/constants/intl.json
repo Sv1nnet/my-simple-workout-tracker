@@ -54,6 +54,10 @@
         "required": {
           "ru": "Повторите пароль",
           "eng": "Repeat your password"
+        },
+        "password_matching": {
+          "ru": "Пароли не совпадают",
+          "eng": "Passwords do not match"
         }
       }
     }
