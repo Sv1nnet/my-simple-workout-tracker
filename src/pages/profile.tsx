@@ -7,7 +7,6 @@ import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/with
 import { Rule } from 'antd/lib/form'
 import { useAppSelector } from 'app/hooks'
 import { profileApi } from 'store/slices/profile/api'
-import { selectToken } from 'store/slices/auth'
 import { selectCredentials } from 'store/slices/profile'
 import { CustomBaseQueryError } from '../app/store/utils/baseQueryWithReauth'
 import { IntlContext } from '../app/contexts/intl/IntContextProvider'
@@ -22,7 +21,6 @@ const FormWrapper = styled(Form)`
 
 const Profile = () => {
   const { intl } = useContext(IntlContext)
-  const token = useAppSelector(selectToken)
   const credentials = useAppSelector(selectCredentials)
   const [ form ] = useForm()
   const [ fetchProfile, { isLoading, isFetching } ] = profileApi.useLazyGetQuery()
@@ -44,7 +42,7 @@ const Profile = () => {
 
   const handleSubmit = async ({ email, password, new_password }) => {
     try {
-      await updateProfile({ profile: { email, password, new_password }, token })
+      await updateProfile({ profile: { email, password, new_password } })
       form.setFieldsValue({ email, password: '', new_password: '', confirm_password: '' })
     } catch {}
   }
@@ -72,7 +70,7 @@ const Profile = () => {
   }, [ credentials.email ])
 
   useEffect(() => {
-    fetchProfile(token)
+    fetchProfile()
   }, [])
 
   return (

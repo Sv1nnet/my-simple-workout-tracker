@@ -1,6 +1,7 @@
 import { combineReducers, configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
 import { authApi } from './slices/auth/api'
 import { profileApi } from './slices/profile/api'
+import { exerciseApi } from './slices/exercise/api'
 import auth from './slices/auth'
 import profile from './slices/profile'
 import config from './slices/config'
@@ -8,6 +9,7 @@ import config from './slices/config'
 const rootReducer = combineReducers({
   auth,
   profile,
+  [exerciseApi.reducerPath]: exerciseApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   config,
@@ -16,7 +18,11 @@ const rootReducer = combineReducers({
 export function makeStore() {
   return configureStore({
     reducer: rootReducer,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(authApi.middleware, profileApi.middleware),
+    middleware: getDefaultMiddleware => getDefaultMiddleware().concat(
+      authApi.middleware,
+      profileApi.middleware,
+      exerciseApi.middleware,
+    ),
   })
 }
 

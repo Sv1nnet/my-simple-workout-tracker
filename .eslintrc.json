@@ -1,5 +1,7 @@
 {
-  "extends": "airbnb-typescript",
+  "extends": [
+    "airbnb-typescript"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -28,7 +30,7 @@
   "rules": {
     "@typescript-eslint/semi": ["warn", "never"],
     "@typescript-eslint/naming-convention": [
-      "error",
+      0,
       {
         "selector": "variable",
         "format": ["camelCase", "PascalCase", "snake_case"],
@@ -68,7 +70,7 @@
     "import/prefer-default-export": "off",
     "react/jsx-indent-props": [1, 2],
     "react/sort-comp": [1],
-    "react/prop-types": [2, { "ignore": ["dispatch", "params"] }],
+    "react/prop-types": [0, { "ignore": ["dispatch", "params"] }],
     "react/prefer-stateless-function": 0,
     "react/jsx-indent": [2, 2],
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
@@ -86,6 +88,7 @@
     "jsx-a11y/anchor-is-valid": ["error", { "components": ["Link"], "specialLink": ["to"] }],
     "jsx-a11y/label-has-for": [2, { "required": "id", "allowChildren": true }],
     "function-paren-newline": ["error", "consistent"],
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^_" }]
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }]
   }
 }

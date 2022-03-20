@@ -1,5 +1,6 @@
+import getConfig from 'next/config'
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const BASE_URL = 'http://192.168.0.13:3005/api'
+export const BASE_URL = `http://${getConfig().publicRuntimeConfig.__API_HOST__}:3005/api`
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 let _global = typeof window !== 'undefined' ? window : global
@@ -68,6 +69,40 @@ const routes = {
         return {
           full: `${routes.base}${this.base.path}/update`,
           path: `${this.base.path}/update`,
+        }
+      },
+    },
+  },
+  exercise: {
+    v1: {
+      get base() {
+        return {
+          full: `${_global.__API__.BASE_URL}/v1/exercise`,
+          path: '/v1/exercise',
+        }
+      },
+      get list() {
+        return {
+          full: `${routes.base}${this.base.path}/list`,
+          path: `${this.base.path}/list`,
+        }
+      },
+      get create() {
+        return {
+          full: `${routes.base}${this.base.path}/create`,
+          path: `${this.base.path}/create`,
+        }
+      },
+      get update() {
+        return {
+          full: `${routes.base}${this.base.path}/update`,
+          path: `${this.base.path}/update`,
+        }
+      },
+      get delete() {
+        return {
+          full: `${routes.base}${this.base.path}/delete`,
+          path: `${this.base.path}/delete`,
         }
       },
     },

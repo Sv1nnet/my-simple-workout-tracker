@@ -1,6 +1,9 @@
 import 'antd/dist/antd.css'
 import 'src/styles/globals.css'
 
+import dayjs from 'dayjs'
+import 'dayjs/locale/en'
+import 'dayjs/locale/ru'
 import { Fragment } from 'react'
 import { Provider } from 'react-redux'
 import type { AppProps as NextAppProps } from 'next/app'
@@ -10,9 +13,13 @@ import { AuthLayout } from 'layouts/authorization'
 import { selectToken, updateToken } from 'app/store/slices/auth'
 import RouterContextProvider from 'app/contexts/router/RouterContextProvider'
 import IntlContextProvider from 'app/contexts/intl/IntContextProvider'
+import isoWeek from 'dayjs/plugin/isoWeek'
+dayjs.extend(isoWeek)
 
 type ComponentWithLayout = NextComponentType & {
   Layout?: NextComponentType
+  layoutProps?: object
+  componentProps?: object
 }
 
 type AppProps = NextAppProps & {
@@ -22,6 +29,7 @@ type AppProps = NextAppProps & {
 export default function App({ Component, pageProps }: AppProps) {
   const Layout = Component.Layout || Fragment
   const layoutExists = Layout !== Fragment
+  const { componentProps = {}, layoutProps = {} } = Component
 
   if (pageProps.token && pageProps.token !== selectToken(store.getState())) {
     store.dispatch(updateToken(pageProps.token))
@@ -32,8 +40,8 @@ export default function App({ Component, pageProps }: AppProps) {
       <IntlContextProvider>
         <RouterContextProvider>
           <AuthLayout>
-            <Layout {...(layoutExists ? pageProps : {})}>
-              <Component {...(layoutExists ? {} : pageProps)} />
+            <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
+              <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
             </Layout>
           </AuthLayout>
         </RouterContextProvider>

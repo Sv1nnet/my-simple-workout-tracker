@@ -56,7 +56,7 @@ export const authApi = createApi({
     refreshToken: build.query<RefreshSuccess, void>({
       query: () => ({
         url: routes.auth.v1.refresh.full,
-        method: 'POST',
+        method: 'GET',
       }),
     }),
   }),

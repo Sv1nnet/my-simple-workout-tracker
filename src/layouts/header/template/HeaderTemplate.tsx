@@ -7,6 +7,7 @@ import { theme } from 'src/styles/vars'
 import { NavTemplate } from 'layouts/nav'
 import UserMenu from '../user_menu/UserMenu'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { TabRoutes } from '../../nav/template/NavTemplate'
 
 const StyledPageHeader = styled(PageHeader)`
   background-color: ${theme.primaryColor};
@@ -70,9 +71,9 @@ HeaderTemplate.propTypes = {
   children: PropTypes.node,
 }
 
-const HeaderTemplateWithNav: FC = ({ children }) => {
+const HeaderTemplateWithNav: FC<{ route: TabRoutes }> = ({ children, route }) => {
   const router = useRouter()
-  const _title = (router.query.main as 'exercises' | 'workouts' | 'activities') || 'activities'
+  const _title = route ?? ((router.route) || 'activities').replace('/', '') as TabRoutes
 
   return (
     <>
@@ -82,10 +83,6 @@ const HeaderTemplateWithNav: FC = ({ children }) => {
       </Header>
     </>
   )
-}
-
-HeaderTemplateWithNav.propTypes = {
-  children: PropTypes.node,
 }
 
 export default HeaderTemplateWithNav

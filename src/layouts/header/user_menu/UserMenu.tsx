@@ -8,6 +8,7 @@ import style from './UserMenu.module.scss'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import { logout } from '@/src/app/store/slices/auth'
 import { useAppDispatch } from '@/src/app/hooks'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 
 const StyledAvatar = styled(Avatar)`
@@ -18,6 +19,7 @@ const StyledAvatar = styled(Avatar)`
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
   const { loading, loadingRoute } = useContext(RouterContext)
+  const { intl } = useContext(IntlContext)
   const { route } = useRouter()
   const dispatch = useAppDispatch()
   const avatarFirstClicked = useRef(false)
@@ -35,19 +37,19 @@ const UserMenu = () => {
           ? (
             <Menu.Item key="profile">
               <Button loading={profileLoading} type="link" block>
-                <Link href="/profile">Profile</Link>
+                <Link href="/profile">{intl.pages.profile.profile}</Link>
               </Button>
             </Menu.Item>
           )
           : (
             <Menu.Item key="main">
               <Button loading={mainLoading} type="link" block>
-                <Link href="/">Main</Link>
+                <Link href="/">{intl.pages.profile.main}</Link>
               </Button>
             </Menu.Item>
           )}
         <Menu.Item key="logout" onClick={closeMenu}>
-          <Button type="link" onClick={handleClick} block>Logout</Button>
+          <Button type="link" onClick={handleClick} block>{intl.pages.profile.logout}</Button>
         </Menu.Item>
       </Menu>
     )
