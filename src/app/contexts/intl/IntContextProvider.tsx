@@ -14,9 +14,13 @@ const IntlContextProvider: FC = ({ children }) => {
 
     const getValueByLang = (obj: object & { short?: object }, l: string) => {
       if (l in obj) {
-        const result: StringWithShort = new String(obj[l]) as StringWithShort
-        if (typeof obj.short === 'object' && obj.short !== null) {
-          result.short = obj.short[l]
+        const extraKeys = Object.keys(obj).filter(key => key !== 'ru' && key !== 'eng')
+        let result: StringWithShort | string = obj[l]
+        if (extraKeys.length) {
+          result = Array.isArray(result) ? result : new String(result) as StringWithShort
+          extraKeys.forEach((key) => {
+            result[key] = getValueByLang(obj[key], lang)
+          })
         }
         return result
       }

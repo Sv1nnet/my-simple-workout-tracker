@@ -1,5 +1,5 @@
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import Main from './[main]'
+import Main from './exercises'
 
 export default Main
 

@@ -94,6 +94,18 @@
   },
   "pages": {
     "profile": {
+      "main": {
+        "ru": "Главная",
+        "eng": "Main"
+      },
+      "profile": {
+        "ru": "Профиль",
+        "eng": "Profile"
+      },
+      "logout": {
+        "ru": "Выйти",
+        "eng": "Logout"
+      },
       "save_button": {
         "ru": "Сохранить",
         "eng": "Save"
@@ -112,6 +124,190 @@
         "message": {
           "ru": "Произошла ошибка при сохранения данных",
           "eng": "Error occurred while saving data"
+        }
+      }
+    },
+    "exercises": {
+      "payload": {
+        "repeats": {
+          "ru": [ "Повторение", "Повторения", "Повторений" ],
+          "eng": [ "Repeat", "Repeats" ],
+          "short": {
+            "ru": [ "повт." ],
+            "eng": [ "rep", "reps" ]
+          }
+        },
+        "mass_unit": {
+          "kg": {
+            "ru": [ "кг" ],
+            "eng": [ "kg", "kgs" ]
+          },
+          "lb": {
+            "ru": [ "фунт", "фунта", "фунтов" ],
+            "eng": [ "lb", "lbs" ]
+          }
+        },
+        "time": {
+          "hour": {
+            "ru": [ "час", "часа", "часов"],
+            "eng": [ "hour", "hours" ],
+            "short": {
+              "ru": "ч",
+              "eng": "h"
+            }
+          },
+          "minute": {
+            "ru": [ "минута", "минуты", "минут"],
+            "eng": [ "minute", "minutes" ],
+            "short": {
+              "ru": "м",
+              "eng": "m"
+            }
+          },
+          "second": {
+            "ru": [ "секунда", "секунды", "секунд"],
+            "eng": [ "second", "seconds" ],
+            "short": {
+              "ru": "с",
+              "eng": "s"
+            }
+          }
+        }
+      },
+      "input_labels": {
+        "title": {
+          "ru": "Название",
+          "eng": "Title"
+        },
+        "type": {
+          "ru": "Тип нагрузки",
+          "eng": "Type",
+          "options": {
+            "repeats": {
+              "ru": "Повотрения",
+              "eng": "Repeats"
+            },
+            "time": {
+              "ru": "Время (меньше - лучше)",
+              "eng": "Time (less - better)"
+            },
+            "duration": {
+              "ru": "Длительность (больше - лучше)",
+              "eng": "Duration (more - better)"
+            },
+            "distance": {
+              "ru": "Дистанция",
+              "eng": "Distance"
+            }
+          }
+        },
+        "each_side": {
+          "ru": "Каждая сторона (левая/правая рука и т.д.)",
+          "eng": "Each side (left/right arm, etc.)"
+        },
+        "time": {
+          "ru": "Время",
+          "eng": "Time"
+        },
+        "repeats": {
+          "ru": "Повотрения",
+          "eng": "Repeats"
+        },
+        "weight": {
+          "ru": "Вес",
+          "eng": "Weight"
+        },
+        "description": {
+          "ru": "Описание",
+          "eng": "Description"
+        },
+        "image": {
+          "ru": "Изображение",
+          "eng": "Image"
+        }
+      },
+      "submit_button": {
+        "save": {
+          "ru": "Сохранить",
+          "eng": "Save"
+        },
+        "create": {
+          "ru": "Создать",
+          "eng": "Create"
+        },
+        "cancel": {
+          "ru": "Отмена",
+          "eng": "Cancel"
+        }
+      },
+      "list_buttons": {
+        "create": {
+          "ru": "Создать упражнение",
+          "eng": "Create exercise"
+        },
+        "select_all": {
+          "ru": "Выделить все",
+          "eng": "Select all"
+        },
+        "deselect_all": {
+          "ru": "Убрать выделение",
+          "eng": "Deselect all"
+        },
+        "delete": {
+          "ru": "Удалить упражнение",
+          "eng": "Delete exercise"
+        },
+        "cancel": {
+          "ru": "Отменить выделение",
+          "eng": "Cancel selection"
+        },
+        "more_options": {
+          "ru": "Больше вариантов",
+          "eng": "More options"
+        }
+      },
+      "modal": {
+        "delete": {
+          "title": {
+            "ru": "Удаление",
+            "eng": "Deleting"
+          },
+          "body": {
+            "ru": "Удалить выбранные упражнения?",
+            "eng": "Delete selected exercises?"
+          },
+          "ok_button": {
+            "ru": "Удалить",
+            "eng": "Delete"
+          },
+          "cancel_button": {
+            "ru": "Отмена",
+            "eng": "Cancel"
+          }
+        }
+      }
+    }
+  },
+  "modal": {
+    "common": {
+      "title": {
+        "error": {
+          "ru": "Ошибка!",
+          "eng": "Error!"
+        },
+        "warning": {
+          "ru": "Внимание!",
+          "eng": "Warning!"
+        }
+      },
+      "ok_text": {
+        "ru": "Понятно",
+        "eng": "Got it"
+      },
+      "default_content": {
+        "error": {
+          "ru": "Что-то пошло не так",
+          "eng": "Something went wrong"
         }
       }
     }

@@ -10,8 +10,20 @@ import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { Token } from 'store/slices/auth/types'
 import { IResponse } from '@/src/app/constants/response_types'
 import { SerializedError } from '@reduxjs/toolkit'
+import { AppState } from '..'
 
-export const baseQuery = fetchBaseQuery({ baseUrl: routes.base, credentials: 'include' })
+export const baseQuery = fetchBaseQuery({
+  baseUrl: routes.base,
+  credentials: 'include',
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as AppState).auth.token
+    // If we have a token set in state, let's assume that we should be passing it.
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
+    return headers
+  },
+})
 export const baseQueryWithoutCreds = fetchBaseQuery({ baseUrl: routes.base })
 
 export type CustomBaseQueryError = FetchBaseQueryError & { data: IResponse<null, any> } | SerializedError & { data: IResponse<null, any> }

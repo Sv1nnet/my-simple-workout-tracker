@@ -4,11 +4,14 @@ import { Tabs } from 'antd'
 import { useRouter } from 'next/router'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import TabLabel from '../tab_label/TabLabel'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const { TabPane } = Tabs
 
 const StyledTabs = styled(Tabs)`
+  .ant-tabs-nav {
+    margin-bottom: 0;
+  }
   .ant-tabs-nav-list {
     width: 100%;
     .ant-tabs-tab {
@@ -32,7 +35,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
 
-  const handleChange = tab => router.push(tab, undefined, { shallow: true })
+  const handleChange = tab => router.push(`/${tab}`, undefined, { shallow: true })
 
   useEffect(() => {
     const handleResize = () => window.innerWidth < 375 ? setWidth('sm') : setWidth('md')
@@ -48,8 +51,10 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
     activities: ((isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '').toUpperCase(),
   }
 
+  const [ ,, subRoute ] = router.route.split('/')
+
   return (
-    <StyledTabs tabBarGutter={0} onChange={handleChange} size="large" activeKey={activeTab} centered>
+    <StyledTabs tabBarGutter={0} onChange={handleChange} size="large" activeKey={!subRoute ? activeTab : ''} centered>
       <TabPane tab={<TabLabel label={labels.exercises} loading={loading && loadingRoute === '/exercises'} />} key="exercises" />
       <TabPane tab={<TabLabel label={labels.workouts} loading={loading && loadingRoute === '/workouts'} />} key="workouts" />
       <TabPane tab={<TabLabel label={labels.activities} loading={loading && loadingRoute === '/activities'} />} key="activities" />

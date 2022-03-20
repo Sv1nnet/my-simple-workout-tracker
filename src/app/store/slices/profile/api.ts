@@ -14,24 +14,18 @@ export const profileApi = createApi({
   refetchOnMountOrArgChange: true,
   tagTypes: [ 'Profile' ],
   endpoints: build => ({
-    get: build.query<GetProfileSuccess, Token>({
-      query: token => ({
+    get: build.query<GetProfileSuccess, void>({
+      query: () => ({
         url: routes.profile.v1.base.full,
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       }),
       providesTags: () => [ 'Profile' ],
     }),
-    update: build.query<ProfileUpdateSuccess, { profile: ProfileForm, token: Token }>({
-      query: ({ profile, token }) => ({
+    update: build.query<ProfileUpdateSuccess, { profile: ProfileForm }>({
+      query: ({ profile }) => ({
         url: routes.profile.v1.update.full,
         method: 'PATCH',
         body: { ...profile },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       }),
       providesTags: () => [ 'Profile' ],
     }),

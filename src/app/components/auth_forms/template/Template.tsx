@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Login from '../login/Login'
 import Signup from '../signup/Signup'
-import { FC, SyntheticEvent, useContext, useLayoutEffect, useState } from 'react'
+import { FC, SyntheticEvent, useContext, useEffect, useState } from 'react'
 import { changeLang, selectLang } from '@/src/app/store/slices/config'
 import { useRouter } from 'next/router'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
@@ -74,7 +74,7 @@ const AuthTemplate = () => {
     dispatch(changeLang(dataset.lang))
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (router.pathname !== '/') {
       router.push('/')
     }
