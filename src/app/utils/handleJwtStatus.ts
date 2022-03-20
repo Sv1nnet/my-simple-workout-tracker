@@ -2,7 +2,6 @@ import { GetServerSideProps } from 'next'
 import { GetServerSidePropsWithAuth } from 'store/utils/withAuth'
 import { IResponse } from '../constants/response_types'
 
-// eslint-disable-next-line no-unused-vars
 export type GetServerSidePropsCb = <R = IResponse>(response?: R) => Awaited<ReturnType<GetServerSidePropsWithAuth | GetServerSideProps>>
 
 export type ResponseWithMessage = { message?: string }

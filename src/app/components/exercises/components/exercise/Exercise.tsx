@@ -136,7 +136,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
   const [ repeats, setRepeats ] = useState(null)
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
-  const { input_labels, submit_button, payload, modal } = useContext(IntlContext).intl.pages.exercises
+  const { intl } = useContext(IntlContext)
+  const { input_labels, submit_button, payload, modal } = intl.pages.exercises
+  const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
   const initialValues = useMemo(() => {
@@ -296,9 +298,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
   useEffect(() => {
     if (error) {
       Modal.error({
-        title: modal.title.error,
-        content: error || modal.default_content,
-        okText: modal.ok_text,
+        title: title.error,
+        content: error || default_content.error,
+        okText: ok_text,
       })
     }
   }, [ !!error ])
