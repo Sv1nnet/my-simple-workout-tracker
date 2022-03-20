@@ -52,8 +52,10 @@ const refreshToken = async (token): Promise<RefreshTokenResult> => {
 
 const handleRefreshResult = (ctx, refreshRes) => {
   if (refreshRes.cookies && refreshRes?.body?.data?.token) {
-    ctx.res.setHeader('set-cookie', refreshRes.cookies)
-    ctx.res.setHeader('Cookie', refreshRes.cookies)
+    let [ refresh_token, access_token ] = refreshRes.cookies.split('HttpOnly')
+    access_token = access_token.substring(2)
+
+    ctx.res.setHeader('Set-Cookie', [ refresh_token, access_token ])
     ctx.req.session = { token: refreshRes.body.data.token }
     return true
   }
@@ -64,7 +66,6 @@ const handleRefreshResult = (ctx, refreshRes) => {
 }
 
 export type GetServerSidePropsWithAuth = GetServerSideProps & { shouldRefresh?: boolean } & { props?: object }
-// eslint-disable-next-line no-unused-vars
 export type WithAuthCb = (ctx: GetServerSidePropsContextWithSession) => Promise<{ props: any, shouldRefresh?: boolean } | any>
 
 const withAuth = (cb: WithAuthCb): GetServerSidePropsWithAuth => async (ctx: GetServerSidePropsContextWithSession) => {
