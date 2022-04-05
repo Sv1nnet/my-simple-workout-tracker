@@ -15,7 +15,7 @@ import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import Link from 'next/link'
 
 const StyledButton = styled(AntButton)`
-  z-index: 10001;
+  z-index: 999;
   transform: translateX(-100px);
   ${({ $isSelectionActive, $isCancel, $isDelete, $isCreate, $isMoreOptions, $expanded }) => (
     $isCancel && `
@@ -36,7 +36,7 @@ const StyledButton = styled(AntButton)`
   }
 `
 
-const ListButton = React.forwardRef<unknown, { tooltipTitle: string, isCancel?: boolean, isDelete?: boolean, isMoreOptions?: boolean, icon: React.ReactElement }>(({
+const ListButton = React.forwardRef<unknown, { $isCreate?: boolean, tooltipTitle?: string, isCancel?: boolean, isDelete?: boolean, isMoreOptions?: boolean, icon: React.ReactElement }>(({
   tooltipTitle,
   isCancel,
   isDelete,
@@ -49,8 +49,8 @@ const ListButton = React.forwardRef<unknown, { tooltipTitle: string, isCancel?: 
 ))
 
 const MoreOptionsButton = props => <ListButton isMoreOptions type="text" icon={props.expanded ? <RightOutlined /> : <LeftOutlined />} {...props} />
-const CreateButton = props => (
-  <Link href="/exercises/create">
+const CreateButton = ({ href, ...props }) => (
+  <Link href={href}>
     <ListButton $isCreate icon={<PlusOutlined />} {...props} />
   </Link>
 )
@@ -59,7 +59,7 @@ const SelectAllButton = props => <ListButton icon={<BarsOutlined />} {...props} 
 const DeselectAllButton = props => <ListButton icon={<SwitcherOutlined />} {...props} />
 const DeleteButton = props => <ListButton isDelete style={!props.disabled ? { background: '#cf1322', borderColor: '#cf1322' } : {}} icon={<DeleteOutlined />} {...props} />
 
-const ListControls = ({ isDeleteFetching, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
+const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
   const { list_buttons } = useContext(IntlContext).intl.pages.exercises
   const [ expanded, setExpanded ] = useState(false)
 
@@ -74,7 +74,7 @@ const ListControls = ({ isDeleteFetching, isSelectionActive, selected, allSelect
   
   return (
     <MainButtonContainer>
-      <CreateButton />
+      {createHref && <CreateButton tooltipTitle={list_buttons.create} href={createHref} disabled={isDeleteFetching} />}
       {isSelectionActive && <MoreOptionsButton $expanded={expanded} tooltipTitle={list_buttons.more_options} onClick={handleShowMoreOptions} />}
       <MoreOptionsButtonContainer $expanded={expanded}>
         <MoreOptionsButtonContainer.Inner>
@@ -84,7 +84,7 @@ const ListControls = ({ isDeleteFetching, isSelectionActive, selected, allSelect
               : <SelectAllButton tooltipTitle={list_buttons.select_all} onClick={handleListAll} />
           }
           <DeleteButton loading={isDeleteFetching} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
-          <CancelSelectionButton tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
+          <CancelSelectionButton disabled={isDeleteFetching} tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
         </MoreOptionsButtonContainer.Inner>
       </MoreOptionsButtonContainer>
     </MainButtonContainer>

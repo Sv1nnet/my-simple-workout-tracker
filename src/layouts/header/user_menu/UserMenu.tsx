@@ -20,7 +20,7 @@ const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
   const { loading, loadingRoute } = useContext(RouterContext)
   const { intl } = useContext(IntlContext)
-  const { route } = useRouter()
+  const { route, push } = useRouter()
   const dispatch = useAppDispatch()
   const avatarFirstClicked = useRef(false)
 
@@ -28,7 +28,10 @@ const UserMenu = () => {
   const mainLoading = loading && loadingRoute === '/'
 
   const menu = useMemo(function MenuItself() {
-    const handleClick = () => dispatch(logout())
+    const handleClick = () => {
+      dispatch(logout())
+      push('/')
+    }
     const closeMenu = () => setIsOpen(false)
 
     return (

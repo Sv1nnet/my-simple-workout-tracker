@@ -14,6 +14,9 @@ import { selectToken, updateToken } from 'app/store/slices/auth'
 import RouterContextProvider from 'app/contexts/router/RouterContextProvider'
 import IntlContextProvider from 'app/contexts/intl/IntContextProvider'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import duration from 'dayjs/plugin/duration'
+
+dayjs.extend(duration)
 dayjs.extend(isoWeek)
 
 type ComponentWithLayout = NextComponentType & {

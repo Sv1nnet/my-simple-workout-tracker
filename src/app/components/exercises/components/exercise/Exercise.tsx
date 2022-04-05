@@ -16,6 +16,7 @@ import { timeToDayjs } from 'app/utils/time'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import routes from 'app/constants/end_points'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { Input as CustomInput } from 'app/components'
 
 const StyledForm = styled(Form)`
   position: relative;
@@ -107,9 +108,6 @@ function getBase64(file) {
   })
 }
 
-const FLOAT_REGEXP = /(^\d+$)|(^\d{1,}(\.|,)$)|(^\d+(\.|,)\d{1,}$)|(^(\.|,)\d{1,}$)/
-const INT_REGEXP = /^\d+$/
-
 const previewReducer = (state, { type, payload }) => {
   switch (type) {
     case 'open':
@@ -132,12 +130,10 @@ const previewReducer = (state, { type, payload }) => {
 }
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, error }) => {
-  const [ weight, setWeight ] = useState(null)
-  const [ repeats, setRepeats ] = useState(null)
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
   const { intl } = useContext(IntlContext)
-  const { input_labels, submit_button, payload, modal } = intl.pages.exercises
+  const { input_labels, submit_button, payload } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
@@ -171,52 +167,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
 
   const mountedRef = useRef(false)
 
-  const handleWeightChange = ({ target }) => {
-    let { value } = target
-    if (value === '' || FLOAT_REGEXP.test(value)) {
-      value = value.replace(',', '.')
-      form.setFieldsValue({ weight: value })
-      setWeight(value)
-    } else {
-      form.setFieldsValue({ weight: weight })
-      setWeight(weight)
-    }
-  }
+  const handleWeightChange = value => form.setFieldsValue({ weight: value })
 
-  const handleWeightBlur = ({ target }) => {
-    let { value } = target
-    if (value === '' || FLOAT_REGEXP.test(value)) {
-      value = value ? parseFloat(value) : value
-      form.setFieldsValue({ weight: value })
-      setWeight(value)
-    } else {
-      form.setFieldsValue({ weight })
-      setWeight(weight)
-    }
-  }
-
-  const handleRepeatsChange = ({ target }) => {
-    let { value } = target
-    if (value === '' || INT_REGEXP.test(value)) {
-      form.setFieldsValue({ repeats: value })
-      setRepeats(value)
-    } else {
-      form.setFieldsValue({ repeats })
-      setRepeats(repeats)
-    }
-  }
-
-  const handleRepeatsBlur = ({ target }) => {
-    let { value } = target
-    if (value === '' || INT_REGEXP.test(value)) {
-      value = value ? parseInt(value, 10) : value
-      form.setFieldsValue({ repeats: value })
-      setWeight(value)
-    } else {
-      form.setFieldsValue({ repeats })
-      setWeight(repeats)
-    }
-  }
+  const handleRepeatsChange = value => form.setFieldsValue({ repeats: value })
 
   const handleCancelEditing = () => {
     setEditMode(false)
@@ -343,11 +296,11 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
                   )
                   : (
                     <ShortFormItem name="repeats" label={input_labels.repeats} $fullWidth $margin>
-                      <Input disabled={!isEditMode || isFetching} onChange={handleRepeatsChange} onBlur={handleRepeatsBlur} size="large" />
+                      <CustomInput.Number int positive disabled={!isEditMode || isFetching} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
                     </ShortFormItem>
                   )}
                 <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
-                  <Input disabled={!isEditMode || isFetching} onChange={handleWeightChange} onBlur={handleWeightBlur} size="large" addonAfter={selectAfter} />
+                  <CustomInput.Number positive disabled={!isEditMode || isFetching} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
                 </ShortFormItem>
               </>
             )

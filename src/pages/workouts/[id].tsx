@@ -1,30 +1,96 @@
 import type { NextPage } from 'next'
 import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { MainTemplate } from '@/src/layouts/main'
+import { WorkoutTemplate } from '@/src/layouts/main'
+import { useRouter } from 'next/router'
+import { workoutApi } from '@/src/app/store/slices/workout/api'
+import { GetWorkoutError, GetWorkoutSuccess, WorkoutServerPayload } from '@/src/app/store/slices/workout/types'
+import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
+import { Workout } from '@/src/app/components'
+import routes from '@/src/app/constants/end_points'
+import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
 
-const EditWorkouts: NextPage & { Layout: FC, layoutProps?: {} } = () => {
+interface IWorkoutPage {
+  workout: WorkoutServerPayload;
+  error: string;
+}
+
+const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = ({ workout, error: serverError }) => {
+  const router = useRouter()
+  const [
+    get,
+    {
+      data: dataOfGet,
+      isLoading: isLoading_get,
+      isFetching: isFetching_get,
+      error: errorGet,
+    },
+  ] = workoutApi.useLazyGetQuery()
+  const [
+    update,
+    {
+      data: dataOfUpdate,
+      isLoading: isLoading_update,
+      error: errorUpdate,
+    },
+  ] = workoutApi.useUpdateMutation()
+
+  const handleSubmit = values => update({ workout: values })
+
   useEffect(() => {
-    console.log('exercise mounted')
+    if (!workout) get({ id: router.query.id as string })
   }, [])
 
+  let error
+  if (errorGet ) {
+    error = 'error' in errorGet
+      ? errorGet.error
+      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text
+  } else if (errorUpdate) {
+    error = 'error' in errorUpdate
+      ? errorUpdate.error
+      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text
+  }
+
   return (
-    <h2>Edit Exercise</h2>
+    <Workout
+      isEdit
+      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? workout}
+      isFetching={isLoading_get || isFetching_get || isLoading_update}
+      onSubmit={handleSubmit}
+      error={error || serverError}
+    />
   )
 }
 
-EditWorkouts.Layout = MainTemplate
+EditWorkouts.Layout = WorkoutTemplate
 EditWorkouts.layoutProps = { tab: 'workouts' }
 
 export default EditWorkouts
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    return {
-      props: {
-        token: ctx.req.session.token,
-      },
+    const [ ,,id ] = ctx.resolvedUrl.split('/')
+    try {
+      let res: GetWorkoutSuccess | GetWorkoutError = await fetch(`${routes.workout.v1.base.full}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${ctx.req.session.token}`,
+        },
+      }).then(r => r.json())
+  
+      return handleJwtStatus(res, () => ({
+        props: {
+          workout: res.data,
+        },
+      }))
+    } catch (error) {
+      return {
+        props: {
+          workout: null,
+          error: error.errno.includes('ECONNREFUSED') ? 'Connection error' : 'Something has gone wrong. Please try again.',
+        },
+      }
     }
   }
-  return ({ props: {} })
+  return { props: {} }
 })

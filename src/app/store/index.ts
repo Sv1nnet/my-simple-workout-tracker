@@ -4,15 +4,19 @@ import { profileApi } from './slices/profile/api'
 import { exerciseApi } from './slices/exercise/api'
 import auth from './slices/auth'
 import profile from './slices/profile'
+import exercise from './slices/exercise'
 import config from './slices/config'
+import { workoutApi } from './slices/workout/api'
 
 const rootReducer = combineReducers({
   auth,
   profile,
+  exercise,
+  config,
   [exerciseApi.reducerPath]: exerciseApi.reducer,
+  [workoutApi.reducerPath]: workoutApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
-  config,
 })
 
 export function makeStore() {
@@ -22,6 +26,7 @@ export function makeStore() {
       authApi.middleware,
       profileApi.middleware,
       exerciseApi.middleware,
+      workoutApi.middleware,
     ),
   })
 }

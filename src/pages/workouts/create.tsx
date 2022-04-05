@@ -1,22 +1,42 @@
 import type { NextPage } from 'next'
 import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { MainTemplate } from '@/src/layouts/main'
+import { WorkoutTemplate } from '@/src/layouts/main'
+import { IWorkout } from '@/src/app/components/workouts/components/workout/Workout'
+import { workoutApi } from '@/src/app/store/slices/workout/api'
+import { WorkoutForm } from '@/src/app/store/slices/workout/types'
+import { useRouter } from 'next/router'
+import { Workout } from 'app/components'
+import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
 
-const CreateWorkouts: NextPage & { Layout: FC, layoutProps?: {} } = () => {
+interface ICreatePage {
+  setWorkout: React.Dispatch<React.SetStateAction<IWorkout>>
+}
+
+const CreateWorkout: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } = () => {
+  const [ create, { data, isLoading, isError, error } ] = workoutApi.useCreateMutation()
+  const router = useRouter()
+
+  const handleSubmit = (values: WorkoutForm) => create({ workout: values })
+
   useEffect(() => {
-    console.log('exercise mounted')
-  }, [])
+    if (!isError && data) router.push('/workouts')
+  }, [ isLoading ])
 
   return (
-    <h2>Create Exercise</h2>
+    <Workout
+      initialValues={data?.data}
+      isFetching={isLoading || (!!data && !isError)}
+      onSubmit={handleSubmit}
+      error={(error as CustomBaseQueryError)?.data?.error?.message?.text}
+    />
   )
 }
 
-CreateWorkouts.Layout = MainTemplate
-CreateWorkouts.layoutProps = { tab: 'workout' }
+CreateWorkout.Layout = WorkoutTemplate
+CreateWorkout.layoutProps = { tab: 'workout' }
 
-export default CreateWorkouts
+export default CreateWorkout
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
