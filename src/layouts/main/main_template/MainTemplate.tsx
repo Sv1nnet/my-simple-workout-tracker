@@ -5,11 +5,14 @@ import styled from 'styled-components'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { Header } from 'layouts/header'
 import { Tabs } from 'antd'
-import { TabRoutes } from '../../nav/template/NavTemplate'
+import { TabRoutes } from 'layouts/nav/template/NavTemplate'
 
 const { TabPane } = Tabs
 
 const StyledTabs = styled(Tabs)`
+  .ant-tabs-content {
+    position: relative;
+  }
   .ant-tabs-nav {
     height: 0;
     margin: 0;
@@ -26,19 +29,6 @@ const routes = [
   'workouts',
   'exercises',
 ]
-
-const Wk = () => {
-  useEffect(() => {
-    console.log('Workouts mounted')
-  }, [])
-  return <h2>Workouts</h2>
-}
-const Act = () => {
-  useEffect(() => {
-    console.log('Activities mounted')
-  }, [])
-  return <h2>Activities</h2>
-}
 
 const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC } = ({ tab, children, ...props }) => {
   const router = useRouter()
@@ -67,10 +57,10 @@ const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC }
             {activeKey === 'exercises' ? React.cloneElement(children, { ...children.props, ...props }) : null}
           </TabPane>
           <TabPane key="workouts">
-            {activeKey === 'workouts' ? React.cloneElement(children, { ...children.props, ...props }) : <Wk />}
+            {activeKey === 'workouts' ? React.cloneElement(children, { ...children.props, ...props }) : null}
           </TabPane>
           <TabPane key="activities">
-            {activeKey === 'activities' ? React.cloneElement(children, { ...children.props, ...props }) : <Act />}
+            {activeKey === 'activities' ? React.cloneElement(children, { ...children.props, ...props }) : null}
           </TabPane>
           <TabPane key="subRoute">
             {activeKey === 'subRoute' ? React.cloneElement(children, { ...children.props, ...props }) : null}

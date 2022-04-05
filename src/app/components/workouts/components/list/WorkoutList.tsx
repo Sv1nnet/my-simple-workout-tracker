@@ -1,30 +1,34 @@
+
 import { List, notification } from 'antd'
-import { ExerciseItem } from './components'
-import { ExerciseDeleteError, ExerciseForm, Image } from 'app/store/slices/exercise/types'
+import { WorkoutItem } from './components'
+import { Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from '@/src/app/store/slices/workout/types'
+import { Image } from 'store/slices/exercise/types'
 import React, { FC, useContext, useEffect } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
-import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
+import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
 
-export type ApiDeleteExerciseError = {
-  data: ExerciseDeleteError;
+export type ApiDeleteWorkoutError = {
+  data: WorkoutDeleteError;
   status: number;
 }
 
-type DeleteExercisePayload = { ids: Pick<ExerciseForm, 'id'>[] } 
-type Exercise = (ExerciseForm & { id: string })
+type DeleteWorkoutPayload = { ids: Pick<WorkoutForm, 'id'>[] } 
 
-export interface IExerciseList {
-  exercises: Exercise[];
-  deleteExercises: (ids: DeleteExercisePayload) => any;
+export interface IWorkoutList {
+  workouts: WorkoutListItem[];
+  deleteWorkouts: (ids: DeleteWorkoutPayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
 }
 
-const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, exercises }) => {
-  const { payload, modal } = useContext(IntlContext).intl.pages.exercises
+const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, workouts }) => {
+  const { intl } = useContext(IntlContext)
+  const { payload } = intl.pages.exercises
+  const { workouts: workoutDictionary } = intl.pages
+  const { modal } = workoutDictionary
   const {
     isModalVisible,
     selectionRef,
@@ -34,8 +38,8 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
 
   const handleDelete = () => {
     closeModal()
-    return deleteExercises({
-      ids: Object.keys(selectionRef.current.selected).filter(id => selectionRef.current.selected[id]) as Pick<ExerciseForm, 'id'>[],
+    return deleteWorkouts({
+      ids: Object.keys(selectionRef.current.selected).filter(id => selectionRef.current.selected[id]) as Pick<Workout, 'id'>[],
     })
   }
 
@@ -47,7 +51,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiDeleteExerciseError)?.data?.error.message })
+      openNotification({ message: 'Error!', description: (error as ApiDeleteWorkoutError)?.data?.error.message })
     }
   }, [ error ])
 
@@ -58,11 +62,11 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
   return (
     <SelectableList
       ref={selectionRef}
-      list={exercises}
+      list={workouts}
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}
-      createHref="/exercises/create"
+      createHref="/workouts/create"
     >
       {({
         selected,
@@ -73,11 +77,12 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
         <>
           <List
             itemLayout="horizontal"
-            dataSource={exercises}
-            renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
+            dataSource={workouts}
+            renderItem={(item: Omit<WorkoutListItem & { id: number | string }, 'image'> & { image: Image }) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
-                <ExerciseItem
+                <WorkoutItem
                   payloadDictionary={payload}
+                  workoutDictionary={workoutDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   {...item}
@@ -85,7 +90,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
               </SelectableList.Item>
             )}
           />
-          <SelectableList.Modal 
+          <SelectableList.Modal
             okText={modal.delete.ok_button}
             cancelText={modal.delete.cancel_button}
             visible={isModalVisible} 
@@ -100,4 +105,4 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
   )
 }
 
-export default ExerciseList
+export default WorkoutList

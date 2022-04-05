@@ -24,7 +24,17 @@ export const baseQuery = fetchBaseQuery({
     return headers
   },
 })
-export const baseQueryWithoutCreds = fetchBaseQuery({ baseUrl: routes.base })
+export const baseQueryWithoutCreds = fetchBaseQuery({
+  baseUrl: routes.base,
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as AppState).auth.token
+    // If we have a token set in state, let's assume that we should be passing it.
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
+    return headers
+  },
+})
 
 export type CustomBaseQueryError = FetchBaseQueryError & { data: IResponse<null, any> } | SerializedError & { data: IResponse<null, any> }
 
@@ -50,26 +60,5 @@ FetchBaseQueryError | SerializedError | CustomBaseQueryError
   }
   return result
 }
-
-// const baseQueryWithReauth: BaseQueryFn<
-// string | FetchArgs,
-// unknown,
-// FetchBaseQueryError
-// > = async (args, api, extraOptions) => {
-//   let result = await baseQuery(args, api, extraOptions)
-//   if (result.error && result.error.status === 401) {
-//     // try to get a new token
-//     const refreshResult = (await baseQuery(routes.auth.v1.refresh.path, api, extraOptions)) as QueryReturnValue<string>
-//     if (refreshResult.data) {
-//       // store the new token
-//       api.dispatch(updateToken(refreshResult.data))
-//       // retry the initial query
-//       result = await baseQuery(args, api, extraOptions)
-//     } else {
-//       api.dispatch(authApi.endpoints.logout.useQuery())
-//     }
-//   }
-//   return result
-// }
 
 export default getBaseQueryWithReauth

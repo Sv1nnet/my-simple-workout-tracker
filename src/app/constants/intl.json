@@ -264,6 +264,10 @@
         "more_options": {
           "ru": "Больше вариантов",
           "eng": "More options"
+        },
+        "add": {
+          "ru": "Добавить",
+          "eng": "Add"
         }
       },
       "modal": {
@@ -275,6 +279,120 @@
           "body": {
             "ru": "Удалить выбранные упражнения?",
             "eng": "Delete selected exercises?"
+          },
+          "ok_button": {
+            "ru": "Удалить",
+            "eng": "Delete"
+          },
+          "cancel_button": {
+            "ru": "Отмена",
+            "eng": "Cancel"
+          }
+        }
+      }
+    },
+    "workouts": {
+      "input_labels": {
+        "title": {
+          "ru": "Название",
+          "eng": "Title"
+        },
+        "exercise": {
+          "ru": "Упражнение",
+          "eng": "Exercise"
+        },
+        "rounds": {
+          "ru": "Подходы",
+          "eng": "Rounds"
+        },
+        "round_break": {
+          "ru": "Отдых",
+          "eng": "Rest"
+        },
+        "break": {
+          "ru": "Перерыв",
+          "eng": "Break"
+        },
+        "break_enabled": {
+          "ru": "Перерыв",
+          "eng": "Break"
+        },
+        "add_exercise": {
+          "ru": "Добавить упражнение",
+          "eng": "Add exercise"
+        },
+        "description": {
+          "ru": "Описание",
+          "eng": "Description"
+        }
+      },
+      "submit_button": {
+        "save": {
+          "ru": "Сохранить",
+          "eng": "Save"
+        },
+        "create": {
+          "ru": "Создать",
+          "eng": "Create"
+        },
+        "cancel": {
+          "ru": "Отмена",
+          "eng": "Cancel"
+        }
+      },
+      "list_buttons": {
+        "create": {
+          "ru": "Создать тренировку",
+          "eng": "Create workout"
+        },
+        "select_all": {
+          "ru": "Выделить все",
+          "eng": "Select all"
+        },
+        "deselect_all": {
+          "ru": "Убрать выделение",
+          "eng": "Deselect all"
+        },
+        "delete": {
+          "ru": "Удалить тренировку",
+          "eng": "Delete workout"
+        },
+        "cancel": {
+          "ru": "Отменить выделение",
+          "eng": "Cancel selection"
+        },
+        "more_options": {
+          "ru": "Больше вариантов",
+          "eng": "More options"
+        },
+        "add": {
+          "ru": "Добавить",
+          "eng": "Add"
+        }
+      },
+      "error_message": {
+        "rounds": {
+          "required": {
+            "ru": "Минимум 1 подход",
+            "eng": "Minimum 1 round"
+          }
+        },
+        "common": {
+          "required": {
+            "ru": "Обязательно",
+            "eng": "Required"
+          }
+        }
+      },
+      "modal": {
+        "delete": {
+          "title": {
+            "ru": "Удаление",
+            "eng": "Deleting"
+          },
+          "body": {
+            "ru": "Удалить выбранные тренировки?",
+            "eng": "Delete selected workouts?"
           },
           "ok_button": {
             "ru": "Удалить",

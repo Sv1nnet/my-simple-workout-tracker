@@ -52,7 +52,7 @@ const StyledTitle = ({ id, title, repeats, time, weight, massUnit = 'kg', payloa
       },
     )
     : null
-  weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit]}` : null
+  weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit][0]}` : null
 
   return selectionEnabled
     ? (

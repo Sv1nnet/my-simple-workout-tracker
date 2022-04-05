@@ -24,17 +24,20 @@ export const authSlice = createSlice({
       state.token = action.payload
       state.status = 'loaded'
     },
-    // logout: (state) => {
-    //   Cookie.set('logout', Date.now())
-    //   state.token = null
-    //   state.status = 'loaded'
-    // },
   },
   extraReducers: (builder) => {
     builder
     // logout
       .addCase(
         actions.logout.pending,
+        (state) => {
+          Cookie.set('logout', Date.now())
+          state.token = null
+          state.status = 'loaded'
+        },
+      )
+      .addMatcher(
+        authApi.endpoints.logout.matchPending,
         (state) => {
           Cookie.set('logout', Date.now())
           state.token = null

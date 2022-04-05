@@ -1,13 +1,17 @@
 import type { NextPage } from 'next'
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
 import { ExerciseList } from 'app/components'
-import { ExerciseForm, GetExerciseListError, GetExerciseListSuccess } from '@/src/app/store/slices/exercise/types'
-import routes from '@/src/app/constants/end_points'
-import { exerciseApi } from '@/src/app/store/slices/exercise/api'
+import { ExerciseForm, GetExerciseListError, GetExerciseListSuccess } from 'app/store/slices/exercise/types'
+import routes from 'app/constants/end_points'
+import { exerciseApi } from 'store/slices/exercise/api'
 import { notification } from 'antd'
+import { updateList } from 'store/slices/exercise'
+import { useAppDispatch } from 'app/hooks'
+import { AddButton } from 'app/components/list_buttons'
+import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 
 export interface IExercises {
   exercises: ExerciseForm[];
@@ -19,6 +23,8 @@ export type ApiGetExerciseListError = {
 }
 
 const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ exercises: _exercises }) => {
+  const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
+  const dispatch = useAppDispatch()
   const [ loadExercises, { data: { data } = { data: [] }, error, isError } ] = exerciseApi.useLazyListQuery()
   const [
     deleteExercises,
@@ -40,6 +46,7 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
 
   useEffect(() => {
     if (!_exercises || _exercises.length === 0) loadExercises()
+    dispatch(updateList(getExercises()))
   }, [])
 
   useEffect(() => {
@@ -56,16 +63,18 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
 
   useEffect(() => {
     if (deleteStatus === 'fulfilled' && !isDeleteLoading && !deleteError) loadExercises()
-
   }, [ isDeleteLoading, deleteStatus, isDeleteError ])
 
   return (
-    <ExerciseList
-      deleteExercises={deleteExercises}
-      error={deleteError}
-      isLoading={isDeleteLoading}
-      exercises={getExercises()}
-    />
+    <>
+      <AddButton href="/exercises/create" text={add} />
+      <ExerciseList
+        deleteExercises={deleteExercises}
+        error={deleteError}
+        isLoading={isDeleteLoading}
+        exercises={getExercises()}
+      />
+    </>
   )
 }
 

@@ -9,7 +9,7 @@ LogoutSuccess
   'logout',
   async (_, thunkApi) => {
     try {
-      const res = await fetch(routes.auth.v1.logout.full).then(r => r.json())
+      const res = await fetch(routes.auth.v1.logout.full, { method: 'POST', credentials: 'include' }).then(r => r.json())
       return res
     } catch (error) {
       return thunkApi.rejectWithValue(error.res)

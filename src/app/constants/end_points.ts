@@ -107,6 +107,40 @@ const routes = {
       },
     },
   },
+  workout: {
+    v1: {
+      get base() {
+        return {
+          full: `${_global.__API__.BASE_URL}/v1/workout`,
+          path: '/v1/workout',
+        }
+      },
+      get list() {
+        return {
+          full: `${routes.base}${this.base.path}/list`,
+          path: `${this.base.path}/list`,
+        }
+      },
+      get create() {
+        return {
+          full: `${routes.base}${this.base.path}/create`,
+          path: `${this.base.path}/create`,
+        }
+      },
+      get update() {
+        return {
+          full: `${routes.base}${this.base.path}/update`,
+          path: `${this.base.path}/update`,
+        }
+      },
+      get delete() {
+        return {
+          full: `${routes.base}${this.base.path}/delete`,
+          path: `${this.base.path}/delete`,
+        }
+      },
+    },
+  },
 }
 
 export default routes
