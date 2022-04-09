@@ -84,7 +84,7 @@ const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selecte
               : <SelectAllButton tooltipTitle={list_buttons.select_all} onClick={handleListAll} />
           }
           <DeleteButton loading={isDeleteFetching} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
-          <CancelSelectionButton disabled={isDeleteFetching} tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
+          <CancelSelectionButton tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
         </MoreOptionsButtonContainer.Inner>
       </MoreOptionsButtonContainer>
     </MainButtonContainer>
