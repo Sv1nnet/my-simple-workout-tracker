@@ -47,7 +47,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiDeleteExerciseError)?.data?.error.message })
+      openNotification({ message: 'Error!', description: (error as ApiDeleteExerciseError)?.data?.error.message?.text })
     }
   }, [ error ])
 
