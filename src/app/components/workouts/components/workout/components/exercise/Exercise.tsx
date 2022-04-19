@@ -22,7 +22,7 @@ const StyledSelect = styled(Select)`
 `
 
 
-const Exercise = ({ fields, validate, form, dictionary, errorsDictionary, index, isEditMode, isFetching, payload, exerciseList, onExerciseChange, remove }) => {
+const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, errorsDictionary, index, isEditMode, isFetching, payload, exerciseList, onExerciseChange, remove }) => {
   const requiredRules = isEditMode ? [ { required: true, message: errorsDictionary.common.required } ] : []
 
   return (
@@ -31,7 +31,7 @@ const Exercise = ({ fields, validate, form, dictionary, errorsDictionary, index,
       {isEditMode && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
 
       <Form.Item label={dictionary.exercise} name={[ index, 'id' ]} rules={requiredRules}>
-        <StyledSelect disabled={!isEditMode || isFetching} size="large">
+        <StyledSelect disabled={isFormItemDisabled} size="large">
           {exerciseList.data.map(exercise => (
             <Select.Option value={exercise.id} key={exercise.id}>
               <ExerciseOption {...exercise} payloadDictionary={payload} />
@@ -50,7 +50,7 @@ const Exercise = ({ fields, validate, form, dictionary, errorsDictionary, index,
           ]}
           $margin
         >
-          <CustomInput.Number int positive disabled={!isEditMode || isFetching} onChange={onExerciseChange(index, 'rounds')} onBlur={onExerciseChange(index, 'rounds')} size="large" />
+          <CustomInput.Number int positive disabled={isFormItemDisabled} onChange={onExerciseChange(index, 'rounds')} onBlur={onExerciseChange(index, 'rounds')} size="large" />
         </ShortFormItem>
         <ShortFormItem name={[ index, 'round_break' ]} label={dictionary.break} rules={requiredRules}>
           <TimePicker
@@ -71,7 +71,7 @@ const Exercise = ({ fields, validate, form, dictionary, errorsDictionary, index,
               <>
                 <ShortFormItem name={[ index, 'break' ]} label={dictionary.break} $margin rules={breakEnabled ? requiredRules : []}>
                   <TimePicker
-                    disabled={!isEditMode || isFetching || !breakEnabled}
+                    disabled={isFormItemDisabled || !breakEnabled}
                     onChange={onExerciseChange(index, 'break')}
                     showNow={false}
                     size="large"
@@ -85,7 +85,7 @@ const Exercise = ({ fields, validate, form, dictionary, errorsDictionary, index,
                 >
                   <Checkbox
                     onChange={onExerciseChange(index, 'break_enabled')}
-                    disabled={!isEditMode || isFetching}
+                    disabled={isFormItemDisabled}
                   >
                     {dictionary.break_enabled}
                   </Checkbox>

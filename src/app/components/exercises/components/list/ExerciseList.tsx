@@ -91,7 +91,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
             visible={isModalVisible} 
             onOk={handleDelete} 
             onCancel={closeModal}
-            text={modal.delete.body}
+            text={modal.delete.body_many}
             selected={selected}
           />
         </>

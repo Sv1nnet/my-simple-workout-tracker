@@ -5,7 +5,6 @@ import {
   StyledFormItem,
   ShortFormItem,
   CreateEditFormItem,
-  ToggleEdit,
   DeleteButton,
   StyledModal,
 } from './styled'
@@ -17,7 +16,6 @@ export {
   StyledFormItem,
   ShortFormItem,
   CreateEditFormItem,
-  ToggleEdit,
   DeleteButton,
   StyledModal,
 }

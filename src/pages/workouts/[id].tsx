@@ -34,8 +34,20 @@ const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = 
       error: errorUpdate,
     },
   ] = workoutApi.useUpdateMutation()
+  const [
+    deleteWorkout,
+    {
+      isLoading: isLoading_delete,
+      error: errorDelete,
+    },
+  ] = workoutApi.useDeleteMutation()
 
   const handleSubmit = values => update({ workout: values })
+  
+  const handleDelete = async id => deleteWorkout({ id }).then((res) => {
+    if (!('error' in res)) router.replace('/workouts')
+    return res
+  })
 
   useEffect(() => {
     if (!workout) get({ id: router.query.id as string })
@@ -50,15 +62,20 @@ const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = 
     error = 'error' in errorUpdate
       ? errorUpdate.error
       : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text
+  } else if (errorDelete) {
+    error = 'error' in errorDelete
+      ? errorDelete.error
+      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text
   }
 
   return (
     <Workout
       isEdit
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? workout}
-      isFetching={isLoading_get || isFetching_get || isLoading_update}
+      isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}
       error={error || serverError}
+      deleteWorkout={handleDelete}
     />
   )
 }

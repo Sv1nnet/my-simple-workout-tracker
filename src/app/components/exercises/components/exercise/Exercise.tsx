@@ -9,14 +9,16 @@ import {
   Modal,
 } from 'antd'
 import { FC, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
-import { PlusOutlined, EditOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { TimePicker } from 'app/components'
 import { Dayjs } from 'dayjs'
 import { timeToDayjs } from 'app/utils/time'
+import { FormActionButtonsContainer, ToggleEdit } from 'app/components'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import routes from 'app/constants/end_points'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Input as CustomInput } from 'app/components'
+import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 
 const StyledForm = styled(Form)`
   position: relative;
@@ -58,17 +60,6 @@ const CreateEditFormItem = styled(Form.Item)`
   margin-bottom: 0;
 `
 
-const ToggleEdit = styled(Button)`
-  ${({ $enable }) => $enable ? `
-    position: absolute;
-    z-index: 1;
-    top: 6px;
-    right: 15px;
-  ` : `
-    margin-top: 15px;
-  `}
-`
-
 const StyledModal = styled(Modal)`
   .ant-modal-header {
     padding-right: 52px;
@@ -96,6 +87,7 @@ export interface IExercise {
   isFetching?: boolean;
   initialValues?: ExerciseForm;
   error?: string;
+  deleteExercise?: Function;
   onSubmit: Function;
 }
 
@@ -129,11 +121,13 @@ const previewReducer = (state, { type, payload }) => {
   }
 }
 
-const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, error }) => {
+const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, error }) => {
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
+  const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
   const { intl } = useContext(IntlContext)
-  const { input_labels, submit_button, payload } = intl.pages.exercises
+  const { loading } = useContext(RouterContext)
+  const { input_labels, submit_button, payload, modal } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
@@ -242,6 +236,11 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
       })
   }
 
+  const handleDelete = () => deleteExercise(initialValues.id).then((res) => {
+    setIsModalVisible(false)
+    return res
+  })
+
   useEffect(() => {
     if (mountedRef.current) {
       form.setFieldsValue(initialValues)
@@ -262,15 +261,22 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
     mountedRef.current = true
   }, [])
 
+  const isFormItemDisabled = !isEditMode || isFetching || loading
+
   return (
     <>
       <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
-        {!isEditMode && <ToggleEdit onClick={() => setEditMode(true)} $enable><EditOutlined /></ToggleEdit>}
+        {isEdit && (
+          <FormActionButtonsContainer>
+            {!isEditMode && <ToggleEdit onClick={() => setEditMode(true)} $enable><EditOutlined /></ToggleEdit>}
+            <Button disabled={isFetching || loading} type="primary" danger onClick={() => setIsModalVisible(true)}><DeleteOutlined /></Button>
+          </FormActionButtonsContainer>
+        )}
         <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: 'Required' } ]}>
-          <Input disabled={!isEditMode || isFetching} size="large" />
+          <Input disabled={isFormItemDisabled} size="large" />
         </Form.Item>
         <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
-          <Select disabled={!isEditMode || isFetching} size="large">
+          <Select disabled={isFormItemDisabled} size="large">
             <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
             <Select.Option value="time">{input_labels.type.options.time}</Select.Option>
             <Select.Option value="duration">{input_labels.type.options.duration}</Select.Option>
@@ -278,7 +284,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
           </Select>
         </Form.Item>
         <Form.Item name="each_side" valuePropName="checked">
-          <Checkbox disabled={!isEditMode || isFetching}>
+          <Checkbox disabled={isFormItemDisabled}>
             {input_labels.each_side}
           </Checkbox>
         </Form.Item>
@@ -291,23 +297,23 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
                 {shouldRenderTimeInput
                   ? (
                     <ShortFormItem name="time" label={input_labels.time}>
-                      <TimePicker disabled={!isEditMode || isFetching} showNow={false} size="large" placeholder="" />
+                      <TimePicker disabled={isFormItemDisabled} showNow={false} size="large" placeholder="" />
                     </ShortFormItem>
                   )
                   : (
                     <ShortFormItem name="repeats" label={input_labels.repeats} $fullWidth $margin>
-                      <CustomInput.Number int positive disabled={!isEditMode || isFetching} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                      <CustomInput.Number int positive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
                     </ShortFormItem>
                   )}
                 <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
-                  <CustomInput.Number positive disabled={!isEditMode || isFetching} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
+                  <CustomInput.Number positive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
                 </ShortFormItem>
               </>
             )
           }}
         </StyledFormItem>
         <Form.Item label={input_labels.description} name="description">
-          <Input.TextArea disabled={!isEditMode || isFetching} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
+          <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
         </Form.Item>
         <ImageFormItem label={input_labels.image} style={{ marginBottom: isEditMode ? '' : '0' }} name="image" valuePropName="fileList" getValueFromEvent={({ fileList }) => fileList}>
           <Upload.Dragger onPreview={handlePreviewOpen} listType="picture-card" maxCount={1} accept="image/*" disabled={!isEditMode || isFetching}>
@@ -325,7 +331,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
         {(isEditMode || !isEdit) && (
           <CreateEditFormItem>
             <>
-              <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
+              <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
                 {isEdit ? submit_button.save : submit_button.create}
               </Button>
               {isEdit && (
@@ -336,6 +342,16 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, isEdit, isFetc
             </>
           </CreateEditFormItem>
         )}
+        <Modal
+          visible={isModalVisible}
+          okText={modal.delete.ok_button}
+          onOk={handleDelete}
+          okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
+          cancelText={modal.delete.cancel_button}
+          onCancel={() => setIsModalVisible(false)}
+        >
+          {modal.delete.body_single}
+        </Modal>
       </StyledForm>
     </>
   )

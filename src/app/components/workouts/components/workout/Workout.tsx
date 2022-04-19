@@ -5,18 +5,19 @@ import {
   Modal,
 } from 'antd'
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { EditOutlined } from '@ant-design/icons'
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import dayjs, { Dayjs } from 'dayjs'
 import { dayjsToSeconds, timeToDayjs } from 'app/utils/time'
+import { FormActionButtonsContainer, ToggleEdit } from 'app/components'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { WorkoutForm } from 'app/store/slices/workout/types'
 import { useAppSelector } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
 import { exerciseApi } from 'app/store/slices/exercise/api'
+import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import {
   StyledForm,
   CreateEditFormItem,
-  ToggleEdit,
   Exercise,
 } from './components'
 
@@ -35,6 +36,7 @@ export interface IWorkout {
   isFetching?: boolean;
   initialValues?: WorkoutForm;
   error?: string;
+  deleteWorkout?: Function
   onSubmit: Function;
 }
 
@@ -46,13 +48,15 @@ const addDefaultExercise = () => ({
   break: dayjs().hour(0).minute(0).second(0),
 })
 
-const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, error }) => {
+const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, error }) => {
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
+  const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
   const exerciseList = useAppSelector(selectList)
   const { intl } = useContext(IntlContext)
+  const { loading } = useContext(RouterContext)
   const { payload } = intl.pages.exercises
-  const { input_labels, submit_button, error_message } = intl.pages.workouts
+  const { input_labels, submit_button, error_message, modal } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<WorkoutForm>()
@@ -118,6 +122,11 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     },
   })
 
+  const handleDelete = () => deleteWorkout(initialValues.id).then((res) => {
+    setIsModalVisible(false)
+    return res
+  })
+
   useEffect(() => {
     if (mountedRef.current) form.setFieldsValue(initialValues)
   }, [ initialValues ])
@@ -140,12 +149,19 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     mountedRef.current = true
   }, [])
 
+  const isFormItemDisabled = !isEditMode || isFetching || loading
+
   return (
     <>
       <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
-        {!isEditMode && <ToggleEdit onClick={() => setEditMode(true)} $enable><EditOutlined /></ToggleEdit>}
+        {isEdit && (
+          <FormActionButtonsContainer>
+            {!isEditMode && <ToggleEdit onClick={() => setEditMode(true)} $enable><EditOutlined /></ToggleEdit>}
+            <Button disabled={isFetching || loading} type="primary" danger onClick={() => setIsModalVisible(true)}><DeleteOutlined /></Button>
+          </FormActionButtonsContainer>
+        )}
         <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: 'Required' } ] : []}>
-          <Input disabled={!isEditMode || isFetching} size="large" />
+          <Input disabled={isFormItemDisabled} size="large" />
         </Form.Item>
         <Form.List name="exercises">
           {(fields, { add, remove }) => (
@@ -161,6 +177,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
                   errorsDictionary={error_message}
                   isEditMode={isEditMode}
                   isFetching={isFetching}
+                  isFormItemDisabled={isFormItemDisabled}
                   payload={payload}
                   exerciseList={exerciseList}
                   onExerciseChange={handleExerciseChange}
@@ -169,7 +186,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
               ))}
               {isEditMode && (
                 <Button
-                  disabled={!isEditMode || isFetching}
+                  disabled={isFormItemDisabled}
                   onClick={() => add(addDefaultExercise())}
                   block
                   size="large"
@@ -186,7 +203,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
           {({ getFieldValue }) => (
             (isEditMode || getFieldValue('description')) ? (
               <Form.Item label={input_labels.description} name="description">
-                <Input.TextArea disabled={!isEditMode || isFetching} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
+                <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
               </Form.Item>
             ) : null
           )}
@@ -194,7 +211,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         {(isEditMode || !isEdit) && (
           <CreateEditFormItem>
             <>
-              <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
+              <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
                 {isEdit ? submit_button.save : submit_button.create}
               </Button>
               {isEdit && (
@@ -205,6 +222,16 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
             </>
           </CreateEditFormItem>
         )}
+        <Modal
+          visible={isModalVisible}
+          okText={modal.delete.ok_button}
+          onOk={handleDelete}
+          okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
+          cancelText={modal.delete.cancel_button}
+          onCancel={() => setIsModalVisible(false)}
+        >
+          {modal.delete.body_single}
+        </Modal>
       </StyledForm>
     </>
   )

@@ -276,9 +276,13 @@
             "ru": "Удаление",
             "eng": "Deleting"
           },
-          "body": {
+          "body_many": {
             "ru": "Удалить выбранные упражнения?",
             "eng": "Delete selected exercises?"
+          },
+          "body_single": {
+            "ru": "Удалить упражнение?",
+            "eng": "Delete the exercise?"
           },
           "ok_button": {
             "ru": "Удалить",
@@ -390,9 +394,13 @@
             "ru": "Удаление",
             "eng": "Deleting"
           },
-          "body": {
+          "body_many": {
             "ru": "Удалить выбранные тренировки?",
             "eng": "Delete selected workouts?"
+          },
+          "body_single": {
+            "ru": "Удалить тренировку?",
+            "eng": "Delete the workout?"
           },
           "ok_button": {
             "ru": "Удалить",
