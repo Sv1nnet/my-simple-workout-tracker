@@ -96,7 +96,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, worko
             visible={isModalVisible} 
             onOk={handleDelete} 
             onCancel={closeModal}
-            text={modal.delete.body}
+            text={modal.delete.body_many}
             selected={selected}
           />
         </>

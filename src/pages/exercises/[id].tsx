@@ -34,8 +34,20 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
       error: errorUpdate,
     },
   ] = exerciseApi.useUpdateMutation()
+  const [
+    deleteExercise,
+    {
+      isLoading: isLoading_delete,
+      error: errorDelete,
+    },
+  ] = exerciseApi.useDeleteMutation()
 
   const handleSubmit = (values: IExerciseFormData) => update({ exercise: values })
+
+  const handleDelete = async id => deleteExercise({ id }).then((res) => {
+    if (!('error' in res)) router.replace('/exercises')
+    return res
+  })
 
   useEffect(() => {
     if (!exercise) get({ id: router.query.id as string })
@@ -50,15 +62,20 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
     error = 'error' in errorUpdate
       ? errorUpdate.error
       : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text
+  } else if (errorDelete) {
+    error = 'error' in errorDelete
+      ? errorDelete.error
+      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text
   }
 
   return (
     <Exercise
       isEdit
-      initialValues={dataOfGet?.data ?? exercise ?? dataOfUpdate?.data}
-      isFetching={isLoading_get || isFetching_get || isLoading_update}
+      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? exercise}
+      isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}
       error={error || serverError}
+      deleteExercise={handleDelete}
     />
   )
 }

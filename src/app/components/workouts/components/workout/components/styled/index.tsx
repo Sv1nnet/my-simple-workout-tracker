@@ -33,17 +33,6 @@ export const CreateEditFormItem = styled(Form.Item)`
   margin-bottom: 0;
 `
 
-export const ToggleEdit = styled(Button)`
-  ${({ $enable }) => $enable ? `
-    position: absolute;
-    z-index: 1;
-    top: 6px;
-    right: 15px;
-  ` : `
-    margin-top: 15px;
-  `}
-`
-
 export const DeleteButton = styled(Button)`
   position: absolute;
   z-index: 1;

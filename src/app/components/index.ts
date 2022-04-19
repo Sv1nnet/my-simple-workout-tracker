@@ -7,6 +7,10 @@ import DatePicker from './date_picker/DatePicker'
 import { ListControls } from './list_buttons'
 import SelectableList from './selectable_list'
 import Input from './input'
+import {
+  FormActionButtonsContainer,
+  ToggleEdit,
+} from './styled'
 
 export {
   AuthTemplate,
@@ -20,4 +24,6 @@ export {
   ListControls,
   SelectableList,
   Input,
+  FormActionButtonsContainer,
+  ToggleEdit,
 }
