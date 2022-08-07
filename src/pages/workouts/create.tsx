@@ -1,13 +1,13 @@
 import type { NextPage } from 'next'
 import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { WorkoutTemplate } from '@/src/layouts/main'
-import { IWorkout } from '@/src/app/components/workouts/components/workout/Workout'
-import { workoutApi } from '@/src/app/store/slices/workout/api'
-import { WorkoutForm } from '@/src/app/store/slices/workout/types'
+import { WorkoutTemplate } from 'layouts/main'
+import { IWorkout } from 'app/views/workouts/components/workout/Workout'
+import { workoutApi } from 'app/store/slices/workout/api'
+import { WorkoutForm } from 'app/store/slices/workout/types'
 import { useRouter } from 'next/router'
-import { Workout } from 'app/components'
-import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
+import { Workout } from 'app/views'
+import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 
 interface ICreatePage {
   setWorkout: React.Dispatch<React.SetStateAction<IWorkout>>

@@ -412,6 +412,104 @@
           }
         }
       }
+    },
+    "activities": {
+      "input_labels": {
+        "date": {
+          "ru": "Дата активности",
+          "eng": "Activity date"
+        },
+        "workout": {
+          "ru": "Тренировка",
+          "eng": "Workout"
+        },
+        "round": {
+          "ru": "Подход",
+          "eng": "Round"
+        },
+        "description": {
+          "ru": "Описание",
+          "eng": "Description"
+        }
+      },
+      "submit_button": {
+        "save": {
+          "ru": "Сохранить",
+          "eng": "Save"
+        },
+        "create": {
+          "ru": "Создать",
+          "eng": "Create"
+        },
+        "cancel": {
+          "ru": "Отмена",
+          "eng": "Cancel"
+        }
+      },
+      "list_buttons": {
+        "create": {
+          "ru": "Создать активность",
+          "eng": "Create activity"
+        },
+        "select_all": {
+          "ru": "Выделить все",
+          "eng": "Select all"
+        },
+        "deselect_all": {
+          "ru": "Убрать выделение",
+          "eng": "Deselect all"
+        },
+        "delete": {
+          "ru": "Удалить активность",
+          "eng": "Delete activity"
+        },
+        "cancel": {
+          "ru": "Отменить выделение",
+          "eng": "Cancel selection"
+        },
+        "more_options": {
+          "ru": "Больше вариантов",
+          "eng": "More options"
+        },
+        "add": {
+          "ru": "Добавить",
+          "eng": "Add"
+        }
+      },
+      "error_message": {
+        "rounds": {
+          "required": {
+            "ru": "Минимум 1 подход",
+            "eng": "Minimum 1 round"
+          }
+        },
+        "common": {
+          "required": {
+            "ru": "Обязательно",
+            "eng": "Required"
+          }
+        }
+      },
+      "modal": {
+        "delete": {
+          "title": {
+            "ru": "Удаление",
+            "eng": "Deleting"
+          },
+          "body": {
+            "ru": "Удалить выбранные активности?",
+            "eng": "Delete selected activities?"
+          },
+          "ok_button": {
+            "ru": "Удалить",
+            "eng": "Delete"
+          },
+          "cancel_button": {
+            "ru": "Отмена",
+            "eng": "Cancel"
+          }
+        }
+      }
     }
   },
   "modal": {

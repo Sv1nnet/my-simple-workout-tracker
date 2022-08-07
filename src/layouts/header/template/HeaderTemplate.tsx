@@ -38,7 +38,7 @@ const Header = ({ title, onBack, children }) => {
     <>
       <StyledPageHeader
         onBack={onBack}
-        title={intl.header[title]}
+        title={intl.header[title] || <span>&nbsp;</span>}
         ghost={false}
         extra={<UserMenu />}
       />
@@ -76,12 +76,10 @@ const HeaderTemplateWithNav: FC<{ route: TabRoutes }> = ({ children, route }) =>
   const _title = route ?? ((router.route) || 'activities').replace('/', '') as TabRoutes
 
   return (
-    <>
-      <Header onBack={router.back} title={_title}>
-        <NavTemplate activeTab={_title} />
-        {children}
-      </Header>
-    </>
+    <Header onBack={router.back} title={_title}>
+      <NavTemplate activeTab={_title} />
+      {children}
+    </Header>
   )
 }
 

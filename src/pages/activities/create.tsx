@@ -1,22 +1,42 @@
 import type { NextPage } from 'next'
 import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { MainTemplate } from '@/src/layouts/main'
+import { ActivityTemplate } from 'layouts/main'
+import { IActivity } from 'app/views/activities/components/workout/Activity'
+import { workoutApi } from 'app/store/slices/workout/api'
+import { ActivityForm } from 'app/store/slices/activity/types'
+import { useRouter } from 'next/router'
+import { Activity } from 'app/views'
+import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 
-const CreateActivities: NextPage & { Layout: FC, layoutProps?: {} } = () => {
+interface ICreatePage {
+  setActivity: React.Dispatch<React.SetStateAction<IActivity>>
+}
+
+const CreateActivity: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } = () => {
+  const [ create, { data, isLoading, isError, error } ] = workoutApi.useCreateMutation()
+  const router = useRouter()
+
+  const handleSubmit = (values: ActivityForm) => create({ activity: values })
+
   useEffect(() => {
-    console.log('exercise mounted')
-  }, [])
+    if (!isError && data) router.push('/activities')
+  }, [ isLoading ])
 
   return (
-    <h2>Create Exercise</h2>
+    <Activity
+      initialValues={data?.data}
+      isFetching={isLoading || (!!data && !isError)}
+      onSubmit={handleSubmit}
+      error={(error as CustomBaseQueryError)?.data?.error?.message?.text}
+    />
   )
 }
 
-CreateActivities.Layout = MainTemplate
-CreateActivities.layoutProps = { tab: 'activities' }
+CreateActivity.Layout = ActivityTemplate
+CreateActivity.layoutProps = { tab: 'activity' }
 
-export default CreateActivities
+export default CreateActivity
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {

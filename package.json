@@ -27,6 +27,7 @@
     "react-final-form": "^6.5.7",
     "react-redux": "^7.2.0",
     "react-transition-group": "^4.4.2",
+    "react-virtualized": "^10.0.0-alpha.17",
     "styled-components": "^5.3.3"
   },
   "devDependencies": {

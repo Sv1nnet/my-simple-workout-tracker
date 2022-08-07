@@ -62,6 +62,7 @@ interface IVirtualList {
   onRenderedItemsChange?: ({ startIndex, endIndex, scrollOffset }: { startIndex:number, endIndex:number, scrollOffset:number }) => any,
   itemContainerRenderer?: Function,
   overscanCount?: number,
+  msToSetNotScrolling?: number,
   componentStyle?: StyleHTMLAttributes<any>,
   listStyle?:  StyleHTMLAttributes<any>,
   onScrollEnd?: Function,
@@ -93,6 +94,7 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
       listStyle,
       onScrollEnd,
       onRenderedItemsChange,
+      msToSetNotScrolling,
       children,
     },
     ref,
@@ -126,7 +128,7 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
       if (!isScrolling) setIsScrolling(true)
       
       clearTimeout(scrollingTimeoutRef.current as number)
-      scrollingTimeoutRef.current = setTimeout(() => setIsScrolling(false), 100)
+      scrollingTimeoutRef.current = setTimeout(() => setIsScrolling(false), msToSetNotScrolling)
 
       let _endIndex = endIndex
       let { scrollOffset, direction, index: _startIndex } = getPositionData({
@@ -232,6 +234,8 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
               position: 'relative',
               ...listStyle,
             },
+            startIndex,
+            endIndex,
           },
           data.slice(startIndex, endIndex).map(renderListItem),
         )}
@@ -247,6 +251,7 @@ VirtualList.defaultProps = {
   overscanCount: 6,
   componentStyle: {},
   listStyle: {},
+  msToSetNotScrolling: 300,
 }
 
 export default VirtualList

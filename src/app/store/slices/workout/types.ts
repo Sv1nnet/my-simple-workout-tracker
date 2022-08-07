@@ -17,6 +17,7 @@ export type WorkoutExercise<T = number | Dayjs> = {
   rounds: number;
   round_break: T;
   break?: T;
+  _id?: string;
   break_enabled: boolean;
 }
 

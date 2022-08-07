@@ -2,9 +2,12 @@ import { combineReducers, configureStore, ThunkAction, Action } from '@reduxjs/t
 import { authApi } from './slices/auth/api'
 import { profileApi } from './slices/profile/api'
 import { exerciseApi } from './slices/exercise/api'
+import { activityApi } from './slices/activity/api'
 import auth from './slices/auth'
 import profile from './slices/profile'
 import exercise from './slices/exercise'
+import workout from './slices/workout'
+import activity from './slices/activity'
 import config from './slices/config'
 import { workoutApi } from './slices/workout/api'
 
@@ -12,7 +15,10 @@ const rootReducer = combineReducers({
   auth,
   profile,
   exercise,
+  workout,
+  activity,
   config,
+  [activityApi.reducerPath]: activityApi.reducer,
   [exerciseApi.reducerPath]: exerciseApi.reducer,
   [workoutApi.reducerPath]: workoutApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
