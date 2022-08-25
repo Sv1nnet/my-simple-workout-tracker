@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { ExerciseTemplate } from 'layouts/main'
-import { Exercise } from 'app/components'
+import { Exercise } from 'app/views'
 import { exerciseApi } from '@/src/app/store/slices/exercise/api'
 import { useRouter } from 'next/router'
 import routes from 'constants/end_points'
@@ -71,6 +71,7 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
   return (
     <Exercise
       isEdit
+      isError={!!error}
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? exercise}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}

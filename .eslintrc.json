@@ -48,7 +48,6 @@
       }
     ],
     "array-bracket-spacing": ["error", "always"],
-    "indent": [2, 2, { "SwitchCase": 1 }],
     "comma-dangle": ["error", "always-multiline"],
     "max-len": ["error", 200, 2],
     "one-var": ["error", "never"],
@@ -63,7 +62,7 @@
     "no-bitwise": "off",
     "no-underscore-dangle": "off",
     "no-plusplus": "off",
-    "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
     "import/extensions": ["error", "never"],
     "import/no-unresolved": 2,
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true, "optionalDependencies": false, "peerDependencies": false }],
@@ -89,6 +88,7 @@
     "jsx-a11y/label-has-for": [2, { "required": "id", "allowChildren": true }],
     "function-paren-newline": ["error", "consistent"],
     "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }]
+    "@typescript-eslint/no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/indent": [2, 2, { "SwitchCase": 1, "offsetTernaryExpressions": false, "flatTernaryExpressions": true }]
   }
 }

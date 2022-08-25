@@ -7,12 +7,16 @@ export type Image = {
   name: string,
 }
 
+export type ExerciseType = 'repeats' | 'time' | 'duration' | 'distance' | 'weight' | 'time_distance' | 'time_repeats'
+
 export type Exercise<T = number | Dayjs> = {
+  _id?: string;
   id?: string;
   title: string;
   each_side: boolean;
   mass_unit: 'kg' | 'lb'
-  type?: 'repeats' | 'time' | 'duration' | 'distance';
+  hours?: boolean;
+  type?: ExerciseType;
   time?: T;
   repeats?: number;
   weight?: string;

@@ -27,6 +27,8 @@ export interface ISelectableList {
     onCancelSelection: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     onContextMenu: MouseEventHandler<HTMLElement>,
   }) => ReactElement) | ReactElement | ReactElement[];
+  style?: React.CSSProperties,
+  className?: string,
 }
 
 const SelectableList: ForwardRefExoticComponent<
@@ -43,6 +45,8 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     onSelectDeselectAll,
     isLoading,
     createHref,
+    style,
+    className,
   },
   ref,
 ) => {
@@ -113,10 +117,10 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     allSelected,
     handleSelect,
     handleCancelSelection,
-  }))
+  }), [ selected, selectionEnabled, allSelected, handleSelect, handleCancelSelection ])
 
   return (
-    <ListContainer>
+    <ListContainer style={style} className={className}>
       {typeof children === 'function'
         ? children({
           selected,

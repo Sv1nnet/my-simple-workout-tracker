@@ -1,5 +1,5 @@
 import { Input, InputProps } from 'antd'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
 const NEG_FLOAT_REGEXP = /(^\d+$)|(^\d{1,}(\.|,)$)|(^\d+(\.|,)\d{1,}$)|(^(\.|,)\d{1,}$)/
 const POS_FLOAT_REGEXP = /(^\d+$)|(^\d{1,}(\.|,)$)|(^\d+(\.|,)\d{1,}$)|(^(\.|,)\d{1,}$)/
@@ -66,6 +66,14 @@ const NumberInput: FC<INumberInput> = ({ int, positive, negative, value: _value,
       if (typeof onBlur === 'function') onBlur(value, e)
     }
   }
+
+  useEffect(() => {
+    if (_value !== value) {
+      const v = convert(_value)
+      if (!Number.isNaN(v)) setValue(v)
+      setValue('')
+    }
+  }, [ _value ])
 
   return <Input value={value} onChange={handleChange} onBlur={handleBlur} {...props} />
 }

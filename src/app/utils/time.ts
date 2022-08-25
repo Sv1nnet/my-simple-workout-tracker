@@ -1,5 +1,10 @@
 import dayjs, { Dayjs, UnitType } from 'dayjs'
 
+export const getTimeDateUnit = (t: number, leadingZero?: boolean) => {
+  if (leadingZero) return t > 9 ? t : `0${t}`
+  return `${t}`
+}
+
 export const timeArrayToDayjs = (time: [number, number, number]) => [ 'h', 'm', 's' ].reduce((d, t, i) => d.set(t as UnitType, time[i]), dayjs())
 
 export const timeToDayjs = (time: number) => {
@@ -25,7 +30,17 @@ export const secondsToTimeArray = (seconds: number) => {
 
 export const timeToHms = (
   time: number | Dayjs | string | number[],
-  { hms = [ 'h', 'm', 's' ], zeroIncluded }: { hms: [string, string, string], zeroIncluded?: boolean } = { hms: [ 'h', 'm', 's' ] },
+  {
+    hms = [ 'h', 'm', 's' ],
+    zeroIncluded = false,
+    leadingZero = false,
+    cutHours = false,
+  }: {
+    hms: [string, string, string] | ':',
+    zeroIncluded?: boolean,
+    leadingZero?: boolean,
+    cutHours?: boolean,
+  } = { hms: [ 'h', 'm', 's' ] },
 ): string => {
   let _time: number | Dayjs | string | number[] = time
   if (typeof time === 'object') {
@@ -35,23 +50,33 @@ export const timeToHms = (
   }
 
   if (Array.isArray(_time)) {
-    const getTimeUnit = (t: number, leadingZero?: boolean) => {
-      if (leadingZero) return t > 9 ? t : `0${t}`
-      return `${t}`
-    }
     const getNonZeroTimeUnit = (t: number, postfix: string) => {
       const res = t > 0
-        ? `${getTimeUnit(t, false)}${postfix}`
+        ? `${getTimeDateUnit(t, false)}${postfix}`
         : ''
       return res
     }
 
     const [ h, m, s ] = _time
+    
+    if (hms === ':') {
+      return zeroIncluded
+        ? cutHours
+          ? `${getTimeDateUnit(m, leadingZero)}:${getTimeDateUnit(s, leadingZero)}`
+          : `${getTimeDateUnit(h, leadingZero)}:${getTimeDateUnit(m, leadingZero)}:${getTimeDateUnit(s, leadingZero)}`
+        : [ !cutHours && getNonZeroTimeUnit(h, ''), getNonZeroTimeUnit(m, ''), getNonZeroTimeUnit(s, '') ].filter(Boolean).join(':')  
+    }
+
     return zeroIncluded
-      ? `${getTimeUnit(h)}h ${getTimeUnit(m)}m ${getTimeUnit(s)}s`
-      : [ getNonZeroTimeUnit(h, hms[0]), getNonZeroTimeUnit(m, hms[1]), getNonZeroTimeUnit(s, hms[2]) ].filter(Boolean).join(' ')
+      ? cutHours
+        ? `${getTimeDateUnit(m, leadingZero)}m ${getTimeDateUnit(s, leadingZero)}s`
+        : `${getTimeDateUnit(h, leadingZero)}h ${getTimeDateUnit(m, leadingZero)}m ${getTimeDateUnit(s, leadingZero)}s`
+      : [ !cutHours && getNonZeroTimeUnit(h, hms[0]), getNonZeroTimeUnit(m, hms[1]), getNonZeroTimeUnit(s, hms[2]) ].filter(Boolean).join(' ')
   }
   
   console.warn(`Wrong time argument format in timeToHms. Type of time: ${typeof time}`)
   return ''
 }
+
+export const timeTypes = [ 'time', 'time_distance', 'time_repeats', 'duration' ]
+export const isExerciseTimeType = (type: string) => timeTypes.includes(type)

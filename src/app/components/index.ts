@@ -1,12 +1,12 @@
 import { AuthTemplate } from './auth_forms'
-import { Exercise, ExerciseList } from './exercises'
-import { Workout, WorkoutList } from './workouts'
 import Calendar from './calendar/Calendar'
 import TimePicker from './time_picker/TimePicker'
 import DatePicker from './date_picker/DatePicker'
 import { ListControls } from './list_buttons'
 import SelectableList from './selectable_list'
 import Input from './input'
+import DeleteEditPanel from './delete_edit_panel'
+import VirtualList from './virtual_list/VirtualList'
 import {
   FormActionButtonsContainer,
   ToggleEdit,
@@ -14,10 +14,6 @@ import {
 
 export {
   AuthTemplate,
-  Exercise,
-  ExerciseList,
-  Workout,
-  WorkoutList,
   Calendar,
   TimePicker,
   DatePicker,
@@ -26,4 +22,6 @@ export {
   Input,
   FormActionButtonsContainer,
   ToggleEdit,
+  DeleteEditPanel,
+  VirtualList,
 }

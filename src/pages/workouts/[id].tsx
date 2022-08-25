@@ -1,14 +1,14 @@
 import type { NextPage } from 'next'
 import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { WorkoutTemplate } from '@/src/layouts/main'
+import { WorkoutTemplate } from 'layouts/main'
 import { useRouter } from 'next/router'
-import { workoutApi } from '@/src/app/store/slices/workout/api'
-import { GetWorkoutError, GetWorkoutSuccess, WorkoutServerPayload } from '@/src/app/store/slices/workout/types'
-import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
-import { Workout } from '@/src/app/components'
-import routes from '@/src/app/constants/end_points'
-import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
+import { workoutApi } from 'app/store/slices/workout/api'
+import { GetWorkoutError, GetWorkoutSuccess, WorkoutServerPayload } from 'app/store/slices/workout/types'
+import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
+import { Workout } from 'app/views'
+import routes from 'app/constants/end_points'
+import handleJwtStatus from 'app/utils/handleJwtStatus'
 
 interface IWorkoutPage {
   workout: WorkoutServerPayload;
