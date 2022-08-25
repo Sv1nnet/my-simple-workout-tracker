@@ -1,12 +1,16 @@
+import { FC } from 'react'
 import styled from 'styled-components'
-import { Button, Form, Input, Radio, Typography } from 'antd'
+import { Button, Form, FormInstance, Input, Radio, Typography } from 'antd'
 import { History, Rounds } from './components'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import routes from 'app/constants/end_points'
 import { useContext, useMemo, useRef, useState } from 'react'
-import { timeToHms } from 'app/utils/time'
+import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { ActivityForm, Round } from '@/src/app/store/slices/activity/types'
+import { Dayjs } from 'dayjs'
+import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
 
 const Header = styled.div`
   display: flex;
@@ -40,10 +44,12 @@ const AddRemoveNoteButton = styled(Button)`
 `
 
 const ResultTypeButtonsContainer = styled.div`
-  /* display: flex;
-  flex-direction: column;
-  align-items: flex-end; */
   text-align: right;
+`
+
+const ExerciseTitle = styled(Typography.Title)`
+  margin-bottom: 0;
+  line-height: 1;
 `
 
 const modeOptions = [
@@ -51,73 +57,69 @@ const modeOptions = [
   { label: <HistoryButtonIcon $table src="/icons/table.svg" alt="table" />, value: 'table' },
 ]
 
-/*
-break: 180
-break_enabled: true
-exercise: {
-  each_side: false
-  id: "625f17f7bd914948431bcb60"
-  image: {
-    uid: 'rc-upload-1650396875360-2',
-    uuid: 'YL-K4ND7fsHBU2UTz1bYb',
-    name: 'pull-ups.jpeg',
-    url: '/uploads/61e4445e0c3fba6d031ae67d/625f17f7bd914948431bcb60/YL-K4ND7fsHBU2UTz1bYb_pull-ups.jpeg',
-    uploaded_at: 1650399223269
-  }
-  mass_unit: "kg"
-  title: "Wide pull ups"
-  type: "repeats"
-}
-id: "625f17f7bd914948431bcb60"
-round_break: 90
-rounds: 4
-_id: "62605e50bd914948431bcbae"
-*/
 
-const Exercise = ({
+export interface IExerciseProps {
+  roundResults: {
+    rounds: Round[],
+    note?: string,
+  };
+  total: number;
+  break?: number;
+  isFormItemDisabled: boolean;
+  isHistoryLoading: boolean;
+  exercise: TExercise<number | Dayjs>,
+  history: any;
+  form: FormInstance<ActivityForm<Dayjs>>;
+  round_break: number;
+  rounds: number;
+  id: Pick<TExercise<number | Dayjs>, 'id'>;
+  exerciseIndex: number;
+}
+
+const Exercise: FC<IExerciseProps> = ({
   roundResults,
   total,
+  isFormItemDisabled,
+  isHistoryLoading,
   break: exerciseBreak,
   exercise,
-  history: _history,
+  history: historyByDates,
   form,
   round_break,
   rounds,
-  id,
   exerciseIndex,
 }) => {
-  const [ showNote, setShowNote ] = useState(false)
-  const [ historyDisplayMode, setHistoryDisplayMode ] = useState('table')
-  const { payload, modal } = useContext(IntlContext).intl.pages.exercises
+  const [ showNote, setShowNote ] = useState(form.getFieldValue([ 'results', exerciseIndex, 'note' ]))
+  const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
+  const { exercises, activities, workouts } = useContext(IntlContext).intl.pages
+  const { payload } = exercises
+  const { input_placeholders, input_labels, loader } = activities
   const $exercise = useRef(null)
-
-  const history = useMemo(() => {
-    const lastResults = Array.from({ length: _history.length < 6 ? _history.length : 6 }, (_, i) => _history[i][1].results)
+  
+  const historyByRounds = useMemo(() => {
+    if (isHistoryLoading || !historyByDates) return null
+    const lastResults = Array.from({ length: historyByDates.length < 6 ? historyByDates.length : 6 }, (_, i) => historyByDates[i].results)
     return lastResults.reduce(
       (prev, next) => next.map((_, i) => (prev[i] || []).concat(next[i])),
       [],
     )
-  }, [ _history ])
+  }, [ isHistoryLoading, historyByDates ])
 
   const handleHistoryDisplayType = ({ target: { value } }) => setHistoryDisplayMode(value)
 
   const handleHideNote = () => {
     setShowNote(false)
     const results = [ ...form.getFieldValue('results') ]
-    results[exerciseIndex][2] = undefined
+    results[exerciseIndex].note = null
     form.setFieldsValue({ results })
   }
 
-  let { repeats, time, weight, mass_unit } = exercise
+  let { repeats: _repeats, time: _time, weight, mass_unit } = exercise
 
-  // repeats = 10
-  // time = 75
-  // weight = 15
-
-  repeats = repeats ? `${repeats} ${getWordByNumber(payload.repeats.short, repeats)}` : null
-  time = time
+  const repeats = _repeats ? `${_repeats} ${getWordByNumber(payload.repeats.short, _repeats)}` : null
+  const time = _time
     ? timeToHms(
-      time,
+      _time,
       {
         hms: [
           payload.time.hour.short,
@@ -129,12 +131,22 @@ const Exercise = ({
     : null
   weight = weight ? `${weight} ${payload.mass_unit[mass_unit][0]}` : null
 
+  const isTimeType = isExerciseTimeType(exercise.type)
+
   return (
     <div ref={$exercise} style={{ marginBottom: '10px' }}>
       <Header>
         <div>
-          <Typography.Title level={5} style={{ marginBottom: 0, lineHeight: 1 }}>{exercise.title}</Typography.Title>
-          <Typography.Text type="secondary">Rest: {timeToHms(round_break)}</Typography.Text>
+          <ExerciseTitle level={5}>{exercise.title}</ExerciseTitle>
+          <Typography.Text type="secondary">
+            {workouts.input_labels.round_break}: {timeToHms(round_break, {
+              hms: [
+                payload.time.hour.short,
+                payload.time.minute.short,
+                payload.time.second.short,
+              ],
+            })}
+          </Typography.Text>
         </div>
         <ResultTypeButtonsContainer>
           <Typography.Text>
@@ -162,33 +174,69 @@ const Exercise = ({
           src={exercise.image?.url ? `${routes.base}${exercise.image.url}` : itemImagePlaceholder}
         />
         <History
+          isLoading={isHistoryLoading || !historyByDates}
           total={total}
           exerciseRef={$exercise}
-          history={_history}
+          history={historyByDates}
           rounds={rounds}
           eachSide={exercise.each_side}
-          exerciseId={id}
+          type={exercise.type}
+          loaderDictionary={loader}
+          isTimeType={isTimeType}
+          hours={exercise.hours}
           mode={historyDisplayMode}
         />
       </HistoryContainer>
-      <Rounds eachSide={exercise.each_side} history={history} exerciseIndex={exerciseIndex} form={form} rounds={roundResults} />
-      {!!exerciseBreak && <div style={{ marginTop: '10px' }}><Typography.Text>Break: {timeToHms(exerciseBreak)}</Typography.Text></div>}
+      <Rounds
+        isTimeType={isTimeType}
+        hours={exercise.hours}
+        isFormItemDisabled={isFormItemDisabled}
+        historyDisplayMode={historyDisplayMode}
+        eachSide={exercise.each_side}
+        isLoading={isHistoryLoading}
+        history={historyByRounds}
+        loaderDictionary={loader}
+        exerciseIndex={exerciseIndex}
+        form={form}
+        type={exercise.type}
+        rounds={roundResults.rounds}
+      />
+      {!!exerciseBreak && (
+        <div style={{ marginTop: '10px' }}>
+          <Typography.Text>
+            {workouts.input_labels.break}: {timeToHms(exerciseBreak, {
+              hms: [
+                payload.time.hour.short,
+                payload.time.minute.short,
+                payload.time.second.short,
+              ],
+            })}
+          </Typography.Text></div>
+      )}
       {
         !showNote
           ? (
-            <AddRemoveNoteButton size="small" onClick={() => setShowNote(true)}>
-              Add a note
+            <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={() => setShowNote(true)}>
+              {input_labels.add_note}
             </AddRemoveNoteButton>
           )
           : (
-            <AddRemoveNoteButton size="small" onClick={handleHideNote}>
-              Remove the note
+            <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={handleHideNote}>
+              {input_labels.remove_note}
             </AddRemoveNoteButton>
           )
       }
       {showNote && (
-        <Form.Item name={[ 'results', exerciseIndex, 2 ]}>
-          <Input.TextArea autoFocus style={{ marginTop: '10px' }} placeholder="Note..." disabled={false} showCount maxLength={120} autoSize={{ minRows: 1, maxRows: 4 }} />
+        <Form.Item name={[ 'results', exerciseIndex, 'note' ]}>
+          <Input.TextArea
+            disabled={isFormItemDisabled}
+            autoFocus
+            style={{ marginTop: '10px' }}
+            placeholder={input_placeholders.note}
+            showCount
+            maxLength={120}
+            autoSize={{ minRows: 1, maxRows: 4 }}
+          />
         </Form.Item>
       )}
     </div>

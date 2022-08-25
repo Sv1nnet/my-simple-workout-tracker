@@ -1,5 +1,6 @@
 import { IResponse } from 'app/constants/response_types'
 import { Dayjs } from 'dayjs'
+import { WorkoutForm } from 'store/slices/workout/types'
 
 export type Image = {
   uid: string,
@@ -7,40 +8,78 @@ export type Image = {
   name: string,
 }
 
-export type Activity<T = number | Dayjs> = {
+export type Activity<T = string | Dayjs> = {
   id?: string;
-  title: string;
-  each_side: boolean;
-  mass_unit: 'kg' | 'lb'
-  type?: 'repeats' | 'time' | 'duration' | 'distance';
-  time?: T;
-  repeats?: number;
-  weight?: string;
-  description?: string;
-  image?: Image;
+  date: T,
+  workout_id: Pick<WorkoutForm, 'id'>;
+  results: {
+    _id: string,
+    hours?: boolean,
+    original_id: string,
+    id_in_workout: string,
+    type: string,
+    rounds: Round[],
+    note?: string | null,
+  }[];
+  description: string | null;
 }
 
-export type ActivityForm = Omit<Activity, 'image'> & {
-  image?: Image | Image[];
-}
+export type ActivityForm<T = Dayjs> = Activity<T>
 
-export type ActivityServerPayload = Omit<Activity<number>, 'image'> & {
-  image?: Image;
-}
+// export type ActivityServerPayload = 
 
-export interface IActivityFormData extends ActivityForm, FormData {}
+export interface IActivityFormData extends ActivityForm {}
 
-export type ActivityCreateSuccess = IResponse<ActivityServerPayload>
+export type ActivityCreateSuccess = IResponse<ActivityForm<string>>
 
-export type ActivityUpdateSuccess = IResponse<ActivityServerPayload>
+export type ActivityUpdateSuccess = IResponse<ActivityForm<string>>
 
-export type ActivityDeleteSuccess = IResponse<ActivityServerPayload[]>
+export type ActivityDeleteSuccess = IResponse<ActivityForm<string>[]>
 export type ActivityDeleteError = IResponse<null>
+export type EachSideRound<T = number | string | null | Dayjs> = { left: T, right: T }
+export type Round = number | Dayjs | EachSideRound
 
-export type GetActivitySuccess = IResponse<ActivityForm>
+export type GetActivitySuccess = IResponse<ActivityForm<string>>
 export type GetActivityError = IResponse<null>
 
-export type GetActivityListSuccess = IResponse<ActivityServerPayload[]>
+export type ActivityListItem = {
+  date: string,
+  description: string,
+  id: string,
+  results: {
+    details: {
+      repeats: number,
+      weight: number,
+      mass_unit: string,
+    }
+    exercise_title: string,
+    hours: boolean,
+    id_in_workout: string,
+    original_id: string,
+    rounds: Round[],
+    type: string,
+    _id: string,
+  }[],
+  workout_id: Pick<WorkoutForm, 'id'>,
+  workout_title: string,
+}
+
+export type GetActivityListSuccess = IResponse<ActivityListItem[]>
 export type GetActivityListError = IResponse<null>
+
+export type HisotryResult = number | { left: number, right: number }
+
+export type HistoryServerPayload<T = string> = {
+  [type: string]: {
+    items: {
+      date: T,
+      results: HisotryResult[]
+    }[],
+    total: 3,
+  }
+}
+
+export type GetHistoryListSuccess = IResponse<HistoryServerPayload>
+export type GetHistoryListError = IResponse<null>
 
 export type ActivityError = IResponse

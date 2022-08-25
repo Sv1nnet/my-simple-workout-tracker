@@ -196,7 +196,16 @@ export const spreadSegments = (segments: [number, number][], { gap = 1, dir = DI
   return _segments.sort((a, b) => a.index - b.index).map(({ segment }) => segment)
 }
 
-export const shiftSegments = (segments, { coefficient = .5, low = -Infinity, high = Infinity, getter = segment => segment, returnResult = (range, initial, adjusted) => range } = {}) => segments.map((segment, index) => {
+export const shiftSegments = (
+  segments,
+  {
+    coefficient = .5,
+    low = -Infinity,
+    high = Infinity,
+    getter = segment => segment,
+    returnResult = (range, _initial, _adjusted) => range,
+  } = {},
+) => segments.map((segment, index) => {
   const [ start, end ] = getter(segment)
   const bias = (end - start) * coefficient
 
@@ -245,8 +254,3 @@ export const shiftSegments = (segments, { coefficient = .5, low = -Infinity, hig
 
   return returnResult([ _start, _end ], segment, [ startAdjusted, endAdjusted ])
 })
-
-if (typeof window !== 'undefined') {
-  window.spread = spreadSegments
-  window.shiftSegments = shiftSegments
-}

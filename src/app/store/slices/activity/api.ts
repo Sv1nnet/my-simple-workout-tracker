@@ -7,38 +7,26 @@ import {
   ActivityDeleteSuccess,
   GetActivityListSuccess,
   IActivityFormData,
+  GetHistoryListSuccess,
 } from './types'
-import { Dayjs } from 'dayjs'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { timeToDayjs } from 'app/utils/time'
+import { WorkoutForm } from 'store/slices/workout/types'
 
 export const activityApi = createApi({
   reducerPath: 'activityApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
-  tagTypes: [ 'Activity', 'ActivityList' ],
+  tagTypes: [ 'Activity', 'ActivityList', 'History' ],
   endpoints: build => ({
     get: build.query<GetActivitySuccess, { id: string }>({
       query: ({ id }) => ({
         url: `${routes.activity.v1.base.full}/${id}`,
         method: 'GET',
       }),
-      transformResponse: (response: GetActivitySuccess) => {
-        if (response.success) {
-          const activity = { ...response.data }
-          let time: number | Dayjs = activity.time
-          if (time) {
-            time = timeToDayjs(time as number)
-            activity.time = time
-            response.data = activity
-          }
-        }
-        return response
-      },
       providesTags: () => [ 'Activity' ],
     }),
-    create: build.mutation<ActivityCreateSuccess, { activity: Omit<ActivityForm, 'id'> }>({
+    create: build.mutation<ActivityCreateSuccess, { activity: Omit<ActivityForm<string>, 'id'> }>({
       query: ({ activity }) => ({
         url: routes.activity.v1.create.full,
         method: 'POST',
@@ -48,7 +36,7 @@ export const activityApi = createApi({
     }),
     update: build.mutation<ActivityUpdateSuccess, { activity: IActivityFormData }>({
       query: ({ activity }) => ({
-        url: `${routes.activity.v1.update.full}/${activity.get('id')}`,
+        url: `${routes.activity.v1.update.full}/${activity.id}`,
         method: 'PATCH',
         body: activity,
       }),
@@ -75,6 +63,13 @@ export const activityApi = createApi({
         method: 'GET',
       }),
       providesTags: () => [ 'ActivityList' ],
+    }),
+    getHistory: build.query<GetHistoryListSuccess, { workoutId: Pick<WorkoutForm, 'id'>, activityId?: string, page?: number, byPage?: number, offset?: number }>({
+      query: ({ workoutId, activityId, page = 1, byPage = 30, offset }) => ({
+        url: `${routes.activity.v1.history.full}/${workoutId}?${activityId ? `activity_id=${activityId}&` : ''}page=${page}&byPage=${byPage}${typeof offset === 'number' ? `&offset=${offset}` : ''}`,
+        method: 'GET',
+      }),
+      providesTags: () => [ 'History' ],
     }),
   }),
 })

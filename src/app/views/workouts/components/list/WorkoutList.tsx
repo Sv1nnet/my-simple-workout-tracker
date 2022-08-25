@@ -63,6 +63,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, worko
     <SelectableList
       ref={selectionRef}
       list={workouts}
+      style={{ paddingBottom: 45 }}
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}

@@ -4,6 +4,7 @@ import styled from 'styled-components'
 export const StyledForm = styled(Form)`
   position: relative;
   padding: 15px;
+  ${({ $isEdit }) => $isEdit ? 'padding-top: 35px' : ''}
 `
 export const StyledFormItem = styled(Form.Item)`
   margin-bottom: 0;
@@ -48,7 +49,7 @@ export const StyledModal = styled(Modal)`
 `
 
 export const WorkoutFormItem = styled(Form.Item)`
-  & label[for="workout"].ant-form-item-required {
+  & label[for="workout_id"].ant-form-item-required {
     width: 100%;
   }
 `

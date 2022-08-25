@@ -47,6 +47,7 @@ export interface IExercise {
   isEdit?: boolean;
   isFetching?: boolean;
   initialValues?: ExerciseForm;
+  isError: boolean;
   error?: string;
   deleteExercise?: Function;
   onSubmit: Function;
@@ -82,7 +83,7 @@ const previewReducer = (state, { type, payload }) => {
   }
 }
 
-const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, error }) => {
+const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error }) => {
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
@@ -209,14 +210,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   }, [ initialValues ])
 
   useEffect(() => {
-    if (error) {
+    if (error || isError) {
       Modal.error({
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
       })
     }
-  }, [ !!error ])
+  }, [ !!error, isError ])
 
   useEffect(() => {
     mountedRef.current = true

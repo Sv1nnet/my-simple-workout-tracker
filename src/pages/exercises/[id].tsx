@@ -71,6 +71,7 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
   return (
     <Exercise
       isEdit
+      isError={!!error}
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? exercise}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}

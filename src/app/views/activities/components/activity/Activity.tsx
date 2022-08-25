@@ -4,206 +4,174 @@ import {
   Button,
   Modal,
   Select,
-  Checkbox,
 } from 'antd'
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
-import { FormActionButtonsContainer, ToggleEdit, TimePicker, DeleteEditPanel, DatePicker } from 'app/components'
-import dayjs, { Dayjs } from 'dayjs'
-import { dayjsToSeconds, timeToDayjs } from 'app/utils/time'
+import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
+import dayjs, { Dayjs, isDayjs } from 'dayjs'
+import { dayjsToSeconds, isExerciseTimeType, timeToDayjs } from 'app/utils/time'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ActivityForm } from 'app/store/slices/activity/types'
+import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
 import { useAppSelector } from 'app/hooks'
-import { exerciseApi } from 'app/store/slices/exercise/api'
-import { Input as CustomInput } from 'app/components'
 import {
   Exercise,
   StyledForm,
-  StyledFormItem,
-  StyledModal,
   CreateEditFormItem,
-  ImageFormItem,
-  ShortFormItem,
   WorkoutFormItem,
   WorkoutLabelContainer,
 } from './components'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { selectList } from 'app/store/slices/workout'
+import { activityApi } from '@/src/app/store/slices/activity/api'
+import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
+import { WorkoutForm } from '@/src/app/store/slices/workout/types'
 
-export type InitialValues = ActivityForm & {
-  exercises: {
-    rounds: number;
-    round_break: Dayjs | number;
-    break?: Dayjs | number;
-    break_enabled: boolean;
-  }[]
-}
-
-export interface IActivity {
+export interface IActivityProps {
   id?: string;
   isEdit?: boolean;
   isFetching?: boolean;
-  initialValues?: ActivityForm;
+  initialValues?: InitialValues<string>;
+  isError: boolean;
   error?: string;
-  deleteActivity?: Function,
+  deleteActivity?: Function;
   onSubmit: Function;
 }
 
-/*
-  {
-    workout: id,
-    date: number | Date,
-    results: [
-      id: string,
-      {
-        type: string,
-        rounds: number[],
-        description?: string,
-      },
-    ][],
-  }
-*/
-
-/*
-  history
-  {
-    id: string, // exercise id
-    date: number | Date,
-    results: number[]
-  }[]
-*/
-
-const createFakeHistory = (dateAmount: number, roundAmount: number, eachSide = false) => {
-  const res = []
-  
-  for (let i = 0; i < dateAmount; i++) {
-    if (i === 0) {
-      res.push([
-        `${Date.now()}`,
-        {
-          date: dayjs(),
-          // results: [ 137, 187, 188, 133 ],
-          // results: eachSide ? [
-          //   { right: 17, left: 15 },
-          //   { right: 14, left: 13 },
-          //   { right: 10, left: 9 },
-          //   { right: 8, left: 6 },
-          // ] : [ 0, 187, 188, 5 ],
-          // results: [ 0, 187, 188, 5 ],
-          results: eachSide ? [
-            { right: 17, left: 15 },
-            { right: 14, left: 13 },
-            { right: 10, left: 9 },
-            { right: 8, left: 6 },
-          ] : [ 200, 10, 200, 0 ],
-          // results: [ 100, 100, 100, 100 ],
-          // results: [ 0, 0, 0, 10 ],
-          // results: [ 0, 5, 0, 10 ],
-          // results: [ 75, 94, 97, 96 ],
-          // results: [ 106, 167, 25, 85 ],
-          // results: [ 91, 159, 189, 188 ],
-          // results: [ 103, 144, 143, 148 ],
-        },
-      ])
-      continue
-    }
-    res.push([
-      `${Date.now()}`,
-      {
-        date: dayjs().add(-7 * i, 'day'),
-        results: Array.from({ length: roundAmount }, () => eachSide ? { right: Math.round(Math.random() * 200), left: Math.round(Math.random() * 200) } : Math.round(Math.random() * 200)),
-      },
-    ])
-  }
-  return res
+export type InitialValues<T = Dayjs> = Omit<ActivityForm<T>, '_id' | 'workout_id'> & {
+  _id?: string,
+  workout_id?: Pick<WorkoutForm, 'id'>,
 }
 
-const Activity: FC<IActivity> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, error }) => {
+export const getComparator = (type: string) => type === 'time' 
+  ? {
+    pos: (curr, next) => curr < next,
+    neg: (curr, next) => curr > next,
+  }
+  : {
+    pos: (curr, next) => curr > next,
+    neg: (curr, next) => curr < next,
+  }
+
+const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error }) => {
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
-  const [ selectedWorkout, setSelectedWorkout ] = useState()
+  const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const workoutList = useAppSelector(selectList)
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
-  // const { input_labels, submit_button, payload, modal } = intl.pages.exercises
-  const { input_labels, submit_button, payload, modal } = intl.pages.activities
+
+  const { input_labels, submit_button, modal } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
 
   const mountedRef = useRef(false)
+  const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
+  const history = useMemo<HistoryServerPayload>(() => _history
+    ? Object
+      .entries(_history.data)
+      .reduce((acc, [ exercise_id, results ]) => {
+        acc[exercise_id] = results.items.map(item => ({
+          date: dayjs(item.date),
+          results: item.results,
+        }))
+        return acc
+      }, {})
+    : _history, [ _history ])
 
   const [ form ] = Form.useForm<ActivityForm>()
-  console.log('workoutList', workoutList)
-  const initialValues = useMemo(() => ({
-    id: 'a',
-    date: dayjs(),
-    results: workoutList
-      .data
-      .find(wk => wk.id === form.getFieldValue('workout'))
-      ?.exercises
-      ?.map(({ rounds, _id, exercise }) => {
-        console.log('exercise _id', _id)
-        return [ _id, Array.from({ length: rounds }, () => ({ type: exercise.type, value: '' })) ]
-      }) || [],
-    // ?.map(exercise => Array.from({ length: exercise.rounds }, () => [ `${Date.now()}`, { type: 'time', value: dayjs() } ])) || [],
-  }), [ _initialValues, selectedWorkout ])
-  console.log('initialValues', initialValues)
-  const _history = useMemo(() => Array.from({ length: 4 }, () => createFakeHistory(31, 4, false) ), [])
 
-  const handleWeightChange = value => form.setFieldsValue({ weight: value })
+  const initialValues = useMemo<InitialValues>(() => {
+    const newInitialValues = !isEdit
+      ? ({
+        id: _initialValues._id,
+        date: (form.getFieldValue('date') as Dayjs) || dayjs(),
+        workout_id: selectedWorkout,
+        results: workoutList
+          .data
+          .find(wk => wk.id === form.getFieldValue('workout_id'))
+        // TODO: on the server - exercise -> details
+          ?.exercises
+          ?.map(({ rounds, _id, exercise }) => ({
+            _id,
+            hours: exercise.hours,
+            original_id: exercise.id,
+            id_in_workout: _id,
+            type: exercise.type,
+            rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
+            note: undefined,
+          })) || [],
+        description: '',
+      })
+      : {
+        ..._initialValues,
+        date: dayjs(_initialValues.date),
+        results: _initialValues.results.map(results => isExerciseTimeType(results.type)
+          ? {
+            ...results,
+            rounds: results.rounds.map((round: number | { right: number, left: number }) => (round !== null && typeof round === 'object')
+              ? { right: timeToDayjs(round.right), left: timeToDayjs(round.left) }
+              : timeToDayjs(round as number)),
+          }
+          : results),
+      }
 
-  const handleRepeatsChange = value => form.setFieldsValue({ repeats: value })
+    if (mountedRef.current) form.setFieldsValue(newInitialValues)
+    if (newInitialValues.workout_id) {
+      setSelectedWorkout(newInitialValues.workout_id)
+      getHistory({ workoutId: newInitialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: newInitialValues.id })
+    }
+
+    return newInitialValues
+  }, [ _initialValues, selectedWorkout ])
 
   const handleCancelEditing = () => {
     setEditMode(false)
     form.resetFields()
   }
 
-  const handleSubmit = async (_values) => {
-    console.log('submit', _values)
-    // let { time, image, ...values } = _values
-    // values = (() => {
-    //   const formData = new FormData()
-    //   Object
-    //     .entries(values)
-    //     .forEach(([ key, value ]) => value !== undefined && formData.append(key, `${value}`))
+  const handleSubmit = async ({ ...values }) => {
+    values.id = initialValues.id
+    values.date = values.date.toJSON()
+    values.results = values.results.reduce((acc, { id, rounds, note }, i) => {
+      const exercise = workoutList.data.find(workout => workout.id === values.workout_id).exercises[i]
+      const { exercise: details } = exercise
 
-    //   return formData
-    // })()
+      acc.push({
+        original_id: id || exercise.id,
+        id_in_workout: exercise._id,
+        type: details.type,
+        rounds: isExerciseTimeType(details.type)
+          ? rounds.map((round) => {
+            if (round === null) return 0
+            return isDayjs(round)
+              ? dayjsToSeconds(round)
+              : {
+                right: round.right === null || round.right === '' ? 0 : dayjsToSeconds(round.right),
+                left: round.left === null || round.left === '' ? 0 : dayjsToSeconds(round.left),
+              }
+          })
+          : rounds.map((round) => {
+            if (round === null) return 0
+            return typeof round === 'number'
+              ? round
+              : {
+                right: round.right === null || round.right === '' ? 0 : round.right,
+                left: round.left === null || round.left === '' ? 0 : round.left,
+              }
+          }),
+        note,
+      })
+      return acc
+    }, [])
 
-    // if (time) {
-    //   const [ h, m, s ] = [ time.hour(), time.minute(), time.second() ]
-    //   const timeInSeconds = s + (m * 60) + (h * 60 * 60)
-    //   values.append('time', timeInSeconds)
-    // }
-
-    // if (image && image.length) {
-    //   [ image ] = image
-    //   if (image.originFileObj) {
-    //     values.append('image_uid', image.uid)
-    //     values.append('image', image.originFileObj)
-    //   } else {
-    //     image = { ...image }
-    //     delete image.uploaded_at
-
-    //     Object
-    //       .entries(image)
-    //       .forEach(([ key, value ]) => {
-    //         values.append(`image_${key}`, value)
-    //       })
-    //   }
-    // }
-
-    // if (initialValues.id) {
-    //   values.append('id', initialValues.id)
-    // }
-
-    // return onSubmit(values)
-    //   .then((res) => {
-    //     if (isEdit && !res.error && !res.data.error) setEditMode(false)
-    //     return res
-    //   })
+    return onSubmit(values)
+      .then((res) => {
+        if (isEdit && !res.error && !res.data.error) {
+          setEditMode(false)
+          if (selectedWorkout && initialValues.date.toString() !== values.date.toString()) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
+        }
+        return res
+      })
   }
 
   const handleDelete = () => deleteActivity(initialValues.id).then((res) => {
@@ -212,26 +180,33 @@ const Activity: FC<IActivity> = ({ initialValues: _initialValues, isEdit, isFetc
   })
 
   useEffect(() => {
-    if (mountedRef.current) {
-      // debugger
-      console.log('initialValues', initialValues)
-      form.setFieldsValue(initialValues)
-    }
-  }, [ initialValues ])
-
-  useEffect(() => {
-    if (error) {
+    const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text
+    if (error || isError) {
       Modal.error({
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
       })
+    } else if (!!historyErrorText || isHistoryError) {
+      Modal.error({
+        title: title.error,
+        content: historyErrorText || default_content.error,
+        okText: ok_text,
+      })
     }
-  }, [ !!error ])
+  }, [ !!error, isError, isHistoryError, historyError ])
 
   useEffect(() => {
     if (!workoutList.data.length) fetchWorkoutList()
   }, [])
+
+  useEffect(() => {
+    if (isEdit) form.setFieldsValue(initialValues)
+  }, [])
+
+  useEffect(() => {
+    if (selectedWorkout) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
+  }, [ selectedWorkout ])
 
   useEffect(() => {
     mountedRef.current = true
@@ -241,7 +216,7 @@ const Activity: FC<IActivity> = ({ initialValues: _initialValues, isEdit, isFetc
 
   return (
     <>
-      <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
+      <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
         {isEdit && (
           <DeleteEditPanel
             isEditMode={isEditMode}
@@ -258,16 +233,16 @@ const Activity: FC<IActivity> = ({ initialValues: _initialValues, isEdit, isFetc
               <Form.Item
                 required
                 name="date"
-                style={{ marginBottom: '0' }}
+                style={{ marginBottom: 0 }}
               >
-                <DatePicker inputReadOnly bordered={false} size="small" allowClear={false} />
+                <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
               </Form.Item>
             </WorkoutLabelContainer>
           )}
-          name="workout"
+          name="workout_id"
           rules={[ { required: true, message: 'Required' } ]}
         >
-          <Select disabled={isFormItemDisabled} size="large" onChange={(value) => { console.log('args', value); setSelectedWorkout(value)}}>
+          <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={(value) => { setSelectedWorkout(value); return value }}>
             {workoutList.data.map(workout => (
               <Select.Option key={workout.id} value={workout.id}>{workout.title}</Select.Option>
             ))}
@@ -277,66 +252,24 @@ const Activity: FC<IActivity> = ({ initialValues: _initialValues, isEdit, isFetc
           {
             ({ getFieldValue }) => workoutList
               .data
-              .find(wk => wk.id === getFieldValue('workout'))
+              .find(workout => workout.id === getFieldValue('workout_id'))
               ?.exercises
               .map((exercise, i) => (
                 <Exercise
-                  // roundResults={getFieldValue('results')}
-                  roundResults={initialValues.results}
+                  roundResults={initialValues.results[i]}
                   form={form}
                   exerciseIndex={i}
                   id={exercise._id}
                   key={exercise._id}
-                  history={_history[i]}
+                  isHistoryLoading={isHistoryLoading}
+                  isFormItemDisabled={isFormItemDisabled}
+                  total={history?.[exercise._id]?.total}
+                  history={history?.[exercise._id]}
                   {...exercise}
                 />
               ))
           }
         </Form.Item>
-        {/* <StyledFormItem shouldUpdate>
-          {({ getFieldValue }) => {
-            const type = getFieldValue('type')
-            const shouldRenderTimeInput = type !== 'time' && type !== 'duration'
-            return (
-              <>
-                {shouldRenderTimeInput
-                  ? (
-                    <ShortFormItem name="time" label={input_labels.time}>
-                      <TimePicker
-                        disabled={!isEditMode || isFetching}
-                        inputReadOnly
-                        showNow={false}
-                        size="large"
-                        allowClear={false}
-                        placeholder=""
-                      />
-                    </ShortFormItem>
-                  )
-                  : (
-                    <ShortFormItem name="repeats" label={input_labels.repeats} $fullWidth $margin>
-                      <CustomInput.Number
-                        int
-                        positive
-                        disabled={isFormItemDisabled}
-                        onChange={handleRepeatsChange}
-                        onBlur={handleRepeatsChange}
-                        size="large"
-                      />
-                    </ShortFormItem>
-                  )}
-                <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
-                  <CustomInput.Number
-                    positive
-                    disabled={isFormItemDisabled}
-                    onChange={handleWeightChange}
-                    onBlur={handleWeightChange}
-                    size="large"
-                  />
-                </ShortFormItem>
-              </>
-            )
-          }}
-        </StyledFormItem> */}
         <Form.Item label={input_labels.description} name="description">
           <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
         </Form.Item>
@@ -371,7 +304,10 @@ const Activity: FC<IActivity> = ({ initialValues: _initialValues, isEdit, isFetc
 
 Activity.defaultProps = {
   initialValues: {
-    title: '',
+    _id: undefined,
+    workout_id: undefined,
+    date: undefined,
+    results: [],
     description: '',
   },
 }

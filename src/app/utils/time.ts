@@ -77,3 +77,6 @@ export const timeToHms = (
   console.warn(`Wrong time argument format in timeToHms. Type of time: ${typeof time}`)
   return ''
 }
+
+export const timeTypes = [ 'time', 'time_distance', 'time_repeats', 'duration' ]
+export const isExerciseTimeType = (type: string) => timeTypes.includes(type)

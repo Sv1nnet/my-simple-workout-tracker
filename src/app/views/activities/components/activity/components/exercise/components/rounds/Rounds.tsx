@@ -1,7 +1,13 @@
 import { Input, TimePicker } from '@/src/app/components'
-import { Form, Typography } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { ActivityForm, HisotryResult, Round as TRound } from '@/src/app/store/slices/activity/types'
+import { ExerciseType } from '@/src/app/store/slices/exercise/types'
+import { Form, FormInstance, Typography } from 'antd'
+import dayjs from 'dayjs'
+import React, { FC, useContext } from 'react'
 import styled from 'styled-components'
+import { getComparator } from 'app/views/activities/components/activity/Activity'
+import { colors } from '../chart/Chart'
 import PreviousItem from '../previous_item/PreviousItem'
 
 const RoundsHeader = styled.div`
@@ -23,12 +29,15 @@ const RoundItem = styled.span`
   flex-shrink: 0;
   text-align: center;
   flex-wrap: wrap;
+  ${({ $round }) => $round ? `
+    text-align: center;
+    padding: 0 5px;
+  ` : ''}
 `
 
 const RoundsBodyContainer = styled.div`
   display: flex;
   align-items: center;
-  /* flex-wrap: wrap; */
 `
 
 const PreviousItemContainer = styled.div`
@@ -44,92 +53,159 @@ const RoundText = styled(Typography.Text)`
   flex-shrink: 0;
 `
 
-// const RoundItem = styled.span`
-//   display: block;
-//   text-align: center;
-// `
+const LegendItem = styled.span`
+  display: inline-block;
+  position: relative;
+  bottom: -6px;
+  list-style-type: none;
+  width: 30px;
+  height: 2px;
+  background-color: ${({ $color }) => $color.line};
 
-/*
-break: 180
-break_enabled: true
-exercise: {
-  each_side: false
-  id: "625f17f7bd914948431bcb60"
-  image: {
-    uid: 'rc-upload-1650396875360-2',
-    uuid: 'YL-K4ND7fsHBU2UTz1bYb',
-    name: 'pull-ups.jpeg',
-    url: '/uploads/61e4445e0c3fba6d031ae67d/625f17f7bd914948431bcb60/YL-K4ND7fsHBU2UTz1bYb_pull-ups.jpeg',
-    uploaded_at: 1650399223269
+  span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -90%);
+    color: ${({ $color }) => $color.text};
   }
-  mass_unit: "kg"
-  title: "Wide pull ups"
-  type: "repeats"
-}
-id: "625f17f7bd914948431bcb60"
-round_break: 90
-rounds: 4
-_id: "62605e50bd914948431bcbae"
-*/
 
-const StyledTimePicker = styled(TimePicker)`
-  width: 95px;
+  &:after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 6px;
+    width: 6px;
+    background-color: ${({ $color }) => $color.line};
+  }
 `
 
-const Round = ({ history, form, exerciseIndex, hours, round, eachSide, isTimeType }) => {
+const PreviousLoader = styled.span`
+  display: inline-block;
+  width: 100%;
+  margin-top: 10px;
+  padding-left: 25px;
+  text-align: center;
+`
+
+const StyledTimePicker = styled(TimePicker)`
+  width: ${({ hours }) => hours ? '95px' : '75px'};
+  padding: 1px 7px 1px;
+`
+
+export interface ISideNumberInput {
+  dataSide: string;
+  roundText: string;
+  disabled: boolean;
+  onBlur: Function;
+}
+
+const SideNumberInput: FC<ISideNumberInput> = ({ dataSide, roundText, ...props }) => (
+  <div style={{ display: 'flex', marginTop: 5 }}>
+    <RoundText type="secondary">{roundText}</RoundText>
+    <Input.Number
+      data-side={dataSide}
+      positive
+      style={{ textAlign: 'center' }}
+      size="small"
+      {...props}
+    />
+  </div>
+)
+
+export interface ISideTimePicker {
+  dataSide: string;
+  roundText: string;
+  hours: boolean;
+  disabled: boolean;
+}
+
+const SideTimePicker: FC<ISideTimePicker> = ({ dataSide, roundText, hours, ...props }) => (
+  <div style={{ display: 'flex', marginTop: 5 }}>
+    <RoundText type="secondary">{roundText}</RoundText>
+    <StyledTimePicker
+      format={hours ? 'HH:mm:ss' : 'mm:ss'}
+      data-side={dataSide}
+      inputReadOnly
+      showNow={false}
+      size="small"
+      allowClear={false}
+      placeholder=""
+      {...props}
+    />
+  </div>
+)
+
+export interface IRound {
+  comparator: {
+    pos: (curr: number, next: number) => boolean,
+    neg: (curr: number, next: number) => boolean,
+  };
+  isFormItemDisabled: boolean;
+  loaderDictionary: {
+    previous_loading: string,
+  };
+  isLoading: boolean;
+  history: HisotryResult,
+  form: FormInstance<ActivityForm<dayjs.Dayjs>>,
+  exerciseIndex: number;
+  hours: boolean;
+  round: number;
+  eachSide: boolean,
+  isTimeType: boolean,
+  historyDisplayMode: 'chart' | 'table',
+  sideLabels: {
+    right: {
+      short: string,
+    },
+    left: {
+      short: string,
+    },
+  };
+}
+
+const Round: FC<IRound> = ({ comparator, isFormItemDisabled, loaderDictionary, isLoading, history, form, exerciseIndex, hours, round, eachSide, isTimeType, historyDisplayMode, sideLabels }) => {
   const handleRepeatsChange = (value, { target }) => {
     const results = [ ...form.getFieldValue('results') ]
-    if (eachSide) {
-      results[exerciseIndex][1][round].type = results[exerciseIndex][1][round].type
-      results[exerciseIndex][1][round].value[target.dataset.side] = value
-    } else {
-      results[exerciseIndex][1][round].type = results[exerciseIndex][1][round].type
-      results[exerciseIndex][1][round].value = value
-    }
+
+    if (eachSide) results[exerciseIndex].rounds[round][target.dataset.side] = value
+    else results[exerciseIndex].rounds[round] = value
+
     form.setFieldsValue({ results })
   }
 
   return (
     <RoundsBodyContainer>
-      <RoundItem style={{ flexShrink: 0 }}>{round + 1}</RoundItem>
-      <RoundItem style={{ flexShrink: 0 }} $eachSide={eachSide}>
+      <RoundItem style={{ flexShrink: 0 }} $round>
+        {historyDisplayMode === 'chart'
+          ? (
+            <LegendItem $color={colors[round]}>
+              <span>{round + 1}</span>
+            </LegendItem>
+          )
+          : <span>{round + 1}</span>}
+      </RoundItem>
+      <RoundItem style={{ flexShrink: 0, flexBasis: isTimeType && !hours ? '95px' : '65px' }} $eachSide={eachSide}>
         {!isTimeType
           ? eachSide
             ? (
               <>
-                <Form.Item name={[ 'results', exerciseIndex, 1, round, 'value', 'right' ]} noStyle>
-                  <div style={{ display: 'flex' }}>
-                    <RoundText type="secondary">R: </RoundText>
-                    <Input.Number
-                      data-side="right"
-                      positive
-                      // disabled={isFormItemDisabled}
-                      style={{ textAlign: 'center' }}
-                      onBlur={handleRepeatsChange}
-                      size="small"
-                    />
-                  </div>
+                <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'right' ]} noStyle>
+                  <SideNumberInput disabled={isFormItemDisabled} dataSide="right" onBlur={handleRepeatsChange} roundText={`${sideLabels.right.short}: `} />
                 </Form.Item>
-                <Form.Item name={[ 'results', exerciseIndex, 1, round, 'value', 'left' ]} noStyle>
-                  <div style={{ display: 'flex' }}>
-                    <RoundText type="secondary">L: </RoundText>
-                    <Input.Number
-                      data-side="left"
-                      positive
-                      // disabled={isFormItemDisabled}
-                      style={{ textAlign: 'center' }}
-                      onBlur={handleRepeatsChange}
-                      size="small"
-                    />
-                  </div>
+                <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'left' ]} noStyle>
+                  <SideNumberInput disabled={isFormItemDisabled} dataSide="left" onBlur={handleRepeatsChange} roundText={`${sideLabels.left.short}: `} />
                 </Form.Item>
               </>
             )
             : (
-              <Form.Item name={[ 'results', exerciseIndex, 1, round, 'value' ]} noStyle>
+              <Form.Item name={[ 'results', exerciseIndex, 'rounds', round ]} noStyle>
                 <Input.Number
                   positive
-                  // disabled={isFormItemDisabled}
+                  disabled={isFormItemDisabled}
                   style={{ textAlign: 'center' }}
                   onBlur={handleRepeatsChange}
                   size="small"
@@ -139,40 +215,19 @@ const Round = ({ history, form, exerciseIndex, hours, round, eachSide, isTimeTyp
           : eachSide
             ? (
               <>
-                <Form.Item name={[ 'results', exerciseIndex, 1, round, 'value', 'right' ]} noStyle>
-                  <div style={{ display: 'flex' }}>
-                    <RoundText type="secondary">R: </RoundText>
-                    <StyledTimePicker
-                      // disabled={!isEditMode || isFetching}
-                      data-side="right"
-                      inputReadOnly
-                      showNow={false}
-                      size="small"
-                      allowClear={false}
-                      placeholder=""
-                    />
-                  </div>
+                <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'right' ]} noStyle>
+                  <SideTimePicker disabled={isFormItemDisabled} roundText={`${sideLabels.right.short}: `} hours={hours} dataSide="right" />
                 </Form.Item>
-                <Form.Item name={[ 'results', exerciseIndex, 1, round, 'value', 'left' ]} noStyle>
-                  <div style={{ display: 'flex' }}>
-                    <RoundText type="secondary">L: </RoundText>
-                    <StyledTimePicker
-                      // disabled={!isEditMode || isFetching}
-                      data-side="left"
-                      inputReadOnly
-                      showNow={false}
-                      size="small"
-                      allowClear={false}
-                      placeholder=""
-                    />
-                  </div>
+                <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'left' ]} noStyle>
+                  <SideTimePicker disabled={isFormItemDisabled} roundText={`${sideLabels.left.short}: `} hours={hours} dataSide="left" />
                 </Form.Item>
               </>
             )
             : (
-              <Form.Item name={[ 'results', exerciseIndex, 1, round, 'value' ]} noStyle>
+              <Form.Item name={[ 'results', exerciseIndex, 'rounds', round ]} noStyle>
                 <StyledTimePicker
-                // disabled={!isEditMode || isFetching}
+                  disabled={isFormItemDisabled}
+                  format={hours ? 'HH:mm:ss' : 'mm:ss'}
                   inputReadOnly
                   showNow={false}
                   size="small"
@@ -182,113 +237,98 @@ const Round = ({ history, form, exerciseIndex, hours, round, eachSide, isTimeTyp
               </Form.Item>
             )}
       </RoundItem>
-      <RoundItem $previous>
-        {eachSide
-          ? (
-            <>
-              <div style={{ display: 'flex' }}>
-                {history[round].length < 6
-                  ? history[round].map((el, i, arr) => (
-                    <PreviousItemContainer key={i}>
-                      <PreviousItem curr={el.right} prev={arr[i + 1].right} isTimeType={isTimeType} hours={hours} />
-                      <PreviousItem curr={el.left} prev={arr[i + 1].left} isTimeType={isTimeType} hours={hours} />
-                    </PreviousItemContainer>
-                  ))
-                  : history[round].map((el, i, arr) => i !== arr.length - 1 && (
-                    <PreviousItemContainer key={i}>
-                      <PreviousItem curr={el.right} prev={arr[i + 1].right} isTimeType={isTimeType} hours={hours} />
-                      <PreviousItem curr={el.left} prev={arr[i + 1].left} isTimeType={isTimeType} hours={hours} />
-                    </PreviousItemContainer>
-                  ))}
-              </div>
-            </>
-          )
-          : (
-            <div style={{ display: 'flex' }}>
-              {history[round].length < 6
-                ? history[round].map((el, i, arr) => (
-                  <PreviousItemContainer key={i}>
-                    <PreviousItem curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
-                  </PreviousItemContainer>
-                ))
-                : history[round].map((el, i, arr) => i !== arr.length - 1 && (
-                  <PreviousItemContainer key={i}>
-                    <PreviousItem curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
-                  </PreviousItemContainer>
-                ))}
-            </div>
-          )}
-      </RoundItem>
+      {isLoading || !history
+        ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
+        : (
+          <RoundItem $previous>
+            {eachSide
+              ? (
+                <>
+                  <div style={{ display: 'flex' }}>
+                    {(history[round] ?? []).length < 6
+                      ? (history[round] ?? []).map((el, i, arr) => (
+                        <PreviousItemContainer key={i}>
+                          <PreviousItem comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} />
+                          <PreviousItem comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={5} />
+                        </PreviousItemContainer>
+                      ))
+                      : (history[round] ?? []).map((el, i, arr) => i !== arr.length - 1 && (
+                        <PreviousItemContainer key={i}>
+                          <PreviousItem comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} />
+                          <PreviousItem comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={5} />
+                        </PreviousItemContainer>
+                      ))}
+                  </div>
+                </>
+              )
+              : (
+                <div style={{ display: 'flex' }}>
+                  {(history[round] ?? []).length < 6
+                    ? (history[round] ?? []).map((el, i, arr) => (
+                      <PreviousItemContainer key={i}>
+                        <PreviousItem comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
+                      </PreviousItemContainer>
+                    ))
+                    : (history[round] ?? []).map((el, i, arr) => i !== arr.length - 1 && (
+                      <PreviousItemContainer key={i}>
+                        <PreviousItem comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
+                      </PreviousItemContainer>
+                    ))}
+                </div>
+              )}
+          </RoundItem>
+        )}
     </RoundsBodyContainer>
   )
 }
 
-
-const RoundBody = ({ history, isTimeType, hours, rounds, form, exerciseIndex, eachSide }) => {
-  const [ , results ] = rounds[exerciseIndex]
-
-  // if (eachSide) {
-  //   return results.map((_, i) => (
-  //     <React.Fragment key={i}>
-  //       <Round
-  //         hours={hours}
-  //         key={i}
-  //         form={form}
-  //         side="r"
-  //         isTimeType={isTimeType}
-  //         exerciseIndex={exerciseIndex}
-  //         round={i}
-  //         history={history}
-  //       />
-  //       <Round
-  //         hours={hours}
-  //         key={i}
-  //         form={form}
-  //         side="l"
-  //         isTimeType={isTimeType}
-  //         exerciseIndex={exerciseIndex}
-  //         round={i}
-  //         history={history}
-  //       />
-  //     </React.Fragment>
-  //   ))
-  // }
-
-  return results.map((_, i) => (
-    <Round
-      hours={hours}
-      key={i}
-      form={form}
-      eachSide={eachSide}
-      isTimeType={isTimeType}
-      exerciseIndex={exerciseIndex}
-      round={i}
-      history={history}
-    />
-  ))
+export interface IRounds {
+  loaderDictionary: {
+    previous_loading: string,
+  };
+  isFormItemDisabled: boolean;
+  isLoading: boolean;
+  form;
+  history: HisotryResult;
+  rounds: TRound[];
+  hours: boolean;
+  exerciseIndex: number;
+  eachSide: boolean;
+  historyDisplayMode: 'table' | 'chart';
+  type: ExerciseType;
+  isTimeType: boolean;
 }
 
-const Rounds = ({ form, history, rounds, exerciseIndex, eachSide }) => {
-  const type = form.getFieldValue([ 'results', exerciseIndex, 0, 1, 'type' ])
-  const hours = form.getFieldValue([ 'results', exerciseIndex, 0, 1, 'hours' ])
-  const isTimeType = type === 'time'
+const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, form, history, rounds, hours, exerciseIndex, eachSide, historyDisplayMode, type, isTimeType }) => {
+  const { side_labels, rounds_section_headers } = useContext(IntlContext).intl.pages.activities
+
+  const comparator = getComparator(type)
 
   return (
     <div>
       <RoundsHeader>
-        <RoundItem>Rounds</RoundItem>
-        <RoundItem $isTimeType={isTimeType} $eachSide={eachSide} style={{ paddingLeft: '15px' }}>Repeats</RoundItem>
-        <RoundItem $previous $header>Previous</RoundItem>
+        <RoundItem>{rounds_section_headers.rounds}</RoundItem>
+        <RoundItem $isTimeType={isTimeType} $eachSide={eachSide} style={eachSide ? { paddingLeft: '15px' } : null}>{rounds_section_headers.results}</RoundItem>
+        <RoundItem $previous $header>{rounds_section_headers.previous}</RoundItem>
       </RoundsHeader>
-      <RoundBody
-        isTimeType={isTimeType}
-        hours={hours}
-        rounds={rounds}
-        form={form}
-        eachSide={eachSide}
-        exerciseIndex={exerciseIndex}
-        history={history}
-      />
+      {rounds.map((_, i) => (
+        <Round
+          isFormItemDisabled={isFormItemDisabled}
+          loaderDictionary={loaderDictionary}
+          sideLabels={side_labels}
+          comparator={comparator}
+          historyDisplayMode={historyDisplayMode}
+          hours={hours}
+          key={i}
+          form={form}
+          isLoading={isLoading}
+          eachSide={eachSide}
+          isTimeType={isTimeType}
+          exerciseIndex={exerciseIndex}
+          round={i}
+          history={history}
+        />
+      ))}
     </div>
   )
 }

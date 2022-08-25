@@ -414,6 +414,16 @@
       }
     },
     "activities": {
+      "loader": {
+        "previous_loading": {
+          "ru": "Загрузка...",
+          "eng": "Loading..."
+        },
+        "history_loading": {
+          "ru": "Загрузка истории...",
+          "eng": "History loading..."
+        }
+      },
       "input_labels": {
         "date": {
           "ru": "Дата активности",
@@ -430,6 +440,24 @@
         "description": {
           "ru": "Описание",
           "eng": "Description"
+        },
+        "add_note": {
+          "ru": "Добавить заметку",
+          "eng": "Add a note"
+        },
+        "remove_note": {
+          "ru": "Убрать заметку",
+          "eng": "Remove the note"
+        },
+        "note": {
+          "ru": "Заметка",
+          "eng": "Note"
+        }
+      },
+      "input_placeholders": {
+        "note": {
+          "ru": "Заметка...",
+          "eng": "Note..."
         }
       },
       "submit_button": {
@@ -444,6 +472,38 @@
         "cancel": {
           "ru": "Отмена",
           "eng": "Cancel"
+        }
+      },
+      "rounds_section_headers": {
+        "rounds": {
+          "ru": "Подходы",
+          "eng": "Rounds"
+        },
+        "results": {
+          "ru": "Рез-ты",
+          "eng": "Results"
+        },
+        "previous": {
+          "ru": "Предыдущие",
+          "eng": "Previous"
+        }
+      },
+      "side_labels": {
+        "left": {
+          "ru": "Лево",
+          "eng": "Left",
+          "short": {
+            "ru": "Л",
+            "eng": "L"
+          }
+        },
+        "right": {
+          "ru": "Право",
+          "eng": "Right",
+          "short": {
+            "ru": "П",
+            "eng": "R"
+          }
         }
       },
       "list_buttons": {
@@ -499,6 +559,10 @@
           "body": {
             "ru": "Удалить выбранные активности?",
             "eng": "Delete selected activities?"
+          },
+          "body_single": {
+            "ru": "Удалить активность?",
+            "eng": "Delete the activity?"
           },
           "ok_button": {
             "ru": "Удалить",

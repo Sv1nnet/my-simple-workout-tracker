@@ -1,30 +1,33 @@
 import { List, notification } from 'antd'
 import { ActivityItem } from './components'
-import { ActivityDeleteError, ActivityForm, Image } from 'app/store/slices/activity/types'
+import { ActivityDeleteError, ActivityForm } from 'app/store/slices/activity/types'
 import React, { FC, useContext, useEffect } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
+import { ActivitiesItem } from '@/src/pages/activities'
 
 export type ApiDeleteActivityError = {
   data: ActivityDeleteError;
   status: number;
 }
 
-type DeleteActivityPayload = { ids: Pick<ActivityForm, 'id'>[] } 
-type Activity = (ActivityForm & { id: string })
+type DeleteActivityPayload = { ids: Pick<ActivityForm, 'id'>[] }
 
 export interface IActivityList {
-  activities: Activity[];
+  activities: ActivitiesItem[];
   deleteActivities: (ids: DeleteActivityPayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
 }
 
 const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, activities }) => {
-  const { payload, modal } = useContext(IntlContext).intl.pages.activities
+  const { intl } = useContext(IntlContext)
+  const { payload: exercisePayloadDictionary } = intl.pages.exercises
+  const { activities: activityDictionary } = intl.pages
+  const { modal } = activityDictionary
   const {
     isModalVisible,
     selectionRef,
@@ -59,6 +62,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, a
     <SelectableList
       ref={selectionRef}
       list={activities}
+      style={{ paddingBottom: 45 }}
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}
@@ -74,10 +78,11 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, a
           <List
             itemLayout="horizontal"
             dataSource={activities}
-            renderItem={(item: Omit<Activity, 'image'> & { image: Image }) => (
+            renderItem={(item: ActivitiesItem) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
                 <ActivityItem
-                  payloadDictionary={payload}
+                  activityDictionary={activityDictionary}
+                  exercisePayloadDictionary={exercisePayloadDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   {...item}

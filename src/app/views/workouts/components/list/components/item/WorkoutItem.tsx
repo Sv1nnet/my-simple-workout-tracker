@@ -117,7 +117,7 @@ interface IWorkout extends WorkoutListItem {
       },
     }
   };
-  workoutDictionary
+  workoutDictionary: any;
   selectionEnabled: boolean;
   selected: boolean;
   image: Image;

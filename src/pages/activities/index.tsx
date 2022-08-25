@@ -12,9 +12,32 @@ import { updateList } from 'store/slices/activity'
 import { useAppDispatch } from 'app/hooks'
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { Dayjs } from 'dayjs'
 
+export type ExerciseResultsDetails = {
+  weight?: number,
+  repeats?: number,
+  mass_unit?: string,
+  time?: string | number | number[] | Dayjs,
+}
+
+export type ActivitiesItem = Omit<ActivityForm, 'results' | 'id'> & {
+  id: string,
+  workout_title: string,
+  results: {
+    _id: string,
+    id_in_workout: string,
+    original_id: string,
+    rounds: number[] | { left: number, right: number }[],
+    note: string | null,
+    exercise_title: string,
+    hours: boolean,
+    type: string,
+    details: ExerciseResultsDetails,
+  }[],
+}
 export interface IActivities {
-  activities: ActivityForm[];
+  activities: ActivitiesItem[];
 }
 
 export type ApiGetActivitiesListError = {

@@ -34,8 +34,9 @@ export interface IWorkout {
   isEdit?: boolean;
   isFetching?: boolean;
   initialValues?: WorkoutForm;
+  isError: boolean;
   error?: string;
-  deleteWorkout?: Function
+  deleteWorkout?: Function;
   onSubmit: Function;
 }
 
@@ -47,7 +48,7 @@ const addDefaultExercise = () => ({
   break: dayjs().hour(0).minute(0).second(0),
 })
 
-const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, error }) => {
+const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error }) => {
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
@@ -131,14 +132,14 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   }, [ initialValues ])
 
   useEffect(() => {
-    if (error) {
+    if (error || isError) {
       Modal.error({
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
       })
     }
-  }, [ !!error ])
+  }, [ !!error, isError ])
 
   useEffect(() => {
     if (!exerciseList.data.length) fetchExerciseList()

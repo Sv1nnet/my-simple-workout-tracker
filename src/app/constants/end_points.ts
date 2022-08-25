@@ -173,6 +173,12 @@ const routes = {
           path: `${this.base.path}/delete`,
         }
       },
+      get history() {
+        return {
+          full: `${routes.base}${this.base.path}/history`,
+          path: `${this.base.path}/history`,
+        }
+      },
     },
   },
 }
