@@ -11,7 +11,7 @@ import { FC, useContext, useEffect, useMemo, useReducer, useRef, useState } from
 import { PlusOutlined } from '@ant-design/icons'
 import { DeleteEditPanel, TimePicker } from 'app/components'
 import { Dayjs } from 'dayjs'
-import { timeToDayjs } from 'app/utils/time'
+import { isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
 import { ToggleEdit } from 'app/components'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import routes from 'app/constants/end_points'
@@ -25,6 +25,7 @@ import {
   CreateEditFormItem,
   ImageFormItem,
   ShortFormItem,
+  HoursFormItem,
 } from './components'
 
 export type InitialValues = {
@@ -97,7 +98,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     const exercise = { ..._initialValues }
     let time: number | Dayjs = exercise.time
     if (time && typeof time !== 'object') {
-      time = timeToDayjs(time)
+      time = secondsToDayjs(time)
       exercise.time = time
     }
 
@@ -247,22 +248,31 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
             <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
           </Select>
         </Form.Item>
-        <Form.Item name="each_side" valuePropName="checked">
+        <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
           <Checkbox disabled={isFormItemDisabled}>
             {input_labels.each_side}
           </Checkbox>
         </Form.Item>
+        <HoursFormItem shouldUpdate>
+          {({ getFieldValue }) => isExerciseTimeType(getFieldValue('type')) && (
+            <Form.Item name="hours" valuePropName="checked">
+              <Checkbox disabled={isFormItemDisabled}>
+                {input_labels.hours}
+              </Checkbox>
+            </Form.Item>
+          )}
+        </HoursFormItem>
         <StyledFormItem shouldUpdate>
           {({ getFieldValue }) => {
             const type = getFieldValue('type')
-            const shouldRenderTimeInput = type !== 'time' && type !== 'duration'
+            const shouldRenderTimeInput = !isExerciseTimeType(type)
             return (
               <>
                 {shouldRenderTimeInput
                   ? (
                     <ShortFormItem name="time" label={input_labels.time}>
                       <TimePicker
-                        disabled={!isEditMode || isFetching}
+                        disabled={isFormItemDisabled}
                         inputReadOnly
                         showNow={false}
                         size="large"

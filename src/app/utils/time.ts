@@ -7,10 +7,10 @@ export const getTimeDateUnit = (t: number, leadingZero?: boolean) => {
 
 export const timeArrayToDayjs = (time: [number, number, number]) => [ 'h', 'm', 's' ].reduce((d, t, i) => d.set(t as UnitType, time[i]), dayjs())
 
-export const timeToDayjs = (time: number) => {
-  const h = Math.floor((time as number) / (60 * 60))
-  const m = Math.floor(((time as number) - 3600 * h) / 60)
-  const s = (time as number) - (m * 60) - (h * 60 * 60)
+export const secondsToDayjs = (seconds: number) => {
+  const h = Math.floor((seconds as number) / (60 * 60))
+  const m = Math.floor(((seconds as number) - 3600 * h) / 60)
+  const s = (seconds as number) - (m * 60) - (h * 60 * 60)
   return timeArrayToDayjs([ h, m, s ])
 }
 

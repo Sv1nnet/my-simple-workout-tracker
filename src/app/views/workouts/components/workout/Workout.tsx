@@ -6,10 +6,10 @@ import {
 } from 'antd'
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
-import { dayjsToSeconds, timeToDayjs } from 'app/utils/time'
+import { dayjsToSeconds, secondsToDayjs } from 'app/utils/time'
 import { DeleteEditPanel, ToggleEdit } from 'app/components'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
-import { WorkoutForm } from 'app/store/slices/workout/types'
+import { WorkoutForm, WorkoutExercise } from 'app/store/slices/workout/types'
 import { useAppSelector } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
 import { exerciseApi } from 'app/store/slices/exercise/api'
@@ -20,8 +20,9 @@ import {
   Exercise,
 } from './components'
 
-export type InitialValues = WorkoutForm & {
+export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
+    id: Pick<WorkoutExercise<number | dayjs.Dayjs>, 'id'>;
     rounds: number;
     round_break: Dayjs | number;
     break?: Dayjs | number;
@@ -33,7 +34,7 @@ export interface IWorkout {
   id?: string;
   isEdit?: boolean;
   isFetching?: boolean;
-  initialValues?: WorkoutForm;
+  initialValues?: InitialValues;
   isError: boolean;
   error?: string;
   deleteWorkout?: Function;
@@ -59,15 +60,15 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const { input_labels, submit_button, error_message, modal } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common
 
-  const [ form ] = Form.useForm<WorkoutForm>()
-  const initialValues = useMemo(() => {
-    const workout = { ..._initialValues }
+  const [ form ] = Form.useForm<InitialValues>()
+  const initialValues = useMemo<InitialValues>(() => {
+    const workout = { ..._initialValues } as unknown as InitialValues
     workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled }) => ({
       id,
       rounds,
-      round_break: typeof round_break === 'object' ? round_break : timeToDayjs(round_break as number),
+      round_break: typeof round_break === 'object' ? round_break : secondsToDayjs(round_break as number),
+      break: typeof exercise_break === 'object' ? exercise_break : secondsToDayjs(exercise_break as number),
       break_enabled,
-      break: typeof exercise_break === 'object' ? exercise_break : timeToDayjs(exercise_break as number),
     }))
 
     if (!workout.exercises.length) workout.exercises.push(addDefaultExercise())

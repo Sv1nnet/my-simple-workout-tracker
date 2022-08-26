@@ -11,7 +11,7 @@ import {
 import { Dayjs } from 'dayjs'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { timeToDayjs } from 'app/utils/time'
+import { secondsToDayjs } from 'app/utils/time'
 
 export const exerciseApi = createApi({
   reducerPath: 'exerciseApi',
@@ -29,7 +29,7 @@ export const exerciseApi = createApi({
           const exercise = { ...response.data }
           let time: number | Dayjs = exercise.time
           if (time) {
-            time = timeToDayjs(time as number)
+            time = secondsToDayjs(time as number)
             exercise.time = time
             response.data = exercise
           }
