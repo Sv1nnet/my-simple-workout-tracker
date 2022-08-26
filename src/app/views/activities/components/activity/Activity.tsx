@@ -280,7 +280,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
                 {isEdit ? submit_button.save : submit_button.create}
               </Button>
               {isEdit && (
-                <ToggleEdit onClick={handleCancelEditing} size="large" block>
+                <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
                   {submit_button.cancel}
                 </ToggleEdit>
               )}
