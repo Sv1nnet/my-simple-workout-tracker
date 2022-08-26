@@ -55,7 +55,7 @@ const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, erro
           <TimePicker
             inputReadOnly
             allowClear={false}
-            disabled={!isEditMode || isFetching}
+            disabled={isFormItemDisabled}
             onChange={onExerciseChange(index, 'round_break')}
             showNow={false}
             size="large"
@@ -74,7 +74,7 @@ const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, erro
                   <TimePicker
                     allowClear={false}
                     inputReadOnly
-                    disabled={!isEditMode || isFetching || !breakEnabled}
+                    disabled={isFormItemDisabled || !breakEnabled}
                     onChange={onExerciseChange(index, 'break')}
                     showNow={false}
                     size="large"
