@@ -205,6 +205,10 @@
           "ru": "Каждая сторона (левая/правая рука и т.д.)",
           "eng": "Each side (left/right arm, etc.)"
         },
+        "hours": {
+          "ru": "Часовой формат",
+          "eng": "Hour format"
+        },
         "time": {
           "ru": "Время",
           "eng": "Time"

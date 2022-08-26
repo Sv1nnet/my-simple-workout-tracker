@@ -5,6 +5,7 @@ import {
   CreateEditFormItem,
   ImageFormItem,
   ShortFormItem,
+  HoursFormItem,
 } from './styled'
 
 export {
@@ -14,4 +15,5 @@ export {
   CreateEditFormItem,
   ImageFormItem,
   ShortFormItem,
+  HoursFormItem,
 }

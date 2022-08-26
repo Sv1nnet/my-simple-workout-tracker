@@ -46,3 +46,15 @@ export const StyledModal = styled(Modal)`
     padding-right: 52px;
   }
 `
+
+export const HoursFormItem = styled(Form.Item)`
+  margin-bottom: 0;
+
+ & .ant-form-item-control-input {
+   min-height: 14px;
+ }
+
+ & .ant-form-item {
+   margin-bottom: 18px;
+ }
+`

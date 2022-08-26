@@ -10,7 +10,7 @@ import {
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { timeToDayjs } from 'app/utils/time'
+import { secondsToDayjs } from 'app/utils/time'
 
 export const workoutApi = createApi({
   reducerPath: 'workoutApi',
@@ -29,9 +29,9 @@ export const workoutApi = createApi({
           workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled }) => ({
             id,
             rounds,
-            round_break: typeof round_break === 'object' ? round_break : timeToDayjs(round_break as number),
+            round_break: typeof round_break === 'object' ? round_break : secondsToDayjs(round_break as number),
             break_enabled,
-            break: typeof exercise_break === 'object' ? exercise_break : timeToDayjs(exercise_break as number),
+            break: typeof exercise_break === 'object' ? exercise_break : secondsToDayjs(exercise_break as number),
           }))
           response.data = workout
         }

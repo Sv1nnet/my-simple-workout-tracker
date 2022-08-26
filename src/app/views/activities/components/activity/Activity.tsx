@@ -8,7 +8,7 @@ import {
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
 import dayjs, { Dayjs, isDayjs } from 'dayjs'
-import { dayjsToSeconds, isExerciseTimeType, timeToDayjs } from 'app/utils/time'
+import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
 import { useAppSelector } from 'app/hooks'
@@ -109,8 +109,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           ? {
             ...results,
             rounds: results.rounds.map((round: number | { right: number, left: number }) => (round !== null && typeof round === 'object')
-              ? { right: timeToDayjs(round.right), left: timeToDayjs(round.left) }
-              : timeToDayjs(round as number)),
+              ? { right: secondsToDayjs(round.right), left: secondsToDayjs(round.left) }
+              : secondsToDayjs(round as number)),
           }
           : results),
       }
