@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import {
   Form,
   Input,
@@ -24,7 +25,8 @@ import { workoutApi } from 'app/store/slices/workout/api'
 import { selectList } from 'app/store/slices/workout'
 import { activityApi } from '@/src/app/store/slices/activity/api'
 import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
-import { WorkoutForm } from '@/src/app/store/slices/workout/types'
+import { WorkoutForm, WorkoutListExercise } from '@/src/app/store/slices/workout/types'
+import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 
 export interface IActivityProps {
   id?: string;
@@ -33,6 +35,8 @@ export interface IActivityProps {
   initialValues?: InitialValues<string>;
   isError: boolean;
   error?: string;
+  errorCode?: number;
+  errorAppCode?: number;
   deleteActivity?: Function;
   onSubmit: Function;
 }
@@ -52,12 +56,21 @@ export const getComparator = (type: string) => type === 'time'
     neg: (curr, next) => curr < next,
   }
 
-const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error }) => {
+const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
+  const router = useRouter()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
-  const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
+  const [ cachedFormValues, setCachedFormValues ] = useState<InitialValues | null>(() => {
+    try {
+      return JSON.parse(typeof localStorage !== 'undefined' ? (localStorage.getItem('cached_activity') || 'null') : 'null')
+    } catch {
+      return null
+    }
+  })
   const workoutList = useAppSelector(selectList)
+  const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
+  const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
 
@@ -81,28 +94,81 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const [ form ] = Form.useForm<ActivityForm>()
 
   const initialValues = useMemo<InitialValues>(() => {
-    const newInitialValues = !isEdit
-      ? ({
+    if (isEdit && _initialValues === null) {
+      return {}
+    }
+
+    const getResultsFromWorkoutList = (_workoutList, workoutId) => workoutList
+      .data
+      .find(wk => wk.id === workoutId)
+    // TODO: on the server - exercise -> details
+      ?.exercises
+      ?.map(({ rounds, _id, exercise }) => ({
+        _id,
+        hours: exercise.hours,
+        original_id: exercise.id,
+        id_in_workout: _id,
+        type: exercise.type,
+        rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
+        note: undefined,
+      })) || []
+
+    let newInitialValues
+    if (!isEdit && cachedFormValues && selectedWorkout) {
+      const workout = workoutList
+        .data
+        .find(wk => wk.id === cachedFormValues.workout_id)
+
+      newInitialValues = {
+        ...cachedFormValues,
+        date: dayjs(cachedFormValues.date),
+        results: cachedFormValues.results
+          ? cachedFormValues.results.map((results, i) => {
+            const { _id, exercise } = workout.exercises[i]
+            return isExerciseTimeType(exercise.type)
+              ? {
+                _id,
+                hours: exercise.hours,
+                original_id: exercise.id,
+                id_in_workout: _id,
+                type: exercise.type,
+                ...results,
+                rounds: results.rounds.map((round: string | { right: string, left: string }) => {
+                  if (round === null) return round
+
+                  return (typeof round === 'object')
+                    ? { right: round.right !== null ? dayjs(round.right) : null, left: round.left !== null ? dayjs(round.left) : null }
+                    : dayjs(round as string)
+                }),
+              }
+              : {
+                ...results,
+                _id,
+                hours: exercise.hours,
+                original_id: exercise.id,
+                id_in_workout: _id,
+                type: exercise.type,
+                rounds: results.rounds.map((round: string | { right: string, left: string }) => {
+                  if (round === null) return round
+
+                  return (typeof round === 'object')
+                    ? { right: round.right !== null ? +round.right : null, left: round.left !== null ? +round.left : null }
+                    : +round
+                }),
+              }
+          })
+          : getResultsFromWorkoutList(workoutList, cachedFormValues.workout_id),
+      }
+    } else if (!isEdit) {
+      newInitialValues = ({
         id: _initialValues._id,
         date: (form.getFieldValue('date') as Dayjs) || dayjs(),
         workout_id: selectedWorkout,
-        results: workoutList
-          .data
-          .find(wk => wk.id === form.getFieldValue('workout_id'))
-        // TODO: on the server - exercise -> details
-          ?.exercises
-          ?.map(({ rounds, _id, exercise }) => ({
-            _id,
-            hours: exercise.hours,
-            original_id: exercise.id,
-            id_in_workout: _id,
-            type: exercise.type,
-            rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
-            note: undefined,
-          })) || [],
+        results: getResultsFromWorkoutList(workoutList, form.getFieldValue('workout_id')),
         description: '',
       })
-      : {
+    } else {
+      newInitialValues = {
         ..._initialValues,
         date: dayjs(_initialValues.date),
         results: _initialValues.results.map(results => isExerciseTimeType(results.type)
@@ -114,6 +180,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           }
           : results),
       }
+    }
 
     if (mountedRef.current) form.setFieldsValue(newInitialValues)
     if (newInitialValues.workout_id) {
@@ -166,6 +233,10 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
     return onSubmit(values)
       .then((res) => {
+        if (!isEdit) {
+          localStorage.removeItem('cached_activity')
+          setCachedFormValues(null)
+        }
         if (isEdit && !res.error && !res.data.error) {
           setEditMode(false)
           if (selectedWorkout && initialValues.date.toString() !== values.date.toString()) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
@@ -179,6 +250,11 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     return res
   })
 
+  const cacheFormData = (_, allValues) => {
+    if (isEdit) return
+    localStorage.setItem('cached_activity', JSON.stringify(allValues))
+  }
+
   useEffect(() => {
     const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text
     if (error || isError) {
@@ -186,6 +262,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
+        onOk() {
+          if (errorCode === 404) router.push('/activities')
+        },
       })
     } else if (!!historyErrorText || isHistoryError) {
       Modal.error({
@@ -205,8 +284,51 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [])
 
   useEffect(() => {
+    if (workoutList.status === 'loading') {
+      runLoader('workout_list_loader', { tip: 'Loading workout list...' })
+    } else if (workoutList.status === 'loaded' || workoutList.status === 'error') {
+      stopLoaderById('workout_list_loader')
+    }
+  }, [ workoutList.status ])
+
+  useEffect(() => () => stopLoaderById('workout_list_loader'), [])
+
+  useEffect(() => {
     if (selectedWorkout) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
   }, [ selectedWorkout ])
+
+  useEffect(() => {
+    if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === 'loaded') {
+      Modal.confirm({
+        title: 'You have unfinished activity.',
+        content: 'Restore unfinished activity? If no the activity will be cleared.',
+        okText: 'Restore',
+        cancelText: 'Don\'t restore',
+        onOk() {
+          try {
+            const _cachedFormValues = JSON.parse(localStorage.getItem('cached_activity') || 'null')
+
+            if (!_cachedFormValues) {
+              throw new Error('No cached form values')
+            }
+
+            setSelectedWorkout(_cachedFormValues.workout_id)
+            setCachedFormValues(_cachedFormValues)
+          } catch {
+            Modal.error({
+              title: 'Oops!',
+              content: 'Something has gone wrong and could not restore activity.',
+              okText: 'It\'s sad but ok',
+            })
+            localStorage.removeItem('cached_activity')
+          }
+        },
+        onCancel() {
+          localStorage.removeItem('cached_activity')
+        },
+      })
+    }
+  }, [ workoutList.status ])
 
   useEffect(() => {
     mountedRef.current = true
@@ -216,7 +338,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
   return (
     <>
-      <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
+      <StyledForm onValuesChange={cacheFormData} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
         {isEdit && (
           <DeleteEditPanel
             isEditMode={isEditMode}
@@ -254,17 +376,17 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
               .data
               .find(workout => workout.id === getFieldValue('workout_id'))
               ?.exercises
-              .map((exercise, i) => (
+              .map((exercise: WorkoutListExercise<number>, i) => (
                 <Exercise
                   roundResults={initialValues.results[i]}
                   form={form}
                   exerciseIndex={i}
                   id={exercise._id}
-                  key={exercise._id}
+                  key={exercise._id as string}
                   isHistoryLoading={isHistoryLoading}
                   isFormItemDisabled={isFormItemDisabled}
-                  total={history?.[exercise._id]?.total}
-                  history={history?.[exercise._id]}
+                  total={history?.[exercise._id as string]?.total}
+                  history={history?.[exercise._id as string]}
                   {...exercise}
                 />
               ))

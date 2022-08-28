@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { exerciseApi } from './api'
-import { ExerciseServerPayload } from './types'
+import { ExerciseListItem, ExerciseServerPayload } from './types'
 
 export interface IExerciseState {
   list: {
-    data: ExerciseServerPayload[];
+    data: ExerciseListItem[];
     status: 'initial' | 'loading' | 'error' | 'loaded';
   }
   single: {
@@ -29,7 +29,7 @@ export const exerciseSlice = createSlice({
   name: 'exercise',
   initialState,
   reducers: {
-    updateList: (state, action: PayloadAction<ExerciseServerPayload[]>) => {
+    updateList: (state, action: PayloadAction<ExerciseListItem[]>) => {
       state.list.data = action.payload
       state.list.status = 'loaded'
     },

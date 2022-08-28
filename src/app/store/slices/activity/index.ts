@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { activityApi } from './api'
-import { ActivityServerPayload } from './types'
+import { ActivityListItem } from './types'
 
 export interface IActivityState {
   list: {
-    data: ActivityServerPayload[];
+    data: ActivityListItem[];
     status: 'initial' | 'loading' | 'error' | 'loaded';
   }
   single: {
-    data: ActivityServerPayload;
+    data: ActivityListItem;
     status: 'initial' | 'loading' | 'error' | 'loaded';
   }
 }
@@ -29,7 +29,7 @@ export const activitySlice = createSlice({
   name: 'activity',
   initialState,
   reducers: {
-    updateList: (state, action: PayloadAction<ActivityServerPayload[]>) => {
+    updateList: (state, action: PayloadAction<ActivityListItem[]>) => {
       state.list.data = action.payload
       state.list.status = 'loaded'
     },

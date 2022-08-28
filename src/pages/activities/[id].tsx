@@ -72,6 +72,8 @@ const EditActivity: NextPage<IActivityPage> & { Layout: FC, layoutProps?: {} } =
     <Activity
       isEdit
       isError={!!error}
+      errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
+      errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? activity}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}

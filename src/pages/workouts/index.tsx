@@ -7,12 +7,14 @@ import { WorkoutList } from 'app/views'
 import routes from 'app/constants/end_points'
 import { notification } from 'antd'
 import { workoutApi } from 'app/store/slices/workout/api'
-import { GetWorkoutListError, GetWorkoutListSuccess, WorkoutForm } from '@/src/app/store/slices/workout/types'
+import { GetWorkoutListError, GetWorkoutListSuccess, WorkoutListItem } from '@/src/app/store/slices/workout/types'
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { selectList, updateList } from '@/src/app/store/slices/workout'
+import { useAppDispatch, useAppSelector } from '@/src/app/hooks'
 
 export interface IExercises {
-  workouts: WorkoutForm[];
+  workouts: WorkoutListItem[];
 }
 
 export type ApiGetExerciseListError = {
@@ -22,27 +24,34 @@ export type ApiGetExerciseListError = {
 
 const Workouts: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
-  const [ loadWorkouts, { data: { data } = { data: [] }, error, isError } ] = workoutApi.useLazyListQuery()
+  const dispatch = useAppDispatch()
+  const [ loadWorkouts, { error, isError } ] = workoutApi.useLazyListQuery()
+  const { data: workoutsInStore } = useAppSelector(selectList)
   const [
     deleteWorkouts,
     {
-      data: { data: deleteData } = { data: [] },
       isError: isDeleteError,
       isLoading: isDeleteLoading,
       error: deleteError,
       status: deleteStatus,
+      isUninitialized: isDeleteUninitialized,
     },
   ] = workoutApi.useDeleteManyMutation()
 
-  const getWorkouts = () => {
-    if (deleteStatus !== 'fulfilled') {
-      return !data.length && _workouts ? _workouts : data
-    }
-    return deleteData
-  }
+  const getWorkouts = () => isDeleteUninitialized ? _workouts : workoutsInStore
+
+  const handeDeleteWorkouts = args => deleteWorkouts(args)
+    .then(async (res) => {
+      loadWorkouts()
+      return res
+    })
 
   useEffect(() => {
-    if (!_workouts || _workouts.length === 0) loadWorkouts()
+    if (!_workouts) {
+      loadWorkouts()
+      return
+    }
+    dispatch(updateList(getWorkouts()))
   }, [])
 
   useEffect(() => {
@@ -59,17 +68,16 @@ const Workouts: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ wor
 
   useEffect(() => {
     if (deleteStatus === 'fulfilled' && !isDeleteLoading && !deleteError) loadWorkouts()
-
   }, [ isDeleteLoading, deleteStatus, isDeleteError ])
 
   return (
     <>
       <AddButton href="/workouts/create" text={add} />
       <WorkoutList
-        deleteWorkouts={deleteWorkouts}
+        deleteWorkouts={handeDeleteWorkouts}
         error={deleteError}
         isLoading={isDeleteLoading}
-        workouts={getWorkouts()}
+        workouts={getWorkouts() ?? []}
       />
     </>
   )

@@ -3,9 +3,9 @@ import { Dayjs } from 'dayjs'
 import { Exercise } from 'store/slices/exercise/types'
 
 export type WorkoutListExercise<T = number | Dayjs> = {
-  _id: string;
-  id: string;
-  exercise: Pick<Exercise, 'id' | 'title' | 'image' | 'repeats' | 'weight' | 'mass_unit' | 'time'>;
+  _id: Pick<Exercise<number | Dayjs>, 'id'>;
+  id: Pick<Exercise<number | Dayjs>, 'id'>;
+  exercise: Exercise;
   rounds: number;
   round_break: T;
   break?: T;
@@ -52,7 +52,7 @@ export type WorkoutDeleteError = IResponse<null>
 export type GetWorkoutSuccess = IResponse<Workout>
 export type GetWorkoutError = IResponse<null>
 
-export type GetWorkoutListSuccess = IResponse<WorkoutServerPayload[]>
+export type GetWorkoutListSuccess = IResponse<WorkoutListItem[]>
 export type GetWorkoutListError = IResponse<null>
 
 export type WorkoutError = IResponse

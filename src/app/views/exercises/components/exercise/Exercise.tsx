@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import {
   Form,
   Input,
@@ -50,6 +51,8 @@ export interface IExercise {
   initialValues?: ExerciseForm;
   isError: boolean;
   error?: string;
+  errorCode?: number;
+  errorAppCode?: number;
   deleteExercise?: Function;
   onSubmit: Function;
 }
@@ -84,7 +87,8 @@ const previewReducer = (state, { type, payload }) => {
   }
 }
 
-const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error }) => {
+const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
+  const router = useRouter()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
@@ -216,6 +220,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
+        onOk() {
+          if (errorCode === 404) router.push('/exercises')
+        },
       })
     }
   }, [ !!error, isError ])
@@ -228,7 +235,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   return (
     <>
-      <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
+      <StyledForm preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
         {isEdit && (
           <DeleteEditPanel
             isEditMode={isEditMode}

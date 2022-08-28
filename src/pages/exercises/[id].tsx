@@ -72,6 +72,8 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
     <Exercise
       isEdit
       isError={!!error}
+      errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
+      errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? exercise}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}

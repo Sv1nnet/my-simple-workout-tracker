@@ -70,7 +70,10 @@ const NumberInput: FC<INumberInput> = ({ int, positive, negative, value: _value,
   useEffect(() => {
     if (_value !== value) {
       const v = convert(_value)
-      if (!Number.isNaN(v)) setValue(v)
+      if (!Number.isNaN(v)) {
+        setValue(v)
+        return
+      }
       setValue('')
     }
   }, [ _value ])
