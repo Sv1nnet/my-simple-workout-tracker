@@ -51,7 +51,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, worko
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiDeleteWorkoutError)?.data?.error.message })
+      openNotification({ message: 'Error!', description: (error as ApiDeleteWorkoutError)?.data?.error.message?.text })
     }
   }, [ error ])
 

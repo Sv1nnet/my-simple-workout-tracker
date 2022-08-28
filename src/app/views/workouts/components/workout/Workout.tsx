@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import {
   Form,
   Input,
@@ -9,7 +10,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import { dayjsToSeconds, secondsToDayjs } from 'app/utils/time'
 import { DeleteEditPanel, ToggleEdit } from 'app/components'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
-import { WorkoutForm, WorkoutExercise } from 'app/store/slices/workout/types'
+import { WorkoutForm } from 'app/store/slices/workout/types'
 import { useAppSelector } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
 import { exerciseApi } from 'app/store/slices/exercise/api'
@@ -19,10 +20,12 @@ import {
   CreateEditFormItem,
   Exercise,
 } from './components'
+import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
+import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
-    id: Pick<WorkoutExercise<number | dayjs.Dayjs>, 'id'>;
+    id: Pick<TExercise<number | dayjs.Dayjs>, 'id'>;
     rounds: number;
     round_break: Dayjs | number;
     break?: Dayjs | number;
@@ -37,6 +40,8 @@ export interface IWorkout {
   initialValues?: InitialValues;
   isError: boolean;
   error?: string;
+  errorCode?: number;
+  errorAppCode?: number;
   deleteWorkout?: Function;
   onSubmit: Function;
 }
@@ -49,10 +54,12 @@ const addDefaultExercise = () => ({
   break: dayjs().hour(0).minute(0).second(0),
 })
 
-const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error }) => {
+const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }) => {
+  const router = useRouter()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
+  const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
   const exerciseList = useAppSelector(selectList)
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
@@ -62,6 +69,13 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
 
   const [ form ] = Form.useForm<InitialValues>()
   const initialValues = useMemo<InitialValues>(() => {
+    if (isEdit && _initialValues === null) {
+      return {
+        title: '',
+        exercises: [],
+      }
+    }
+
     const workout = { ..._initialValues } as unknown as InitialValues
     workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled }) => ({
       id,
@@ -138,6 +152,9 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
+        onOk() {
+          if (errorCode === 404) router.push('/workouts')
+        },
       })
     }
   }, [ !!error, isError ])
@@ -145,6 +162,16 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   useEffect(() => {
     if (!exerciseList.data.length) fetchExerciseList()
   }, [])
+  
+  useEffect(() => {
+    if (exerciseList.status === 'loading') {
+      runLoader('exercise_list_loader', { tip: 'Loading exercise list...' })
+    } else if (exerciseList.status === 'loaded' || exerciseList.status === 'error') {
+      stopLoaderById('exercise_list_loader')
+    }
+  }, [ exerciseList.status ])
+
+  useEffect(() => () => stopLoaderById('exercise_list_loader'), [])
 
   useEffect(() => {
     mountedRef.current = true

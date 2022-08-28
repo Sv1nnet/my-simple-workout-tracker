@@ -26,8 +26,6 @@ export type Activity<T = string | Dayjs> = {
 
 export type ActivityForm<T = Dayjs> = Activity<T>
 
-// export type ActivityServerPayload = 
-
 export interface IActivityFormData extends ActivityForm {}
 
 export type ActivityCreateSuccess = IResponse<ActivityForm<string>>
@@ -37,7 +35,7 @@ export type ActivityUpdateSuccess = IResponse<ActivityForm<string>>
 export type ActivityDeleteSuccess = IResponse<ActivityForm<string>[]>
 export type ActivityDeleteError = IResponse<null>
 export type EachSideRound<T = number | string | null | Dayjs> = { left: T, right: T }
-export type Round = number | Dayjs | EachSideRound
+export type Round<T = number | string | null | Dayjs> = number | string | Dayjs | EachSideRound<T>
 
 export type GetActivitySuccess = IResponse<ActivityForm<string>>
 export type GetActivityError = IResponse<null>
@@ -54,6 +52,7 @@ export type ActivityListItem = {
     }
     exercise_title: string,
     hours: boolean,
+    note?: string,
     id_in_workout: string,
     original_id: string,
     rounds: Round[],

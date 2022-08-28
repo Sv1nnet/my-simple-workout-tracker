@@ -4,12 +4,12 @@ import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/with
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
 import { ActivityList } from 'app/views'
-import { ActivityForm, GetActivityListError, GetActivityListSuccess } from 'app/store/slices/activity/types'
+import { ActivityListItem, GetActivityListError, GetActivityListSuccess } from 'app/store/slices/activity/types'
 import routes from 'app/constants/end_points'
 import { activityApi } from 'store/slices/activity/api'
 import { notification } from 'antd'
-import { updateList } from 'store/slices/activity'
-import { useAppDispatch } from 'app/hooks'
+import { selectList, updateList } from 'store/slices/activity'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
@@ -21,23 +21,8 @@ export type ExerciseResultsDetails = {
   time?: string | number | number[] | Dayjs,
 }
 
-export type ActivitiesItem = Omit<ActivityForm, 'results' | 'id'> & {
-  id: string,
-  workout_title: string,
-  results: {
-    _id: string,
-    id_in_workout: string,
-    original_id: string,
-    rounds: number[] | { left: number, right: number }[],
-    note: string | null,
-    exercise_title: string,
-    hours: boolean,
-    type: string,
-    details: ExerciseResultsDetails,
-  }[],
-}
 export interface IActivities {
-  activities: ActivitiesItem[];
+  activities: ActivityListItem[];
 }
 
 export type ApiGetActivitiesListError = {
@@ -48,27 +33,32 @@ export type ApiGetActivitiesListError = {
 const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ activities: _activities }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
   const dispatch = useAppDispatch()
-  const [ loadActivities, { data: { data } = { data: [] }, error, isError } ] = activityApi.useLazyListQuery()
+  const [ loadActivities, { error, isError } ] = activityApi.useLazyListQuery()
+  const { data: activitiesInStore } = useAppSelector(selectList)
   const [
     deleteActivities,
     {
-      data: { data: deleteData } = { data: [] },
       isError: isDeleteError,
       isLoading: isDeleteLoading,
       error: deleteError,
       status: deleteStatus,
+      isUninitialized: isDeleteUninitialized,
     },
   ] = activityApi.useDeleteManyMutation()
 
-  const getActivities = () => {
-    if (deleteStatus !== 'fulfilled') {
-      return !data.length && _activities ? _activities : data
-    }
-    return deleteData
-  }
+  const getActivities = () => isDeleteUninitialized ? _activities : activitiesInStore
+
+  const handeDeleteActivities = args => deleteActivities(args)
+    .then(async (res) => {
+      loadActivities()
+      return res
+    })
 
   useEffect(() => {
-    if (!_activities || _activities.length === 0) loadActivities()
+    if (!_activities) {
+      loadActivities()
+      return
+    }
     dispatch(updateList(getActivities()))
   }, [])
 
@@ -92,7 +82,7 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
     <>
       <AddButton href="/activities/create" text={add} />
       <ActivityList
-        deleteActivities={deleteActivities}
+        deleteActivities={handeDeleteActivities}
         error={deleteError}
         isLoading={isDeleteLoading}
         activities={getActivities() ?? []}

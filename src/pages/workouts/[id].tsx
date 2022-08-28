@@ -71,6 +71,9 @@ const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = 
   return (
     <Workout
       isEdit
+      isError={!!error}
+      errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
+      errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? workout}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}

@@ -13,6 +13,7 @@ import { AuthLayout } from 'layouts/authorization'
 import { selectToken, updateToken } from 'app/store/slices/auth'
 import RouterContextProvider from 'app/contexts/router/RouterContextProvider'
 import IntlContextProvider from 'app/contexts/intl/IntContextProvider'
+import AppLoaderProvider from 'app/contexts/loader/AppLoaderContextProvider'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import duration from 'dayjs/plugin/duration'
 
@@ -41,13 +42,15 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
       <IntlContextProvider>
-        <RouterContextProvider>
-          <AuthLayout>
-            <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
-              <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
-            </Layout>
-          </AuthLayout>
-        </RouterContextProvider>
+        <AppLoaderProvider>
+          <RouterContextProvider>
+            <AuthLayout>
+              <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
+                <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
+              </Layout>
+            </AuthLayout>
+          </RouterContextProvider>
+        </AppLoaderProvider>
       </IntlContextProvider>
     </Provider>
   )

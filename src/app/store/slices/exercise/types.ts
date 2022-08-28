@@ -24,8 +24,12 @@ export type Exercise<T = number | Dayjs> = {
   image?: Image;
 }
 
-export type ExerciseForm = Omit<Exercise, 'image'> & {
+export type ExerciseForm<T = number | Dayjs> = Omit<Exercise<T>, 'image'> & {
   image?: Image | Image[];
+}
+
+export type ExerciseListItem<T = number | Dayjs> = Omit<ExerciseForm<T>, 'id'> & {
+  id: string,
 }
 
 export type ExerciseServerPayload = Omit<Exercise<number>, 'image'> & {
@@ -44,7 +48,7 @@ export type ExerciseDeleteError = IResponse<null>
 export type GetExerciseSuccess = IResponse<ExerciseForm>
 export type GetExerciseError = IResponse<null>
 
-export type GetExerciseListSuccess = IResponse<ExerciseServerPayload[]>
+export type GetExerciseListSuccess = IResponse<ExerciseListItem<number>[]>
 export type GetExerciseListError = IResponse<null>
 
 export type ExerciseError = IResponse

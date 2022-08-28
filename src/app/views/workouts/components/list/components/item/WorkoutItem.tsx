@@ -155,7 +155,7 @@ const WorkoutItem: FC<IWorkout> = ({
           break: interExercisesBreak,
           break_enabled,
         }) => (
-          <React.Fragment key={exerciseId}>
+          <React.Fragment key={exerciseId as string}>
             <List.Item.Meta
               avatar={(
                 <ImageContainer>

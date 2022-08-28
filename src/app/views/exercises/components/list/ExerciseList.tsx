@@ -1,6 +1,6 @@
 import { List, notification } from 'antd'
 import { ExerciseItem } from './components'
-import { ExerciseDeleteError, ExerciseForm, Image } from 'app/store/slices/exercise/types'
+import { ExerciseDeleteError, ExerciseForm, ExerciseListItem, Image } from 'app/store/slices/exercise/types'
 import React, { FC, useContext, useEffect } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
@@ -14,7 +14,7 @@ export type ApiDeleteExerciseError = {
 }
 
 type DeleteExercisePayload = { ids: Pick<ExerciseForm, 'id'>[] } 
-type Exercise = (ExerciseForm & { id: string })
+type Exercise = (ExerciseListItem & { id: string })
 
 export interface IExerciseList {
   exercises: Exercise[];

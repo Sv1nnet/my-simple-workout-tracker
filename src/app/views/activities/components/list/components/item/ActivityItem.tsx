@@ -1,4 +1,3 @@
-import { ActivitiesItem } from '@/src/pages/activities'
 import React, { FC } from 'react'
 import { Collapse, Checkbox, Button, List, Typography } from 'antd'
 import Link from 'next/link'
@@ -7,6 +6,7 @@ import styled from 'styled-components'
 import dayjs from 'dayjs'
 import ExerciseDetails from '../exercise_details/ExerciseDetails'
 import Rounds from '../rounds/Rounds'
+import { ActivityListItem } from '@/src/app/store/slices/activity/types'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography
@@ -74,7 +74,7 @@ export const StyledText = styled(Typography.Text)`
 `
 
 
-export type ActivityItemProps = ActivitiesItem & {
+export type ActivityItemProps = ActivityListItem & {
   exercisePayloadDictionary: any;
   activityDictionary: any;
   selectionEnabled: boolean;
