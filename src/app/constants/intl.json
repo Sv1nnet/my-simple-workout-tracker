@@ -334,6 +334,12 @@
           "eng": "Description"
         }
       },
+      "placeholders": {
+        "rounds": {
+          "ru": "Максимум 10",
+          "eng": "10 rounds max"
+        }
+      },
       "submit_button": {
         "save": {
           "ru": "Сохранить",
@@ -383,6 +389,10 @@
           "required": {
             "ru": "Минимум 1 подход",
             "eng": "Minimum 1 round"
+          },
+          "max": {
+            "ru": "Максимум 10 подходов",
+            "eng": "10 rounds max"
           }
         },
         "common": {
