@@ -19,7 +19,7 @@ const SEPARATOR_REGEX = /(^[,\.]$)/
 const isSignedSeparator = v => SIGN_AND_SEPARATOR_REGEX.test(v)
 const isSeparator = v => SEPARATOR_REGEX.test(v)
 
-const stringifyValue = v => v === undefined && v === null ? '' : typeof v === 'string' ? v : `${v}`
+const stringifyValue = v => v === undefined || v === null ? '' : typeof v === 'string' ? v : `${v}`
 
 const isFunc = func => typeof func === 'function'
 
