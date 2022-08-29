@@ -23,13 +23,14 @@ const StyledSelect = styled(Select)`
 
 const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, errorsDictionary, index, isEditMode, isFetching, payload, exerciseList, onExerciseChange, remove }) => {
   const requiredRules = isEditMode ? [ { required: true, message: errorsDictionary.common.required } ] : []
+  const handleExerciseChange = onExerciseChange(index, 'rounds')
 
   return (
     <ExerciseContainer>
       <Divider style={{ marginBottom: '16px', marginTop: '6px' }} />
       {isEditMode && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
 
-      <Form.Item label={dictionary.exercise} name={[ index, 'id' ]} rules={requiredRules}>
+      <Form.Item label={dictionary.input_labels.exercise} name={[ index, 'id' ]} rules={requiredRules}>
         <StyledSelect disabled={isFormItemDisabled} size="large">
           {exerciseList.data.map(exercise => (
             <Select.Option value={exercise.id} key={exercise.id}>
@@ -42,16 +43,16 @@ const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, erro
       <StyledFormItem>
         <ShortFormItem
           name={[ index, 'rounds' ]}
-          label={dictionary.rounds}
+          label={dictionary.input_labels.rounds}
           rules={[
             ...requiredRules,
             validate as Rule,
           ]}
           $margin
         >
-          <CustomInput.Number int positive disabled={isFormItemDisabled} onChange={onExerciseChange(index, 'rounds')} onBlur={onExerciseChange(index, 'rounds')} size="large" />
+          <CustomInput.Number placeholder={dictionary.placeholders.rounds} int onlyPositive disabled={isFormItemDisabled} onChange={handleExerciseChange} onBlur={handleExerciseChange} size="large" />
         </ShortFormItem>
-        <ShortFormItem name={[ index, 'round_break' ]} label={dictionary.break} rules={requiredRules}>
+        <ShortFormItem name={[ index, 'round_break' ]} label={dictionary.input_labels.break} rules={requiredRules}>
           <TimePicker
             inputReadOnly
             allowClear={false}
@@ -70,7 +71,7 @@ const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, erro
             const breakEnabled = getFieldValue([ 'exercises', index, 'break_enabled' ])
             return (
               <>
-                <ShortFormItem name={[ index, 'break' ]} label={dictionary.break} $margin rules={breakEnabled ? requiredRules : []}>
+                <ShortFormItem name={[ index, 'break' ]} label={dictionary.input_labels.break} $margin rules={breakEnabled ? requiredRules : []}>
                   <TimePicker
                     allowClear={false}
                     inputReadOnly
@@ -90,7 +91,7 @@ const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, erro
                     onChange={onExerciseChange(index, 'break_enabled')}
                     disabled={isFormItemDisabled}
                   >
-                    {dictionary.break_enabled}
+                    {dictionary.input_labels.break_enabled}
                   </Checkbox>
                 </ShortFormItem>
               </>

@@ -64,7 +64,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
   const { payload } = intl.pages.exercises
-  const { input_labels, submit_button, error_message, modal } = intl.pages.workouts
+  const { input_labels, submit_button, error_message, modal, placeholders } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<InitialValues>()
@@ -130,8 +130,11 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const validate = () => ({
     validator: async ({ field }, value) => {
       const fieldName = field.split('.').pop()
+
       if (fieldName === 'rounds') {
-        if (parseInt(value, 10) !== 0) return
+        const parsedValue = parseInt(value, 10)
+        if (parsedValue > 10) throw new Error(error_message.rounds.max)
+        if (parsedValue !== 0) return
         throw new Error(error_message.rounds.required)
       }
     },
@@ -203,7 +206,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
                   form={form}
                   index={i}
                   validate={validate}
-                  dictionary={input_labels}
+                  dictionary={{ input_labels, placeholders }}
                   errorsDictionary={error_message}
                   isEditMode={isEditMode}
                   isFetching={isFetching}

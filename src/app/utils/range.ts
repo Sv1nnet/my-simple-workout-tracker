@@ -137,7 +137,6 @@ export const getIntersections = (segments: [number, number][] | { index: number,
         ? segments[i] as [number, number]
         : (segments[i] as { index: number, segment: [number, number] }).segment
       const [ _start, _end ] = _segment
-      // debugger
       const hasIntersection = intersects(segment.segment, _segment)
 
       if (hasIntersection) {
@@ -182,10 +181,6 @@ export const spreadSegments = (segments: [number, number][], { gap = 1, dir = DI
       break
     }
     c++
-
-    if (c >= 500) {
-      debugger
-    }
     
     if (c >= 10000) {
       console.warn('endless loop')
