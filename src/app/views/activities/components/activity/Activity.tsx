@@ -56,6 +56,23 @@ export const getComparator = (type: string) => type === 'time'
     neg: (curr, next) => curr < next,
   }
 
+
+
+const getResultsFromWorkoutList = (_workoutList, workoutId) => _workoutList
+  .data
+  .find(wk => wk.id === workoutId)
+// TODO: on the server - exercise -> details
+  ?.exercises
+  ?.map(({ rounds, _id, exercise }) => ({
+    _id,
+    hours: exercise.hours,
+    original_id: exercise.id,
+    id_in_workout: _id,
+    type: exercise.type,
+    rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
+    note: undefined,
+  })) || []
+
 const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
   const router = useRouter()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
@@ -73,10 +90,10 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
-
+  
   const { input_labels, submit_button, modal } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
-
+  
   const mountedRef = useRef(false)
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
   const history = useMemo<HistoryServerPayload>(() => _history
@@ -90,74 +107,68 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         return acc
       }, {})
     : _history, [ _history ])
-
+  
   const [ form ] = Form.useForm<ActivityForm>()
+  
+  const initFromCacheRef = useRef(false)
+  const showRestoreFromCacheError = () => {
 
+  }
   const initialValues = useMemo<InitialValues>(() => {
-    if (isEdit && _initialValues === null) {
-      return {}
-    }
-
-    const getResultsFromWorkoutList = (_workoutList, workoutId) => workoutList
-      .data
-      .find(wk => wk.id === workoutId)
-    // TODO: on the server - exercise -> details
-      ?.exercises
-      ?.map(({ rounds, _id, exercise }) => ({
-        _id,
-        hours: exercise.hours,
-        original_id: exercise.id,
-        id_in_workout: _id,
-        type: exercise.type,
-        rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
-        note: undefined,
-      })) || []
-
+    if (isEdit && _initialValues === null) return {}
+    
     let newInitialValues
-    if (!isEdit && cachedFormValues && selectedWorkout) {
-      const workout = workoutList
-        .data
-        .find(wk => wk.id === cachedFormValues.workout_id)
-
-      newInitialValues = {
-        ...cachedFormValues,
-        date: dayjs(cachedFormValues.date),
-        results: cachedFormValues.results
-          ? cachedFormValues.results.map((results, i) => {
-            const { _id, exercise } = workout.exercises[i]
-            return isExerciseTimeType(exercise.type)
-              ? {
-                _id,
-                hours: exercise.hours,
-                original_id: exercise.id,
-                id_in_workout: _id,
-                type: exercise.type,
-                ...results,
-                rounds: results.rounds.map((round: string | { right: string, left: string }) => {
-                  if (round === null) return round
-
-                  return (typeof round === 'object')
-                    ? { right: round.right !== null ? dayjs(round.right) : null, left: round.left !== null ? dayjs(round.left) : null }
-                    : dayjs(round as string)
-                }),
-              }
-              : {
-                ...results,
-                _id,
-                hours: exercise.hours,
-                original_id: exercise.id,
-                id_in_workout: _id,
-                type: exercise.type,
-                rounds: results.rounds.map((round: string | { right: string, left: string }) => {
-                  if (round === null) return round
-
-                  return (typeof round === 'object')
-                    ? { right: round.right !== null ? +round.right : null, left: round.left !== null ? +round.left : null }
-                    : +round
-                }),
-              }
-          })
-          : getResultsFromWorkoutList(workoutList, cachedFormValues.workout_id),
+    if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current) {
+      try {
+        initFromCacheRef.current = false
+  
+        const workout = workoutList
+          .data
+          .find(wk => wk.id === cachedFormValues.workout_id)
+  
+        newInitialValues = {
+          ...cachedFormValues,
+          workout_id: selectedWorkout,
+          date: dayjs(cachedFormValues.date),
+          results: cachedFormValues.results
+            ? cachedFormValues.results.map((results, i) => {
+              const { _id, exercise } = workout.exercises[i]
+              return isExerciseTimeType(exercise.type)
+                ? {
+                  _id,
+                  hours: exercise.hours,
+                  original_id: exercise.id,
+                  id_in_workout: _id,
+                  type: exercise.type,
+                  ...results,
+                  rounds: results.rounds.map((round: string | { right: string, left: string }) => {
+                    if (round === null) return round
+  
+                    return (typeof round === 'object')
+                      ? { right: round.right !== null ? dayjs(round.right) : null, left: round.left !== null ? dayjs(round.left) : null }
+                      : dayjs(round as string)
+                  }),
+                }
+                : {
+                  ...results,
+                  _id,
+                  hours: exercise.hours,
+                  original_id: exercise.id,
+                  id_in_workout: _id,
+                  type: exercise.type,
+                  rounds: results.rounds.map((round: string | { right: string, left: string }) => {
+                    if (round === null) return round
+  
+                    return (typeof round === 'object')
+                      ? { right: round.right !== null ? +round.right : null, left: round.left !== null ? +round.left : null }
+                      : +round
+                  }),
+                }
+            })
+            : getResultsFromWorkoutList(workoutList, cachedFormValues.workout_id),
+        }
+      } catch {
+        showRestoreFromCacheError()
       }
     } else if (!isEdit) {
       newInitialValues = ({
@@ -189,7 +200,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     }
 
     return newInitialValues
-  }, [ _initialValues, selectedWorkout ])
+  }, [ _initialValues, selectedWorkout, workoutList ])
 
   const handleCancelEditing = () => {
     setEditMode(false)
@@ -250,8 +261,23 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     return res
   })
 
-  const cacheFormData = (_, allValues) => {
+  const handleSelectedWorkoutChange = (value) => {
+    setSelectedWorkout(value)
+    const newCachedValues = {
+      date: dayjs(),
+      description: '',
+      workout_id: value,
+      results: getResultsFromWorkoutList(workoutList, value),
+    }
+    localStorage.setItem('cached_activity', JSON.stringify(newCachedValues))
+    setCachedFormValues(newCachedValues)
+    return value
+  }
+
+  const cacheFormData = (changedValues, allValues) => {
     if (isEdit) return
+    if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
+
     localStorage.setItem('cached_activity', JSON.stringify(allValues))
   }
 
@@ -314,13 +340,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
             setSelectedWorkout(_cachedFormValues.workout_id)
             setCachedFormValues(_cachedFormValues)
+            initFromCacheRef.current = true
           } catch {
-            Modal.error({
-              title: 'Oops!',
-              content: 'Something has gone wrong and could not restore activity.',
-              okText: 'It\'s sad but ok',
-            })
-            localStorage.removeItem('cached_activity')
+            showRestoreFromCacheError()
           }
         },
         onCancel() {
@@ -338,7 +360,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
   return (
     <>
-      <StyledForm onValuesChange={cacheFormData} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
+      <StyledForm onValuesChange={cacheFormData} preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
         {isEdit && (
           <DeleteEditPanel
             isEditMode={isEditMode}
@@ -364,7 +386,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           name="workout_id"
           rules={[ { required: true, message: 'Required' } ]}
         >
-          <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={(value) => { setSelectedWorkout(value); return value }}>
+          <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={handleSelectedWorkoutChange}>
             {workoutList.data.map(workout => (
               <Select.Option key={workout.id} value={workout.id}>{workout.title}</Select.Option>
             ))}

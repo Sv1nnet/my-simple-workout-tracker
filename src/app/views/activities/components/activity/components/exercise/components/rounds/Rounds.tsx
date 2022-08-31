@@ -8,45 +8,7 @@ import React, { FC, useContext } from 'react'
 import styled from 'styled-components'
 import { getComparator } from 'app/views/activities/components/activity/Activity'
 import { colors } from '../chart/Chart'
-import PreviousItem from '../previous_item/PreviousItem'
-
-const RoundsHeader = styled.div`
-  display: flex;
-`
-
-const RoundItem = styled.span`
-  margin-top: 10px;
-  flex-basis: ${({ $previous, $eachSide }) => !$previous ? `${$eachSide ? '80px' : '65px'}` : 'auto'};
-  flex-grow: ${({ $previous }) => !$previous ? '0' : '1'};
-  ${({ $isTimeType, $eachSide }) => $isTimeType ? `flex-basis: ${$eachSide ? '110px' : '95px'}` : ''};
-  ${({ $previous }) => $previous ? `
-    display: flex;
-    overflow-x: scroll;
-    margin-left: 15px;
-    width: 50%;
-  ` : ''}
-  ${({ $header }) => $header ? 'display: block;' : ''}
-  flex-shrink: 0;
-  text-align: center;
-  flex-wrap: wrap;
-  ${({ $round }) => $round ? `
-    text-align: center;
-    padding: 0 5px;
-  ` : ''}
-`
-
-const RoundsBodyContainer = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-const PreviousItemContainer = styled.div`
-  margin-right: 5px;
-  &:not(:last-of-type) {
-    padding-right: 2px;
-    border-right: 2px solid lightgrey;
-  }
-`
+import { PreviousRoundsHistory } from '..'
 
 const RoundText = styled(Typography.Text)`
   min-width: 15px;
@@ -96,6 +58,12 @@ const StyledTimePicker = styled(TimePicker)`
   padding: 1px 7px 1px;
 `
 
+const SideInputContainer = styled.div`
+  margin-top: 5px;
+  display: flex;
+  justify-content: ${({ $hours }) => $hours ? 'stretch' : 'center' };
+`
+
 export interface ISideNumberInput {
   dataSide: string;
   roundText: string;
@@ -104,7 +72,7 @@ export interface ISideNumberInput {
 }
 
 const SideNumberInput: FC<ISideNumberInput> = ({ dataSide, roundText, ...props }) => (
-  <div style={{ display: 'flex', marginTop: 5 }}>
+  <SideInputContainer>
     <RoundText type="secondary">{roundText}</RoundText>
     <Input.Number
       data-side={dataSide}
@@ -113,7 +81,7 @@ const SideNumberInput: FC<ISideNumberInput> = ({ dataSide, roundText, ...props }
       size="small"
       {...props}
     />
-  </div>
+  </SideInputContainer>
 )
 
 export interface ISideTimePicker {
@@ -124,7 +92,7 @@ export interface ISideTimePicker {
 }
 
 const SideTimePicker: FC<ISideTimePicker> = ({ dataSide, roundText, hours, ...props }) => (
-  <div style={{ display: 'flex', marginTop: 5 }}>
+  <SideInputContainer>
     <RoundText type="secondary">{roundText}</RoundText>
     <StyledTimePicker
       format={hours ? 'HH:mm:ss' : 'mm:ss'}
@@ -136,7 +104,7 @@ const SideTimePicker: FC<ISideTimePicker> = ({ dataSide, roundText, hours, ...pr
       placeholder=""
       {...props}
     />
-  </div>
+  </SideInputContainer>
 )
 
 export interface IRound {
@@ -167,7 +135,58 @@ export interface IRound {
   };
 }
 
-const Round: FC<IRound> = ({ comparator, isFormItemDisabled, loaderDictionary, isLoading, history, form, exerciseIndex, hours, round, eachSide, isTimeType, historyDisplayMode, sideLabels }) => {
+export interface IRounds {
+  loaderDictionary: {
+    previous_loading: string,
+  };
+  isFormItemDisabled: boolean;
+  isLoading: boolean;
+  form;
+  history: HisotryResult;
+  rounds: TRound[];
+  hours: boolean;
+  exerciseIndex: number;
+  eachSide: boolean;
+  historyDisplayMode: 'table' | 'chart';
+  type: ExerciseType;
+  isTimeType: boolean;
+}
+
+const RoundsTable = styled.table`
+  table-layout: fixed;
+  width: 100%;
+`
+
+const THeadCell = styled.th`
+  font-weight: normal;
+  padding-left: ${({ $eachSide }) => $eachSide ? '15px' : ''};
+  width: ${({ $previous, $eachSide, $isTimeType }) => (
+    !$previous
+      ? $isTimeType
+        ? `${$eachSide ? '90px' : '75px'}`
+        : `${$eachSide ? '80px' : '65px'}`
+      : ''
+  )};
+  min-width: ${({ $previous, $eachSide, $isTimeType }) => (
+    !$previous
+      ? $isTimeType
+        ? `${$eachSide ? '90px' : '75px'}`
+        : `${$eachSide ? '80px' : '65px'}`
+      : ''
+  )};
+`
+
+const StyledTd = styled.td`
+  text-align: center;
+  padding: 0;
+  padding-bottom: 5px;
+
+  & ${StyledTimePicker} {
+    width: ${({ $hours }) => $hours ? '100%' : ''};
+  }
+`
+
+const Round = ({ comparator, isFormItemDisabled, loaderDictionary, isLoading, history, form, exerciseIndex, hours, round, eachSide, isTimeType, historyDisplayMode, sideLabels }) => {
   const handleRepeatsChange = (value, { target }) => {
     const results = [ ...form.getFieldValue('results') ]
 
@@ -178,8 +197,8 @@ const Round: FC<IRound> = ({ comparator, isFormItemDisabled, loaderDictionary, i
   }
 
   return (
-    <RoundsBodyContainer>
-      <RoundItem style={{ flexShrink: 0 }} $round>
+    <tr>
+      <StyledTd>
         {historyDisplayMode === 'chart'
           ? (
             <LegendItem $color={colors[round]}>
@@ -187,8 +206,8 @@ const Round: FC<IRound> = ({ comparator, isFormItemDisabled, loaderDictionary, i
             </LegendItem>
           )
           : <span>{round + 1}</span>}
-      </RoundItem>
-      <RoundItem style={{ flexShrink: 0, flexBasis: isTimeType && !hours ? '95px' : '65px' }} $eachSide={eachSide}>
+      </StyledTd>
+      <StyledTd $hours={hours}>
         {!isTimeType
           ? eachSide
             ? (
@@ -236,67 +255,26 @@ const Round: FC<IRound> = ({ comparator, isFormItemDisabled, loaderDictionary, i
                 />
               </Form.Item>
             )}
-      </RoundItem>
-      {isLoading || !history
-        ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
-        : (
-          <RoundItem $previous>
-            {eachSide
-              ? (
-                <>
-                  <div style={{ display: 'flex' }}>
-                    {(history[round] ?? []).length < 6
-                      ? (history[round] ?? []).map((el, i, arr) => (
-                        <PreviousItemContainer key={i}>
-                          <PreviousItem comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} />
-                          <PreviousItem comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={5} />
-                        </PreviousItemContainer>
-                      ))
-                      : (history[round] ?? []).map((el, i, arr) => i !== arr.length - 1 && (
-                        <PreviousItemContainer key={i}>
-                          <PreviousItem comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} />
-                          <PreviousItem comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={5} />
-                        </PreviousItemContainer>
-                      ))}
-                  </div>
-                </>
-              )
-              : (
-                <div style={{ display: 'flex' }}>
-                  {(history[round] ?? []).length < 6
-                    ? (history[round] ?? []).map((el, i, arr) => (
-                      <PreviousItemContainer key={i}>
-                        <PreviousItem comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
-                      </PreviousItemContainer>
-                    ))
-                    : (history[round] ?? []).map((el, i, arr) => i !== arr.length - 1 && (
-                      <PreviousItemContainer key={i}>
-                        <PreviousItem comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
-                      </PreviousItemContainer>
-                    ))}
-                </div>
-              )}
-          </RoundItem>
-        )}
-    </RoundsBodyContainer>
+      </StyledTd>
+      {round === 0
+        ? <td rowSpan={0} style={{ overflow: 'scroll', padding: 0 }}>
+          {isLoading || !history
+            ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
+            : (
+              <PreviousRoundsHistory
+                isLoading={isLoading}
+                history={history}
+                comparator={comparator}
+                loaderDictionary={loaderDictionary}
+                eachSide={eachSide}
+                isTimeType={isTimeType}
+                hours={hours}
+              />
+            )}
+        </td>
+        : null}
+    </tr>
   )
-}
-
-export interface IRounds {
-  loaderDictionary: {
-    previous_loading: string,
-  };
-  isFormItemDisabled: boolean;
-  isLoading: boolean;
-  form;
-  history: HisotryResult;
-  rounds: TRound[];
-  hours: boolean;
-  exerciseIndex: number;
-  eachSide: boolean;
-  historyDisplayMode: 'table' | 'chart';
-  type: ExerciseType;
-  isTimeType: boolean;
 }
 
 const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, form, history, rounds, hours, exerciseIndex, eachSide, historyDisplayMode, type, isTimeType }) => {
@@ -305,31 +283,35 @@ const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, 
   const comparator = getComparator(type)
 
   return (
-    <div>
-      <RoundsHeader>
-        <RoundItem>{rounds_section_headers.rounds}</RoundItem>
-        <RoundItem $isTimeType={isTimeType} $eachSide={eachSide} style={eachSide ? { paddingLeft: '15px' } : null}>{rounds_section_headers.results}</RoundItem>
-        <RoundItem $previous $header>{rounds_section_headers.previous}</RoundItem>
-      </RoundsHeader>
-      {rounds.map((_, i) => (
-        <Round
-          isFormItemDisabled={isFormItemDisabled}
-          loaderDictionary={loaderDictionary}
-          sideLabels={side_labels}
-          comparator={comparator}
-          historyDisplayMode={historyDisplayMode}
-          hours={hours}
-          key={i}
-          form={form}
-          isLoading={isLoading}
-          eachSide={eachSide}
-          isTimeType={isTimeType}
-          exerciseIndex={exerciseIndex}
-          round={i}
-          history={history}
-        />
-      ))}
-    </div>
+    <RoundsTable style={{ tableLayout: 'fixed' }}>
+      <thead>
+        <tr>
+          <THeadCell>{rounds_section_headers.rounds}</THeadCell>
+          <THeadCell $isTimeType={isTimeType} $eachSide={eachSide}>{rounds_section_headers.results}</THeadCell>
+          <THeadCell $previous>{rounds_section_headers.previous}</THeadCell>
+        </tr>
+      </thead>
+      <tbody>
+        {rounds.map((_, i) => (
+          <Round
+            isFormItemDisabled={isFormItemDisabled}
+            loaderDictionary={loaderDictionary}
+            sideLabels={side_labels}
+            comparator={comparator}
+            historyDisplayMode={historyDisplayMode}
+            hours={hours}
+            key={i}
+            form={form}
+            isLoading={isLoading}
+            eachSide={eachSide}
+            isTimeType={isTimeType}
+            exerciseIndex={exerciseIndex}
+            round={i}
+            history={history}
+          />
+        ))}
+      </tbody>
+    </RoundsTable>
   )
 }
 

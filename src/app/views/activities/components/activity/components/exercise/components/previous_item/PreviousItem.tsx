@@ -6,10 +6,7 @@ import { FC } from 'react'
 const Container = styled.div`
   display: flex;
   margin-top: ${({ $mt }) => $mt};
-
-  &:not(:last-of-type) {
-    min-width: 65px;
-  }
+  padding-right: 8px;
 `
 
 const Value = styled.span`
@@ -32,7 +29,7 @@ export interface IPreviousItem {
   prev: number;
   isTimeType: boolean;
   hours: boolean;
-  marginTop?: number;
+  marginTop?: number | string;
 }
 
 const PreviousItem: FC<IPreviousItem> = ({ comparator, curr, prev, isTimeType, hours, marginTop }) => {
