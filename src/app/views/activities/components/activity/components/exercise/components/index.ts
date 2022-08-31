@@ -4,6 +4,7 @@ import HistoryItemBody from './history_item_body/HistoryItemBody'
 import Rounds from './rounds/Rounds'
 import PreviousItem from './previous_item/PreviousItem'
 import Chart from './chart/Chart'
+import PreviousRoundsHistory from './previous_rounds_history/PreviousRoundsHistory'
 
 export {
   History,
@@ -12,4 +13,5 @@ export {
   Rounds,
   PreviousItem,
   Chart,
+  PreviousRoundsHistory,
 }
