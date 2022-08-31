@@ -12,6 +12,7 @@ import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { selectList, updateList } from '@/src/app/store/slices/workout'
 import { useAppDispatch, useAppSelector } from '@/src/app/hooks'
+import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 
 export interface IExercises {
   workouts: WorkoutListItem[];
@@ -22,8 +23,11 @@ export type ApiGetExerciseListError = {
   status: number;
 }
 
+const CREATE_ROUTE = '/workouts/create'
+
 const Workouts: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
+  const { loading, loadingRoute } = useContext(RouterContext)
   const dispatch = useAppDispatch()
   const [ loadWorkouts, { error, isError } ] = workoutApi.useLazyListQuery()
   const { data: workoutsInStore } = useAppSelector(selectList)
@@ -72,7 +76,7 @@ const Workouts: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ wor
 
   return (
     <>
-      <AddButton href="/workouts/create" text={add} />
+      <AddButton loading={loading && loadingRoute === CREATE_ROUTE} href={CREATE_ROUTE} text={add} />
       <WorkoutList
         deleteWorkouts={handeDeleteWorkouts}
         error={deleteError}

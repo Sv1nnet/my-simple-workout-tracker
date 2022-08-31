@@ -13,6 +13,7 @@ import { MainButtonContainer, MoreOptionsButtonContainer } from '../styled'
 import React, { useContext, useEffect, useState } from 'react'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import Link from 'next/link'
+import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 
 const StyledButton = styled(AntButton)`
   z-index: 999;
@@ -61,6 +62,7 @@ const DeleteButton = props => <ListButton isDelete style={!props.disabled ? { ba
 
 const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
   const { list_buttons } = useContext(IntlContext).intl.pages.exercises
+  const { loading, loadingRoute } = useContext(RouterContext)
   const [ expanded, setExpanded ] = useState(false)
 
   const handleShowMoreOptions = () => setExpanded(_expanded => !_expanded)
@@ -74,7 +76,7 @@ const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selecte
   
   return (
     <MainButtonContainer>
-      {createHref && <CreateButton tooltipTitle={list_buttons.create} href={createHref} disabled={isDeleteFetching} />}
+      {createHref && <CreateButton loading={loading && loadingRoute === createHref} tooltipTitle={list_buttons.create} href={createHref} disabled={isDeleteFetching} />}
       {isSelectionActive && <MoreOptionsButton $expanded={expanded} tooltipTitle={list_buttons.more_options} onClick={handleShowMoreOptions} />}
       <MoreOptionsButtonContainer $expanded={expanded}>
         <MoreOptionsButtonContainer.Inner>
