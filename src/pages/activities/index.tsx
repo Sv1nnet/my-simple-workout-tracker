@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
+import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 
 export type ExerciseResultsDetails = {
   weight?: number,
@@ -30,8 +31,11 @@ export type ApiGetActivitiesListError = {
   status: number;
 }
 
+const CREATE_ROUTE = '/activities/create'
+
 const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ activities: _activities }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
+  const { loading, loadingRoute } = useContext(RouterContext)
   const dispatch = useAppDispatch()
   const [ loadActivities, { error, isError } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore } = useAppSelector(selectList)
@@ -80,7 +84,7 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
 
   return (
     <>
-      <AddButton href="/activities/create" text={add} />
+      <AddButton loading={loading && loadingRoute === CREATE_ROUTE} href={CREATE_ROUTE} text={add} />
       <ActivityList
         deleteActivities={handeDeleteActivities}
         error={deleteError}
