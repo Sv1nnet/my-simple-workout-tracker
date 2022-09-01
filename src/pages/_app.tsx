@@ -1,5 +1,6 @@
 import 'antd/dist/antd.css'
 import 'src/styles/globals.css'
+import 'components/time_picker/style.scss'
 
 import dayjs from 'dayjs'
 import 'dayjs/locale/en'

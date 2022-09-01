@@ -1,0 +1,32 @@
+.stylized-time-picker {
+  width: 100%;
+
+  & .ant-picker-panel {
+    width: 100%;
+
+    & .ant-picker-content {
+      height: 244px;
+
+      .ant-picker-time-panel-column {
+        overflow-y: scroll;
+      }
+    }
+
+    & .ant-picker-time-panel-cell .ant-picker-time-panel-cell-inner {
+      padding: 0;
+      text-align: center;
+      height: 48px;
+      font-size: 26px;
+      line-height: 48px;
+    }
+    
+    & .ant-picker-footer > .ant-picker-ranges > .ant-picker-ok {
+      width: 100%;
+
+      & > .ant-btn{
+        width: 100%;
+        height: 36px;
+      }
+    }
+  }
+}
