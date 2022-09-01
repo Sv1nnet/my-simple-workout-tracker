@@ -76,7 +76,7 @@ const SideNumberInput: FC<ISideNumberInput> = ({ dataSide, roundText, ...props }
     <RoundText type="secondary">{roundText}</RoundText>
     <Input.Number
       data-side={dataSide}
-      positive
+      onlyPositive
       style={{ textAlign: 'center' }}
       size="small"
       {...props}
@@ -223,7 +223,7 @@ const Round = ({ comparator, isFormItemDisabled, loaderDictionary, isLoading, hi
             : (
               <Form.Item name={[ 'results', exerciseIndex, 'rounds', round ]} noStyle>
                 <Input.Number
-                  positive
+                  onlyPositive
                   disabled={isFormItemDisabled}
                   style={{ textAlign: 'center' }}
                   onBlur={handleRepeatsChange}

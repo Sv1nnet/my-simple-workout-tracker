@@ -290,11 +290,11 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
                   )
                   : (
                     <ShortFormItem name="repeats" label={input_labels.repeats} $fullWidth $margin>
-                      <CustomInput.Number int positive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                      <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
                     </ShortFormItem>
                   )}
                 <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
-                  <CustomInput.Number positive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
+                  <CustomInput.Number onlyPositive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
                 </ShortFormItem>
               </>
             )
