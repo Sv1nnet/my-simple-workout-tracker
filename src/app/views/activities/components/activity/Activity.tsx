@@ -111,9 +111,17 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const [ form ] = Form.useForm<ActivityForm>()
   
   const initFromCacheRef = useRef(false)
-  const showRestoreFromCacheError = () => {
 
+  const handleRestoreFromCacheError = () => {
+    Modal.error({
+      title: 'Oops!',
+      content: 'Something has gone wrong and could not restore activity.',
+      okText: 'It\'s sad but ok',
+    })
+    localStorage.removeItem('cached_activity')
+    setSelectedWorkout(null)
   }
+
   const initialValues = useMemo<InitialValues>(() => {
     if (isEdit && _initialValues === null) return {}
     
@@ -168,16 +176,23 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             : getResultsFromWorkoutList(workoutList, cachedFormValues.workout_id),
         }
       } catch {
-        showRestoreFromCacheError()
+        handleRestoreFromCacheError()
+        return {
+          _id: undefined,
+          workout_id: undefined,
+          date: undefined,
+          results: [],
+          description: '',
+        }
       }
     } else if (!isEdit) {
-      newInitialValues = ({
+      newInitialValues = {
         id: _initialValues._id,
         date: (form.getFieldValue('date') as Dayjs) || dayjs(),
         workout_id: selectedWorkout,
         results: getResultsFromWorkoutList(workoutList, form.getFieldValue('workout_id')),
         description: '',
-      })
+      }
     } else {
       newInitialValues = {
         ..._initialValues,
@@ -342,7 +357,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             setCachedFormValues(_cachedFormValues)
             initFromCacheRef.current = true
           } catch {
-            showRestoreFromCacheError()
+            handleRestoreFromCacheError()
           }
         },
         onCancel() {

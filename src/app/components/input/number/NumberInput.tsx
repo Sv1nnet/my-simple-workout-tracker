@@ -25,8 +25,6 @@ const isFunc = func => typeof func === 'function'
 
 export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
   int?: boolean;
-  positive?: boolean;
-  negative?: boolean;
   value?: number | string;
   onChange?: Function;
   onBlur?: Function;
@@ -47,7 +45,6 @@ export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
 
 const NumberInput: FC<INumberInput> = ({
   int,
-  negative,
   onlyPositive,
   onlyNegative,
   shouldUpdate,
@@ -164,7 +161,7 @@ const NumberInput: FC<INumberInput> = ({
         isSignedSeparator(valueStr)
       )
     }
-  }, [ int, onlyPositive, onlyNegative, negative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
+  }, [ int, onlyPositive, onlyNegative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
 
   const [ value, setValue ] = useState(() => {
     const v = formatToNumber(stringifyValue(_value))
