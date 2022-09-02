@@ -249,10 +249,11 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         </Form.Item>
         <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
           <Select disabled={isFormItemDisabled} size="large">
+            <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
             <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
+            <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
             <Select.Option value="time">{input_labels.type.options.time}</Select.Option>
             <Select.Option value="duration">{input_labels.type.options.duration}</Select.Option>
-            <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
           </Select>
         </Form.Item>
         <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
@@ -273,6 +274,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           {({ getFieldValue }) => {
             const type = getFieldValue('type')
             const shouldRenderTimeInput = !isExerciseTimeType(type)
+            const shouldRenderWeightInput = type !== 'weight'
             return (
               <>
                 {shouldRenderTimeInput
@@ -293,9 +295,17 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
                       <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
                     </ShortFormItem>
                   )}
-                <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
-                  <CustomInput.Number onlyPositive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
-                </ShortFormItem>
+                {shouldRenderWeightInput
+                  ? (
+                    <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
+                      <CustomInput.Number onlyPositive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
+                    </ShortFormItem>
+                  )
+                  : (
+                    <ShortFormItem name="repeats" label={input_labels.repeats}>
+                      <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                    </ShortFormItem>
+                  )}
               </>
             )
           }}
