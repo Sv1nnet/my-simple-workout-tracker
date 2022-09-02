@@ -187,6 +187,10 @@
               "ru": "Повторения",
               "eng": "Repeats"
             },
+            "weight": {
+              "ru": "Вес",
+              "eng": "Weight"
+            },
             "time": {
               "ru": "Время (меньше - лучше)",
               "eng": "Time (less - better)"
@@ -214,7 +218,7 @@
           "eng": "Time"
         },
         "repeats": {
-          "ru": "Повотрения",
+          "ru": "Повторения",
           "eng": "Repeats"
         },
         "weight": {

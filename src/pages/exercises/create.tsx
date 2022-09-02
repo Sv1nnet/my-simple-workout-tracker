@@ -27,6 +27,7 @@ const CreateExercise: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } =
     <Exercise
       initialValues={data?.data}
       isFetching={isLoading || (!!data && !isError)}
+      isError={isError}
       onSubmit={handleSubmit}
       error={(error as CustomBaseQueryError)?.data?.error?.message?.text}
     />
