@@ -35,7 +35,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
 
-  const handleChange = tab => router.push(`/${tab}`, undefined, { shallow: true })
+  const handleNavClick = tab => router.push(`/${tab}`, undefined, {})
 
   useEffect(() => {
     const handleResize = () => window.innerWidth < 375 ? setWidth('sm') : setWidth('md')
@@ -54,10 +54,10 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const [ ,, subRoute ] = router.route.split('/')
 
   return (
-    <StyledTabs tabBarGutter={0} onChange={handleChange} size="large" activeKey={!subRoute ? activeTab : ''} centered>
-      <TabPane tab={<TabLabel label={labels.exercises} loading={loading && loadingRoute === '/exercises'} />} key="exercises" />
-      <TabPane tab={<TabLabel label={labels.workouts} loading={loading && loadingRoute === '/workouts'} />} key="workouts" />
-      <TabPane tab={<TabLabel label={labels.activities} loading={loading && loadingRoute === '/activities'} />} key="activities" />
+    <StyledTabs tabBarGutter={0} size="large" activeKey={!subRoute ? activeTab : ''} centered>
+      <TabPane tab={<TabLabel id="workouts-tab-pane" tab="workouts" onClick={handleNavClick} label={labels.workouts} loading={loading && loadingRoute === '/workouts'} />} key="workouts" />
+      <TabPane tab={<TabLabel id="activities-tab-pane" tab="activities" onClick={handleNavClick} label={labels.activities} loading={loading && loadingRoute === '/activities'} />} key="activities" />
+      <TabPane tab={<TabLabel id="exercises-tab-pane" tab="exercises" onClick={handleNavClick} label={labels.exercises} loading={loading && loadingRoute === '/exercises'} />} key="exercises" />
     </StyledTabs>
   )
 }
