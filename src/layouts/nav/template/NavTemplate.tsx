@@ -16,9 +16,16 @@ const StyledTabs = styled(Tabs)`
     width: 100%;
     .ant-tabs-tab {
       width: 100%;
+      height: 48px;
+      padding: 0;
       box-sizing: border-box;
       flex-shrink: 1;
       justify-content: center;
+
+      .ant-tabs-tab-btn {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 `
@@ -55,9 +62,9 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
 
   return (
     <StyledTabs tabBarGutter={0} size="large" activeKey={!subRoute ? activeTab : ''} centered>
+      <TabPane tab={<TabLabel id="exercises-tab-pane" tab="exercises" onClick={handleNavClick} label={labels.exercises} loading={loading && loadingRoute === '/exercises'} />} key="exercises" />
       <TabPane tab={<TabLabel id="workouts-tab-pane" tab="workouts" onClick={handleNavClick} label={labels.workouts} loading={loading && loadingRoute === '/workouts'} />} key="workouts" />
       <TabPane tab={<TabLabel id="activities-tab-pane" tab="activities" onClick={handleNavClick} label={labels.activities} loading={loading && loadingRoute === '/activities'} />} key="activities" />
-      <TabPane tab={<TabLabel id="exercises-tab-pane" tab="exercises" onClick={handleNavClick} label={labels.exercises} loading={loading && loadingRoute === '/exercises'} />} key="exercises" />
     </StyledTabs>
   )
 }
