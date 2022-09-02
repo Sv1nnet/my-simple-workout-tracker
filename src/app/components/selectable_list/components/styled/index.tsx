@@ -4,6 +4,7 @@ import { theme } from 'src/styles/vars'
 
 export const StyledSelectableListItem = styled(List.Item)`
   position: relative;
+  flex-wrap: wrap;
   transition: all .3s;
   margin-left: -15px;
   margin-right: -15px;
