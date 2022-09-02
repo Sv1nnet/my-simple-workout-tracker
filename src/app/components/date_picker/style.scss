@@ -1,0 +1,49 @@
+@media (max-width: 768px) {
+  .stylized-date-picker {
+    width: 70%;
+
+    .ant-picker-panel {
+      width: 100%;
+
+      .ant-picker-header {
+        button.ant-picker-header-prev-btn:nth-child(2) {
+          margin-left: 15px;
+          width: 35px;
+        }
+
+        button:nth-child(4){
+          margin-right: 15px;
+          width: 35px;
+        }
+      }
+
+      .ant-picker-date-panel {
+        width: 100%;
+
+        .ant-picker-body {
+          width: 100%;
+
+          .ant-picker-content {
+            width: 100%;
+
+            .ant-picker-cell .ant-picker-cell-inner {
+              width: 70%;
+              height: 30px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 425px) {
+  .stylized-date-picker {
+    left: 0px !important;
+    width: 100%;
+  }
+}

@@ -186,7 +186,7 @@ const StyledTd = styled.td`
   }
 `
 
-const Round = ({ comparator, isFormItemDisabled, loaderDictionary, isLoading, history, form, exerciseIndex, hours, round, eachSide, isTimeType, historyDisplayMode, sideLabels }) => {
+const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, isLoading, history, form, exerciseIndex, hours, round, eachSide, isTimeType, historyDisplayMode, sideLabels }) => {
   const handleRepeatsChange = (value, { target }) => {
     const results = [ ...form.getFieldValue('results') ]
 
@@ -257,7 +257,7 @@ const Round = ({ comparator, isFormItemDisabled, loaderDictionary, isLoading, hi
             )}
       </StyledTd>
       {round === 0
-        ? <td rowSpan={0} style={{ overflow: 'scroll', padding: 0 }}>
+        ? <td rowSpan={totalRounds} style={{ overflow: 'scroll', padding: 0 }}>
           {isLoading || !history
             ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
             : (
@@ -301,6 +301,7 @@ const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, 
             historyDisplayMode={historyDisplayMode}
             hours={hours}
             key={i}
+            totalRounds={rounds.length}
             form={form}
             isLoading={isLoading}
             eachSide={eachSide}
