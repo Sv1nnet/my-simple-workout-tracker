@@ -16,7 +16,7 @@ const StyledTabs = styled(Tabs)`
     width: 100%;
     .ant-tabs-tab {
       width: 100%;
-      height: 48px;
+      height: 59px;
       padding: 0;
       box-sizing: border-box;
       flex-shrink: 1;
