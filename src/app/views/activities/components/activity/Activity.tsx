@@ -382,6 +382,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             onEditClick={() => setEditMode(true)}
             onDeleteClick={() => setIsModalVisible(true)}
             deleteButtonProps={{ disabled: isFetching || loading }}
+            editButtonProps={{ disabled: isFetching || loading }}
           />
         )}
         <WorkoutFormItem

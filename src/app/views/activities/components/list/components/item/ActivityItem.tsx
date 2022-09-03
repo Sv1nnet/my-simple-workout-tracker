@@ -1,12 +1,11 @@
 import React, { FC } from 'react'
-import { Collapse, Checkbox, Button, List, Typography } from 'antd'
-import Link from 'next/link'
-import { EyeOutlined } from '@ant-design/icons'
+import { Collapse, Checkbox, List, Typography } from 'antd'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import ExerciseDetails from '../exercise_details/ExerciseDetails'
 import Rounds from '../rounds/Rounds'
 import { ActivityListItem } from '@/src/app/store/slices/activity/types'
+import { InspectButton } from '@/src/app/components/list_buttons'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography
@@ -79,9 +78,10 @@ export type ActivityItemProps = ActivityListItem & {
   activityDictionary: any;
   selectionEnabled: boolean;
   selected: boolean;
+  loadingActivityId: string | null;
 }
 
-const ActivityItem: FC<ActivityItemProps> = ({ id, date, workout_title, results, description, selectionEnabled, selected, activityDictionary, exercisePayloadDictionary }) => (
+const ActivityItem: FC<ActivityItemProps> = ({ id, loadingActivityId, date, workout_title, results, description, selectionEnabled, selected, activityDictionary, exercisePayloadDictionary }) => (
   <>
     <Collapse style={{ width: '100%' }} ghost expandIconPosition="left" collapsible={selectionEnabled ? 'disabled' : undefined}>
       <StyledPanel key="exercises" header={(
@@ -90,11 +90,7 @@ const ActivityItem: FC<ActivityItemProps> = ({ id, date, workout_title, results,
             <DateOfActivity>{dayjs(date).format('DD.MM.YYYY')}</DateOfActivity>
             <WorkoutTitle level={3}>{workout_title}</WorkoutTitle>
           </div>
-          <Link href={`/activities/${id}`}>
-            <Button onClick={e => e.stopPropagation()}>
-              <a href={`/activities/${id}`}><EyeOutlined size={3} /></a>
-            </Button>
-          </Link>
+          <InspectButton loading={loadingActivityId === id} href={`/activities/${id}`} />
         </HeaderContainer>
       )}>
         {/* render every exercise */}

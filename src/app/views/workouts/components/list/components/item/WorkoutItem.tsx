@@ -3,12 +3,11 @@ import { Image } from '@/src/app/store/slices/exercise/types'
 import { WorkoutListItem } from '@/src/app/store/slices/workout/types'
 import getWordByNumber from '@/src/app/utils/getWordByNumber'
 import { timeToHms } from '@/src/app/utils/time'
-import { Collapse, Checkbox, Button, List, Typography } from 'antd'
+import { Collapse, Checkbox, List, Typography } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
-import Link from 'next/link'
-import { EyeOutlined } from '@ant-design/icons'
 import React, { FC } from 'react'
 import styled from 'styled-components'
+import { InspectButton } from 'app/components/list_buttons'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography
@@ -117,6 +116,7 @@ interface IWorkout extends WorkoutListItem {
       },
     }
   };
+  loadingWorkoutId: string | null;
   workoutDictionary: any;
   selectionEnabled: boolean;
   selected: boolean;
@@ -127,6 +127,7 @@ const WorkoutItem: FC<IWorkout> = ({
   id,
   title,
   exercises,
+  loadingWorkoutId,
   selectionEnabled,
   description,
   selected,
@@ -138,12 +139,7 @@ const WorkoutItem: FC<IWorkout> = ({
       <StyledPanel key="exercises" header={(
         <HeaderContainer>
           <Typography.Title level={3}>{title}</Typography.Title>
-          <Link href={`/workouts/${id}`}>
-            <Button onClick={e => e.stopPropagation()}>
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a><EyeOutlined size={3} /></a>
-            </Button>
-          </Link>
+          <InspectButton loading={loadingWorkoutId === id} href={`/workouts/${id}`} />
         </HeaderContainer>
       )}>
         {/* render every exercise */}
