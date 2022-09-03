@@ -191,6 +191,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
             onEditClick={() => setEditMode(true)}
             onDeleteClick={() => setIsModalVisible(true)}
             deleteButtonProps={{ disabled: isFetching || loading }}
+            editButtonProps={{ disabled: isFetching || loading }}
           />
         )}
         <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: 'Required' } ] : []}>

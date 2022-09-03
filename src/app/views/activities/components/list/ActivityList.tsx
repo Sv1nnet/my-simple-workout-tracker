@@ -7,6 +7,7 @@ import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
+import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 
 export type ApiDeleteActivityError = {
   data: ActivityDeleteError;
@@ -23,6 +24,8 @@ export interface IActivityList {
 }
 
 const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, activities }) => {
+  const { loading, loadingRoute } = useContext(RouterContext)
+  const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl } = useContext(IntlContext)
   const { payload: exercisePayloadDictionary } = intl.pages.exercises
   const { activities: activityDictionary } = intl.pages
@@ -80,6 +83,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, a
             renderItem={(item: ActivityListItem) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
                 <ActivityItem
+                  loadingActivityId={loading && loadingId ? loadingId : null}
                   activityDictionary={activityDictionary}
                   exercisePayloadDictionary={exercisePayloadDictionary}
                   selectionEnabled={selectionEnabled}
