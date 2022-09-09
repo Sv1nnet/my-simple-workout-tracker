@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import TabLabel from '../tab_label/TabLabel'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useAppSelector } from '@/src/app/hooks'
+import { selectAllLists } from '@/src/app/store/utils/commonSelectors'
 
 const { TabPane } = Tabs
 
@@ -40,7 +42,31 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const router = useRouter()
   const { intl } = useContext(IntlContext)
   const { loading, loadingRoute } = useContext(RouterContext)
+  const { exerciseList, workoutList, activityList } = useAppSelector(selectAllLists)
   const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
+
+  const getLoadingTab = ({ activeTab: _activeTab, loading: _loading, loadingRoute: _loadingRoute, exerciseList: _exerciseList, workoutList: _workoutList, activityList: _activityList }) => {
+    if (_loading && _loadingRoute) {
+      switch (_loadingRoute) {
+        case '/exercises':
+          return 'exercises'
+        case '/workouts':
+          return 'workouts'
+        case '/activities':
+          return 'activities'
+        default:
+          return null
+      }
+    }
+
+    if (_exerciseList.status === 'loading' || _workoutList.status === 'loading' || _activityList.status === 'loading') {
+      return _activeTab
+    }
+
+    return null
+  }
+
+  const [ loadingTab, setLoadingTab ] = useState(() => getLoadingTab({ activeTab, loading, loadingRoute, exerciseList, workoutList, activityList }))
 
   const handleNavClick = tab => router.push(`/${tab}`, undefined, {})
 
@@ -58,13 +84,50 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
     activities: ((isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '').toUpperCase(),
   }
 
+  useEffect(() => {
+    setLoadingTab(getLoadingTab({ activeTab, loading, loadingRoute, exerciseList, workoutList, activityList }))
+  }, [ loading, loadingRoute, exerciseList.status, workoutList.status, activityList.status, activeTab ])
+
   const [ ,, subRoute ] = router.route.split('/')
 
   return (
     <StyledTabs tabBarGutter={0} size="large" activeKey={!subRoute ? activeTab : ''} centered>
-      <TabPane tab={<TabLabel id="exercises-tab-pane" tab="exercises" onClick={handleNavClick} label={labels.exercises} loading={loading && loadingRoute === '/exercises'} />} key="exercises" />
-      <TabPane tab={<TabLabel id="workouts-tab-pane" tab="workouts" onClick={handleNavClick} label={labels.workouts} loading={loading && loadingRoute === '/workouts'} />} key="workouts" />
-      <TabPane tab={<TabLabel id="activities-tab-pane" tab="activities" onClick={handleNavClick} label={labels.activities} loading={loading && loadingRoute === '/activities'} />} key="activities" />
+      <TabPane
+        tab={(
+          <TabLabel
+            id="exercises-tab-pane"
+            tab="exercises"
+            onClick={handleNavClick}
+            label={labels.exercises}
+            loading={loadingTab === 'exercises'}
+          />
+        )}
+        key="exercises"
+      />
+      <TabPane
+        tab={(
+          <TabLabel
+            id="workouts-tab-pane"
+            tab="workouts"
+            onClick={handleNavClick}
+            label={labels.workouts}
+            loading={loadingTab === 'workouts'}
+          />
+        )}
+        key="workouts"
+      />
+      <TabPane
+        tab={(
+          <TabLabel
+            id="activities-tab-pane"
+            tab="activities"
+            onClick={handleNavClick}
+            label={labels.activities}
+            loading={loadingTab === 'activities'}
+          />
+        )}
+        key="activities"
+      />
     </StyledTabs>
   )
 }

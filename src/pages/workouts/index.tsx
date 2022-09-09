@@ -5,83 +5,69 @@ import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
 import { WorkoutList } from 'app/views'
 import routes from 'app/constants/end_points'
-import { notification } from 'antd'
 import { workoutApi } from 'app/store/slices/workout/api'
-import { GetWorkoutListError, GetWorkoutListSuccess, WorkoutListItem } from '@/src/app/store/slices/workout/types'
+import { GetWorkoutListError, WorkoutListItem } from '@/src/app/store/slices/workout/types'
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { selectList, updateList } from '@/src/app/store/slices/workout'
-import { useAppDispatch, useAppSelector } from '@/src/app/hooks'
+import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from '@/src/app/hooks'
 import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import respondeAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondeAfterTimeoutInMs'
 
-export interface IExercises {
+export interface IWorkouts {
   workouts: WorkoutListItem[];
 }
 
-export type ApiGetExerciseListError = {
+export type ApiGetWorkoutListError = {
   data: GetWorkoutListError;
   status: number;
 }
 
 const CREATE_ROUTE = '/workouts/create'
 
-const Workouts: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
+const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
   const { loading, loadingRoute } = useContext(RouterContext)
-  const dispatch = useAppDispatch()
   const [ loadWorkouts, { error, isError } ] = workoutApi.useLazyListQuery()
-  const { data: workoutsInStore } = useAppSelector(selectList)
+  const { data: workoutsInStore, status } = useAppSelector(selectList)
   const [
     deleteWorkouts,
     {
       isError: isDeleteError,
-      isLoading: isDeleteLoading,
+      isLoading: isDeleting,
       error: deleteError,
       status: deleteStatus,
-      isUninitialized: isDeleteUninitialized,
     },
   ] = workoutApi.useDeleteManyMutation()
 
-  const getWorkouts = () => isDeleteUninitialized ? _workouts : workoutsInStore
+  const { dispatch } = useLoadList({
+    loading,
+    updateList,
+    listFromComponent: _workouts,
+    loadList: loadWorkouts,
+  })
 
-  const handeDeleteWorkouts = args => deleteWorkouts(args)
-    .then(async (res) => {
-      loadWorkouts()
+  const handeDelete = ({ ids }) => deleteWorkouts({ ids })
+    .then((res) => {
+      dispatch(updateList(workoutsInStore.filter(workout => !ids.includes(workout.id))))
       return res
     })
 
-  useEffect(() => {
-    if (!_workouts) {
-      loadWorkouts()
-      return
-    }
-    dispatch(updateList(getWorkouts()))
-  }, [])
+  useShowListErrorNotification({ isError, error: (error as ApiGetListError) })
 
   useEffect(() => {
-    if (isError && error) {
-      const openNotification = ({ message, description }) => {
-        notification.error({
-          message,
-          description,
-        })
-      }
-      openNotification({ message: 'Error!', description: (error as ApiGetExerciseListError)?.data?.error?.message })
-    }
-  }, [ error ])
-
-  useEffect(() => {
-    if (deleteStatus === 'fulfilled' && !isDeleteLoading && !deleteError) loadWorkouts()
-  }, [ isDeleteLoading, deleteStatus, isDeleteError ])
+    if (deleteStatus === 'fulfilled' && !isDeleting && !deleteError) loadWorkouts()
+  }, [ isDeleting, deleteStatus, isDeleteError ])
 
   return (
     <>
       <AddButton loading={loading && loadingRoute === CREATE_ROUTE} href={CREATE_ROUTE} text={add} />
       <WorkoutList
-        deleteWorkouts={handeDeleteWorkouts}
+        deleteWorkouts={handeDelete}
         error={deleteError}
-        isLoading={isDeleteLoading}
-        workouts={getWorkouts() ?? []}
+        isLoading={status === 'loading'}
+        isDeleting={isDeleting}
+        workouts={workoutsInStore ?? []}
       />
     </>
   )
@@ -92,13 +78,11 @@ Workouts.layoutProps = { tab: 'workouts' }
 
 export default Workouts
 
+const timeout = new Timeout()
+
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    let res: GetWorkoutListSuccess | GetWorkoutListError = await fetch(`${routes.workout.v1.list.full}`, {
-      headers: {
-        Authorization: `Bearer ${ctx.req.session.token}`,
-      },
-    }).then(r => r.json())
+    const res = await respondeAfterTimeoutInMs({ timeout, ctx, route: routes.workout.v1.list.full })
 
     return handleJwtStatus(res, () => ({
       props: {

@@ -1,4 +1,3 @@
-// import { useAppSelector } from '@/src/app/hooks'
 import PropTypes from 'prop-types'
 import GuestRoute from '../guest/GuestRoute'
 import UserRoute from '../user/UserRoute'

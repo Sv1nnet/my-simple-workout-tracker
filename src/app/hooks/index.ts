@@ -1,3 +1,4 @@
+import { notification } from 'antd'
 import type { ChangeEvent } from 'react'
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
@@ -47,3 +48,44 @@ export const useInterval = (callback: Function, delay: number) => {
 export const useAppDispatch = () => useDispatch<AppDispatch>()
 
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
+
+export type UseLoadList = (args: {
+  loading: boolean,
+  updateList: Function,
+  listFromComponent: any[],
+  loadList: Function,
+}) => { dispatch: AppDispatch }
+
+export const useLoadList: UseLoadList = ({ loading, updateList, listFromComponent, loadList }) => {
+  const dispatch = useAppDispatch()
+  useEffect(() => {
+    if (!loading) {
+      if (!listFromComponent) {
+        loadList()
+        return
+      }
+      dispatch(updateList(listFromComponent))
+    }
+  }, [ loading ])
+
+  return { dispatch }
+}
+
+export type ApiGetListError = {
+  data: { error?: { message?: string } };
+  status: number;
+}
+
+export const useShowListErrorNotification = ({ isError, error }: { isError: boolean, error: ApiGetListError }) => {
+  useEffect(() => {
+    if (isError && error) {
+      const openNotification = ({ message, description }) => {
+        notification.error({
+          message,
+          description,
+        })
+      }
+      openNotification({ message: 'Error!', description: (error as ApiGetListError)?.data?.error?.message })
+    }
+  }, [ error ])
+}

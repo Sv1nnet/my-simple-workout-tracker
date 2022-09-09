@@ -18,6 +18,7 @@ export interface ISelectableList {
   onCancelSelection?: Function;
   onSelectDeselectAll?: Function;
   isLoading?: boolean;
+  isDeleting?: boolean;
   createHref: string;
   children: ((options: {
     selected: object,
@@ -43,7 +44,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     onSelect,
     onCancelSelection,
     onSelectDeselectAll,
-    isLoading,
+    isDeleting,
     createHref,
     style,
     className,
@@ -110,7 +111,6 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     if (typeof onCancelSelection === 'function') onCancelSelection()
   }
 
-
   useImperativeHandle(ref, () => ({
     selected,
     selectionEnabled,
@@ -144,7 +144,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
         ))}
       <ListControls
         createHref={createHref}
-        isDeleteFetching={isLoading}
+        isDeleting={isDeleting}
         selected={selected}
         allSelected={allSelected}
         onSelect={handleSelectDeselectAll}

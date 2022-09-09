@@ -119,7 +119,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       okText: 'It\'s sad but ok',
     })
     localStorage.removeItem('cached_activity')
-    setSelectedWorkout(null)
+    setTimeout(() => setSelectedWorkout(null))
   }
 
   const initialValues = useMemo<InitialValues>(() => {
@@ -208,9 +208,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       }
     }
 
-    if (mountedRef.current) form.setFieldsValue(newInitialValues)
+    if (mountedRef.current) setTimeout(() => form.setFieldsValue(newInitialValues))
     if (newInitialValues.workout_id) {
-      setSelectedWorkout(newInitialValues.workout_id)
+      setTimeout(() => setSelectedWorkout(newInitialValues.workout_id))
       getHistory({ workoutId: newInitialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: newInitialValues.id })
     }
 

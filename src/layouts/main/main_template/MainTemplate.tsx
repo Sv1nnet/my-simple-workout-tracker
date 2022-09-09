@@ -45,6 +45,9 @@ const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC }
   })
 
   const activeKey = !subRoute ? tab : 'subRoute'
+
+  const getTabComponent = shouldRender => shouldRender ? React.cloneElement(children, { ...children.props, ...props }) : null
+
   return (
     <>
       <Head>
@@ -54,16 +57,16 @@ const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC }
       <Header route={route}>
         <StyledTabs activeKey={activeKey}>
           <TabPane key="exercises">
-            {activeKey === 'exercises' ? React.cloneElement(children, { ...children.props, ...props }) : null}
+            {getTabComponent(activeKey === 'exercises')}
           </TabPane>
           <TabPane key="workouts">
-            {activeKey === 'workouts' ? React.cloneElement(children, { ...children.props, ...props }) : null}
+            {getTabComponent(activeKey === 'workouts')}
           </TabPane>
           <TabPane key="activities">
-            {activeKey === 'activities' ? React.cloneElement(children, { ...children.props, ...props }) : null}
+            {getTabComponent(activeKey === 'activities')}
           </TabPane>
           <TabPane key="subRoute">
-            {activeKey === 'subRoute' ? React.cloneElement(children, { ...children.props, ...props }) : null}
+            {getTabComponent(activeKey === 'subRoute')}
           </TabPane>
         </StyledTabs>
       </Header>
