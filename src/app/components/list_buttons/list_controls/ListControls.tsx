@@ -60,7 +60,7 @@ const SelectAllButton = props => <ListButton icon={<BarsOutlined />} {...props} 
 const DeselectAllButton = props => <ListButton icon={<SwitcherOutlined />} {...props} />
 const DeleteButton = props => <ListButton isDelete style={!props.disabled ? { background: '#cf1322', borderColor: '#cf1322' } : {}} icon={<DeleteOutlined />} {...props} />
 
-const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
+const ListControls = ({ createHref, isDeleting, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
   const { list_buttons } = useContext(IntlContext).intl.pages.exercises
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ expanded, setExpanded ] = useState(false)
@@ -76,7 +76,7 @@ const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selecte
   
   return (
     <MainButtonContainer>
-      {createHref && <CreateButton loading={loading && loadingRoute === createHref} tooltipTitle={list_buttons.create} href={createHref} disabled={isDeleteFetching} />}
+      {createHref && <CreateButton loading={loading && loadingRoute === createHref} tooltipTitle={list_buttons.create} href={createHref} />}
       {isSelectionActive && <MoreOptionsButton $expanded={expanded} tooltipTitle={list_buttons.more_options} onClick={handleShowMoreOptions} />}
       <MoreOptionsButtonContainer $expanded={expanded}>
         <MoreOptionsButtonContainer.Inner>
@@ -85,7 +85,7 @@ const ListControls = ({ createHref, isDeleteFetching, isSelectionActive, selecte
               ? <DeselectAllButton tooltipTitle={list_buttons.deselect_all} onClick={handleDeselectAll} />
               : <SelectAllButton tooltipTitle={list_buttons.select_all} onClick={handleListAll} />
           }
-          <DeleteButton loading={isDeleteFetching} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
+          <DeleteButton loading={isDeleting} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
           <CancelSelectionButton tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
         </MoreOptionsButtonContainer.Inner>
       </MoreOptionsButtonContainer>

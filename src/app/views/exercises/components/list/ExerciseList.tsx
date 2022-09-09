@@ -1,7 +1,7 @@
 import { List, notification } from 'antd'
 import { ExerciseItem } from './components'
 import { ExerciseDeleteError, ExerciseForm, ExerciseListItem, Image } from 'app/store/slices/exercise/types'
-import React, { FC, useContext, useEffect } from 'react'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
@@ -21,9 +21,11 @@ export interface IExerciseList {
   deleteExercises: (ids: DeleteExercisePayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
+  isDeleting: boolean;
 }
 
-const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, exercises }) => {
+const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, isDeleting, exercises }) => {
+  const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const { payload, modal } = useContext(IntlContext).intl.pages.exercises
   const {
     isModalVisible,
@@ -34,9 +36,13 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
 
   const handleDelete = () => {
     closeModal()
+
+    const toDelete = selectionRef.current.selected
+    setExercisesToDelete(toDelete)
+
     return deleteExercises({
-      ids: Object.keys(selectionRef.current.selected).filter(id => selectionRef.current.selected[id]) as Pick<ExerciseForm, 'id'>[],
-    })
+      ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ExerciseForm, 'id'>[],
+    }).finally(() => setExercisesToDelete({}))
   }
 
   useEffect(() => {
@@ -62,6 +68,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}
+      isDeleting={isDeleting}
       createHref="/exercises/create"
     >
       {({
@@ -80,6 +87,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, ex
                   payloadDictionary={payload}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
+                  isLoading={exercisesToDelete[item.id]}
                   {...item}
                 />
               </SelectableList.Item>

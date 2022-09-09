@@ -44,12 +44,12 @@ const PreviousRoundsHistory = ({ isLoading, history, comparator, loaderDictionar
   : (
     <table style={{ marginLeft: 10 }}>
       <tbody>
-        {history.map(previous => eachSide
+        {history.map((previous, index) => eachSide
           ? (previous ?? []).length < 6
             ? (
-              <StyledTr $eachSide>
+              <StyledTr $eachSide key={index}>
                 {previous.map((el, i, arr) => (
-                  <StyledTd $eachSide>
+                  <StyledTd $eachSide key={i}>
                     <PreviousItemContainer $isTimeType={isTimeType} $eachSide key={i}>
                       <PreviousItem comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} marginTop="-1px" />
                       <PreviousItem comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={isTimeType ? '9px' : '7px'} />
@@ -59,9 +59,9 @@ const PreviousRoundsHistory = ({ isLoading, history, comparator, loaderDictionar
               </StyledTr>
             )
             : (
-              <StyledTr $eachSide>
+              <StyledTr $eachSide key={index}>
                 {(previous ?? []).map((el, i, arr) => i !== arr.length - 1 && (
-                  <StyledTd $eachSide>
+                  <StyledTd $eachSide key={i}>
                     <PreviousItemContainer $isTimeType={isTimeType} $eachSide key={i}>
                       <PreviousItem comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} marginTop="-1px" />
                       <PreviousItem comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={isTimeType ? '9px' : '7px'} />
@@ -71,9 +71,9 @@ const PreviousRoundsHistory = ({ isLoading, history, comparator, loaderDictionar
               </StyledTr>
             )
           : (previous ?? []).length < 6
-            ? <StyledTr>
+            ? <StyledTr key={index}>
               {previous.map((el, i, arr) => (
-                <StyledTd>
+                <StyledTd key={i}>
                   <PreviousItemContainer $isTimeType={isTimeType} key={i}>
                     <PreviousItem comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
                   </PreviousItemContainer>
@@ -81,9 +81,9 @@ const PreviousRoundsHistory = ({ isLoading, history, comparator, loaderDictionar
               ))}
             </StyledTr>
             : (
-              <StyledTr>
+              <StyledTr key={index}>
                 {previous.map((el, i, arr) => i !== arr.length - 1 && (
-                  <StyledTd>
+                  <StyledTd key={i}>
                     <PreviousItemContainer $isTimeType={isTimeType} key={i}>
                       <PreviousItem comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
                     </PreviousItemContainer>

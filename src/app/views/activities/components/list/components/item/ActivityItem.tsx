@@ -79,9 +79,22 @@ export type ActivityItemProps = ActivityListItem & {
   selectionEnabled: boolean;
   selected: boolean;
   loadingActivityId: string | null;
+  isLoading?: boolean;
 }
 
-const ActivityItem: FC<ActivityItemProps> = ({ id, loadingActivityId, date, workout_title, results, description, selectionEnabled, selected, activityDictionary, exercisePayloadDictionary }) => (
+const ActivityItem: FC<ActivityItemProps> = ({
+  id,
+  loadingActivityId,
+  isLoading,
+  date,
+  workout_title,
+  results,
+  description,
+  selectionEnabled,
+  selected,
+  activityDictionary,
+  exercisePayloadDictionary,
+}) => (
   <>
     <Collapse style={{ width: '100%' }} ghost expandIconPosition="left" collapsible={selectionEnabled ? 'disabled' : undefined}>
       <StyledPanel key="exercises" header={(
@@ -90,7 +103,7 @@ const ActivityItem: FC<ActivityItemProps> = ({ id, loadingActivityId, date, work
             <DateOfActivity>{dayjs(date).format('DD.MM.YYYY')}</DateOfActivity>
             <WorkoutTitle level={3}>{workout_title}</WorkoutTitle>
           </div>
-          <InspectButton loading={loadingActivityId === id} href={`/activities/${id}`} />
+          <InspectButton loading={loadingActivityId === id || isLoading} href={`/activities/${id}`} />
         </HeaderContainer>
       )}>
         {/* render every exercise */}

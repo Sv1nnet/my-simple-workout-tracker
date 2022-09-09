@@ -51,7 +51,8 @@ export const workoutSlice = createSlice({
       )
       .addMatcher(
         workoutApi.endpoints.list.matchRejected,
-        (state) => {
+        (state, { error }) => {
+          if (error?.name === 'ConditionError') return state
           state.list.status = 'error'
         },
       )

@@ -1,7 +1,7 @@
 import { List, notification } from 'antd'
 import { ActivityItem } from './components'
 import { ActivityDeleteError, ActivityForm, ActivityListItem } from 'app/store/slices/activity/types'
-import React, { FC, useContext, useEffect } from 'react'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
@@ -21,9 +21,11 @@ export interface IActivityList {
   deleteActivities: (ids: DeleteActivityPayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
+  isDeleting: boolean;
 }
 
-const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, activities }) => {
+const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, isDeleting, activities }) => {
+  const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl } = useContext(IntlContext)
@@ -39,9 +41,13 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, a
 
   const handleDelete = () => {
     closeModal()
+
+    const toDelete = selectionRef.current.selected
+    setActivitiesToDelete(toDelete)
+
     return deleteActivities({
-      ids: Object.keys(selectionRef.current.selected).filter(id => selectionRef.current.selected[id]) as Pick<ActivityForm, 'id'>[],
-    })
+      ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ActivityForm, 'id'>[],
+    }).finally(() => setActivitiesToDelete({}))
   }
 
   useEffect(() => {
@@ -68,6 +74,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, a
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}
+      isDeleting={isDeleting}
       createHref="/activities/create"
     >
       {({
@@ -88,6 +95,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, a
                   exercisePayloadDictionary={exercisePayloadDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
+                  isLoading={activitiesToDelete[item.id]}
                   {...item}
                 />
               </SelectableList.Item>

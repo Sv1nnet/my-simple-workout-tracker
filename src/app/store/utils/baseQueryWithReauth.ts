@@ -4,7 +4,7 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query'
-import { updateToken, logout } from 'store/slices/auth'
+import { updateToken, logout, selectToken } from 'store/slices/auth'
 import routes from 'constants/end_points'
 import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { Token } from 'store/slices/auth/types'
@@ -16,7 +16,7 @@ export const baseQuery = fetchBaseQuery({
   baseUrl: routes.base,
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as AppState).auth.token
+    const token = selectToken(getState() as AppState)
     // If we have a token set in state, let's assume that we should be passing it.
     if (token) {
       headers.set('Authorization', `Bearer ${token}`)
@@ -27,7 +27,7 @@ export const baseQuery = fetchBaseQuery({
 export const baseQueryWithoutCreds = fetchBaseQuery({
   baseUrl: routes.base,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as AppState).auth.token
+    const token = selectToken(getState() as AppState)
     // If we have a token set in state, let's assume that we should be passing it.
     if (token) {
       headers.set('Authorization', `Bearer ${token}`)

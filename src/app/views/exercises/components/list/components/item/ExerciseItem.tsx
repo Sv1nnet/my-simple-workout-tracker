@@ -2,7 +2,8 @@ import routes from '@/src/app/constants/end_points'
 import { ExerciseForm, Image } from '@/src/app/store/slices/exercise/types'
 import getWordByNumber from '@/src/app/utils/getWordByNumber'
 import { timeToHms } from '@/src/app/utils/time'
-import { Checkbox, List, Typography } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+import { Checkbox, List, Spin, Typography } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import Link from 'next/link'
 import { FC } from 'react'
@@ -38,7 +39,7 @@ const StyledCheckbox = styled(Checkbox)`
   left: 0;
 `
 
-const StyledTitle = ({ id, title, repeats, time, weight, massUnit = 'kg', payloadDictionary, selectionEnabled }) => {
+const StyledTitle = ({ id, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary, selectionEnabled }) => {
   repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
   time = time
     ? timeToHms(
@@ -54,7 +55,7 @@ const StyledTitle = ({ id, title, repeats, time, weight, massUnit = 'kg', payloa
     : null
   weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit][0]}` : null
 
-  return selectionEnabled
+  return selectionEnabled || isLoading
     ? (
       <div>
         <LoadType>
@@ -76,53 +77,62 @@ const StyledTitle = ({ id, title, repeats, time, weight, massUnit = 'kg', payloa
     )
 }
 
+const ExerciseImage = ({ id, isLoading, selectionEnabled, image }) => (selectionEnabled || isLoading)
+  ? isLoading
+    ? (
+      <Spin indicator={<LoadingOutlined />}>
+        <img
+          src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
+        />
+      </Spin>
+    )
+    : (
+      <img
+        src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
+      />
+    )
+  
+  : (
+    <Link href={`/exercises/${id}`}>
+      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+      <a>
+        <img
+          src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
+        />
+      </a>
+    </Link>
+  )
+
 interface IExerciseForm extends ExerciseForm {
   payloadDictionary: object;
   selectionEnabled: boolean;
   selected: boolean;
   image: Image;
+  isLoading?: boolean;
 }
 
-const ExerciseItem: FC<IExerciseForm> = ({ id, title, repeats, time, weight, mass_unit, image, selectionEnabled, selected, payloadDictionary }) => {
-  const renderImage = () => selectionEnabled
-    ? (
-      <img
-        src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
+const ExerciseItem: FC<IExerciseForm> = ({ id, isLoading, title, repeats, time, weight, mass_unit, image, selectionEnabled, selected, payloadDictionary }) => (
+  <List.Item.Meta
+    avatar={(
+      <ImageContainer>
+        {selectionEnabled && <StyledCheckbox checked={selected} />}
+        <ExerciseImage isLoading={isLoading} selectionEnabled={selectionEnabled} id={id} image={image} />
+      </ImageContainer>
+    )}
+    title={(
+      <StyledTitle
+        id={id}
+        isLoading={isLoading}
+        title={title}
+        repeats={repeats}
+        time={time}
+        weight={weight}
+        massUnit={mass_unit}
+        payloadDictionary={payloadDictionary}
+        selectionEnabled={selectionEnabled}
       />
-    )
-    : (
-      <Link href={`/exercises/${id}`}>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a>
-          <img
-            src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
-          />
-        </a>
-      </Link>
-    )
-
-  return (
-    <List.Item.Meta
-      avatar={(
-        <ImageContainer>
-          {selectionEnabled && <StyledCheckbox checked={selected} />}
-          {renderImage()}
-        </ImageContainer>
-      )}
-      title={(
-        <StyledTitle
-          id={id}
-          title={title}
-          repeats={repeats}
-          time={time}
-          weight={weight}
-          massUnit={mass_unit}
-          payloadDictionary={payloadDictionary}
-          selectionEnabled={selectionEnabled}
-        />
-      )}
-    />
-  )
-}
+    )}
+  />
+)
 
 export default ExerciseItem

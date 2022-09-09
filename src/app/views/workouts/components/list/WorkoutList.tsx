@@ -3,7 +3,7 @@ import { List, notification } from 'antd'
 import { WorkoutItem } from './components'
 import { Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from '@/src/app/store/slices/workout/types'
 import { Image } from 'store/slices/exercise/types'
-import React, { FC, useContext, useEffect } from 'react'
+import React, { FC, useContext, useEffect, useState } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
@@ -23,9 +23,11 @@ export interface IWorkoutList {
   deleteWorkouts: (ids: DeleteWorkoutPayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
+  isDeleting: boolean;
 }
 
-const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, workouts }) => {
+const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDeleting, workouts }) => {
+  const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl } = useContext(IntlContext)
@@ -41,9 +43,13 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, worko
 
   const handleDelete = () => {
     closeModal()
+
+    const toDelete = selectionRef.current.selected
+    setWorkoutsToDelete(toDelete)
+
     return deleteWorkouts({
-      ids: Object.keys(selectionRef.current.selected).filter(id => selectionRef.current.selected[id]) as Pick<Workout, 'id'>[],
-    })
+      ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<Workout, 'id'>[],
+    }).finally(() => setWorkoutsToDelete({}))
   }
 
   useEffect(() => {
@@ -70,6 +76,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, worko
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}
+      isDeleting={isDeleting}
       createHref="/workouts/create"
     >
       {({
@@ -90,6 +97,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, worko
                   workoutDictionary={workoutDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
+                  isLoading={workoutsToDelete[item.id]}
                   {...item}
                 />
               </SelectableList.Item>
