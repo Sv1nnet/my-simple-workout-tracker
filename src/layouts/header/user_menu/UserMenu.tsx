@@ -16,6 +16,13 @@ const StyledAvatar = styled(Avatar)`
   right: 3px;
 `
 
+const ROUTES = {
+  PROFILE: '/profile',
+  EXERCISES: '/exercises',
+  WORKOUTS: '/workouts',
+  ACTIVITIES: '/activities',
+}
+
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
   const { loading, loadingRoute } = useContext(RouterContext)
@@ -24,8 +31,10 @@ const UserMenu = () => {
   const dispatch = useAppDispatch()
   const avatarFirstClicked = useRef(false)
 
-  const profileLoading = loading && loadingRoute === '/profile'
-  const mainLoading = loading && loadingRoute === '/'
+  const profileLoading = loading && loadingRoute === ROUTES.PROFILE
+  const exercisesLoading = loading && loadingRoute === ROUTES.EXERCISES
+  const workoutsLoading = loading && loadingRoute === ROUTES.WORKOUTS
+  const activitiesLoading = loading && loadingRoute === ROUTES.ACTIVITIES
 
   const menu = useMemo(function MenuItself() {
     const handleClick = () => {
@@ -36,27 +45,39 @@ const UserMenu = () => {
 
     return (
       <Menu style={{ width: '100%' }}>
-        {route !== '/profile' 
+        {route !== ROUTES.PROFILE
           ? (
             <Menu.Item key="profile">
               <Button loading={profileLoading} type="link" block>
-                <Link href="/profile">{intl.pages.profile.profile}</Link>
+                <Link href={ROUTES.PROFILE}>{intl.header.profile}</Link>
               </Button>
             </Menu.Item>
           )
           : (
-            <Menu.Item key="main">
-              <Button loading={mainLoading} type="link" block>
-                <Link href="/">{intl.pages.profile.main}</Link>
-              </Button>
-            </Menu.Item>
+            <>
+              <Menu.Item key="exercises">
+                <Button loading={exercisesLoading} type="link" block>
+                  <Link href={ROUTES.EXERCISES}>{`${intl.header.exercises}`}</Link>
+                </Button>
+              </Menu.Item>
+              <Menu.Item key="workouts">
+                <Button loading={workoutsLoading} type="link" block>
+                  <Link href={ROUTES.WORKOUTS}>{`${intl.header.workouts}`}</Link>
+                </Button>
+              </Menu.Item>
+              <Menu.Item key="activities">
+                <Button loading={activitiesLoading} type="link" block>
+                  <Link href={ROUTES.ACTIVITIES}>{`${intl.header.activities}`}</Link>
+                </Button>
+              </Menu.Item>
+            </>
           )}
         <Menu.Item key="logout" onClick={closeMenu}>
           <Button type="link" onClick={handleClick} block>{intl.pages.profile.logout}</Button>
         </Menu.Item>
       </Menu>
     )
-  }, [ profileLoading, mainLoading ])
+  }, [ profileLoading, exercisesLoading, workoutsLoading, activitiesLoading ])
 
   const handleAvatarClick = () => !isOpen && setIsOpen(true)
 
