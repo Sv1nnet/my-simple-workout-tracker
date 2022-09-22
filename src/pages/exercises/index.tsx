@@ -12,7 +12,8 @@ import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotificat
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import respondeAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondeAfterTimeoutInMs'
+import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 export interface IExercises {
   exercises: ExerciseListItem<number>[];
@@ -60,7 +61,7 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
       <ExerciseList
         deleteExercises={handleDelete}
         error={deleteError}
-        isLoading={status === 'loading'}
+        isLoading={status === API_STATUS.LOADING}
         isDeleting={isDeleting}
         exercises={exercisesInStore ?? []}
       />
@@ -77,7 +78,7 @@ const timeout = new Timeout()
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    const res = await respondeAfterTimeoutInMs({ timeout, ctx, route: routes.exercise.v1.list.full })
+    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: routes.exercise.v1.list.full })
 
     return handleJwtStatus(res, () => ({
       props: {

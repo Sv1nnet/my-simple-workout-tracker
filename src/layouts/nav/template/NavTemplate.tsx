@@ -7,6 +7,7 @@ import TabLabel from '../tab_label/TabLabel'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useAppSelector } from '@/src/app/hooks'
 import { selectAllLists } from '@/src/app/store/utils/commonSelectors'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 const { TabPane } = Tabs
 
@@ -59,7 +60,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
       }
     }
 
-    if (_exerciseList.status === 'loading' || _workoutList.status === 'loading' || _activityList.status === 'loading') {
+    if (_exerciseList.status === API_STATUS.LOADING || _workoutList.status === API_STATUS.LOADING || _activityList.status === API_STATUS.LOADING) {
       return _activeTab
     }
 

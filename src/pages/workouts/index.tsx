@@ -12,7 +12,8 @@ import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { selectList, updateList } from '@/src/app/store/slices/workout'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from '@/src/app/hooks'
 import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import respondeAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondeAfterTimeoutInMs'
+import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 export interface IWorkouts {
   workouts: WorkoutListItem[];
@@ -65,7 +66,7 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
       <WorkoutList
         deleteWorkouts={handeDelete}
         error={deleteError}
-        isLoading={status === 'loading'}
+        isLoading={status === API_STATUS.LOADING}
         isDeleting={isDeleting}
         workouts={workoutsInStore ?? []}
       />
@@ -82,7 +83,7 @@ const timeout = new Timeout()
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    const res = await respondeAfterTimeoutInMs({ timeout, ctx, route: routes.workout.v1.list.full })
+    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: routes.workout.v1.list.full })
 
     return handleJwtStatus(res, () => ({
       props: {

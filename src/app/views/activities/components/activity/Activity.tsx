@@ -27,6 +27,7 @@ import { activityApi } from '@/src/app/store/slices/activity/api'
 import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
 import { WorkoutForm, WorkoutListExercise } from '@/src/app/store/slices/workout/types'
 import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 export interface IActivityProps {
   id?: string;
@@ -325,9 +326,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [])
 
   useEffect(() => {
-    if (workoutList.status === 'loading') {
+    if (workoutList.status === API_STATUS.LOADING) {
       runLoader('workout_list_loader', { tip: 'Loading workout list...' })
-    } else if (workoutList.status === 'loaded' || workoutList.status === 'error') {
+    } else if (workoutList.status === API_STATUS.LOADED || workoutList.status === API_STATUS.ERROR) {
       stopLoaderById('workout_list_loader')
     }
   }, [ workoutList.status ])
@@ -339,7 +340,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [ selectedWorkout ])
 
   useEffect(() => {
-    if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === 'loaded') {
+    if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === API_STATUS.LOADED) {
       Modal.confirm({
         title: 'You have unfinished activity.',
         content: 'Restore unfinished activity? If no the activity will be cleared.',

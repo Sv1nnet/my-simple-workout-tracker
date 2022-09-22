@@ -13,7 +13,8 @@ import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
 import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import respondeAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondeAfterTimeoutInMs'
+import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 export type ExerciseResultsDetails = {
   weight?: number,
@@ -68,7 +69,7 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
       <ActivityList
         deleteActivities={handeDeleteActivities}
         error={deleteError}
-        isLoading={status === 'loading'}
+        isLoading={status === API_STATUS.LOADING}
         isDeleting={isDeleting}
         activities={activitiesInStore ?? []}
       />
@@ -85,7 +86,7 @@ const timeout = new Timeout()
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    const res = await respondeAfterTimeoutInMs({ timeout, ctx, route: routes.activity.v1.list.full })
+    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: routes.activity.v1.list.full })
 
     return handleJwtStatus(res, () => ({
       props: {

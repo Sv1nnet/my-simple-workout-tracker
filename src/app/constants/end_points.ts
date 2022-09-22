@@ -73,6 +73,22 @@ const routes = {
       },
     },
   },
+  config: {
+    v1: {
+      get base() {
+        return {
+          full: `${_global.__API__.BASE_URL}/v1/config`,
+          path: '/v1/config',
+        }
+      },
+      get update() {
+        return {
+          full: `${routes.base}${this.base.path}/update`,
+          path: `${this.base.path}/update`,
+        }
+      },
+    },
+  },
   exercise: {
     v1: {
       get base() {

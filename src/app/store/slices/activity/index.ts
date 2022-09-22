@@ -1,3 +1,4 @@
+import { ApiStatus, API_STATUS } from '@/src/app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { activityApi } from './api'
@@ -6,22 +7,22 @@ import { ActivityListItem } from './types'
 export interface IActivityState {
   list: {
     data: ActivityListItem[];
-    status: 'initial' | 'loading' | 'error' | 'loaded';
+    status: ApiStatus;
   }
   single: {
     data: ActivityListItem;
-    status: 'initial' | 'loading' | 'error' | 'loaded';
+    status: ApiStatus;
   }
 }
 
 const initialState: IActivityState = {
   list: {
     data: [],
-    status: 'initial',
+    status: API_STATUS.INITIAL,
   },
   single: {
     data: null,
-    status: 'initial',
+    status: API_STATUS.INITIAL,
   },
 }
 
@@ -31,7 +32,7 @@ export const activitySlice = createSlice({
   reducers: {
     updateList: (state, action: PayloadAction<ActivityListItem[]>) => {
       state.list.data = action.payload
-      state.list.status = 'loaded'
+      state.list.status = API_STATUS.LOADED
     },
   },
   extraReducers: (builder) => {
@@ -39,20 +40,20 @@ export const activitySlice = createSlice({
       .addMatcher(
         activityApi.endpoints.list.matchPending,
         (state) => {
-          state.list.status = 'loading'
+          state.list.status = API_STATUS.LOADING
         },
       )
       .addMatcher(
         activityApi.endpoints.list.matchFulfilled,
         (state, { payload }) => {
           state.list.data = payload.data
-          state.list.status = 'loaded'
+          state.list.status = API_STATUS.LOADED
         },
       )
       .addMatcher(
         activityApi.endpoints.list.matchRejected,
         (state) => {
-          state.list.status = 'error'
+          state.list.status = API_STATUS.ERROR
         },
       )
   },

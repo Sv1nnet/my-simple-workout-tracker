@@ -22,6 +22,7 @@ import {
 } from './components'
 import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
 import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
@@ -167,9 +168,9 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   }, [])
   
   useEffect(() => {
-    if (exerciseList.status === 'loading') {
+    if (exerciseList.status === API_STATUS.LOADING) {
       runLoader('exercise_list_loader', { tip: 'Loading exercise list...' })
-    } else if (exerciseList.status === 'loaded' || exerciseList.status === 'error') {
+    } else if (exerciseList.status === API_STATUS.LOADED || exerciseList.status === API_STATUS.ERROR) {
       stopLoaderById('exercise_list_loader')
     }
   }, [ exerciseList.status ])

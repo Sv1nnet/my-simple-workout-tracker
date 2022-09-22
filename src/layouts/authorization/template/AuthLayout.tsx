@@ -4,10 +4,13 @@ import UserRoute from '../user/UserRoute'
 import { NextPage } from 'next'
 import { selectToken } from '@/src/app/store/slices/auth'
 import { useAppSelector } from '@/src/app/hooks'
+import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
+import withAuth, { GetServerSidePropsContextWithSession } from '@/src/app/store/utils/withAuth'
+import routes from '@/src/app/constants/end_points'
+import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
 
-const AuthTemplate: NextPage = ({ children }) => {
+const AuthLayout: NextPage = ({ children, ...rest }) => {
   const token = useAppSelector(selectToken)
-
   return (
     token
       ? (
@@ -18,11 +21,11 @@ const AuthTemplate: NextPage = ({ children }) => {
       : <GuestRoute />
   )
 }
-AuthTemplate.propTypes = {
+AuthLayout.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
 }
 
-export default AuthTemplate
+export default AuthLayout
