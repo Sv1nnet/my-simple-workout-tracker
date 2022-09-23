@@ -92,7 +92,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
   
-  const { input_labels, submit_button, modal } = intl.pages.activities
+  const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
   
   const mountedRef = useRef(false)
@@ -327,7 +327,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
   useEffect(() => {
     if (workoutList.status === API_STATUS.LOADING) {
-      runLoader('workout_list_loader', { tip: 'Loading workout list...' })
+      runLoader('workout_list_loader', { tip: loader.workouts_loading })
     } else if (workoutList.status === API_STATUS.LOADED || workoutList.status === API_STATUS.ERROR) {
       stopLoaderById('workout_list_loader')
     }
@@ -342,10 +342,10 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   useEffect(() => {
     if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === API_STATUS.LOADED) {
       Modal.confirm({
-        title: 'You have unfinished activity.',
-        content: 'Restore unfinished activity? If no the activity will be cleared.',
-        okText: 'Restore',
-        cancelText: 'Don\'t restore',
+        title: modal.restore.title,
+        content: modal.restore.body,
+        okText: modal.restore.ok_button,
+        cancelText: modal.restore.cancel_button,
         onOk() {
           try {
             const _cachedFormValues = JSON.parse(localStorage.getItem('cached_activity') || 'null')

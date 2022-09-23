@@ -6,7 +6,8 @@ import { SignupError } from 'store/slices/auth/types'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface IProps {
-  active: boolean
+  active: boolean;
+  loading: boolean;
 }
 
 export type SignupQueryResult = ReturnType<typeof authApi.useLazySignupQuery>
@@ -15,7 +16,7 @@ export type ApiSignupError = {
   status: number
 }
 
-const Signup: FC<IProps> = ({ active }) => {
+const Signup: FC<IProps> = ({ active, loading }) => {
   const { intl } = useContext(IntlContext)
   const [ signup, stateResult ] = authApi.useLazySignupQuery()
 
@@ -27,6 +28,7 @@ const Signup: FC<IProps> = ({ active }) => {
   return (
     <Form
       data={stateResult.data}
+      loading={loading}
       isFetching={stateResult.isFetching}
       isError={stateResult.isError}
       error={stateResult.error as ApiSignupError}

@@ -6,10 +6,11 @@ import styled from 'styled-components'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import Login from '../login/Login'
 import Signup from '../signup/Signup'
-import { FC, SyntheticEvent, useContext, useEffect, useState } from 'react'
+import { Dispatch, FC, SetStateAction, SyntheticEvent, useContext, useEffect, useState } from 'react'
 import { changeLang, selectLang } from '@/src/app/store/slices/config'
 import { useRouter } from 'next/router'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 
 const { TabPane } = Tabs
 
@@ -62,12 +63,18 @@ const ResetPasswordLink = styled.span`
   text-align: center;
 `
 
+export enum AUTH_FORM_TABS {
+  LOGIN = 'login',
+  SIGNUP = 'signup',
+}
+
 const AuthTemplate = () => {
   const lang = useAppSelector(selectLang)
   const { intl } = useContext(IntlContext)
   const dispatch = useAppDispatch()
-  const [ tab, setTab ] = useState('login')
+  const [ tab, setTab ] = useState(AUTH_FORM_TABS.LOGIN)
   const router = useRouter()
+  const { loading } = useContext(RouterContext)
 
   const handleChangeLang = (e: SyntheticEvent<HTMLButtonElement>) => {
     const { dataset } = e.currentTarget as HTMLButtonElement
@@ -93,12 +100,12 @@ const AuthTemplate = () => {
         </FlagsContainer>
 
         <Card bordered={false} size="small">
-          <StyledTabs onChange={setTab} size="large" defaultActiveKey="login">
-            <TabPane tab={intl.auth_form.login_tab} key="login">
-              <Login active={tab === 'login'} />
+          <StyledTabs onChange={setTab as Dispatch<SetStateAction<string>>} size="large" defaultActiveKey={AUTH_FORM_TABS.LOGIN}>
+            <TabPane tab={intl.auth_form.login_tab} key={AUTH_FORM_TABS.LOGIN}>
+              <Login active={tab === AUTH_FORM_TABS.LOGIN} loading={loading} />
             </TabPane>
-            <TabPane tab={intl.auth_form.signup_tab} key="signup">
-              <Signup active={tab === 'signup'} />
+            <TabPane tab={intl.auth_form.signup_tab} key={AUTH_FORM_TABS.SIGNUP}>
+              <Signup active={tab === AUTH_FORM_TABS.SIGNUP} loading={loading} />
             </TabPane>
           </StyledTabs>
           <ResetPasswordLink>

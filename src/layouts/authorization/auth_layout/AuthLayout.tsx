@@ -4,12 +4,8 @@ import UserRoute from '../user/UserRoute'
 import { NextPage } from 'next'
 import { selectToken } from '@/src/app/store/slices/auth'
 import { useAppSelector } from '@/src/app/hooks'
-import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
-import withAuth, { GetServerSidePropsContextWithSession } from '@/src/app/store/utils/withAuth'
-import routes from '@/src/app/constants/end_points'
-import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
 
-const AuthLayout: NextPage = ({ children, ...rest }) => {
+const AuthLayout: NextPage = ({ children }) => {
   const token = useAppSelector(selectToken)
   return (
     token

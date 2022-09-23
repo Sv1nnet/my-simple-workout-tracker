@@ -17,7 +17,9 @@ export const langs: ILangs = {
 
 const initialState: IConfigState = {
   data: {
-    lang: langs.eng,
+    lang: typeof localStorage !== 'undefined'
+      ? ((JSON.parse(localStorage.getItem('config')) as { lang: Lang })?.lang ?? langs.eng)
+      : langs.eng,
   },
   status: API_STATUS.INITIAL,
 }
@@ -29,7 +31,7 @@ export const authSlice = createSlice({
     changeLang: (state, action: PayloadAction<string>) => {
       state.data.lang = langs[action.payload] ?? langs.eng
       if (localStorage) {
-        localStorage.setItem('config', JSON.stringify(state))
+        localStorage.setItem('config', JSON.stringify(state.data))
       }
     },
   },

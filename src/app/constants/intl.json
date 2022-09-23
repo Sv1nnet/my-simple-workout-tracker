@@ -9,6 +9,10 @@
       "ru": "Регистрация",
       "eng": "Signup"
     },
+    "loading": {
+      "ru": "Загрузка...",
+      "eng": "Loading..."
+    },
     "email": {
       "ru": "Почта",
       "eng": "Email"
@@ -440,6 +444,10 @@
         "history_loading": {
           "ru": "Загрузка истории...",
           "eng": "History loading..."
+        },
+        "workouts_loading": {
+          "ru": "Загрузка тренировок...",
+          "eng": "Loading workout list..."
         }
       },
       "input_labels": {
@@ -589,6 +597,38 @@
           "cancel_button": {
             "ru": "Отмена",
             "eng": "Cancel"
+          }
+        },
+        "restore": {
+          "title": {
+            "ru": "У Вас есть незаконченная активность.",
+            "eng": "You have unfinished activity."
+          },
+          "body": {
+            "ru": "Восстановить незаконченную активность? Если нет, она будет очищена.",
+            "eng": "Restore unfinished activity? If no the activity will be discarded."
+          },
+          "ok_button": {
+            "ru": "Восстановить",
+            "eng": "Restore"
+          },
+          "cancel_button": {
+            "ru": "Очистить",
+            "eng": "Discard"
+          }
+        },
+        "error": {
+          "title": {
+            "ru": "Упс!",
+            "eng": "Oops!"
+          },
+          "body": {
+            "ru": "Что-то пошло не так и активность не может быть восстановлена.",
+            "eng": "Something has gone wrong and could not restore activity."
+          },
+          "ok_button": {
+            "ru": "Грустно, но ок",
+            "eng": "It's sad but ok"
           }
         }
       }

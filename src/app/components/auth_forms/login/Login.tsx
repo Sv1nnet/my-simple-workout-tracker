@@ -6,7 +6,8 @@ import { LoginError } from 'store/slices/auth/types'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface IProps {
-  active: boolean
+  active: boolean;
+  loading: boolean;
 }
 
 export type ApiLoginError = {
@@ -14,13 +15,14 @@ export type ApiLoginError = {
   status: number
 }
 
-const Login: FC<IProps> = ({ active }) => {
+const Login: FC<IProps> = ({ active, loading }) => {
   const { intl } = useContext(IntlContext)
   const [ login, stateResult ] = authApi.useLazyLoginQuery()
 
   return (
     <Form
       data={stateResult.data}
+      loading={loading}
       isFetching={stateResult.isFetching}
       isError={stateResult.isError}
       error={stateResult.error as ApiLoginError}

@@ -69,10 +69,10 @@ export const authSlice = createSlice({
   },
 })
 
-// export const { updateToken, logout } = authSlice.actions
 export const { updateToken } = authSlice.actions
 export const { logout } = actions
 
 export const selectToken = (state: AppState) => state.auth.token
+export const selectAuthStatus = (state: AppState) => state.auth.status
 
 export default authSlice.reducer
