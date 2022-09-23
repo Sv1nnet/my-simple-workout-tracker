@@ -27,6 +27,7 @@ import { activityApi } from '@/src/app/store/slices/activity/api'
 import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
 import { WorkoutForm, WorkoutListExercise } from '@/src/app/store/slices/workout/types'
 import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
+import { API_STATUS } from '@/src/app/constants/api_statuses'
 
 export interface IActivityProps {
   id?: string;
@@ -91,7 +92,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const { intl } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
   
-  const { input_labels, submit_button, modal } = intl.pages.activities
+  const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
   
   const mountedRef = useRef(false)
@@ -325,9 +326,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [])
 
   useEffect(() => {
-    if (workoutList.status === 'loading') {
-      runLoader('workout_list_loader', { tip: 'Loading workout list...' })
-    } else if (workoutList.status === 'loaded' || workoutList.status === 'error') {
+    if (workoutList.status === API_STATUS.LOADING) {
+      runLoader('workout_list_loader', { tip: loader.workouts_loading })
+    } else if (workoutList.status === API_STATUS.LOADED || workoutList.status === API_STATUS.ERROR) {
       stopLoaderById('workout_list_loader')
     }
   }, [ workoutList.status ])
@@ -339,12 +340,12 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [ selectedWorkout ])
 
   useEffect(() => {
-    if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === 'loaded') {
+    if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === API_STATUS.LOADED) {
       Modal.confirm({
-        title: 'You have unfinished activity.',
-        content: 'Restore unfinished activity? If no the activity will be cleared.',
-        okText: 'Restore',
-        cancelText: 'Don\'t restore',
+        title: modal.restore.title,
+        content: modal.restore.body,
+        okText: modal.restore.ok_button,
+        cancelText: modal.restore.cancel_button,
         onOk() {
           try {
             const _cachedFormValues = JSON.parse(localStorage.getItem('cached_activity') || 'null')

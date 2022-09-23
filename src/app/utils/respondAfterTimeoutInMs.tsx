@@ -16,7 +16,7 @@ export class Timeout {
   }
 }
 
-const respondeAfterTimeoutInMs = ({ timeout, ctx, route }, timeToWait = 1000) => {
+const respondAfterTimeoutInMs = ({ timeout, ctx, route }, timeToWait = 1000) => {
   clearTimeout(timeout.getTimeout)
 
   return new Promise<IResponse<null>>(async (res, rej) => {
@@ -48,4 +48,4 @@ const respondeAfterTimeoutInMs = ({ timeout, ctx, route }, timeToWait = 1000) =>
   })
 }
 
-export default respondeAfterTimeoutInMs
+export default respondAfterTimeoutInMs

@@ -1,3 +1,4 @@
+import { ApiStatus, API_STATUS } from '@/src/app/constants/api_statuses'
 import { createSlice } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { profileApi } from './api'
@@ -6,13 +7,13 @@ import { ProfileForm } from './types'
 export type Credentials = Pick<Partial<ProfileForm>, 'email'>
 
 export interface IProfileState {
-  credentials: Credentials,
-  status: 'initial' | 'loading' | 'error' | 'loaded'
+  credentials: Credentials;
+  status: ApiStatus;
 }
 
 const initialState: IProfileState = {
   credentials: {},
-  status: 'initial',
+  status: API_STATUS.INITIAL,
 }
 
 export const profileSlice = createSlice({
@@ -25,40 +26,40 @@ export const profileSlice = createSlice({
       .addMatcher(
         profileApi.endpoints.update.matchPending,
         (state) => {
-          state.status = 'loading'
+          state.status = API_STATUS.LOADING
         },
       )
       .addMatcher(
         profileApi.endpoints.update.matchFulfilled,
         (state, { payload }) => {
           Object.assign(state.credentials, payload.data)
-          state.status = 'loaded'
+          state.status = API_STATUS.LOADED
         },
       )
       .addMatcher(
         profileApi.endpoints.update.matchRejected,
         (state) => {
-          state.status = 'error'
+          state.status = API_STATUS.ERROR
         },
       )
       // get profile
       .addMatcher(
         profileApi.endpoints.get.matchPending,
         (state) => {
-          state.status = 'loading'
+          state.status = API_STATUS.LOADING
         },
       )
       .addMatcher(
         profileApi.endpoints.get.matchFulfilled,
         (state, { payload }) => {
           Object.assign(state.credentials, payload)
-          state.status = 'loaded'
+          state.status = API_STATUS.LOADED
         },
       )
       .addMatcher(
         profileApi.endpoints.get.matchRejected,
         (state) => {
-          state.status = 'error'
+          state.status = API_STATUS.ERROR
         },
       )
   },

@@ -10,6 +10,8 @@ import { updateToken } from 'store/slices/auth'
 import { ApiSignupError } from '../signup/Signup'
 import { ApiLoginError } from '../login/Login'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
+import { AUTH_FORM_TABS } from '../template/Template'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -21,13 +23,15 @@ interface IFormProps {
   submitLabel: string
   active: boolean
   data?: SignupSuccess | LoginSuccess
+  loading: boolean
   isFetching: boolean
   isError: boolean
   error: ApiSignupError | ApiLoginError | null
 }
 
-const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resData = {}, isFetching, isError, error }) => {
-  const { intl } = useContext(IntlContext)
+const Form: FC<IFormProps> = ({ type, active, loading, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
+  const { auth_form } = useContext(IntlContext).intl
+  const { runLoader, stopLoaderById, forceStopLoader } = useContext(AppLoaderContext)
   const dispatch = useAppDispatch()
   const [ form ] = useForm()
   const { data } = resData
@@ -38,7 +42,7 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
 
       if (isFieldName('confirm_password')) {
         if (!value || getFieldValue('password') === value) return
-        throw new Error(intl.auth_form.error_message.confirm_password.password_matching)
+        throw new Error(auth_form.error_message.confirm_password.password_matching)
       }
     },
   })
@@ -65,6 +69,13 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
     if (!active) form.resetFields()
   }, [ active ])
 
+  useEffect(() => {
+    if (loading) runLoader('auth', { tip: auth_form.loading, style: { top: '-72px' } })
+    else stopLoaderById('auth')
+
+    return forceStopLoader
+  }, [ loading ])
+
   return (
     <AntForm
       form={form}
@@ -72,30 +83,30 @@ const Form: FC<IFormProps> = ({ type, active, submitLabel, onSubmit, data: resDa
       onFinish={onSubmit}
       layout="vertical"
     >
-      <AntForm.Item label={intl.auth_form.email} name="email" rules={[
-        { required: true, message: intl.auth_form.error_message.email.required },
+      <AntForm.Item label={auth_form.email} name="email" rules={[
+        { required: true, message: auth_form.error_message.email.required },
         validate as Rule,
       ]}>
         <Input size="large" type="email" name="email" />
       </AntForm.Item>
 
       <AntForm.Item 
-        label={intl.auth_form.password}
+        label={auth_form.password}
         name="password"
         rules={[
-          { min: 6, message: intl.auth_form.error_message.password.len },
-          { required: true, message: intl.auth_form.error_message.password.required },
+          { min: 6, message: auth_form.error_message.password.len },
+          { required: true, message: auth_form.error_message.password.required },
         ]}
       >
         <Input.Password size="large" type="password" name="password" />
       </AntForm.Item>
 
-      {type === 'signup' && (
+      {type === AUTH_FORM_TABS.SIGNUP && (
         <AntForm.Item
-          label={intl.auth_form.confirm_password}
+          label={auth_form.confirm_password}
           name="confirm_password"
           rules={[
-            { required: true, message: intl.auth_form.error_message.confirm_password.required },
+            { required: true, message: auth_form.error_message.confirm_password.required },
             validate as Rule,
           ]}
         >

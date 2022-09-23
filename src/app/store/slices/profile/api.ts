@@ -6,7 +6,6 @@ import {
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { Token } from '../auth/types'
 
 export const profileApi = createApi({
   reducerPath: 'profileApi',

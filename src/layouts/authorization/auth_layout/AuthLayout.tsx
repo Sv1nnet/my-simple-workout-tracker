@@ -5,9 +5,8 @@ import { NextPage } from 'next'
 import { selectToken } from '@/src/app/store/slices/auth'
 import { useAppSelector } from '@/src/app/hooks'
 
-const AuthTemplate: NextPage = ({ children }) => {
+const AuthLayout: NextPage = ({ children }) => {
   const token = useAppSelector(selectToken)
-
   return (
     token
       ? (
@@ -18,11 +17,11 @@ const AuthTemplate: NextPage = ({ children }) => {
       : <GuestRoute />
   )
 }
-AuthTemplate.propTypes = {
+AuthLayout.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
   ]).isRequired,
 }
 
-export default AuthTemplate
+export default AuthLayout
