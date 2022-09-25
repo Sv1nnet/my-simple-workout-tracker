@@ -1,7 +1,9 @@
+
+import { useRef } from 'react'
 import styled from 'styled-components'
 import TimePicker from 'app/components/time_picker/TimePicker'
-import { DeleteFilled } from '@ant-design/icons'
-import { Checkbox, Divider, Form, Select } from 'antd'
+import { DeleteFilled, DownOutlined, UpOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Divider, Form, Select } from 'antd'
 import { Rule } from 'antd/lib/form'
 import { Input as CustomInput } from 'app/components'
 import {
@@ -21,13 +23,60 @@ const StyledSelect = styled(Select)`
   }
 `
 
-const Exercise = ({ fields, isFormItemDisabled, validate, form, dictionary, errorsDictionary, index, isEditMode, isFetching, payload, exerciseList, onExerciseChange, remove }) => {
+const MoveExerciseButtonContainer = styled.div`
+  position: absolute;
+  z-index: 1;
+  top: ${({ $hasTopButton }) => $hasTopButton ? '-24px' : '0px'};
+  left: 50%;
+  background: white;
+  border: 1px lightgrey solid;
+  ${({ $hasBottomButton }) => !$hasBottomButton ? 'border-bottom: white;' : ''}
+  ${({ $hasTopButton }) => !$hasTopButton ? 'border-top: white;' : ''}
+  transform: translateX(-50%);
+  border-radius: ${({ $hasBottomButton, $hasTopButton }) => `${$hasTopButton ? '25px 25px' : '0 0'} ${$hasBottomButton ? '25px 25px' : '0 0'}`};
+  width: 50px;
+  overflow: hidden;
+
+  button {
+    width: 100%;
+    padding: 0;
+  }
+`
+
+const Exercise = ({
+  exerciseAmount,
+  fields,
+  isFormItemDisabled,
+  validate,
+  form,
+  dictionary,
+  errorsDictionary,
+  index,
+  isEditMode,
+  isNew,
+  isFetching,
+  payload,
+  exerciseList,
+  onExerciseChange,
+  remove,
+}) => {
+  const $container = useRef(null)
   const requiredRules = isEditMode ? [ { required: true, message: errorsDictionary.common.required } ] : []
   const handleExerciseChange = onExerciseChange(index, 'rounds')
+  const hasTopButton = index !== 0
+  const hasBottomButton = index !== exerciseAmount - 1
+
+  const handleChangeOrder = (order: number) => onExerciseChange(index, 'order', order, $container)
 
   return (
-    <ExerciseContainer>
+    <ExerciseContainer ref={$container}>
       <Divider style={{ marginBottom: '16px', marginTop: '6px' }} />
+      {isNew && (
+        <MoveExerciseButtonContainer $hasBottomButton={hasBottomButton} $hasTopButton={hasTopButton}>
+          {hasTopButton && <Button onClick={handleChangeOrder(-1)} size="small" type="text"><UpOutlined /></Button>}
+          {hasBottomButton && <Button onClick={handleChangeOrder(1)} size="small" type="text"><DownOutlined /></Button>}
+        </MoveExerciseButtonContainer>
+      )}
       {isEditMode && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
 
       <Form.Item label={dictionary.input_labels.exercise} name={[ index, 'id' ]} rules={requiredRules}>

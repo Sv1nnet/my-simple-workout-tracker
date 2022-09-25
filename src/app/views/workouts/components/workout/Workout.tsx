@@ -57,6 +57,7 @@ const addDefaultExercise = () => ({
 
 const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }) => {
   const router = useRouter()
+  const $container = useRef(null)
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
@@ -93,13 +94,30 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
 
   const mountedRef = useRef(false)
 
-  const handleExerciseChange = (i, name) => (value) => {
+  const handleExerciseChange = (i, name, order, ref) => (value) => {
+    let exercises = [ ...form.getFieldValue('exercises') ]
+    const exerciseToUpdate = { ...exercises[i] }
+
+    if (order) {
+      const newPos = i + order
+      form.setFieldsValue({
+        exercises: exercises.map((exercise, index) => {
+          if (index === newPos) return exerciseToUpdate
+          if (index === i) return exercises[index + order]
+          return exercise
+        }),
+      })
+      requestAnimationFrame(() => {
+        const elementToScrollTo = ref.current.parentElement.children[newPos + 1]
+        $container.current.parentElement.scrollTo(0, (elementToScrollTo.offsetTop - 25))
+      })
+      return
+    }
+
     if (value && typeof value === 'object' && 'target' in value) {
       value = value.target.checked
     }
 
-    let exercises = [ ...form.getFieldValue('exercises') ]
-    const exerciseToUpdate = { ...exercises[i] }
     exerciseToUpdate[name] = value
     exercises[i] = exerciseToUpdate
     form.setFieldsValue({ exercises })
@@ -184,7 +202,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const isFormItemDisabled = !isEditMode || isFetching || loading
 
   return (
-    <>
+    <div ref={$container}>
       <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
         {isEdit && (
           <DeleteEditPanel
@@ -204,6 +222,8 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
               {fields.map((field, i) => (
                 <Exercise
                   key={field.key}
+                  isNew={!isEdit}
+                  exerciseAmount={fields.length}
                   fields={fields}
                   form={form}
                   index={i}
@@ -268,7 +288,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
           {modal.delete.body_single}
         </Modal>
       </StyledForm>
-    </>
+    </div>
   )
 }
 
