@@ -11,4 +11,8 @@ Also I implemented internationalization by my own.
 
 I did not spend much time on making backend codebase neat since frontend is my specialization and I'm not really interested in backend.
 
-My backend https://github.com/Sv1nnet/mswt-server
+## Run locally
+To run it locally you have to have [Backend](https://github.com/Sv1nnet/mswt-server) installed.
+Then:
+1. Run `npm i`
+2. Run `npm run dev`
