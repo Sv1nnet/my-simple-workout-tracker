@@ -1,5 +1,29 @@
 {
   "langs": ["ru", "eng"],
+  "signup_by_code": {
+    "code_label": {
+      "ru": "Код",
+      "eng": "Code"
+    },
+    "signup_code_tip": {
+      "ru": "Сохраните код и держите его в секрете, т.к. он понадобится для восстановления пароля.",
+      "eng": "Save the code and keep it in secret since you need it to restore your password."
+    },
+    "error_message": {
+      "code": {
+        "ru": "Введите код",
+        "eng": "Code is required"
+      }
+    },
+    "submit_label": {
+      "ru": "Отправить",
+      "eng": "Submit"
+    },
+    "loading": {
+      "ru": "Загрузка...",
+      "eng": "Loading..."
+    }
+  },
   "auth_form": {
     "login_tab": {
       "ru": "Войти",
@@ -16,6 +40,10 @@
     "email": {
       "ru": "Почта",
       "eng": "Email"
+    },
+    "reset_password": {
+      "ru": "Восстановить пароль",
+      "eng": "Restore password"
     },
     "password": {
       "ru": "Пароль",

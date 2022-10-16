@@ -31,6 +31,12 @@ const routes = {
           path: `${this.base.path}/signup`,
         }
       },
+      get verifySignupCode() {
+        return {
+          full: `${routes.base}${this.base.path}/verify-signup-code`,
+          path: `${this.base.path}/verify-signup-code`,
+        }
+      },
       get logout() {
         return {
           full: `${routes.base}${this.base.path}/logout`,

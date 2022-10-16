@@ -18,18 +18,19 @@ const StyledButton = styled(Button)`
 `
 
 interface IFormProps {
-  type: string
-  onSubmit: (values: Login | Signup) => void
-  submitLabel: string
-  active: boolean
-  data?: SignupSuccess | LoginSuccess
-  loading: boolean
-  isFetching: boolean
-  isError: boolean
-  error: ApiSignupError | ApiLoginError | null
+  type: string;
+  signupCode?: string;
+  onSubmit: (values: Login | Signup) => void;
+  submitLabel: string;
+  active: boolean;
+  data?: SignupSuccess | LoginSuccess;
+  loading: boolean;
+  isFetching: boolean;
+  isError: boolean;
+  error: ApiSignupError | ApiLoginError | null;
 }
 
-const Form: FC<IFormProps> = ({ type, active, loading, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
+const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
   const { auth_form } = useContext(IntlContext).intl
   const { runLoader, stopLoaderById, forceStopLoader } = useContext(AppLoaderContext)
   const dispatch = useAppDispatch()
@@ -46,6 +47,8 @@ const Form: FC<IFormProps> = ({ type, active, loading, submitLabel, onSubmit, da
       }
     },
   })
+
+  const handleSubmit = values => onSubmit({ ...values, signup_code: signupCode })
   
   useEffect(() => {
     if (isError && error) {
@@ -55,7 +58,7 @@ const Form: FC<IFormProps> = ({ type, active, loading, submitLabel, onSubmit, da
           description,
         })
       }
-      openNotification({ message: 'Error!', description: error?.data?.error.message })
+      openNotification({ message: 'Error!', description: error?.data?.error.message?.text })
     }
   }, [ isError ])
 
@@ -80,7 +83,7 @@ const Form: FC<IFormProps> = ({ type, active, loading, submitLabel, onSubmit, da
     <AntForm
       form={form}
       name={type}
-      onFinish={onSubmit}
+      onFinish={handleSubmit}
       layout="vertical"
     >
       <AntForm.Item label={auth_form.email} name="email" rules={[

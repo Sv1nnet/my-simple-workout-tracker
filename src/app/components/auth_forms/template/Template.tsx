@@ -110,7 +110,7 @@ const AuthTemplate = () => {
           </StyledTabs>
           <ResetPasswordLink>
             <Link href="/">
-              Reset password
+              {intl.auth_form.reset_password}
             </Link>
           </ResetPasswordLink>
         </Card>
