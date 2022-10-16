@@ -9,6 +9,7 @@ import {
   ResetSuccess,
   RestoreSuccess,
   RefreshSuccess,
+  VerifySignupCodeSuccess,
 } from './types'
 import routes from 'constants/end_points'
 
@@ -31,6 +32,13 @@ export const authApi = createApi({
         url: routes.auth.v1.signup.full,
         method: 'POST',
         body: { ...cred },
+      }),
+    }),
+    verifySignupCode: build.query<VerifySignupCodeSuccess, void>({
+      query: code => ({
+        url: routes.auth.v1.verifySignupCode.full,
+        method: 'POST',
+        body: { code },
       }),
     }),
     logout: build.query<LogoutSuccess, void>({
