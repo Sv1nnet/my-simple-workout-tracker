@@ -1,11 +1,10 @@
 import routes from '@/src/app/constants/end_points'
+import { InspectButton } from '@/src/app/components/list_buttons'
 import { ExerciseForm, Image } from '@/src/app/store/slices/exercise/types'
 import getWordByNumber from '@/src/app/utils/getWordByNumber'
 import { timeToHms } from '@/src/app/utils/time'
-import { LoadingOutlined } from '@ant-design/icons'
-import { Checkbox, List, Spin, Typography } from 'antd'
+import { Checkbox, List, Typography } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
-import Link from 'next/link'
 import { FC } from 'react'
 import styled from 'styled-components'
 
@@ -39,7 +38,7 @@ const StyledCheckbox = styled(Checkbox)`
   left: 0;
 `
 
-const StyledTitle = ({ id, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary, selectionEnabled }) => {
+const StyledTitle = ({ id, loadingExerciseId, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary }) => {
   repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
   time = time
     ? timeToHms(
@@ -55,55 +54,21 @@ const StyledTitle = ({ id, isLoading, title, repeats, time, weight, massUnit = '
     : null
   weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit][0]}` : null
 
-  return selectionEnabled || isLoading
-    ? (
-      <div>
-        <LoadType>
-          <Text type="secondary">{[ repeats, time, weight ].filter(Boolean).join(' / ') || <span>&nbsp;</span>}</Text>
-        </LoadType>
+  return (
+    <div>
+      <LoadType>
+        <Text type="secondary">{[ repeats, time, weight ].filter(Boolean).join(' / ') || <span>&nbsp;</span>}</Text>
+      </LoadType>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Title level={4}>{title}</Title>
+        <InspectButton loading={loadingExerciseId === id || isLoading} href={`/exercises/${id}`} />
       </div>
-    )
-    : (
-      <Link href={`/exercises/${id}`}>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a>
-          <LoadType>
-            <Text type="secondary">{[ repeats, time, weight ].filter(Boolean).join(' / ') || <span>&nbsp;</span>}</Text>
-          </LoadType>
-          <Title level={4}>{title}</Title>
-        </a>
-      </Link>
-    )
+    </div>
+  )
 }
 
-const ExerciseImage = ({ id, isLoading, selectionEnabled, image }) => (selectionEnabled || isLoading)
-  ? isLoading
-    ? (
-      <Spin indicator={<LoadingOutlined />}>
-        <img
-          src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
-        />
-      </Spin>
-    )
-    : (
-      <img
-        src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
-      />
-    )
-  
-  : (
-    <Link href={`/exercises/${id}`}>
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <a>
-        <img
-          src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
-        />
-      </a>
-    </Link>
-  )
-
 interface IExerciseForm extends ExerciseForm {
+  loadingExerciseId: string | null;
   payloadDictionary: object;
   selectionEnabled: boolean;
   selected: boolean;
@@ -111,12 +76,25 @@ interface IExerciseForm extends ExerciseForm {
   isLoading?: boolean;
 }
 
-const ExerciseItem: FC<IExerciseForm> = ({ id, isLoading, title, repeats, time, weight, mass_unit, image, selectionEnabled, selected, payloadDictionary }) => (
+const ExerciseItem: FC<IExerciseForm> = ({
+  id,
+  loadingExerciseId,
+  isLoading,
+  title,
+  repeats,
+  time,
+  weight,
+  mass_unit,
+  image,
+  selectionEnabled,
+  selected,
+  payloadDictionary,
+}) => (
   <List.Item.Meta
     avatar={(
       <ImageContainer>
         {selectionEnabled && <StyledCheckbox checked={selected} />}
-        <ExerciseImage isLoading={isLoading} selectionEnabled={selectionEnabled} id={id} image={image} />
+        <img src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder} />
       </ImageContainer>
     )}
     title={(
@@ -128,8 +106,8 @@ const ExerciseItem: FC<IExerciseForm> = ({ id, isLoading, title, repeats, time, 
         time={time}
         weight={weight}
         massUnit={mass_unit}
+        loadingExerciseId={loadingExerciseId}
         payloadDictionary={payloadDictionary}
-        selectionEnabled={selectionEnabled}
       />
     )}
   />
