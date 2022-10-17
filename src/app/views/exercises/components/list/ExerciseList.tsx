@@ -7,6 +7,7 @@ import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
+import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 
 export type ApiDeleteExerciseError = {
   data: ExerciseDeleteError;
@@ -26,6 +27,8 @@ export interface IExerciseList {
 
 const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, isDeleting, exercises }) => {
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
+  const { loading, loadingRoute } = useContext(RouterContext)
+  const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { payload, modal } = useContext(IntlContext).intl.pages.exercises
   const {
     isModalVisible,
@@ -84,6 +87,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
             renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
                 <ExerciseItem
+                  loadingExerciseId={loading && loadingId ? loadingId : null}
                   payloadDictionary={payload}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
