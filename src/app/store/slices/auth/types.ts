@@ -11,7 +11,7 @@ export type Password = string
 
 export type User = Pick<UserForm, 'email'>
 export type Reset = Pick<UserForm, 'email'>
-export type Restore = Pick<UserForm, 'email'>
+export type Restore = { signup_code: string, password: Pick<UserForm, 'password'> }
 export type Refresh = Pick<UserForm, 'email'>
 export type Login = Pick<UserForm, 'email' | 'password'>
 export type Signup = Pick<UserForm, 'email' | 'password'>
@@ -29,7 +29,7 @@ export type ResetSuccess = IResponse
 export type ResetError = IResponse<null, { email?: string }>
 
 export type RestoreSuccess = IResponse
-export type RestoreError = IResponse<null, { password?: string }>
+export type RestoreError = IResponse<null, { signup_code?: string, password?: string }>
 
 export type RefreshSuccess = IResponse<{ token: Token }>
 export type RefreshError = IResponse

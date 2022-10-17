@@ -56,9 +56,10 @@ export const authApi = createApi({
       }),
     }),
     restorePassword: build.query<RestoreSuccess, void>({
-      query: () => ({
+      query: body => ({
         url: routes.auth.v1.restorePassword.full,
         method: 'POST',
+        body,
       }),
     }),
     refreshToken: build.query<RefreshSuccess, void>({

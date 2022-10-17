@@ -24,6 +24,16 @@
       "eng": "Loading..."
     }
   },
+  "restore_password": {
+    "code_label": {
+      "ru": "Код",
+      "eng": "Code"
+    },
+    "submit_label": {
+      "ru": "Восстановить",
+      "eng": "Restore"
+    }
+  },
   "auth_form": {
     "login_tab": {
       "ru": "Войти",
@@ -41,7 +51,7 @@
       "ru": "Почта",
       "eng": "Email"
     },
-    "reset_password": {
+    "restore_password": {
       "ru": "Восстановить пароль",
       "eng": "Restore password"
     },
