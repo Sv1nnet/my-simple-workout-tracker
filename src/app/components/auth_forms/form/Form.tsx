@@ -31,7 +31,7 @@ interface IFormProps {
 }
 
 const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
-  const { auth_form } = useContext(IntlContext).intl
+  const { auth_form, signup_by_code, restore_password } = useContext(IntlContext).intl
   const { runLoader, stopLoaderById, forceStopLoader } = useContext(AppLoaderContext)
   const dispatch = useAppDispatch()
   const [ form ] = useForm()
@@ -48,7 +48,7 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
     },
   })
 
-  const handleSubmit = values => onSubmit({ ...values, signup_code: signupCode })
+  const handleSubmit = values => onSubmit({ ...values, signup_code: values.signup_code ?? signupCode })
   
   useEffect(() => {
     if (isError && error) {
@@ -58,7 +58,7 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
           description,
         })
       }
-      openNotification({ message: 'Error!', description: error?.data?.error.message?.text })
+      openNotification({ message: 'Error!', description: error?.data?.error?.message?.text })
     }
   }, [ isError ])
 
@@ -86,12 +86,23 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
       onFinish={handleSubmit}
       layout="vertical"
     >
-      <AntForm.Item label={auth_form.email} name="email" rules={[
-        { required: true, message: auth_form.error_message.email.required },
-        validate as Rule,
-      ]}>
-        <Input size="large" type="email" name="email" />
-      </AntForm.Item>
+      {type !== AUTH_FORM_TABS.RESTORE_PASSWORD && (
+        <AntForm.Item label={auth_form.email} name="email" rules={[
+          { required: true, message: auth_form.error_message.email.required },
+          validate as Rule,
+        ]}>
+          <Input size="large" type="email" name="email" />
+        </AntForm.Item>
+      )}
+
+      {type === AUTH_FORM_TABS.RESTORE_PASSWORD && (
+        <AntForm.Item label={restore_password.code_label} name="signup_code" rules={[
+          { required: true, message: signup_by_code.error_message.code },
+          validate as Rule,
+        ]}>
+          <Input size="large" type="text" name="signup_code" />
+        </AntForm.Item>
+      )}
 
       <AntForm.Item 
         label={auth_form.password}
@@ -104,7 +115,7 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
         <Input.Password size="large" type="password" name="password" />
       </AntForm.Item>
 
-      {type === AUTH_FORM_TABS.SIGNUP && (
+      {(type === AUTH_FORM_TABS.SIGNUP || type === AUTH_FORM_TABS.RESTORE_PASSWORD) && (
         <AntForm.Item
           label={auth_form.confirm_password}
           name="confirm_password"
@@ -119,7 +130,9 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
 
       <AntForm.Item>
         <StyledButton size="large" type="primary" htmlType="submit" block loading={isFetching}>
-          {submitLabel}
+          {type === AUTH_FORM_TABS.RESTORE_PASSWORD
+            ? restore_password.submit_label
+            : submitLabel}
         </StyledButton>
       </AntForm.Item>
     </AntForm>

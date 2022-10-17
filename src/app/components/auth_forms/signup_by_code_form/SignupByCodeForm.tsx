@@ -63,7 +63,7 @@ const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
       layout="vertical"
     >
       <AntForm.Item label={signup_by_code.code_label} name="code" rules={[
-        { required: true, message: signup_by_code.error_message.code.required },
+        { required: true, message: signup_by_code.error_message.code },
       ]}>
         <Input size="large" type="text" name="code" />
       </AntForm.Item>

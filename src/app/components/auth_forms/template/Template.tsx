@@ -1,6 +1,5 @@
 import Image from 'next/image'
-import Link from 'next/link'
-import { Tabs, Card } from 'antd'
+import { Tabs, Card, Button } from 'antd'
 import type { TabsProps } from 'antd'
 import styled from 'styled-components'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
@@ -11,8 +10,15 @@ import { changeLang, selectLang } from '@/src/app/store/slices/config'
 import { useRouter } from 'next/router'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import RestorePassword from '../restore_password/RestorePassword'
 
 const { TabPane } = Tabs
+
+export enum AUTH_FORM_TABS {
+  LOGIN = 'login',
+  SIGNUP = 'signup',
+  RESTORE_PASSWORD = 'restore-password',
+}
 
 const Container = styled.div`
   position: relative;
@@ -33,6 +39,12 @@ const StyledTabs: FC<TabsProps> = styled(Tabs)`
     .ant-tabs-tab {
       width: 50%;
       justify-content: center;
+      &:nth-child(3) {
+        overflow: hidden;
+        width: 0;
+        padding: 0;
+        margin: 0;
+      }
     }
   }
 `
@@ -58,16 +70,6 @@ const LangButton = styled.button`
   }
 `
 
-const ResetPasswordLink = styled.span`
-  display: block;
-  text-align: center;
-`
-
-export enum AUTH_FORM_TABS {
-  LOGIN = 'login',
-  SIGNUP = 'signup',
-}
-
 const AuthTemplate = () => {
   const lang = useAppSelector(selectLang)
   const { intl } = useContext(IntlContext)
@@ -80,6 +82,10 @@ const AuthTemplate = () => {
     const { dataset } = e.currentTarget as HTMLButtonElement
     dispatch(changeLang(dataset.lang))
   }
+
+  const handleRestorePasswordLinkClick = () => setTab(AUTH_FORM_TABS.RESTORE_PASSWORD)
+
+  const handleSuccessRestorePassword = () => setTab(AUTH_FORM_TABS.LOGIN)
 
   useEffect(() => {
     if (router.pathname !== '/') {
@@ -100,19 +106,22 @@ const AuthTemplate = () => {
         </FlagsContainer>
 
         <Card bordered={false} size="small">
-          <StyledTabs onChange={setTab as Dispatch<SetStateAction<string>>} size="large" defaultActiveKey={AUTH_FORM_TABS.LOGIN}>
+          <StyledTabs onChange={setTab as Dispatch<SetStateAction<string>>} activeKey={tab} size="large" defaultActiveKey={AUTH_FORM_TABS.LOGIN}>
             <TabPane tab={intl.auth_form.login_tab} key={AUTH_FORM_TABS.LOGIN}>
               <Login active={tab === AUTH_FORM_TABS.LOGIN} loading={loading} />
             </TabPane>
             <TabPane tab={intl.auth_form.signup_tab} key={AUTH_FORM_TABS.SIGNUP}>
               <Signup active={tab === AUTH_FORM_TABS.SIGNUP} loading={loading} />
             </TabPane>
+            <TabPane tab={intl.auth_form.restore_password} key={AUTH_FORM_TABS.RESTORE_PASSWORD}>
+              <RestorePassword onSuccess={handleSuccessRestorePassword} active={tab === AUTH_FORM_TABS.RESTORE_PASSWORD} loading={loading} />
+            </TabPane>
           </StyledTabs>
-          <ResetPasswordLink>
-            <Link href="/">
-              {intl.auth_form.reset_password}
-            </Link>
-          </ResetPasswordLink>
+          {tab !== AUTH_FORM_TABS.RESTORE_PASSWORD && (
+            <Button block type="link" onClick={handleRestorePasswordLinkClick}>
+              {intl.auth_form.restore_password}
+            </Button>
+          )}
         </Card>
       </FormContainer>
     </Container>
