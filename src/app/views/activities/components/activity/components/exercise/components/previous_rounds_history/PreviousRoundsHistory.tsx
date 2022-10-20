@@ -42,7 +42,7 @@ const StyledTr = styled.tr`
 const PreviousRoundsHistory = ({ isLoading, history, comparator, loaderDictionary, eachSide, isTimeType, hours }) => (isLoading || !history
   ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
   : (
-    <table style={{ marginLeft: 10 }}>
+    <table>
       <tbody>
         {history.map((previous, index) => eachSide
           ? (previous ?? []).length < 6
