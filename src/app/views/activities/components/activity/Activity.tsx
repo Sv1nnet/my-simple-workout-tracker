@@ -19,6 +19,7 @@ import {
   CreateEditFormItem,
   WorkoutFormItem,
   WorkoutLabelContainer,
+  StyledDateFormItem,
 } from './components'
 import { RouterContext } from 'app/contexts/router/RouterContextProvider'
 import { workoutApi } from 'app/store/slices/workout/api'
@@ -386,18 +387,17 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             editButtonProps={{ disabled: isFetching || loading }}
           />
         )}
+        <StyledDateFormItem
+          required
+          name="date"
+        >
+          <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
+        </StyledDateFormItem>
         <WorkoutFormItem
           required
           label={(
             <WorkoutLabelContainer>
-              <span>{input_labels.workout}</span>
-              <Form.Item
-                required
-                name="date"
-                style={{ marginBottom: 0 }}
-              >
-                <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
-              </Form.Item>
+              {input_labels.workout}
             </WorkoutLabelContainer>
           )}
           name="workout_id"
