@@ -7,6 +7,7 @@ import {
   ShortFormItem,
   WorkoutFormItem,
   WorkoutLabelContainer,
+  StyledDateFormItem,
 } from './styled'
 import Exercise from './exercise/Exercise'
 
@@ -20,4 +21,5 @@ export {
   ShortFormItem,
   WorkoutFormItem,
   WorkoutLabelContainer,
+  StyledDateFormItem,
 }

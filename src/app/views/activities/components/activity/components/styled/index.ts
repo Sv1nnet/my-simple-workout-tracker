@@ -6,6 +6,15 @@ export const StyledForm = styled(Form)`
   padding: 15px;
   ${({ $isEdit }) => $isEdit ? 'padding-top: 35px' : ''}
 `
+
+export const StyledDateFormItem = styled(Form.Item)`
+  position: absolute;
+  right: 7px;
+  top: 10px;
+  z-index: 100;
+  width: 120px;
+`
+
 export const StyledFormItem = styled(Form.Item)`
   margin-bottom: 0;
 
