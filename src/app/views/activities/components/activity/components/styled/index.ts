@@ -4,13 +4,13 @@ import styled from 'styled-components'
 export const StyledForm = styled(Form)`
   position: relative;
   padding: 15px;
-  ${({ $isEdit }) => $isEdit ? 'padding-top: 35px' : ''}
+  ${({ $isEdit }) => $isEdit ? 'padding-top: 40px' : ''}
 `
 
 export const StyledDateFormItem = styled(Form.Item)`
   position: absolute;
   right: 7px;
-  top: 10px;
+  top: ${({ $isEdit }) => $isEdit ? '35px' : '10px'};
   z-index: 100;
   width: 120px;
 `
