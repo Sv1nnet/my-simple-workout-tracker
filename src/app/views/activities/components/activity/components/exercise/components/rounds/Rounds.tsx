@@ -257,19 +257,23 @@ const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, 
             )}
       </StyledTd>
       {round === 0
-        ? <td rowSpan={totalRounds} style={{ overflow: 'scroll', padding: 0 }}>
+        ? <td rowSpan={totalRounds} style={{ overflow: 'hidden', padding: 0 }}>
           {isLoading || !history
             ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
             : (
-              <PreviousRoundsHistory
-                isLoading={isLoading}
-                history={history}
-                comparator={comparator}
-                loaderDictionary={loaderDictionary}
-                eachSide={eachSide}
-                isTimeType={isTimeType}
-                hours={hours}
-              />
+              <div style={{ overflow: 'hidden', paddingLeft: 5 }}>
+                <div style={{ overflow: 'scroll' }}>
+                  <PreviousRoundsHistory
+                    isLoading={isLoading}
+                    history={history}
+                    comparator={comparator}
+                    loaderDictionary={loaderDictionary}
+                    eachSide={eachSide}
+                    isTimeType={isTimeType}
+                    hours={hours}
+                  />
+                </div>
+              </div>
             )}
         </td>
         : null}
