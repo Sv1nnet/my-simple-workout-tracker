@@ -390,6 +390,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         <StyledDateFormItem
           required
           name="date"
+          $isEdit={isEdit}
         >
           <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
         </StyledDateFormItem>
