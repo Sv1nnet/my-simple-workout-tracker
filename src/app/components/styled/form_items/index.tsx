@@ -16,7 +16,3 @@ export const ToggleEdit = styled(Button)`
     margin-top: 15px;
   `}
 `
-
-export const DeleteEntity = styled(Button)`
-  
-`
