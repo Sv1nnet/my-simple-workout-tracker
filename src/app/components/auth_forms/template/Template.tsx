@@ -34,16 +34,22 @@ const FormContainer = styled.div`
 `
 
 const StyledTabs: FC<TabsProps> = styled(Tabs)`
-  .ant-tabs-nav-list {
-    width: 100%;
-    .ant-tabs-tab {
-      width: 50%;
-      justify-content: center;
-      &:nth-child(3) {
-        overflow: hidden;
-        width: 0;
-        padding: 0;
-        margin: 0;
+  .ant-tabs-nav {
+    .ant-tabs-nav-operations {
+      display: none;
+    }
+
+    &-list {
+      width: 100%;
+      .ant-tabs-tab {
+        width: 50%;
+        justify-content: center;
+        &:nth-child(3) {
+          overflow: hidden;
+          width: 0;
+          padding: 0;
+          margin: 0;
+        }
       }
     }
   }
