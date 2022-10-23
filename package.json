@@ -4,7 +4,8 @@
     "dev": "next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
     "dev:debug": "NODE_OPTIONS='--inspect' next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
+    "oldstart": "next start",
     "type-check": "tsc",
     "test": "jest"
   },
@@ -20,6 +21,8 @@
     "js-cookie": "^3.0.1",
     "nanoid": "^3.1.30",
     "next": "latest",
+    "next-compose-plugins": "^2.2.1",
+    "next-pwa": "^5.6.0",
     "next-redux-wrapper": "^7.0.5",
     "rc-picker": "^2.6.1",
     "react": "^17.0.2",

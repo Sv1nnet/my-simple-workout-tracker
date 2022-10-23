@@ -71,10 +71,8 @@ export type WithAuthCb = (ctx: GetServerSidePropsContextWithSession) => Promise<
 const withAuth = (cb: WithAuthCb): GetServerSidePropsWithAuth => async (ctx: GetServerSidePropsContextWithSession) => {
   try {
     let refreshRes = null
-
     if (!ctx.req?.cookies?.logout && !ctx.req?.cookies?.access_token && ctx.req.cookies.refresh_token) {
       refreshRes = await refreshToken(ctx.req?.cookies?.refresh_token)
-
       handleRefreshResult(ctx, refreshRes)
     } else if (!ctx.req?.cookies?.logout && ctx.req.cookies.refresh_token) {
       ctx.req.session = { token: ctx.req.cookies.access_token ?? null }
@@ -107,6 +105,7 @@ const withAuth = (cb: WithAuthCb): GetServerSidePropsWithAuth => async (ctx: Get
         }
       }
     }
+
     ctx.res.removeHeader('set-cookie')
     return { props: {} }
   } catch (error) {
