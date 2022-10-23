@@ -1,5 +1,7 @@
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import Main from './activities'
+import Activities from './activities'
+
+const Main = Activities
 
 export default Main
 
