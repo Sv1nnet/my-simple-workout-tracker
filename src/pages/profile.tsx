@@ -40,11 +40,13 @@ const Profile = () => {
     },
   })
 
-  const handleSubmit = async ({ email, password, new_password }) => {
+  const handleSubmit = async ({ email, password, new_password, signup_code }) => {
     try {
-      await updateProfile({ profile: { email, password, new_password } })
+      await updateProfile({ profile: { email, password, new_password, signup_code } })
       form.setFieldsValue({ email, password: '', new_password: '', confirm_password: '' })
-    } catch {}
+    } catch (err) {
+      console.warn('Changing profile info error', err.message)
+    }
   }
 
   useEffect(() => {
@@ -56,12 +58,12 @@ const Profile = () => {
         })
       }
       openNotification({ message: 'Error!', description: intl.pages.profile.error.message })
-      form.setFields([
-        {
-          name: 'password',
-          errors: [ (error as CustomBaseQueryError)?.data?.error?.message.validation.password ],
-        },
-      ])
+
+      const errorMessages = Object
+        .entries<string>((error as CustomBaseQueryError)?.data?.error?.message.validation)
+        .map<{ name: string, errors: string[] }>(([ field, message ]) => ({ name: field, errors: [ message ] }))
+      
+      form.setFields(errorMessages)
     }
   }, [ isError, (error as CustomBaseQueryError)?.data?.error?.message, (error as CustomBaseQueryError)?.data?.error?.message.validation ])
 
@@ -125,6 +127,18 @@ const Profile = () => {
         validateFirst
       >
         <Input.Password size="large" />
+      </Form.Item>
+
+      <Form.Item
+        label={intl.auth_form.signup_code}
+        name="signup_code"
+        extra={intl.pages.profile.signup_code_tip}
+        rules={[
+          { min: 6, message: intl.auth_form.error_message.signup_code.len },
+          validate as Rule,
+        ]}
+      >
+        <Input type="text" size="large" />
       </Form.Item>
 
       <Form.Item>

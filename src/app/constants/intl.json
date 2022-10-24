@@ -67,6 +67,10 @@
       "ru": "Подтвердите пароль",
       "eng": "Confirm password"
     },
+    "signup_code": {
+      "ru": "Код",
+      "eng": "Code"
+    },
     "login_submit_label": {
       "ru": "Войти",
       "eng": "Log in"
@@ -90,6 +94,12 @@
         "len": {
           "ru": "Пароль слишком короткий",
           "eng": "Password is too short"
+        }
+      },
+      "signup_code": {
+        "len": {
+          "ru": "Минимум 6 символов",
+          "eng": "Minimum 6 symbols"
         }
       },
       "confirm_password": {
@@ -151,6 +161,10 @@
       "save_button": {
         "ru": "Сохранить",
         "eng": "Save"
+      },
+      "signup_code_tip": {
+        "ru": "Запросите код у владельца приложения",
+        "eng": "Request code from app owner"
       },
       "validation_error": {
         "password_matching": {

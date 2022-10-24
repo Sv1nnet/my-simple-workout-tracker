@@ -4,6 +4,7 @@ export type ProfileForm = {
   email: string;
   password: string;
   new_password?: string;
+  signup_code?: string;
 }
 
 export type Password = string
