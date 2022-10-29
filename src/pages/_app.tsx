@@ -33,6 +33,7 @@ type ComponentWithLayout = NextComponentType & {
 
 type AppProps = NextAppProps & {
   Component: ComponentWithLayout,
+  pageProps: any,
   lang: Lang,
 }
 
