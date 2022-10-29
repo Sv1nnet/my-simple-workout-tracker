@@ -2,6 +2,7 @@ import { Component, PropsWithChildren } from 'react'
 import styled from 'styled-components'
 import { Button, Typography } from 'antd'
 import { theme } from 'src/styles/vars'
+import { IIntelContext, withIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const ErrorContainer = styled.div`
   display: flex;
@@ -58,7 +59,7 @@ const SmileMouth = styled.div`
   background: ${theme.primaryColor};
 `
 
-class ErrorBoundary extends Component<PropsWithChildren<{}>, { hasError: boolean }> {
+class ErrorBoundary extends Component<PropsWithChildren<{ intlCtx: IIntelContext }>, { hasError: boolean }> {
   static getDerivedStateFromError() {
     return { hasError: true }
   }
@@ -85,12 +86,12 @@ class ErrorBoundary extends Component<PropsWithChildren<{}>, { hasError: boolean
               <SmileMouth />
             </SmileBody>
             <Typography.Text>
-              Oops! Some error occured. If it happens again try to clear cache and cookie and login again.
+              {this.props.intlCtx.intl.error_boundaries?.main?.text}
             </Typography.Text>
           </ContentContainer>
           <ButtonWrapper>
             <Button block size="large" type="primary" onClick={this.handleRefreshPage}>
-              Refresh the page
+              {this.props.intlCtx.intl.error_boundaries?.main?.button}
             </Button>
           </ButtonWrapper>
         </ErrorContainer>
@@ -101,4 +102,4 @@ class ErrorBoundary extends Component<PropsWithChildren<{}>, { hasError: boolean
   }
 }
 
-export default ErrorBoundary
+export default withIntlContext(ErrorBoundary)

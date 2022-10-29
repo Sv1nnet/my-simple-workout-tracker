@@ -723,5 +723,17 @@
         }
       }
     }
+  },
+  "error_boundaries": {
+    "main": {
+      "text": {
+        "ru": "Упс! Произошла ошибка. Если это повторится, попоробуйте сбросить кэш, почистить куки и залогиниться снова.",
+        "eng": "Oops! Some error occured. If it happens again try to clear cache and cookie and login again."
+      },
+      "button": {
+        "ru": "Обновить страницу",
+        "eng": "Refresh the page"
+      }
+    }
   }
 }

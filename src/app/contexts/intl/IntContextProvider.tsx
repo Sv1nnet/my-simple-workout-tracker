@@ -1,10 +1,15 @@
-import { createContext, FC, useMemo } from 'react'
+import { createContext, FC, useContext, useMemo } from 'react'
 import _rawIntl from 'constants/intl.json'
 import { useAppSelector } from 'app/hooks'
 import { selectLang } from 'store/slices/config'
 import { Lang } from 'store/slices/config/types'
 
-export const IntlContext = createContext<{ intl: any, lang: Lang }>({ intl: {}, lang: 'eng' })
+export interface IIntelContext {
+  intl: any;
+  lang: Lang;
+}
+
+export const IntlContext = createContext<IIntelContext>({ intl: {}, lang: 'eng' })
 export type StringWithShort = String & { short?: string }
 
 const IntlContextProvider: FC = ({ children }) => {
@@ -45,6 +50,12 @@ const IntlContextProvider: FC = ({ children }) => {
   }, [ lang ])
 
   return <IntlContext.Provider value={{ intl, lang }}>{children}</IntlContext.Provider>
+}
+
+export const withIntlContext = Component => (props) => {
+  const intlCtx = useContext(IntlContext)
+
+  return <Component {...props} intlCtx={intlCtx} />
 }
 
 export default IntlContextProvider
