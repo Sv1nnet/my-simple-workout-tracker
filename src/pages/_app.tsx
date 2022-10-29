@@ -20,6 +20,7 @@ import AppLoaderProvider from 'app/contexts/loader/AppLoaderContextProvider'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import duration from 'dayjs/plugin/duration'
 import { Lang } from 'app/store/slices/config/types'
+import ErrorBoundary from '../app/components/error_boundary/ErrorBoundary'
 
 dayjs.extend(duration)
 dayjs.extend(isoWeek)
@@ -51,19 +52,21 @@ export default function App({ Component, pageProps, lang }: AppProps) {
       <Head>
         <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
       </Head>
-      <Provider store={store}>
-        <IntlContextProvider>
-          <AppLoaderProvider>
-            <RouterContextProvider>
-              <AuthLayout>
-                <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
-                  <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
-                </Layout>
-              </AuthLayout>
-            </RouterContextProvider>
-          </AppLoaderProvider>
-        </IntlContextProvider>
-      </Provider>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <IntlContextProvider>
+            <AppLoaderProvider>
+              <RouterContextProvider>
+                <AuthLayout>
+                  <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
+                    <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
+                  </Layout>
+                </AuthLayout>
+              </RouterContextProvider>
+            </AppLoaderProvider>
+          </IntlContextProvider>
+        </Provider>
+      </ErrorBoundary>
     </>
   )
 }
