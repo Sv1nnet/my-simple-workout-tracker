@@ -52,9 +52,9 @@ export default function App({ Component, pageProps, lang }: AppProps) {
       <Head>
         <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
       </Head>
-      <ErrorBoundary>
-        <Provider store={store}>
-          <IntlContextProvider>
+      <Provider store={store}>
+        <IntlContextProvider>
+          <ErrorBoundary>
             <AppLoaderProvider>
               <RouterContextProvider>
                 <AuthLayout>
@@ -64,9 +64,9 @@ export default function App({ Component, pageProps, lang }: AppProps) {
                 </AuthLayout>
               </RouterContextProvider>
             </AppLoaderProvider>
-          </IntlContextProvider>
-        </Provider>
-      </ErrorBoundary>
+          </ErrorBoundary>
+        </IntlContextProvider>
+      </Provider>
     </>
   )
 }

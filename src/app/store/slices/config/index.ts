@@ -38,10 +38,10 @@ const initialState: IConfigState = {
 
 const updateConfigLocally = (state) => {
   try {
-    localStorage.setItem('config', JSON.stringify(state.data))
+    if (typeof localStorage !== 'undefined') localStorage.setItem('config', JSON.stringify(state.data))
     cookie.set('lang', state.data.lang)
-  } catch {
-    console.warn('Update local config error')
+  } catch (error) {
+    console.warn('Update local config error', error.message)
   }
 }
 
@@ -66,9 +66,7 @@ export const authSlice = createSlice({
         configApi.endpoints.get.matchFulfilled,
         (state, { payload }) => {
           state.data = payload.data
-          if (localStorage) {
-            updateConfigLocally(state)
-          }
+          updateConfigLocally(state)
           state.status = API_STATUS.LOADED
         },
       )
@@ -91,9 +89,7 @@ export const authSlice = createSlice({
           state.updateRequestCount -= 1
           if (state.updateRequestCount === 0) {
             state.data = payload.data
-            if (localStorage) {
-              updateConfigLocally(state)
-            }
+            updateConfigLocally(state)
           }
           state.status = API_STATUS.LOADED
         },
