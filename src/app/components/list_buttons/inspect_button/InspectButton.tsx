@@ -18,7 +18,7 @@ const InspectButton: FC<IInspectButton> = ({ loading, href, buttonProps, spinPro
   )
   : (
     <Link href={href}>
-      <Button {...buttonProps}>
+      <Button onClick={e => e.stopPropagation()} {...buttonProps}>
         <EyeOutlined size={3} />
       </Button>
     </Link>
