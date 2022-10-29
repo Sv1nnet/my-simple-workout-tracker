@@ -7,6 +7,7 @@ import SelectableList from './selectable_list'
 import Input from './input'
 import DeleteEditPanel from './delete_edit_panel'
 import VirtualList from './virtual_list/VirtualList'
+import ChangeLangPanel from './change_lang_panel/ChangeLangPanel'
 import {
   FormActionButtonsContainer,
   ToggleEdit,
@@ -24,4 +25,5 @@ export {
   ToggleEdit,
   DeleteEditPanel,
   VirtualList,
+  ChangeLangPanel,
 }

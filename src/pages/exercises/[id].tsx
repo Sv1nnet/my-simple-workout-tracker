@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { ExerciseTemplate } from 'layouts/main'
 import { Exercise } from 'app/views'
@@ -9,6 +9,7 @@ import routes from 'constants/end_points'
 import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
 import { GetExerciseError, GetExerciseSuccess, IExerciseFormData } from '@/src/app/store/slices/exercise/types'
 import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface IExercisePage {
   exercise: IExerciseFormData;
@@ -17,6 +18,7 @@ interface IExercisePage {
 
 const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } = ({ exercise, error: serverError }) => {
   const router = useRouter()
+  const { lang } = useContext(IntlContext)
   const [
     get,
     {
@@ -57,15 +59,15 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
   if (errorGet ) {
     error = 'error' in errorGet
       ? errorGet.error
-      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   } else if (errorUpdate) {
     error = 'error' in errorUpdate
       ? errorUpdate.error
-      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   } else if (errorDelete) {
     error = 'error' in errorDelete
       ? errorDelete.error
-      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   }
 
   return (

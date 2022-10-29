@@ -2,6 +2,7 @@ import { createApi } from '@reduxjs/toolkit/query/react'
 import {
   GetConfigSuccess,
   Config,
+  UpdateConfigSuccess,
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
@@ -19,7 +20,7 @@ export const configApi = createApi({
       }),
       providesTags: () => [ 'Config' ],
     }),
-    update: build.query<GetConfigSuccess, { config: Config }>({
+    update: build.query<UpdateConfigSuccess, { config: Config }>({
       query: ({ config }) => ({
         url: routes.config.v1.update.full,
         method: 'PATCH',

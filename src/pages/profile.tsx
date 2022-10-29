@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { HeaderWithoutNav } from 'layouts/header'
 import { Form, Input, Button, notification } from 'antd'
@@ -8,8 +8,11 @@ import { Rule } from 'antd/lib/form'
 import { useAppSelector } from 'app/hooks'
 import { profileApi } from 'store/slices/profile/api'
 import { selectCredentials } from 'store/slices/profile'
-import { CustomBaseQueryError } from '../app/store/utils/baseQueryWithReauth'
-import { IntlContext } from '../app/contexts/intl/IntContextProvider'
+import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
+import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { ChangeLangPanel } from 'app/components'
+import { configApi } from 'store/slices/config/api'
+import { Lang } from 'store/slices/config/types'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -19,12 +22,22 @@ const FormWrapper = styled(Form)`
   padding: 12px;
 `
 
+const StyledChangeLangPanel = styled(ChangeLangPanel)`
+  position: static;
+  justify-content: center;
+  margin-top: 15px;
+  margin-bottom: 5px;
+`
+
 const Profile = () => {
-  const { intl } = useContext(IntlContext)
+  const { intl, lang } = useContext(IntlContext)
+  const prevLangRef = useRef(lang)
   const credentials = useAppSelector(selectCredentials)
   const [ form ] = useForm()
-  const [ fetchProfile, { isLoading, isFetching } ] = profileApi.useLazyGetQuery()
-  const [ updateProfile, { isLoading: isUpdating, isError, error } ] = profileApi.useLazyUpdateQuery()
+  const [ fetchConfig ] = configApi.useLazyGetQuery()
+  const [ updateConfig ] = configApi.useLazyUpdateQuery()
+  const [ fetchProfile, { isLoading: isProfileLoading, isFetching: isFetchingProfile } ] = profileApi.useLazyGetQuery()
+  const [ updateProfile, { isLoading: isUpdatingProfile, isError: isUpdateProfileError, error: updateProfileError, isSuccess: isUpdateProfileSuccess } ] = profileApi.useLazyUpdateQuery()
 
   const validate = ({ getFieldValue }) => ({
     async validator({ field }, value) {
@@ -42,37 +55,57 @@ const Profile = () => {
 
   const handleSubmit = async ({ email, password, new_password, signup_code }) => {
     try {
-      await updateProfile({ profile: { email, password, new_password, signup_code } })
-      form.setFieldsValue({ email, password: '', new_password: '', confirm_password: '' })
+      updateProfile({ profile: { email, password, new_password, signup_code: signup_code || undefined } })
     } catch (err) {
       console.warn('Changing profile info error', err.message)
     }
   }
 
+  const updateLang = (_lang: Lang) => {
+    updateConfig({ config: { lang: _lang } })
+  }
+
   useEffect(() => {
-    if (isError && error) {
+    if (isUpdateProfileError && updateProfileError) {
       const openNotification = ({ message, description }) => {
         notification.error({
           message,
           description,
         })
       }
-      openNotification({ message: 'Error!', description: intl.pages.profile.error.message })
+      openNotification({ message: intl.modal.common.title.error, description: intl.pages.profile.error.message })
 
       const errorMessages = Object
-        .entries<string>((error as CustomBaseQueryError)?.data?.error?.message.validation)
+        .entries<string>((updateProfileError as CustomBaseQueryError)?.data?.error?.message.validation)
         .map<{ name: string, errors: string[] }>(([ field, message ]) => ({ name: field, errors: [ message ] }))
       
       form.setFields(errorMessages)
     }
-  }, [ isError, (error as CustomBaseQueryError)?.data?.error?.message, (error as CustomBaseQueryError)?.data?.error?.message.validation ])
+  }, [
+    isUpdateProfileError,
+    (updateProfileError as CustomBaseQueryError)?.data?.error?.message?.validation,
+  ])
 
   useEffect(() => {
     form.setFieldsValue({ ...credentials })
   }, [ credentials.email ])
 
   useEffect(() => {
+    if (!isUpdatingProfile && isUpdateProfileSuccess) {
+      const openNotification = ({ message, description }) => {
+        notification.success({
+          message,
+          description,
+        })
+      }
+      openNotification({ message: intl.pages.profile.success.message, description: intl.pages.profile.success.description })
+      form.setFieldsValue({ password: '', new_password: '', confirm_password: '' })
+    }
+  }, [ isUpdatingProfile, isUpdateProfileError ])
+
+  useEffect(() => {
     fetchProfile()
+    fetchConfig()
   }, [])
 
   return (
@@ -82,6 +115,7 @@ const Profile = () => {
       name="profile"
       onFinish={handleSubmit}
       layout="vertical"
+      scrollToFirstError
     >
       <Form.Item
         label={intl.auth_form.email}
@@ -93,9 +127,10 @@ const Profile = () => {
         <Input size="large" type="email" />
       </Form.Item>
 
-      <Form.Item 
+      <Form.Item
         label={intl.auth_form.password}
         name="password"
+        shouldUpdate={() => lang !== prevLangRef.current}
         rules={[
           { min: 6, message: intl.auth_form.error_message.password.len },
           { required: true, message: intl.auth_form.error_message.password.required },
@@ -104,7 +139,7 @@ const Profile = () => {
         <Input.Password size="large" />
       </Form.Item>
 
-      <Form.Item 
+      <Form.Item
         label={intl.auth_form.new_password}
         name="new_password"
         dependencies={[ 'confirm_password' ]}
@@ -130,7 +165,7 @@ const Profile = () => {
       </Form.Item>
 
       <Form.Item
-        label={intl.auth_form.signup_code}
+        label={intl.pages.profile.new_signup_code}
         name="signup_code"
         extra={intl.pages.profile.signup_code_tip}
         rules={[
@@ -141,17 +176,19 @@ const Profile = () => {
         <Input type="text" size="large" />
       </Form.Item>
 
-      <Form.Item>
+      <Form.Item style={{ marginBottom: '0px' }}>
         <StyledButton
           size="large"
           type="primary"
           htmlType="submit"
           block
-          loading={isLoading || isFetching || isUpdating}
+          loading={isProfileLoading || isFetchingProfile || isUpdatingProfile}
         >
           {intl.pages.profile.save_button}
         </StyledButton>
       </Form.Item>
+
+      <StyledChangeLangPanel onChange={updateLang} />
     </FormWrapper>
   )
 }

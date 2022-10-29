@@ -1,6 +1,6 @@
 import getConfig from 'next/config'
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const BASE_URL = `http://${getConfig().publicRuntimeConfig.__API_HOST__}:3005/api`
+export const BASE_URL = `${getConfig().publicRuntimeConfig.__API_HOST__}/api`
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 let _global = typeof window !== 'undefined' ? window : global

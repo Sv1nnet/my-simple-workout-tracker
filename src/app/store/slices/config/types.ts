@@ -17,5 +17,5 @@ export type Config = {
 export type GetConfigSuccess = IResponse<Config>
 export type GetConfigError = IResponse<null>
 
-export type ConfigUpdateSuccess = IResponse<Config>
-export type ConfigUpdateError = IResponse<null>
+export type UpdateConfigSuccess = IResponse<Config>
+export type UpdateConfigError = IResponse<null>

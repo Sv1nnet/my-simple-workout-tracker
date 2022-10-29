@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { WorkoutTemplate } from 'layouts/main'
 import { IWorkout } from 'app/views/workouts/components/workout/Workout'
@@ -8,6 +8,7 @@ import { WorkoutForm } from 'app/store/slices/workout/types'
 import { useRouter } from 'next/router'
 import { Workout } from 'app/views'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface ICreatePage {
   setWorkout: React.Dispatch<React.SetStateAction<IWorkout>>
@@ -15,6 +16,7 @@ interface ICreatePage {
 
 const CreateWorkout: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } = () => {
   const [ create, { data, isLoading, isError, error } ] = workoutApi.useCreateMutation()
+  const { lang } = useContext(IntlContext)
   const router = useRouter()
 
   const handleSubmit = (values: WorkoutForm) => create({ workout: values })
@@ -29,7 +31,7 @@ const CreateWorkout: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } = 
       isFetching={isLoading || (!!data && !isError)}
       isError={isError}
       onSubmit={handleSubmit}
-      error={(error as CustomBaseQueryError)?.data?.error?.message?.text}
+      error={(error as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']}
     />
   )
 }

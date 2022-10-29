@@ -90,9 +90,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const workoutList = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
-  const { intl } = useContext(IntlContext)
+  const { intl, lang } = useContext(IntlContext)
   const { loading } = useContext(RouterContext)
-  
+
   const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
   
@@ -116,9 +116,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
   const handleRestoreFromCacheError = () => {
     Modal.error({
-      title: 'Oops!',
-      content: 'Something has gone wrong and could not restore activity.',
-      okText: 'It\'s sad but ok',
+      title: modal.error.title,
+      content: modal.error.body,
+      okText: modal.error.ok_button,
     })
     localStorage.removeItem('cached_activity')
     setTimeout(() => setSelectedWorkout(null))
@@ -299,7 +299,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }
 
   useEffect(() => {
-    const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text
+    const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
     if (error || isError) {
       Modal.error({
         title: title.error,
