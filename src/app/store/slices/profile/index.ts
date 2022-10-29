@@ -52,7 +52,7 @@ export const profileSlice = createSlice({
       .addMatcher(
         profileApi.endpoints.get.matchFulfilled,
         (state, { payload }) => {
-          Object.assign(state.credentials, payload)
+          Object.assign(state.credentials, payload.data)
           state.status = API_STATUS.LOADED
         },
       )

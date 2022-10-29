@@ -2,15 +2,17 @@ import { createContext, FC, useMemo } from 'react'
 import _rawIntl from 'constants/intl.json'
 import { useAppSelector } from 'app/hooks'
 import { selectLang } from 'store/slices/config'
+import { Lang } from 'store/slices/config/types'
 
-export const IntlContext = createContext<{ intl: any }>({ intl: {} })
+export const IntlContext = createContext<{ intl: any, lang: Lang }>({ intl: {}, lang: 'eng' })
 export type StringWithShort = String & { short?: string }
 
 const IntlContextProvider: FC = ({ children }) => {
-  let lang = useAppSelector(selectLang)
+  const lang = useAppSelector(selectLang)
   const intl = useMemo(() => {
+    let _lang = lang
     const { langs, ...rawIntl } = _rawIntl
-    if (!lang || !langs.includes(lang)) lang = 'eng'
+    if (!_lang || !langs.includes(_lang)) _lang = 'eng'
 
     const getValueByLang = (obj: object & { short?: object }, l: string) => {
       if (l in obj) {
@@ -19,7 +21,7 @@ const IntlContextProvider: FC = ({ children }) => {
         if (extraKeys.length) {
           result = Array.isArray(result) ? result : new String(result) as StringWithShort
           extraKeys.forEach((key) => {
-            result[key] = getValueByLang(obj[key], lang)
+            result[key] = getValueByLang(obj[key], _lang)
           })
         }
         return result
@@ -36,13 +38,13 @@ const IntlContextProvider: FC = ({ children }) => {
     const result = Object
       .entries(rawIntl)
       .reduce((acc, [ key, value ]) => {
-        acc[key] = getValueByLang(value, lang)
+        acc[key] = getValueByLang(value, _lang)
         return acc
       }, {})
     return result
   }, [ lang ])
 
-  return <IntlContext.Provider value={{ intl }}>{children}</IntlContext.Provider>
+  return <IntlContext.Provider value={{ intl, lang }}>{children}</IntlContext.Provider>
 }
 
 export default IntlContextProvider

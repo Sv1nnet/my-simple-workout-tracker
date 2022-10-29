@@ -18,9 +18,8 @@ const InspectButton: FC<IInspectButton> = ({ loading, href, buttonProps, spinPro
   )
   : (
     <Link href={href}>
-      <Button onClick={e => e.stopPropagation()} {...buttonProps}>
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a><EyeOutlined size={3} /></a>
+      <Button {...buttonProps}>
+        <EyeOutlined size={3} />
       </Button>
     </Link>
   )

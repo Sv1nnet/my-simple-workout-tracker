@@ -26,7 +26,7 @@ module.exports = withPlugins(
     
         // Other Config Here...
         publicRuntimeConfig: {
-          __API_HOST__: process.env.API_HOST || firstIp,
+          __API_HOST__: `http://${process.env.API_HOST || firstIp}:3005`,
         },
     
         typescript: {

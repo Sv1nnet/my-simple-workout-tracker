@@ -7,6 +7,7 @@ import { useAppSelector } from '@/src/app/hooks'
 
 const AuthLayout: NextPage = ({ children }) => {
   const token = useAppSelector(selectToken)
+
   return (
     token
       ? (

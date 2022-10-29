@@ -29,7 +29,8 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
-  const { payload, modal } = useContext(IntlContext).intl.pages.exercises
+  const { intl, lang } = useContext(IntlContext)
+  const { payload, modal } = intl.pages.exercises
   const {
     isModalVisible,
     selectionRef,
@@ -56,7 +57,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiDeleteExerciseError)?.data?.error.message?.text })
+      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteExerciseError)?.data?.error?.message?.text[lang || 'eng'] })
     }
   }, [ error ])
 

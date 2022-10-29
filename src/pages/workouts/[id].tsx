@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { WorkoutTemplate } from 'layouts/main'
 import { useRouter } from 'next/router'
@@ -9,6 +9,7 @@ import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { Workout } from 'app/views'
 import routes from 'app/constants/end_points'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
+import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface IWorkoutPage {
   workout: WorkoutServerPayload;
@@ -17,6 +18,7 @@ interface IWorkoutPage {
 
 const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = ({ workout, error: serverError }) => {
   const router = useRouter()
+  const { lang } = useContext(IntlContext)
   const [
     get,
     {
@@ -57,15 +59,15 @@ const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = 
   if (errorGet ) {
     error = 'error' in errorGet
       ? errorGet.error
-      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   } else if (errorUpdate) {
     error = 'error' in errorUpdate
       ? errorUpdate.error
-      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   } else if (errorDelete) {
     error = 'error' in errorDelete
       ? errorDelete.error
-      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   }
 
   return (

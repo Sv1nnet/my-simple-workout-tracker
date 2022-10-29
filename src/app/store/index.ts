@@ -8,8 +8,9 @@ import profile from './slices/profile'
 import exercise from './slices/exercise'
 import workout from './slices/workout'
 import activity from './slices/activity'
-import config from './slices/config'
+import config, { changeLang } from './slices/config'
 import { workoutApi } from './slices/workout/api'
+import { configApi } from './slices/config/api'
 
 const rootReducer = combineReducers({
   auth,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   [workoutApi.reducerPath]: workoutApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
+  [configApi.reducerPath]: configApi.reducer,
 })
 
 export function makeStore() {
@@ -50,4 +52,7 @@ unknown,
 Action<string>
 >
 
-export default store
+export default ({ lang }) => {
+  if (store.getState().config.data.lang !== lang) store.dispatch(changeLang(lang))
+  return store
+}

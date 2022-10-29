@@ -12,6 +12,7 @@ import { ApiLoginError } from '../login/Login'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 import { AUTH_FORM_TABS } from '../template/Template'
+import { changeLang } from '@/src/app/store/slices/config'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -31,7 +32,7 @@ interface IFormProps {
 }
 
 const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
-  const { auth_form, signup_by_code, restore_password } = useContext(IntlContext).intl
+  const { intl: { auth_form, signup_by_code, restore_password, modal }, lang } = useContext(IntlContext)
   const { runLoader, stopLoaderById, forceStopLoader } = useContext(AppLoaderContext)
   const dispatch = useAppDispatch()
   const [ form ] = useForm()
@@ -48,7 +49,7 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
     },
   })
 
-  const handleSubmit = values => onSubmit({ ...values, signup_code: values.signup_code ?? signupCode })
+  const handleSubmit = values => onSubmit({ ...values, signup_code: values.signup_code ?? signupCode, settings: { lang } })
   
   useEffect(() => {
     if (isError && error) {
@@ -58,13 +59,14 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
           description,
         })
       }
-      openNotification({ message: 'Error!', description: error?.data?.error?.message?.text })
+      openNotification({ message: modal.common.title.error, description: error?.data?.error?.message?.text[lang || 'eng'] })
     }
   }, [ isError ])
 
   useEffect(() => {
     if (!isError && data?.token) {
       dispatch(updateToken(data.token))
+      if (data.lang) dispatch(changeLang(data.lang))
     }
   }, [ data?.token ])
 

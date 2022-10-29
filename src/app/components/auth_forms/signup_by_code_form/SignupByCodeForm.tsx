@@ -3,9 +3,9 @@ import { Form as AntForm, Input, Button, notification, Typography } from 'antd'
 import styled from 'styled-components'
 import { useForm } from 'antd/lib/form/Form'
 import { VerifySignupCodeError } from 'store/slices/auth/types'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
-import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
-import { authApi } from '@/src/app/store/slices/auth/api'
+import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { AppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
+import { authApi } from 'app/store/slices/auth/api'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -21,8 +21,8 @@ interface IFormProps {
 }
 
 const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
-  const { intl } = useContext(IntlContext)
-  const { signup_by_code } = intl
+  const { intl, lang } = useContext(IntlContext)
+  const { signup_by_code, modal } = intl
   const [ verify, { data, isLoading, error, isError } ] = authApi.useLazyVerifySignupCodeQuery()
 
   const { runLoader, stopLoaderById, forceStopLoader } = useContext(AppLoaderContext)
@@ -38,7 +38,7 @@ const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiVerifySignupCodeError)?.data?.error.message.text })
+      openNotification({ message: modal.common.title.error, description: (error as ApiVerifySignupCodeError)?.data?.error?.message?.text[lang || 'eng'] })
     }
   }, [ isError ])
 

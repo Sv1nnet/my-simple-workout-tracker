@@ -166,6 +166,10 @@
         "ru": "Запросите код у владельца приложения",
         "eng": "Request code from app owner"
       },
+      "new_signup_code": {
+        "ru": "Новый код",
+        "eng": "New code"
+      },
       "validation_error": {
         "password_matching": {
           "ru": "Пароли не совпадают",
@@ -178,8 +182,18 @@
       },
       "error": {
         "message": {
-          "ru": "Произошла ошибка при сохранения данных",
+          "ru": "Произошла ошибка при сохранении данных",
           "eng": "Error occurred while saving data"
+        }
+      },
+      "success": {
+        "message": {
+          "ru": "Успено!",
+          "eng": "Success!"
+        },
+        "description": {
+          "ru": "Данные профиля изменены.",
+          "eng": "Profile data updated."
         }
       }
     },

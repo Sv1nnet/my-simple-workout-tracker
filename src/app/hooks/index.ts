@@ -1,7 +1,8 @@
 import { notification } from 'antd'
-import type { ChangeEvent } from 'react'
+import { ChangeEvent, useContext } from 'react'
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 
 import type { AppDispatch, AppState } from '../store'
 
@@ -77,6 +78,8 @@ export type ApiGetListError = {
 }
 
 export const useShowListErrorNotification = ({ isError, error }: { isError: boolean, error: ApiGetListError }) => {
+  const { modal } = useContext(IntlContext).intl
+
   useEffect(() => {
     if (isError && error) {
       const openNotification = ({ message, description }) => {
@@ -85,7 +88,7 @@ export const useShowListErrorNotification = ({ isError, error }: { isError: bool
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiGetListError)?.data?.error?.message })
+      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message })
     }
   }, [ error ])
 }

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useEffect } from 'react'
+import { FC, useContext, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from '@/src/layouts/main'
 import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
@@ -9,6 +9,7 @@ import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
 import { Activity } from '@/src/app/views'
 import { activityApi } from '@/src/app/store/slices/activity/api'
 import { useRouter } from 'next/router'
+import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 
 interface IActivityPage {
   activity: ActivityForm<string>;
@@ -17,6 +18,7 @@ interface IActivityPage {
 
 const EditActivity: NextPage<IActivityPage> & { Layout: FC, layoutProps?: {} } = ({ activity, error: serverError }) => {
   const router = useRouter()
+  const { lang } = useContext(IntlContext)
   const [
     get,
     {
@@ -57,15 +59,15 @@ const EditActivity: NextPage<IActivityPage> & { Layout: FC, layoutProps?: {} } =
   if (errorGet ) {
     error = 'error' in errorGet
       ? errorGet.error
-      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   } else if (errorUpdate) {
     error = 'error' in errorUpdate
       ? errorUpdate.error
-      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   } else if (errorDelete) {
     error = 'error' in errorDelete
       ? errorDelete.error
-      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text
+      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
   }
 
   return (

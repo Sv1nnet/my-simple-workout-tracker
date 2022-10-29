@@ -30,10 +30,11 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
-  const { intl } = useContext(IntlContext)
+  const { intl, lang } = useContext(IntlContext)
+  const { modal } = intl
   const { payload } = intl.pages.exercises
   const { workouts: workoutDictionary } = intl.pages
-  const { modal } = workoutDictionary
+  const { modal: workoutModal } = workoutDictionary
   const {
     isModalVisible,
     selectionRef,
@@ -60,7 +61,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
           description,
         })
       }
-      openNotification({ message: 'Error!', description: (error as ApiDeleteWorkoutError)?.data?.error.message?.text })
+      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteWorkoutError)?.data?.error?.message?.text[lang || 'eng'] })
     }
   }, [ error ])
 
@@ -104,12 +105,12 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
             )}
           />
           <SelectableList.Modal
-            okText={modal.delete.ok_button}
-            cancelText={modal.delete.cancel_button}
+            okText={workoutModal.delete.ok_button}
+            cancelText={workoutModal.delete.cancel_button}
             visible={isModalVisible} 
             onOk={handleDelete} 
             onCancel={closeModal}
-            text={modal.delete.body_many}
+            text={workoutModal.delete.body_many}
             selected={selected}
           />
         </>

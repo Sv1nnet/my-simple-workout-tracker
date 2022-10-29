@@ -16,10 +16,10 @@ export type Refresh = Pick<UserForm, 'email'>
 export type Login = Pick<UserForm, 'email' | 'password'>
 export type Signup = Pick<UserForm, 'email' | 'password'>
 
-export type LoginSuccess = IResponse<{ token: Token }>
+export type LoginSuccess = IResponse<{ token: Token, lang: 'ru' | 'eng' }>
 export type LoginError = IResponse
 
-export type SignupSuccess = IResponse<{ token: Token }>
+export type SignupSuccess = IResponse<{ token: Token, lang?: 'ru' | 'eng' }>
 export type SignupError = IResponse<null, { email?: string, password?: string }>
 
 export type VerifySignupCodeSuccess = IResponse

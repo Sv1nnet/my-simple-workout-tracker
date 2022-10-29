@@ -26,7 +26,7 @@ const ROUTES = {
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
   const { loading, loadingRoute } = useContext(RouterContext)
-  const { intl } = useContext(IntlContext)
+  const { intl, lang } = useContext(IntlContext)
   const { route, push } = useRouter()
   const dispatch = useAppDispatch()
   const avatarFirstClicked = useRef(false)
@@ -77,7 +77,7 @@ const UserMenu = () => {
         </Menu.Item>
       </Menu>
     )
-  }, [ profileLoading, exercisesLoading, workoutsLoading, activitiesLoading ])
+  }, [ profileLoading, exercisesLoading, workoutsLoading, activitiesLoading, lang ])
 
   const handleAvatarClick = () => !isOpen && setIsOpen(true)
 
