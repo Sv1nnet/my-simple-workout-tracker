@@ -3,7 +3,6 @@ import 'src/styles/globals.css'
 import 'components/time_picker/style.scss'
 import 'components/date_picker/style.scss'
 
-import getConfig from 'next/config'
 import dayjs from 'dayjs'
 import 'dayjs/locale/en'
 import 'dayjs/locale/ru'
