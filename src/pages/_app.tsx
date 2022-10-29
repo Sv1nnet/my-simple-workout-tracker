@@ -50,7 +50,7 @@ export default function App({ Component, pageProps, lang }: AppProps) {
   return (
     <>
       <Head>
-        <link rel="manifest" href={`${getConfig().publicRuntimeConfig.__API_HOST__}/manifest.json`} crossOrigin="use-credentials" />
+        <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
       </Head>
       <Provider store={store}>
         <IntlContextProvider>
