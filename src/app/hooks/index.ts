@@ -73,12 +73,13 @@ export const useLoadList: UseLoadList = ({ loading, updateList, listFromComponen
 }
 
 export type ApiGetListError = {
-  data: { error?: { message?: string } };
+  data: { error?: { message?: { text?: { [key: string]: string } } } };
   status: number;
 }
 
 export const useShowListErrorNotification = ({ isError, error }: { isError: boolean, error: ApiGetListError }) => {
-  const { modal } = useContext(IntlContext).intl
+  const { intl, lang } = useContext(IntlContext)
+  const { modal } = intl
 
   useEffect(() => {
     if (isError && error) {
@@ -88,7 +89,7 @@ export const useShowListErrorNotification = ({ isError, error }: { isError: bool
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message })
+      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message?.text[lang] })
     }
   }, [ error ])
 }
