@@ -20,7 +20,7 @@ import AppLoaderProvider from 'app/contexts/loader/AppLoaderContextProvider'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import duration from 'dayjs/plugin/duration'
 import { Lang } from 'app/store/slices/config/types'
-import ErrorBoundary from '../app/components/error_boundary/ErrorBoundary'
+import { ErrorBoundary } from 'app/components'
 
 dayjs.extend(duration)
 dayjs.extend(isoWeek)
