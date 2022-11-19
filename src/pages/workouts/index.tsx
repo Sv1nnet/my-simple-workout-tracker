@@ -49,7 +49,8 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
   })
 
   const handeDelete = ({ ids }) => deleteWorkouts({ ids })
-    .then((res) => {
+    .then((res: any) => {
+      if (res.error) return res.error
       dispatch(updateList(workoutsInStore.filter(workout => !ids.includes(workout.id))))
       return res
     })

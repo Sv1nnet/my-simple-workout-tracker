@@ -80,7 +80,7 @@ export type ApiGetListError = {
 export const useShowListErrorNotification = ({ isError, error }: { isError: boolean, error: ApiGetListError }) => {
   const { intl, lang } = useContext(IntlContext)
   const { modal } = intl
-
+  
   useEffect(() => {
     if (isError && error) {
       const openNotification = ({ message, description }) => {
@@ -89,7 +89,7 @@ export const useShowListErrorNotification = ({ isError, error }: { isError: bool
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message?.text[lang] })
+      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message?.text[lang || 'eng'] })
     }
   }, [ error ])
 }

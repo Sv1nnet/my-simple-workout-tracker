@@ -50,7 +50,9 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
 
     return deleteWorkouts({
       ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<Workout, 'id'>[],
-    }).finally(() => setWorkoutsToDelete({}))
+    }).then((res) => {
+      if (res.data.success) setWorkoutsToDelete({})
+    })
   }
 
   useEffect(() => {

@@ -44,7 +44,8 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
   })
 
   const handleDelete = ({ ids }) => deleteExercises({ ids })
-    .then((res) => {
+    .then((res: any) => {
+      if (res.error) return res.error
       dispatch(updateList(exercisesInStore.filter(exercise => !ids.includes(exercise.id))))
       return res
     })
