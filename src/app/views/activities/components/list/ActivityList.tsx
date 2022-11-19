@@ -48,7 +48,9 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
 
     return deleteActivities({
       ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ActivityForm, 'id'>[],
-    }).finally(() => setActivitiesToDelete({}))
+    }).then((res) => {
+      if (res.data.success) setActivitiesToDelete({})
+    })
   }
 
   useEffect(() => {

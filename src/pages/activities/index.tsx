@@ -52,7 +52,8 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
   })
 
   const handeDeleteActivities = ({ ids }) => deleteActivities({ ids })
-    .then((res) => {
+    .then((res: any) => {
+      if (res.error) return res.error
       dispatch(updateList(activitiesInStore.filter(activity => !ids.includes(activity.id))))
       return res
     })

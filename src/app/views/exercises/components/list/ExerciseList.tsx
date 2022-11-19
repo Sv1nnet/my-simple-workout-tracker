@@ -30,7 +30,8 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useContext(IntlContext)
-  const { payload, modal } = intl.pages.exercises
+  const { modal } = intl
+  const { payload, modal: exerciseModal } = intl.pages.exercises
   const {
     isModalVisible,
     selectionRef,
@@ -46,7 +47,9 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
 
     return deleteExercises({
       ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ExerciseForm, 'id'>[],
-    }).finally(() => setExercisesToDelete({}))
+    }).then((res) => {
+      if (res.data.success) setExercisesToDelete({})
+    })
   }
 
   useEffect(() => {
@@ -99,12 +102,12 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
             )}
           />
           <SelectableList.Modal 
-            okText={modal.delete.ok_button}
-            cancelText={modal.delete.cancel_button}
+            okText={exerciseModal.delete.ok_button}
+            cancelText={exerciseModal.delete.cancel_button}
             visible={isModalVisible} 
             onOk={handleDelete} 
             onCancel={closeModal}
-            text={modal.delete.body_many}
+            text={exerciseModal.delete.body_many}
             selected={selected}
           />
         </>
