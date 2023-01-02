@@ -93,3 +93,18 @@ export const useShowListErrorNotification = ({ isError, error }: { isError: bool
     }
   }, [ error ])
 }
+
+export const useMounted = ({ initialMounted = false, dependencies = [] }: { initialMounted?: boolean, dependencies?: any[] } = {}) => {
+  const isMountedRef = useRef(initialMounted)
+
+  return {
+    isMountedRef,
+    useHandleMounted() {
+      useEffect(() => {
+        isMountedRef.current = true
+
+        return () => { isMountedRef.current = false }
+      }, dependencies)
+    },
+  }
+}

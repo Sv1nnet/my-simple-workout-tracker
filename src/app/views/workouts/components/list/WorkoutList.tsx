@@ -10,6 +10,7 @@ import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
 import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import { useMounted } from '@/src/app/hooks'
 
 export type ApiDeleteWorkoutError = {
   data: WorkoutDeleteError;
@@ -27,6 +28,7 @@ export interface IWorkoutList {
 }
 
 const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDeleting, workouts }) => {
+  const { isMountedRef, useHandleMounted } = useMounted()
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const { loading, loadingRoute } = useContext(RouterContext)
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
@@ -51,9 +53,14 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
     return deleteWorkouts({
       ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<Workout, 'id'>[],
     }).then((res) => {
-      if (res.data.success) setWorkoutsToDelete({})
+      if (isMountedRef.current && res?.data?.success) {
+        setWorkoutsToDelete({})
+        selectionRef.current?.handleCancelSelection()
+      }
     })
   }
+
+  useHandleMounted()
 
   useEffect(() => {
     if (error) {
@@ -68,8 +75,8 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
   }, [ error ])
 
   useEffect(() => {
-    if (!error && !isLoading) selectionRef.current.handleCancelSelection()
-  }, [ error, isLoading ])
+    if (!error && !isLoading && !isDeleting && isMountedRef.current) selectionRef.current.handleCancelSelection()
+  }, [ error, isLoading, isDeleting ])
 
   return (
     <SelectableList
@@ -100,7 +107,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
                   workoutDictionary={workoutDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
-                  isLoading={workoutsToDelete[item.id]}
+                  isLoading={workoutsToDelete[item.id] && (isDeleting || loading)}
                   {...item}
                 />
               </SelectableList.Item>
