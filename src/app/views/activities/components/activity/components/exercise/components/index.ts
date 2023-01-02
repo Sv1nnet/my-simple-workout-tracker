@@ -5,6 +5,7 @@ import Rounds from './rounds/Rounds'
 import PreviousItem from './previous_item/PreviousItem'
 import Chart from './chart/Chart'
 import PreviousRoundsHistory from './previous_rounds_history/PreviousRoundsHistory'
+import Timers from './timers/Timers'
 
 export {
   History,
@@ -14,4 +15,5 @@ export {
   PreviousItem,
   Chart,
   PreviousRoundsHistory,
+  Timers,
 }

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
@@ -37,10 +37,8 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
   const [
     deleteActivities,
     {
-      isError: isDeleteError,
       isLoading: isDeleting,
       error: deleteError,
-      status: deleteStatus,
     },
   ] = activityApi.useDeleteManyMutation()
 
@@ -59,10 +57,6 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
     })
 
   useShowListErrorNotification({ isError, error: (error as ApiGetListError) })
-
-  useEffect(() => {
-    if (deleteStatus === 'fulfilled' && !isDeleting && !deleteError) loadActivities()
-  }, [ isDeleting, deleteStatus, isDeleteError ])
 
   return (
     <>

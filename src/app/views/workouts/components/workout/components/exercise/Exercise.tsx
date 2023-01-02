@@ -101,7 +101,7 @@ const Exercise = ({
         >
           <CustomInput.Number placeholder={dictionary.placeholders.rounds} int onlyPositive disabled={isFormItemDisabled} onChange={handleExerciseChange} onBlur={handleExerciseChange} size="large" />
         </ShortFormItem>
-        <ShortFormItem name={[ index, 'round_break' ]} label={dictionary.input_labels.break} rules={requiredRules}>
+        <ShortFormItem name={[ index, 'round_break' ]} label={dictionary.input_labels.round_break} rules={requiredRules}>
           <TimePicker
             inputReadOnly
             allowClear={false}

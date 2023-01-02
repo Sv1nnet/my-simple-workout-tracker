@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import styled from 'styled-components'
 import { Button, Form, FormInstance, Input, Radio, Typography } from 'antd'
-import { History, Rounds } from './components'
+import { History, Rounds, Timers } from './components'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import routes from 'app/constants/end_points'
 import { useContext, useMemo, useRef, useState } from 'react'
@@ -65,10 +65,11 @@ export interface IExerciseProps {
   };
   total: number;
   break?: number;
+  isEdit?: boolean;
   isFormItemDisabled: boolean;
   isHistoryLoading: boolean;
   exercise: TExercise<number | Dayjs>,
-  history: any;
+  history: any; // TODO: define history type
   form: FormInstance<ActivityForm<Dayjs>>;
   round_break: number;
   rounds: number;
@@ -76,11 +77,14 @@ export interface IExerciseProps {
   exerciseIndex: number;
 }
 
+// TODO: пофиксить баг - при выборе тренировок, в случае если по индексу
+// в списке идет то же упражнение, то результаты для него не обновляются
 const Exercise: FC<IExerciseProps> = ({
   roundResults,
   total,
   isFormItemDisabled,
   isHistoryLoading,
+  isEdit,
   break: exerciseBreak,
   exercise,
   history: historyByDates,
@@ -93,7 +97,7 @@ const Exercise: FC<IExerciseProps> = ({
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
   const { exercises, activities, workouts } = useContext(IntlContext).intl.pages
   const { payload } = exercises
-  const { input_placeholders, input_labels, loader } = activities
+  const { input_placeholders, input_labels, loader, side_labels } = activities
   const $exercise = useRef(null)
   
   const historyByRounds = useMemo(() => {
@@ -201,6 +205,9 @@ const Exercise: FC<IExerciseProps> = ({
         type={exercise.type}
         rounds={roundResults.rounds}
       />
+      {!!round_break && !isEdit && (
+        <Timers eachSide={exercise.each_side} durationInSeconds={round_break} sideLabels={side_labels} />
+      )}
       {!!exerciseBreak && (
         <div style={{ marginTop: '10px' }}>
           <Typography.Text>

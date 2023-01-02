@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useContext } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
@@ -29,10 +29,8 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
   const [
     deleteExercises,
     {
-      isError: isDeleteError,
       isLoading: isDeleting,
       error: deleteError,
-      status: deleteStatus,
     },
   ] = exerciseApi.useDeleteManyMutation()
 
@@ -51,10 +49,6 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
     })
 
   useShowListErrorNotification({ isError, error: (error as ApiGetListError) })
-
-  useEffect(() => {
-    if (deleteStatus === 'fulfilled' && !isDeleting && !deleteError) loadExercises()
-  }, [ isDeleting, deleteStatus, isDeleteError ])
 
   return (
     <>

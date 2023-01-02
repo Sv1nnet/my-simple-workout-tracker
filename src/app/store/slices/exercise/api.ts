@@ -13,11 +13,16 @@ import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { secondsToDayjs } from 'app/utils/time'
 
+export const EXERCISE_TAG_TYPES = {
+  EXERCISE: 'Exercise',
+  EXERCISE_LIST: 'ExerciseList',
+}
+
 export const exerciseApi = createApi({
   reducerPath: 'exerciseApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
-  tagTypes: [ 'Exercise', 'ExerciseList' ],
+  tagTypes: [ EXERCISE_TAG_TYPES.EXERCISE, EXERCISE_TAG_TYPES.EXERCISE_LIST ],
   endpoints: build => ({
     get: build.query<GetExerciseSuccess, { id: string }>({
       query: ({ id }) => ({
@@ -36,7 +41,7 @@ export const exerciseApi = createApi({
         }
         return response
       },
-      providesTags: () => [ 'Exercise' ],
+      providesTags: () => [ EXERCISE_TAG_TYPES.EXERCISE ],
     }),
     create: build.mutation<ExerciseCreateSuccess, { exercise: Omit<ExerciseForm, 'id'> }>({
       query: ({ exercise }) => ({
@@ -44,7 +49,7 @@ export const exerciseApi = createApi({
         method: 'POST',
         body: exercise,
       }),
-      invalidatesTags: [ 'Exercise' ],
+      invalidatesTags: [ 'ExerciseList' ],
     }),
     update: build.mutation<ExerciseUpdateSuccess, { exercise: IExerciseFormData }>({
       query: ({ exercise }) => ({
@@ -52,14 +57,14 @@ export const exerciseApi = createApi({
         method: 'PATCH',
         body: exercise,
       }),
-      invalidatesTags: [ 'Exercise' ],
+      invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE, EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
     delete: build.mutation<ExerciseDeleteSuccess, { id: Pick<ExerciseForm, 'id'> }>({
       query: ({ id }) => ({
         url: `${routes.exercise.v1.delete.full}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [ 'Exercise', 'ExerciseList' ],
+      invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
     deleteMany: build.mutation<ExerciseDeleteSuccess, { ids: Pick<ExerciseForm, 'id'>[] }>({
       query: ({ ids }) => ({
@@ -67,14 +72,14 @@ export const exerciseApi = createApi({
         method: 'DELETE',
         body: { ids },
       }),
-      invalidatesTags: [ 'Exercise', 'ExerciseList' ],
+      invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
     list: build.query<GetExerciseListSuccess, void>({
       query: () => ({
         url: routes.exercise.v1.list.full,
         method: 'GET',
       }),
-      providesTags: () => [ 'ExerciseList' ],
+      providesTags: () => [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
   }),
 })

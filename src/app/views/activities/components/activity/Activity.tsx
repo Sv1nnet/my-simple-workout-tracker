@@ -425,6 +425,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
                   key={exercise._id as string}
                   isHistoryLoading={isHistoryLoading}
                   isFormItemDisabled={isFormItemDisabled}
+                  isEdit={isEdit}
                   total={history?.[exercise._id as string]?.total}
                   history={history?.[exercise._id as string]}
                   {...exercise}

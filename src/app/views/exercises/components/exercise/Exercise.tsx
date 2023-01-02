@@ -234,125 +234,123 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const isFormItemDisabled = !isEditMode || isFetching || loading
 
   return (
-    <>
-      <StyledForm preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
-        {isEdit && (
-          <DeleteEditPanel
-            isEditMode={isEditMode}
-            onEditClick={() => setEditMode(true)}
-            onDeleteClick={() => setIsModalVisible(true)}
-            deleteButtonProps={{ disabled: isFetching || loading }}
-            editButtonProps={{ disabled: isFetching || loading }}
-          />
+    <StyledForm preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
+      {isEdit && (
+        <DeleteEditPanel
+          isEditMode={isEditMode}
+          onEditClick={() => setEditMode(true)}
+          onDeleteClick={() => setIsModalVisible(true)}
+          deleteButtonProps={{ disabled: isFetching || loading }}
+          editButtonProps={{ disabled: isFetching || loading }}
+        />
+      )}
+      <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: 'Required' } ]}>
+        <Input disabled={isFormItemDisabled} size="large" />
+      </Form.Item>
+      <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
+        <Select disabled={isFormItemDisabled} size="large">
+          <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
+          <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
+          <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
+          <Select.Option value="time">{input_labels.type.options.time}</Select.Option>
+          <Select.Option value="duration">{input_labels.type.options.duration}</Select.Option>
+        </Select>
+      </Form.Item>
+      <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
+        <Checkbox disabled={isFormItemDisabled}>
+          {input_labels.each_side}
+        </Checkbox>
+      </Form.Item>
+      <HoursFormItem shouldUpdate>
+        {({ getFieldValue }) => isExerciseTimeType(getFieldValue('type')) && (
+          <Form.Item name="hours" valuePropName="checked">
+            <Checkbox disabled={isFormItemDisabled}>
+              {input_labels.hours}
+            </Checkbox>
+          </Form.Item>
         )}
-        <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: 'Required' } ]}>
-          <Input disabled={isFormItemDisabled} size="large" />
-        </Form.Item>
-        <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
-          <Select disabled={isFormItemDisabled} size="large">
-            <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
-            <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
-            <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
-            <Select.Option value="time">{input_labels.type.options.time}</Select.Option>
-            <Select.Option value="duration">{input_labels.type.options.duration}</Select.Option>
-          </Select>
-        </Form.Item>
-        <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
-          <Checkbox disabled={isFormItemDisabled}>
-            {input_labels.each_side}
-          </Checkbox>
-        </Form.Item>
-        <HoursFormItem shouldUpdate>
-          {({ getFieldValue }) => isExerciseTimeType(getFieldValue('type')) && (
-            <Form.Item name="hours" valuePropName="checked">
-              <Checkbox disabled={isFormItemDisabled}>
-                {input_labels.hours}
-              </Checkbox>
-            </Form.Item>
-          )}
-        </HoursFormItem>
-        <StyledFormItem shouldUpdate>
-          {({ getFieldValue }) => {
-            const type = getFieldValue('type')
-            const shouldRenderTimeInput = !isExerciseTimeType(type)
-            const shouldRenderWeightInput = type !== 'weight'
-            return (
-              <>
-                {shouldRenderTimeInput
-                  ? (
-                    <ShortFormItem name="time" label={input_labels.time}>
-                      <TimePicker
-                        disabled={isFormItemDisabled}
-                        inputReadOnly
-                        showNow={false}
-                        size="large"
-                        allowClear={false}
-                        placeholder=""
-                      />
-                    </ShortFormItem>
-                  )
-                  : (
-                    <ShortFormItem name="repeats" label={input_labels.repeats} $fullWidth $margin>
-                      <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
-                    </ShortFormItem>
-                  )}
-                {shouldRenderWeightInput
-                  ? (
-                    <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
-                      <CustomInput.Number onlyPositive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
-                    </ShortFormItem>
-                  )
-                  : (
-                    <ShortFormItem name="repeats" label={input_labels.repeats}>
-                      <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
-                    </ShortFormItem>
-                  )}
-              </>
-            )
-          }}
-        </StyledFormItem>
-        <Form.Item label={input_labels.description} name="description">
-          <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
-        </Form.Item>
-        <ImageFormItem label={input_labels.image} style={{ marginBottom: isEditMode ? '' : '0' }} name="image" valuePropName="fileList" getValueFromEvent={({ fileList }) => fileList}>
-          <Upload.Dragger onPreview={handlePreviewOpen} listType="picture-card" maxCount={1} accept="image/*" disabled={!isEditMode || isFetching}>
-            <PlusOutlined />
-          </Upload.Dragger>
-        </ImageFormItem>
-        <StyledModal
-          visible={preview.visible}
-          title={preview.title}
-          footer={null}
-          onCancel={handlePreviewClose}
-        >
-          <img alt="example" style={{ width: '100%' }} src={preview.url} />
-        </StyledModal>
-        {(isEditMode || !isEdit) && (
-          <CreateEditFormItem>
+      </HoursFormItem>
+      <StyledFormItem shouldUpdate>
+        {({ getFieldValue }) => {
+          const type = getFieldValue('type')
+          const shouldRenderTimeInput = !isExerciseTimeType(type)
+          const shouldRenderWeightInput = type !== 'weight'
+          return (
             <>
-              <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
-                {isEdit ? submit_button.save : submit_button.create}
-              </Button>
-              {isEdit && (
-                <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
-                  {submit_button.cancel}
-                </ToggleEdit>
-              )}
+              {shouldRenderTimeInput
+                ? (
+                  <ShortFormItem name="time" label={input_labels.time}>
+                    <TimePicker
+                      disabled={isFormItemDisabled}
+                      inputReadOnly
+                      showNow={false}
+                      size="large"
+                      allowClear={false}
+                      placeholder=""
+                    />
+                  </ShortFormItem>
+                )
+                : (
+                  <ShortFormItem name="repeats" label={input_labels.repeats} $fullWidth $margin>
+                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                  </ShortFormItem>
+                )}
+              {shouldRenderWeightInput
+                ? (
+                  <ShortFormItem name="weight" label={input_labels.weight} $fullWidth={!shouldRenderTimeInput}>
+                    <CustomInput.Number onlyPositive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
+                  </ShortFormItem>
+                )
+                : (
+                  <ShortFormItem name="repeats" label={input_labels.repeats}>
+                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                  </ShortFormItem>
+                )}
             </>
-          </CreateEditFormItem>
-        )}
-        <Modal
-          visible={isModalVisible}
-          okText={modal.delete.ok_button}
-          onOk={handleDelete}
-          okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
-          cancelText={modal.delete.cancel_button}
-          onCancel={() => setIsModalVisible(false)}
-        >
-          {modal.delete.body_single}
-        </Modal>
-      </StyledForm>
-    </>
+          )
+        }}
+      </StyledFormItem>
+      <Form.Item label={input_labels.description} name="description">
+        <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
+      </Form.Item>
+      <ImageFormItem label={input_labels.image} style={{ marginBottom: isEditMode ? '' : '0' }} name="image" valuePropName="fileList" getValueFromEvent={({ fileList }) => fileList}>
+        <Upload.Dragger onPreview={handlePreviewOpen} listType="picture-card" maxCount={1} accept="image/*" disabled={!isEditMode || isFetching}>
+          <PlusOutlined />
+        </Upload.Dragger>
+      </ImageFormItem>
+      <StyledModal
+        visible={preview.visible}
+        title={preview.title}
+        footer={null}
+        onCancel={handlePreviewClose}
+      >
+        <img alt="example" style={{ width: '100%' }} src={preview.url} />
+      </StyledModal>
+      {(isEditMode || !isEdit) && (
+        <CreateEditFormItem>
+          <>
+            <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
+              {isEdit ? submit_button.save : submit_button.create}
+            </Button>
+            {isEdit && (
+              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
+                {submit_button.cancel}
+              </ToggleEdit>
+            )}
+          </>
+        </CreateEditFormItem>
+      )}
+      <Modal
+        visible={isModalVisible}
+        okText={modal.delete.ok_button}
+        onOk={handleDelete}
+        okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
+        cancelText={modal.delete.cancel_button}
+        onCancel={() => setIsModalVisible(false)}
+      >
+        {modal.delete.body_single}
+      </Modal>
+    </StyledForm>
   )
 }
 
