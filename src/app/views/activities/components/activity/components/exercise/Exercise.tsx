@@ -77,8 +77,6 @@ export interface IExerciseProps {
   exerciseIndex: number;
 }
 
-// TODO: пофиксить баг - при выборе тренировок, в случае если по индексу
-// в списке идет то же упражнение, то результаты для него не обновляются
 const Exercise: FC<IExerciseProps> = ({
   roundResults,
   total,
