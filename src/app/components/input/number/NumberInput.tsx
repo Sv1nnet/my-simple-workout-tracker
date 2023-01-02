@@ -1,3 +1,4 @@
+import isFunc from '@/src/app/utils/isFunc'
 import { Input, InputProps } from 'antd'
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -20,8 +21,6 @@ const isSignedSeparator = v => SIGN_AND_SEPARATOR_REGEX.test(v)
 const isSeparator = v => SEPARATOR_REGEX.test(v)
 
 const stringifyValue = v => v === undefined || v === null ? '' : typeof v === 'string' ? v : `${v}`
-
-const isFunc = func => typeof func === 'function'
 
 export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
   int?: boolean;

@@ -13,18 +13,24 @@ import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { WorkoutForm } from 'store/slices/workout/types'
 
+export const ACTIVITY_TAG_TYPES = {
+  ACTIVITY: 'Activity',
+  ACTIVITY_LIST: 'ActivityList',
+  HISTORY: 'History',
+}
+
 export const activityApi = createApi({
   reducerPath: 'activityApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
-  tagTypes: [ 'Activity', 'ActivityList', 'History' ],
+  tagTypes: [ ACTIVITY_TAG_TYPES.ACTIVITY, ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
   endpoints: build => ({
     get: build.query<GetActivitySuccess, { id: string }>({
       query: ({ id }) => ({
         url: `${routes.activity.v1.base.full}/${id}`,
         method: 'GET',
       }),
-      providesTags: () => [ 'Activity' ],
+      providesTags: () => [ ACTIVITY_TAG_TYPES.ACTIVITY ],
     }),
     create: build.mutation<ActivityCreateSuccess, { activity: Omit<ActivityForm<string>, 'id'> }>({
       query: ({ activity }) => ({
@@ -32,7 +38,7 @@ export const activityApi = createApi({
         method: 'POST',
         body: activity,
       }),
-      invalidatesTags: [ 'Activity' ],
+      invalidatesTags: [ 'ActivityList', 'History' ],
     }),
     update: build.mutation<ActivityUpdateSuccess, { activity: IActivityFormData }>({
       query: ({ activity }) => ({
@@ -40,14 +46,14 @@ export const activityApi = createApi({
         method: 'PATCH',
         body: activity,
       }),
-      invalidatesTags: [ 'Activity' ],
+      invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY, ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
     delete: build.mutation<ActivityDeleteSuccess, { id: Pick<ActivityForm, 'id'> }>({
       query: ({ id }) => ({
         url: `${routes.activity.v1.delete.full}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [ 'Activity', 'ActivityList' ],
+      invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
     deleteMany: build.mutation<ActivityDeleteSuccess, { ids: Pick<ActivityForm, 'id'>[] }>({
       query: ({ ids }) => ({
@@ -55,21 +61,21 @@ export const activityApi = createApi({
         method: 'DELETE',
         body: { ids },
       }),
-      invalidatesTags: [ 'Activity', 'ActivityList' ],
+      invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
     list: build.query<GetActivityListSuccess, void>({
       query: () => ({
         url: routes.activity.v1.list.full,
         method: 'GET',
       }),
-      providesTags: () => [ 'ActivityList' ],
+      providesTags: () => [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST ],
     }),
     getHistory: build.query<GetHistoryListSuccess, { workoutId: Pick<WorkoutForm, 'id'>, activityId?: string, page?: number, byPage?: number, offset?: number }>({
       query: ({ workoutId, activityId, page = 1, byPage = 30, offset }) => ({
         url: `${routes.activity.v1.history.full}/${workoutId}?${activityId ? `activity_id=${activityId}&` : ''}page=${page}&byPage=${byPage}${typeof offset === 'number' ? `&offset=${offset}` : ''}`,
         method: 'GET',
       }),
-      providesTags: () => [ 'History' ],
+      providesTags: () => [ ACTIVITY_TAG_TYPES.HISTORY ],
     }),
   }),
 })

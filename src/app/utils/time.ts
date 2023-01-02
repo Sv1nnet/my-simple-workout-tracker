@@ -28,6 +28,84 @@ export const secondsToTimeArray = (seconds: number) => {
   return [ h, m, s ]
 }
 
+export const milisecondsToTimeArray = (miliseconds: number) => {
+  let [ h, m, s ] = secondsToTimeArray(miliseconds / 1000)
+  s = Math.floor(s)
+  const ms = miliseconds - (s * 1000) - (m * 60 * 1000) - (h * 60 * 60 * 1000)
+  return [ h, m, s, ms ]
+}
+
+export const SECONDS_IN_MINUTE = 60
+export const MINUTES_IN_HOUR = 60
+export const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * MINUTES_IN_HOUR
+
+export const timeArrayToSeconds = (timeArray: number[]) => {
+  let [ h, m, s, ms ] = [ 0, 0, 0, 0 ]
+
+  switch (timeArray.length) {
+    case 4:
+      [ h, m, s, ms ] = timeArray
+      break
+    case 3:
+      [ h, m, s ] = timeArray
+      break
+    case 2:
+      [ m, s ] = timeArray
+      break
+    case 1:
+      [ s ] = timeArray
+      break
+    default:
+      console.warn(`Incorrect argument format: timeArray.length should be more then 0 and less then 4 but got ${timeArray.length}`)
+      return 0
+  }
+
+  const secondsOver59 = s - SECONDS_IN_MINUTE
+  if (secondsOver59 >= 0) {
+    const extraMinutes = Math.ceil(secondsOver59 / SECONDS_IN_MINUTE)
+    m += extraMinutes
+    s -= (extraMinutes * SECONDS_IN_MINUTE)
+  }
+
+  const minutesOver59 = m - MINUTES_IN_HOUR
+  if (minutesOver59 >= 0) {
+    const extraHours = Math.ceil(minutesOver59 / MINUTES_IN_HOUR)
+    h += extraHours
+    m -= (extraHours * MINUTES_IN_HOUR)
+  }
+
+  ms = ms / 1000
+
+  return (h * 60 * 60) + (m * 60) + s + (ms / 1000)
+}
+
+export const timeArrayToMiliseconds = (timeArray: number[]) => {
+  let [ h, m, s, ms ] = [ 0, 0, 0, 0 ]
+
+  switch (timeArray.length) {
+    case 4:
+      [ h, m, s, ms ] = timeArray
+      break
+    case 3:
+      [ m, s, ms ] = timeArray
+      break
+    case 2:
+      [ s, ms ] = timeArray
+      break
+    case 1:
+      [ ms ] = timeArray
+      break
+    default:
+      console.warn(`Incorrect argument format: timeArray.length should be more then 0 and less then 5 but got ${timeArray.length}`)
+      return 0
+  }
+
+  const seconds = timeArrayToSeconds([ h, m, s ])
+
+
+  return ms + (seconds * 1000)
+}
+
 export const timeToHms = (
   time: number | Dayjs | string | number[],
   {

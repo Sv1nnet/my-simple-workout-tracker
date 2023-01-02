@@ -12,11 +12,16 @@ import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { secondsToDayjs } from 'app/utils/time'
 
+export const WORKOUT_TAG_TYPES = {
+  WORKOUT: 'Workout',
+  WORKOUT_LIST: 'WorkoutList',
+}
+
 export const workoutApi = createApi({
   reducerPath: 'workoutApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
-  tagTypes: [ 'Workout', 'WorkoutList' ],
+  tagTypes: [ WORKOUT_TAG_TYPES.WORKOUT, WORKOUT_TAG_TYPES.WORKOUT_LIST ],
   endpoints: build => ({
     get: build.query<GetWorkoutSuccess, { id: string }>({
       query: ({ id }) => ({
@@ -38,7 +43,7 @@ export const workoutApi = createApi({
         }
         return response
       },
-      providesTags: () => [ 'Workout' ],
+      providesTags: () => [ WORKOUT_TAG_TYPES.WORKOUT ],
     }),
     create: build.mutation<WorkoutCreateSuccess, { workout: Omit<WorkoutForm, 'id'> }>({
       query: ({ workout }) => ({
@@ -46,7 +51,7 @@ export const workoutApi = createApi({
         method: 'POST',
         body: workout,
       }),
-      invalidatesTags: [ 'Workout' ],
+      invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
     update: build.mutation<WorkoutUpdateSuccess, { workout: WorkoutServerPayload }>({
       query: ({ workout }) => ({
@@ -54,14 +59,14 @@ export const workoutApi = createApi({
         method: 'PATCH',
         body: workout,
       }),
-      invalidatesTags: [ 'Workout' ],
+      invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT, WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
     delete: build.mutation<WorkoutDeleteSuccess, { id: Pick<WorkoutServerPayload, 'id'> }>({
       query: ({ id }) => ({
         url: `${routes.workout.v1.delete.full}/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: [ 'Workout', 'WorkoutList' ],
+      invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
     deleteMany: build.mutation<WorkoutDeleteSuccess, { ids: Pick<WorkoutServerPayload, 'id'>[] }>({
       query: ({ ids }) => ({
@@ -69,14 +74,14 @@ export const workoutApi = createApi({
         method: 'DELETE',
         body: { ids },
       }),
-      invalidatesTags: [ 'Workout', 'WorkoutList' ],
+      invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
     list: build.query<GetWorkoutListSuccess, void>({
       query: () => ({
         url: routes.workout.v1.list.full,
         method: 'GET',
       }),
-      providesTags: () => [ 'WorkoutList' ],
+      providesTags: () => [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
   }),
 })

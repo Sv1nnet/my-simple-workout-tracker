@@ -49,7 +49,12 @@ const IntlContextProvider: FC = ({ children }) => {
     return result
   }, [ lang ])
 
-  return <IntlContext.Provider value={{ intl, lang }}>{children}</IntlContext.Provider>
+  const value = useMemo(() => ({
+    intl,
+    lang,
+  }), [ intl, lang ])
+
+  return <IntlContext.Provider value={value}>{children}</IntlContext.Provider>
 }
 
 export const withIntlContext = Component => (props) => {

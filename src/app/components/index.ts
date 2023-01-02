@@ -9,6 +9,7 @@ import DeleteEditPanel from './delete_edit_panel'
 import VirtualList from './virtual_list/VirtualList'
 import ChangeLangPanel from './change_lang_panel/ChangeLangPanel'
 import ErrorBoundary from './error_boundary/ErrorBoundary'
+import Timer from './timer/Timer'
 import {
   FormActionButtonsContainer,
   ToggleEdit,
@@ -28,4 +29,5 @@ export {
   VirtualList,
   ChangeLangPanel,
   ErrorBoundary,
+  Timer,
 }
