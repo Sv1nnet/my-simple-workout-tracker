@@ -21,7 +21,7 @@ import {
   WorkoutLabelContainer,
   StyledDateFormItem,
 } from './components'
-import { RouterContext } from 'app/contexts/router/RouterContextProvider'
+import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { selectList } from 'app/store/slices/workout'
 import { activityApi } from '@/src/app/store/slices/activity/api'
@@ -89,9 +89,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   })
   const workoutList = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
-  const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
   const { intl, lang } = useContext(IntlContext)
-  const { loading } = useContext(RouterContext)
+  const { loading } = useRouterContext()
 
   const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common

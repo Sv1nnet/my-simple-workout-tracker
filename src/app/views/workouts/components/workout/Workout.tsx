@@ -14,7 +14,7 @@ import { WorkoutForm } from 'app/store/slices/workout/types'
 import { useAppSelector } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
 import { exerciseApi } from 'app/store/slices/exercise/api'
-import { RouterContext } from 'app/contexts/router/RouterContextProvider'
+import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import {
   StyledForm,
   CreateEditFormItem,
@@ -61,10 +61,10 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
-  const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
   const exerciseList = useAppSelector(selectList)
   const { intl } = useContext(IntlContext)
-  const { loading } = useContext(RouterContext)
+  const { loading } = useRouterContext()
   const { payload } = intl.pages.exercises
   const { input_labels, submit_button, error_message, modal, placeholders } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common

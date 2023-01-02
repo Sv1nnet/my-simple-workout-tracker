@@ -7,7 +7,7 @@ import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
-import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import { useMounted } from '@/src/app/hooks'
 
 export type ApiDeleteActivityError = {
@@ -28,7 +28,7 @@ export interface IActivityList {
 const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, isDeleting, activities }) => {
   const { isMountedRef, useHandleMounted } = useMounted()
   const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
-  const { loading, loadingRoute } = useContext(RouterContext)
+  const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useContext(IntlContext)
   const { modal } = intl

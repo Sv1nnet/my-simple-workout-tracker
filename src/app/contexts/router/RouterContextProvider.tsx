@@ -1,7 +1,14 @@
-import { useState, createContext, FC, useEffect, useRef } from 'react'
+import { useState, createContext, FC, useEffect, useRef, useContext } from 'react'
 import Router from 'next/router'
 
-export const RouterContext = createContext({ loading: false, loadingRoute: null })
+const initialContextValue = { loading: false, loadingRoute: null }
+
+export interface IRouterContextValue {
+  loading: boolean;
+  loadingRoute: string | null;
+}
+
+export const RouterContext = createContext<IRouterContextValue>(initialContextValue)
 
 const RouterContextProvider: FC = ({ children }) => {
   const [ loading, setLoading ] = useState(false)
@@ -32,3 +39,14 @@ const RouterContextProvider: FC = ({ children }) => {
 }
 
 export default RouterContextProvider
+
+export const useRouterContext = (): IRouterContextValue => {
+  const context = useContext(RouterContext)
+
+  if (!context) {
+    console.warn('RouterContext is not provided')
+    return initialContextValue
+  }
+
+  return context
+}

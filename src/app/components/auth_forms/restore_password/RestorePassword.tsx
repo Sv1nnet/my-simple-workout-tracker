@@ -1,8 +1,8 @@
 import Form from '../form/Form'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { authApi } from 'store/slices/auth/api'
 import { SignupError } from 'store/slices/auth/types'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { AUTH_FORM_TABS } from '../template/Template'
 import { notification } from 'antd'
 
@@ -19,7 +19,7 @@ export type ApiSignupError = {
 }
 
 const RestorePassword: FC<IProps> = ({ active, loading, onSuccess }) => {
-  const { intl } = useContext(IntlContext)
+  const { intl } = useIntlContext()
   const [ restorePassword, stateResult ] = authApi.useLazyRestorePasswordQuery()
 
   const handleSubmit = async (values) => {

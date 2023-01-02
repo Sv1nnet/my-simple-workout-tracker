@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import Form from '../form/Form'
-import { FC, useContext, useState } from 'react'
+import { FC, useState } from 'react'
 import { authApi } from 'store/slices/auth/api'
 import { SignupError } from 'store/slices/auth/types'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import SignupByCodeForm from '../signup_by_code_form/SignupByCodeForm'
 
 interface IProps {
@@ -18,7 +18,7 @@ export type ApiSignupError = {
 }
 
 const Signup: FC<IProps> = ({ active, loading }) => {
-  const { intl } = useContext(IntlContext)
+  const { intl } = useIntlContext()
   const [ codeVerifySuccess, setCodeVerifySuccess ] = useState(false)
   const [ signupCode, setSignupCode ] = useState(null)
   const [ signup, stateResult ] = authApi.useLazySignupQuery()

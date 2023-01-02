@@ -1,15 +1,17 @@
-import { createContext, FC, useCallback, useState } from 'react'
+import { createContext, FC, useCallback, useContext, useState } from 'react'
 import styled from 'styled-components'
 import { Spin, SpinProps } from 'antd'
 
-export interface IContextValue {
+const initialContextValue = { loading: false, forceStopLoader: () => {}, stopLoaderById: () => {}, runLoader: () => {} }
+
+export interface IAppLoaderContextValue {
   loading: boolean;
   forceStopLoader: (props?: SpinProps) => void;
   runLoader: (id: number | string, props?: SpinProps) => void;
   stopLoaderById: (id: number | string, props?: SpinProps) => void;
 }
 
-export const AppLoaderContext = createContext<IContextValue>({ loading: false, forceStopLoader: () => {}, stopLoaderById: () => {}, runLoader: () => {} })
+export const AppLoaderContext = createContext<IAppLoaderContextValue>(initialContextValue)
 
 const StyledSpin = styled(Spin)`
   position: fixed;
@@ -98,3 +100,14 @@ AppLoaderProvider.defaultProps = {
 }
 
 export default AppLoaderProvider
+
+export const useAppLoaderContext = (): IAppLoaderContextValue => {
+  const context = useContext(AppLoaderContext)
+
+  if (!context) {
+    console.warn('AppLoaderContext is not provided')
+    return initialContextValue
+  }
+
+  return context
+}

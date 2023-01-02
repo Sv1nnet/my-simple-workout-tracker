@@ -11,7 +11,7 @@ import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { selectList, updateList } from '@/src/app/store/slices/workout'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from '@/src/app/hooks'
-import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
 
@@ -28,7 +28,7 @@ const CREATE_ROUTE = '/workouts/create'
 
 const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
-  const { loading, loadingRoute } = useContext(RouterContext)
+  const { loading, loadingRoute } = useRouterContext()
   const [ loadWorkouts, { error, isError } ] = workoutApi.useLazyListQuery()
   const { data: workoutsInStore, status } = useAppSelector(selectList)
   const [

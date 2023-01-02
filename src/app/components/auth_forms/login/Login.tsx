@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import Form from '../form/Form'
-import { FC, useContext } from 'react'
+import { FC } from 'react'
 import { authApi } from 'store/slices/auth/api'
 import { LoginError } from 'store/slices/auth/types'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 
 interface IProps {
   active: boolean;
@@ -16,7 +16,7 @@ export type ApiLoginError = {
 }
 
 const Login: FC<IProps> = ({ active, loading }) => {
-  const { intl } = useContext(IntlContext)
+  const { intl } = useIntlContext()
   const [ login, stateResult ] = authApi.useLazyLoginQuery()
 
   return (

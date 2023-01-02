@@ -4,12 +4,14 @@ import { useAppSelector } from 'app/hooks'
 import { selectLang } from 'store/slices/config'
 import { Lang } from 'store/slices/config/types'
 
-export interface IIntelContext {
+const initialContextValue: IIntlContextValue = { intl: {}, lang: 'eng' }
+
+export interface IIntlContextValue {
   intl: any;
   lang: Lang;
 }
 
-export const IntlContext = createContext<IIntelContext>({ intl: {}, lang: 'eng' })
+export const IntlContext = createContext<IIntlContextValue>(initialContextValue)
 export type StringWithShort = String & { short?: string }
 
 const IntlContextProvider: FC = ({ children }) => {
@@ -64,3 +66,15 @@ export const withIntlContext = Component => (props) => {
 }
 
 export default IntlContextProvider
+
+export const useIntlContext = (): IIntlContextValue => {
+  const context = useContext(IntlContext)
+
+  if (!context) {
+    console.warn('IntlContext is not provided')
+    return initialContextValue
+  }
+
+  return context
+}
+

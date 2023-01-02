@@ -3,7 +3,7 @@ import { Form as AntForm, Input, Button, notification, Typography } from 'antd'
 import styled from 'styled-components'
 import { useForm } from 'antd/lib/form/Form'
 import { VerifySignupCodeError } from 'store/slices/auth/types'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { AppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { authApi } from 'app/store/slices/auth/api'
 
@@ -21,7 +21,7 @@ interface IFormProps {
 }
 
 const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { signup_by_code, modal } = intl
   const [ verify, { data, isLoading, error, isError } ] = authApi.useLazyVerifySignupCodeQuery()
 

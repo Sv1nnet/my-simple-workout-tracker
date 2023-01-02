@@ -9,7 +9,7 @@ import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
-import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import { useMounted } from '@/src/app/hooks'
 
 export type ApiDeleteWorkoutError = {
@@ -30,7 +30,7 @@ export interface IWorkoutList {
 const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDeleting, workouts }) => {
   const { isMountedRef, useHandleMounted } = useMounted()
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
-  const { loading, loadingRoute } = useContext(RouterContext)
+  const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useContext(IntlContext)
   const { modal } = intl
