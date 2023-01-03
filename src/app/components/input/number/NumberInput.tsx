@@ -1,26 +1,8 @@
-import isFunc from '@/src/app/utils/isFunc'
+import { useFormatToNumber, useValidateNumber } from 'app/hooks'
+import isFunc from 'app/utils/isFunc'
+import { stringifyValue } from 'app/utils/validateNumberUtils'
 import { Input, InputProps } from 'antd'
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-
-const isPos = value => /^(?![-])/.test(value)
-const isZero = value => +value === 0
-
-const INT_REGEX = /(^\d+$)|(^-\d+$)/
-const isInt = value => (value !== '-' ? INT_REGEX.test(value) : true)
-const isPosInt = value => isInt(value) && isPos(value)
-const isNegInt = value => value !== '-' ? isInt(value) && (isZero(value) || !isPos(value)) : true
-
-const FLOAT_REGEX = /(^\d+$)|(^\d{1,}(\.|,)$)|(^\d+(\.|,)\d{1,}$)|(^(\.|,)\d{1,}$)|(^-\d+$)|(^-\d{1,}(\.|,)$)|(^-\d+(\.|,)\d{1,}$)|(^-(\.|,)\d{1,}$)/
-const isFloat = (REGEX?: RegExp) => value => value !== '-' && value !== '-.' && value !== '-,'
-  ? (REGEX ?? FLOAT_REGEX).test(value)
-  : true
-
-const SIGN_AND_SEPARATOR_REGEX = /(^-[,\.]$)/
-const SEPARATOR_REGEX = /(^[,\.]$)/
-const isSignedSeparator = v => SIGN_AND_SEPARATOR_REGEX.test(v)
-const isSeparator = v => SEPARATOR_REGEX.test(v)
-
-const stringifyValue = v => v === undefined || v === null ? '' : typeof v === 'string' ? v : `${v}`
+import { FC, useEffect, useRef, useState } from 'react'
 
 export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
   int?: boolean;
@@ -39,7 +21,6 @@ export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
   cutZeroes?: boolean;
   cutEndingZeroes?: boolean;
   cutLeadingZeroes?: boolean;
-
 }
 
 const NumberInput: FC<INumberInput> = ({
@@ -53,7 +34,7 @@ const NumberInput: FC<INumberInput> = ({
   commaSeparator,
   min,
   max,
-  value: _value,
+  value: propValue,
   onChange,
   onBlur,
   cutZeroes,
@@ -62,108 +43,27 @@ const NumberInput: FC<INumberInput> = ({
   ...props
 }) => {
   const $input = useRef(null)
-  const formatToNumber = useCallback((v: string) => {
-    if (v.length > 1) {
-      if (
-        (cutZeroes || cutEndingZeroes) &&
-        (v.includes(',') || v.includes('.')) &&
-        v.endsWith('0')
-      ) {
-        return formatToNumber(v.slice(0, -1))
-      }
-      // 001
-      if (
-        (cutZeroes || cutLeadingZeroes) &&
-        v.startsWith('0')
-      ) {
-        return formatToNumber(v.slice(1))
-      }
-      // -0000 or -0 or -0001
-      if (
-        (cutZeroes || cutLeadingZeroes) &&
-        v.startsWith('-0')
-      ) {
-        const cutValue = v.slice(2)
-        return formatToNumber(!cutValue.length ? '0' : `-${v.slice(2)}`)
-      }
-    }
-    // 10.00 or 10,00
-    if (v === '-' || v === '-.' || v === '-,') {
-      return ''
-    }
-    // 123. or 123,
-    if (v.endsWith(',') || v.endsWith('.')) {
-      return v.slice(0, -1)
-    }
-    // ,123 or .123
-    if (v.startsWith(',') || v.startsWith('.')) {
-      return `0${v}`
-    }
-    // -,123 or -.123
-    if (v.startsWith('-,') || v.startsWith('-.')) {
-      return `-0${v.slice(1)}`
-    }
 
-    return v
-  }, [])
+  const formatToNumber = useFormatToNumber({
+    cutZeroes,
+    cutEndingZeroes,
+    cutLeadingZeroes,
+  })
 
-  const validate = useMemo(() => {
-    if (isFunc(shouldUpdate)) return (curValue?: any, prevValue?: any): boolean => shouldUpdate(curValue, prevValue)
-  
-    const _isFloat = typeof maxDigitsAfterPoint === 'number' &&
-      !Number.isNaN(maxDigitsAfterPoint)
-      ? isFloat(
-        new RegExp(
-          FLOAT_REGEX.toString()
-            .replace(/,\)\\d\{1,\}/g, `,)\\d{1,${maxDigitsAfterPoint}}`)
-            .slice(1, -1)
-            .replace(/\//g, '//'),
-        ),
-      )
-      : isFloat()
-    const isPosFloat = value => _isFloat(value) && isPos(value)
-    const isNegFloat = value => value !== '-' ? _isFloat(value) && (isZero(value) || !isPos(value)) : true
-  
-    const withinMax = v => maxExcluding ? v < max : v <= max
-    const withinMin = v => (minExcluding && int) ? v > min : v >= min
-  
-    if (int) {
-      if (onlyPositive) return v => isPosInt(v) && withinMax(v) && withinMin(v)
-      if (onlyPositive) return v => (isNegInt(v) && withinMax(v) && withinMin(v)) || v === '-'
-      return v => (isInt(v) && withinMax(v) && withinMin(v)) || v === '-'
-    }
-  
-    if (onlyPositive) {
-      return (v) => {
-        const valueStr = stringifyValue(v).replace(',', '.')
-        return (isPosFloat(v) && withinMax(valueStr) && withinMin(valueStr)) || valueStr === '.'
-      }
-    }
-    if (onlyNegative) {
-      return (v) => {
-        const valueStr = stringifyValue(v).replace(',', '.')
-        return (
-          (isNegFloat(v) && withinMax(valueStr) && withinMin(valueStr)) ||
-          isSeparator(valueStr) ||
-          valueStr === '-' ||
-          isSignedSeparator(valueStr)
-        )
-      }
-    }
-  
-    return (v) => {
-      const valueStr = stringifyValue(v).replace(',', '.')
-      return (
-        (_isFloat(v) && withinMax(valueStr) && withinMin(valueStr)) ||
-        isSeparator(valueStr) ||
-        valueStr === '-' ||
-        isSignedSeparator(valueStr)
-      )
-    }
-  }, [ int, onlyPositive, onlyNegative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
+  const validate = useValidateNumber({
+    shouldUpdate,
+    maxDigitsAfterPoint,
+    int,
+    maxExcluding,
+    minExcluding,
+    onlyPositive,
+    onlyNegative,
+    min,
+    max,
+  })
 
   const [ value, setValue ] = useState(() => {
-    const v = formatToNumber(stringifyValue(_value))
+    const v = formatToNumber(stringifyValue(propValue))
     if (!Number.isNaN(v)) return v
     return ''
   })
@@ -220,31 +120,33 @@ const NumberInput: FC<INumberInput> = ({
   }
 
   useEffect(() => {
-    let propValue = stringifyValue(_value)
-    const stateValue = stringifyValue(value)
+    if (propValue === undefined || propValue === null) return
 
-    if (propValue !== stateValue) {
-      if (propValue.replace(',', '.') !== stateValue.replace(',', '.')) {
-        if (propValue === '') {
-          setValue(propValue)
+    let propValueStr = stringifyValue(propValue)
+    const stateValueStr = stringifyValue(value)
+
+    if (propValueStr !== stateValueStr) {
+      if (propValueStr.replace(',', '.') !== stateValueStr.replace(',', '.')) {
+        if (propValueStr === '') {
+          setValue(propValueStr)
           return
         }
 
         const isValid = isFunc(shouldUpdate)
-          ? validate(propValue, value)
-          : validate(propValue)
+          ? validate(propValueStr, value)
+          : validate(propValueStr)
 
         if (!isValid) {
           return
         }
 
-        propValue = commaSeparator
-          ? propValue.replace('.', ',')
-          : propValue
-        setValue(propValue)
+        propValueStr = commaSeparator
+          ? propValueStr.replace('.', ',')
+          : propValueStr
+        setValue(propValueStr)
       }
     }
-  }, [ _value ])
+  }, [ propValue, commaSeparator, shouldUpdate, validate, value ])
 
   return <Input ref={$input} value={value} onChange={handleChange} onBlur={handleBlur} {...props} />
 }

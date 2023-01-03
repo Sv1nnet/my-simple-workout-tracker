@@ -1,10 +1,12 @@
 import { notification } from 'antd'
-import { ChangeEvent, useContext } from 'react'
+import { ChangeEvent, useCallback, useContext, useMemo } from 'react'
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 
 import type { AppDispatch, AppState } from '../store'
+import isFunc from '../utils/isFunc'
+import { FLOAT_REGEX, isFloat, isInt, isNegInt, isPos, isPosInt, isSeparator, isSignedSeparator, isZero, stringifyValue } from '../utils/validateNumberUtils'
 
 export const useForm = <TContent>(defaultValues: TContent) =>
   (handler: (content: TContent) => void) =>
@@ -108,3 +110,137 @@ export const useMounted = ({ initialMounted = false, dependencies = [] }: { init
     },
   }
 }
+
+export const useFormatToNumber = ({
+  cutZeroes,
+  cutEndingZeroes,
+  cutLeadingZeroes,
+}: {
+  cutZeroes?: boolean,
+  cutEndingZeroes?: boolean,
+  cutLeadingZeroes?: boolean,
+} = {}) => {
+  const formatToNumber = useCallback((v: string) => {
+    if (v.length > 1) {
+      if (
+        (cutZeroes || cutEndingZeroes) &&
+        (v.includes(',') || v.includes('.')) &&
+        v.endsWith('0')
+      ) {
+        return formatToNumber(v.slice(0, -1))
+      }
+      // 001
+      if (
+        (cutZeroes || cutLeadingZeroes) &&
+        v.startsWith('0')
+      ) {
+        return formatToNumber(v.slice(1))
+      }
+      // -0000 or -0 or -0001
+      if (
+        (cutZeroes || cutLeadingZeroes) &&
+        v.startsWith('-0')
+      ) {
+        const cutValue = v.slice(2)
+        return formatToNumber(!cutValue.length ? '0' : `-${v.slice(2)}`)
+      }
+    }
+    // 10.00 or 10,00
+    if (v === '-' || v === '-.' || v === '-,') {
+      return ''
+    }
+    // 123. or 123,
+    if (v.endsWith(',') || v.endsWith('.')) {
+      return v.slice(0, -1)
+    }
+    // ,123 or .123
+    if (v.startsWith(',') || v.startsWith('.')) {
+      return `0${v}`
+    }
+    // -,123 or -.123
+    if (v.startsWith('-,') || v.startsWith('-.')) {
+      return `-0${v.slice(1)}`
+    }
+
+    if (/[^0-9\-.,]/g.test(v)) return formatToNumber(v.replace(/[^0-9\-.,]/g, ''))
+
+    return v
+  }, [ cutZeroes, cutEndingZeroes, cutLeadingZeroes ])
+
+  return formatToNumber
+}
+
+export const useValidateNumber = ({
+  shouldUpdate,
+  maxDigitsAfterPoint,
+  int,
+  maxExcluding,
+  minExcluding,
+  onlyPositive,
+  onlyNegative,
+  min = -Infinity,
+  max = Infinity,
+}: {
+  shouldUpdate?: (curValue?: string | number, prevValue?: string | number) => boolean,
+  maxDigitsAfterPoint?: number,
+  int?: boolean,
+  maxExcluding?: boolean,
+  minExcluding?: boolean,
+  onlyPositive?: boolean,
+  onlyNegative?: boolean,
+  min?: number,
+  max?: number,
+}) => useMemo(() => {
+  if (isFunc(shouldUpdate)) return (curValue?: any, prevValue?: any): boolean => shouldUpdate(curValue, prevValue)
+  
+  const _isFloat = typeof maxDigitsAfterPoint === 'number' &&
+      !Number.isNaN(maxDigitsAfterPoint)
+    ? isFloat(
+      new RegExp(
+        FLOAT_REGEX.toString()
+          .replace(/,\)\\d\{1,\}/g, `,)\\d{1,${maxDigitsAfterPoint}}`)
+          .slice(1, -1)
+          .replace(/\//g, '//'),
+      ),
+    )
+    : isFloat()
+  const isPosFloat = (value?: string | number) => _isFloat(value) && isPos(value)
+  const isNegFloat = (value?: string | number) => value !== '-' ? _isFloat(value) && (isZero(value) || !isPos(value)) : true
+  
+  const withinMax = (v?: string | number) => maxExcluding ? v < max : v <= max
+  const withinMin = (v?: string | number) => (minExcluding && int) ? v > min : v >= min
+  
+  if (int) {
+    if (onlyPositive) return (v?: string | number) => isPosInt(v) && withinMax(v) && withinMin(v)
+    if (onlyPositive) return (v?: string | number) => (isNegInt(v) && withinMax(v) && withinMin(v)) || v === '-'
+    return (v?: string | number) => (isInt(v) && withinMax(v) && withinMin(v)) || v === '-'
+  }
+  
+  if (onlyPositive) {
+    return (v?: string | number) => {
+      const valueStr = stringifyValue(v).replace(',', '.')
+      return (isPosFloat(v) && withinMax(valueStr) && withinMin(valueStr)) || valueStr === '.'
+    }
+  }
+  if (onlyNegative) {
+    return (v?: string | number) => {
+      const valueStr = stringifyValue(v).replace(',', '.')
+      return (
+        (isNegFloat(v) && withinMax(valueStr) && withinMin(valueStr)) ||
+          isSeparator(valueStr) ||
+          valueStr === '-' ||
+          isSignedSeparator(valueStr)
+      )
+    }
+  }
+  
+  return (v: string | number) => {
+    const valueStr = stringifyValue(v).replace(',', '.')
+    return (
+      (_isFloat(v) && withinMax(valueStr) && withinMin(valueStr)) ||
+        isSeparator(valueStr) ||
+        valueStr === '-' ||
+        isSignedSeparator(valueStr)
+    )
+  }
+}, [ int, onlyPositive, onlyNegative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
