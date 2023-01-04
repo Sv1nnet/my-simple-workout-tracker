@@ -7,12 +7,12 @@ import { Login, LoginSuccess, Signup, SignupSuccess } from 'store/slices/auth/ty
 import { useForm } from 'antd/lib/form/Form'
 import { Rule } from 'antd/lib/form'
 import { updateToken } from 'store/slices/auth'
-import { ApiSignupError } from '../signup/Signup'
 import { ApiLoginError } from '../login/Login'
 import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
 import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 import { AUTH_FORM_TABS } from '../template/Template'
 import { changeLang } from '@/src/app/store/slices/config'
+import { ApiSignupError } from '../signup/types'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;

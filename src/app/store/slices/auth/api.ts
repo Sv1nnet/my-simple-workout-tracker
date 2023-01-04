@@ -13,11 +13,15 @@ import {
 } from './types'
 import routes from 'constants/end_points'
 
+export const AUTH_TAG_TYPES = {
+  AUTH: 'Auth',
+}
+
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({ baseUrl: routes.base, credentials: 'include' }),
   refetchOnMountOrArgChange: true,
-  tagTypes: [ 'Auth' ],
+  tagTypes: [ AUTH_TAG_TYPES.AUTH ],
   endpoints: build => ({
     login: build.query<LoginSuccess, Login>({
       query: cred => ({
@@ -25,7 +29,7 @@ export const authApi = createApi({
         method: 'POST',
         body: { ...cred },
       }),
-      providesTags: () => [ 'Auth' ],
+      providesTags: () => [ AUTH_TAG_TYPES.AUTH ],
     }),
     signup: build.query<SignupSuccess, UserForm>({
       query: cred => ({
@@ -46,7 +50,7 @@ export const authApi = createApi({
         url: routes.auth.v1.logout.full,
         method: 'POST',
       }),
-      providesTags: () => [ 'Auth' ],
+      providesTags: () => [ AUTH_TAG_TYPES.AUTH ],
     }),
     resetPassword: build.query<ResetSuccess, Reset>({
       query: cred => ({

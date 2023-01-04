@@ -38,7 +38,7 @@ export const activityApi = createApi({
         method: 'POST',
         body: activity,
       }),
-      invalidatesTags: [ 'ActivityList', 'History' ],
+      invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY  ],
     }),
     update: build.mutation<ActivityUpdateSuccess, { activity: IActivityFormData }>({
       query: ({ activity }) => ({

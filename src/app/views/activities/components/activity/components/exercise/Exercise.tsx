@@ -1,6 +1,5 @@
 import { FC } from 'react'
-import styled from 'styled-components'
-import { Button, Form, FormInstance, Input, Radio, Typography } from 'antd'
+import { Form, FormInstance, Input, Typography } from 'antd'
 import { History, Rounds, Timers } from './components'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import routes from 'app/constants/end_points'
@@ -11,52 +10,21 @@ import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, Round } from '@/src/app/store/slices/activity/types'
 import { Dayjs } from 'dayjs'
 import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-`
-
-const HistoryContainer = styled.div`
-  display: flex;
-  overflow: hidden;
-`
-
-const HistoryButtonsContainer = styled.div`
-  text-align: right;
-  margin-bottom: 5px;
-`
-
-const StyledRadio = styled(Radio.Group)`
-  & > label.ant-radio-button-wrapper {
-    border-width: 2px;
-  }
-`
-
-const HistoryButtonIcon = styled.img`
-  position: relative;
-  top: -2px;
-  ${({ $table }) => $table ? 'transform: scale(1, .7);' : ''}
-`
-
-const AddRemoveNoteButton = styled(Button)`
-  margin-top: 10px;
-`
-
-const ResultTypeButtonsContainer = styled.div`
-  text-align: right;
-`
-
-const ExerciseTitle = styled(Typography.Title)`
-  margin-bottom: 0;
-  line-height: 1;
-`
+import {
+  AddRemoveNoteButton,
+  ExerciseTitle,
+  Header,
+  HistoryButtonIcon,
+  HistoryButtonsContainer,
+  HistoryContainer,
+  ResultTypeButtonsContainer,
+  StyledRadio,
+} from './components/styled'
 
 const modeOptions = [
   { label: <HistoryButtonIcon src="/icons/chart.svg" alt="chart" />, value: 'chart' },
   { label: <HistoryButtonIcon $table src="/icons/table.svg" alt="table" />, value: 'table' },
 ]
-
 
 export interface IExerciseProps {
   roundResults: {

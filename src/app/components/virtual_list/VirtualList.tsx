@@ -23,21 +23,12 @@ const getPositionData = ({
   itemHeight,
   itemWidth,
 }) => {
-  const itemSize = orientation === 'vertical' ? itemHeight : itemWidth
+  const isVertical = orientation === 'vertical'
+  const itemSize = isVertical ? itemHeight : itemWidth
 
-  let index
-  let scrollOffset
-  let direction
-
-  if (orientation === 'vertical') {
-    scrollOffset = DOMEl.scrollTop
-  } else {
-    scrollOffset = DOMEl.scrollLeft
-  }
-
-  index = Math.floor(scrollOffset / itemSize) - Math.ceil(overscanCount / 2)
-
-  direction = prevPos < scrollOffset
+  const scrollOffset = isVertical ? DOMEl.scrollTop : DOMEl.scrollLeft
+  const index = Math.floor(scrollOffset / itemSize) - Math.ceil(overscanCount / 2)
+  const direction = prevPos < scrollOffset
     ? 'forward'
     : prevPos > scrollOffset
       ? 'backward'

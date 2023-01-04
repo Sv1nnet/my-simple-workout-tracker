@@ -16,7 +16,7 @@ export const useModalUtils = ({
   handleCancelSelection: () => {},
   handleSelect: () => {},
 }) => {
-  const [ isModalVisible, setModalVisible ] = useState(visible)
+  const [ isModalVisible, setModalVisible ] = useState<boolean>(visible)
   const selectionRef = useRef({
     selected,
     selectionEnabled,

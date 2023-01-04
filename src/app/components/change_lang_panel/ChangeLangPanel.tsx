@@ -1,32 +1,8 @@
-import styled from 'styled-components'
 import Image from 'next/image'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { FC, SyntheticEvent, useEffect, useRef } from 'react'
 import { changeLang, selectLang } from 'store/slices/config'
-
-const FlagsContainer = styled.div`
-  display: flex;
-  position: absolute;
-  right: 15px;
-  top: 15px;
-`
-
-const LangButton = styled.button`
-  width: 42px;
-  height: 30px;
-  font-size: 40px;
-  line-height: 0px;
-  padding: 0;
-  margin-left: 10px;
-  border: none;
-  background-color: transparent;
-  &.active {
-    background-color: skyblue;
-  }
-  &:focus {
-    outline: 1px skyblue solid;
-  }
-`
+import { FlagsContainer, LangButton } from './components/styled'
 
 export interface IChangeLangPanel {
   className?: string;

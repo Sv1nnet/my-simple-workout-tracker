@@ -1,7 +1,7 @@
+import React, { FC, useContext, useEffect, useState } from 'react'
 import { List, notification } from 'antd'
 import { ActivityItem } from './components'
 import { ActivityDeleteError, ActivityForm, ActivityListItem } from 'app/store/slices/activity/types'
-import React, { FC, useContext, useEffect, useState } from 'react'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
