@@ -32,6 +32,7 @@ export function makeStore() {
     reducer: rootReducer,
     middleware: getDefaultMiddleware => getDefaultMiddleware().concat(
       authApi.middleware,
+      activityApi.middleware,
       profileApi.middleware,
       exerciseApi.middleware,
       workoutApi.middleware,

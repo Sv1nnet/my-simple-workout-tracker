@@ -49,7 +49,7 @@ export const exerciseApi = createApi({
         method: 'POST',
         body: exercise,
       }),
-      invalidatesTags: [ 'ExerciseList' ],
+      invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
     update: build.mutation<ExerciseUpdateSuccess, { exercise: IExerciseFormData }>({
       query: ({ exercise }) => ({

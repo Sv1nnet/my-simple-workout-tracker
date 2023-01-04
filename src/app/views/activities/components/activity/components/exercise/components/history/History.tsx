@@ -1,7 +1,4 @@
-import styled from 'styled-components'
-import { HistoryItemHeader, HistoryItemBody, Chart } from '..'
-import { Header } from 'app/views/activities/components/activity/components/exercise/components/history_item_header/HistoryItemHeader'
-import { Body } from 'app/views/activities/components/activity/components/exercise/components/history_item_body/HistoryItemBody'
+import { HistoryItemHeader, HistoryItemBody } from '..'
 import { getTimeDateUnit } from 'app/utils/time'
 import { VirtualList } from 'app/components'
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
@@ -14,78 +11,8 @@ import {
   EACH_SIDE_TIME_WITH_HOUR_CELL_WIDTH,
 } from 'app/views/activities/components/activity/components/exercise/components/chart/Chart'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
-import { getComparator } from 'app/views/activities/components/activity/Activity'
-
-const Container = styled.div`
-  width: 100%;
-  position: relative;
-  margin-left: 10px;
-  margin-right: 10px;
-`
-
-const ItemContainer = styled.div`
-  text-align: center;
-  overflow-y: hidden;
-  &:last-of-type ${Header}, &:last-of-type ${Body} {
-    border-right: none;
-  }
-  &:after {
-    content: '';
-    display: ${({ $last }) => $last ? 'none' : 'block'};
-    width: 1px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: lightgrey;
-  }
-`
-
-const HistoryLoader = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  text-align: center;
-`
-
-const ListContainer = React.memo(React.forwardRef<{}, any>(function ListContainer({
-  children,
-  sideLabels,
-  showChart,
-  style,
-  data,
-  startIndex,
-  endIndex,
-  hours,
-  eachSide,
-  type,
-  height,
-  isTimeType,
-  ...props
-}, ref) {
-  return (
-    <div {...props} style={style} ref={ref}>
-      {children}
-      {showChart && (
-        <Chart
-          {...props}
-          type={type}
-          isTimeType={isTimeType}
-          height={height}
-          hours={hours}
-          style={style}
-          data={data}
-          startIndex={startIndex}
-          endIndex={endIndex}
-          eachSide={eachSide}
-          sideLabels={sideLabels}
-        />
-      )}
-    </div>
-  )
-}))
+import { getComparator } from 'app/views/activities/components/activity/utils'
+import { Container, HistoryLoader, ItemContainer, ListContainer } from './compoents/styled'
 
 const RESULT_HEIGHT = 22
 const EACH_SIDE_RESULT_HEIGHT = 36

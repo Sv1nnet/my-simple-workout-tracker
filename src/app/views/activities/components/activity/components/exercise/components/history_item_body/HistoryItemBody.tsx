@@ -1,22 +1,8 @@
 import { timeToHms } from 'app/utils/time'
 import { theme } from '@/src/styles/vars'
-import styled from 'styled-components'
 import React, { FC } from 'react'
 import { EachSideRound, Round } from '@/src/app/store/slices/activity/types'
-
-export const Body = styled.div`
-  overflow-y: scroll;
-  border-right: 1px solid lightgrey;
-  border-left: none;
-  height: 100%;
-`
-
-const Text = styled.p`
-  margin: 0;
-  color: ${({ $color }) => $color};
-  margin-top: ${({ $mt }) => $mt};
-  ${({ $eachSide }) => $eachSide ? 'line-height: 1;' : ''}
-`
+import { Body, Text } from './components/styled'
 
 const getColor = (
   curr: number,

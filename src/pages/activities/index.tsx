@@ -12,7 +12,7 @@ import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotificat
 import { AddButton } from 'app/components/list_buttons'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
-import { RouterContext } from '@/src/app/contexts/router/RouterContextProvider'
+import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
 
@@ -31,7 +31,7 @@ const CREATE_ROUTE = '/activities/create'
 
 const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ activities: _activities }) => {
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
-  const { loading, loadingRoute } = useContext(RouterContext)
+  const { loading, loadingRoute } = useRouterContext()
   const [ loadActivities, { error, isError } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore, status } = useAppSelector(selectList)
   const [

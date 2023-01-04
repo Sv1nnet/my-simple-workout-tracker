@@ -18,7 +18,7 @@ import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import routes from 'app/constants/end_points'
 import { IntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Input as CustomInput } from 'app/components'
-import { RouterContext } from 'app/contexts/router/RouterContextProvider'
+import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import {
   StyledForm,
   StyledFormItem,
@@ -93,7 +93,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
   const { intl } = useContext(IntlContext)
-  const { loading } = useContext(RouterContext)
+  const { loading } = useRouterContext()
   const { input_labels, submit_button, payload, modal } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 

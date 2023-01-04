@@ -6,11 +6,11 @@ import {
   Modal,
   Select,
 } from 'antd'
-import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
 import dayjs, { Dayjs, isDayjs } from 'dayjs'
 import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
 import { useAppSelector } from 'app/hooks'
 import {
@@ -21,59 +21,17 @@ import {
   WorkoutLabelContainer,
   StyledDateFormItem,
 } from './components'
-import { RouterContext } from 'app/contexts/router/RouterContextProvider'
+import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { selectList } from 'app/store/slices/workout'
 import { activityApi } from '@/src/app/store/slices/activity/api'
 import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
 import { WorkoutForm, WorkoutListExercise } from '@/src/app/store/slices/workout/types'
-import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
+import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
+import { getResultsFromWorkoutList } from './utils'
+import { IActivityProps, InitialValues } from './types'
 
-export interface IActivityProps {
-  id?: string;
-  isEdit?: boolean;
-  isFetching?: boolean;
-  initialValues?: InitialValues<string>;
-  isError: boolean;
-  error?: string;
-  errorCode?: number;
-  errorAppCode?: number;
-  deleteActivity?: Function;
-  onSubmit: Function;
-}
-
-export type InitialValues<T = Dayjs> = Omit<ActivityForm<T>, '_id' | 'workout_id'> & {
-  _id?: string,
-  workout_id?: Pick<WorkoutForm, 'id'>,
-}
-
-export const getComparator = (type: string) => type === 'time' 
-  ? {
-    pos: (curr, next) => curr < next,
-    neg: (curr, next) => curr > next,
-  }
-  : {
-    pos: (curr, next) => curr > next,
-    neg: (curr, next) => curr < next,
-  }
-
-
-
-const getResultsFromWorkoutList = (_workoutList, workoutId) => _workoutList
-  .data
-  .find(wk => wk.id === workoutId)
-// TODO: on the server - exercise -> details
-  ?.exercises
-  ?.map(({ rounds, _id, exercise }) => ({
-    _id,
-    hours: exercise.hours,
-    original_id: exercise.id,
-    id_in_workout: _id,
-    type: exercise.type,
-    rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
-    note: undefined,
-  })) || []
 
 const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
   const router = useRouter()
@@ -89,9 +47,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   })
   const workoutList = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
-  const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
-  const { intl, lang } = useContext(IntlContext)
-  const { loading } = useContext(RouterContext)
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
+  const { intl, lang } = useIntlContext()
+  const { loading } = useRouterContext()
 
   const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common

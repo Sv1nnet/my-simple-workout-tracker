@@ -1,24 +1,8 @@
-import styled from 'styled-components'
 import { theme } from '@/src/styles/vars'
 import { timeToHms } from '@/src/app/utils/time'
 import { FC } from 'react'
+import { Container, Diff, Value } from './components/styled'
 
-const Container = styled.div`
-  display: flex;
-  margin-top: ${({ $mt }) => $mt};
-  padding-right: 8px;
-`
-
-const Value = styled.span`
-  color: ${({ $color }) => $color};
-  background-color: ${({ $color, $noDiff }) => $noDiff ? 'rgba(0,0,0,0.1)' : `${$color}29`};
-  padding-left: 4px;
-  padding-right: 4px;
-`
-
-const Diff = styled.span`
-  color: ${({ $color }) => $color};
-`
 
 export interface IPreviousItem {
   comparator: {

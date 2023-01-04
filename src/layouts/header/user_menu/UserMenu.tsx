@@ -5,7 +5,7 @@ import { Avatar, Button, Dropdown, Menu } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import style from './UserMenu.module.scss'
-import { RouterContext } from 'app/contexts/router/RouterContextProvider'
+import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import { logout } from '@/src/app/store/slices/auth'
 import { useAppDispatch } from '@/src/app/hooks'
 import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
@@ -25,7 +25,7 @@ const ROUTES = {
 
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
-  const { loading, loadingRoute } = useContext(RouterContext)
+  const { loading, loadingRoute } = useRouterContext()
   const { intl, lang } = useContext(IntlContext)
   const { route, push } = useRouter()
   const dispatch = useAppDispatch()
