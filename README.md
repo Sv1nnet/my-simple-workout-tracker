@@ -3,6 +3,7 @@ This is a workout tracker that I made for own purpose usage. Since I did not fin
 
 ## Tools
 Frontend: TypeScript, Next.js, RTK, RTK Querry, Ant Design, D3.js, Styled Components, Day.js.
+<br>
 Backend: Express.js, MongoDB.
 Deployment: Docker (WIP).
 
