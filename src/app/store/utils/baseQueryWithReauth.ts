@@ -49,9 +49,9 @@ FetchBaseQueryError | SerializedError | CustomBaseQueryError
     // try to get a new token
     const refreshResult = (await baseQuery(routes.auth.v1.refresh.path, api, extraOptions)) as QueryReturnValue<{ data: { token: Token } }>
     if (refreshResult.data) {
-      const { token } = refreshResult.data.data
+      const { token } = (refreshResult.data?.data || { token: null })
       // store the new token
-      api.dispatch(updateToken(refreshResult.data.data.token))
+      api.dispatch(updateToken(token))
       // retry the initial query
       result = await query(typeof args === 'object' ? { ...args, headers: { ...args.headers, Authorization: `Bearer ${token}` } } : args, api, extraOptions)
     } else {

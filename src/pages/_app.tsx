@@ -43,7 +43,7 @@ export default function App({ Component, pageProps, lang }: AppProps) {
   const layoutExists = Layout !== Fragment
   const { componentProps = {}, layoutProps = {} } = Component
 
-  if (pageProps.token && pageProps.token !== selectToken(store.getState())) {
+  if (pageProps?.token && pageProps.token !== selectToken(store.getState())) {
     store.dispatch(updateToken(pageProps.token))
   }
 
@@ -72,8 +72,12 @@ export default function App({ Component, pageProps, lang }: AppProps) {
 }
 
 App.getInitialProps = async ({ ctx: { req } }) => {
-  const langRegex = /lang=[a-zA-Z]+/
-  const [ , lang ] = (langRegex.exec(req.headers.cookie)?.[0] || 'lang=eng').split('=')
+  if (req) {
+    const langRegex = /lang=[a-zA-Z]+/
+    const [ , lang ] = (langRegex.exec(req.headers.cookie)?.[0] || 'lang=eng').split('=')
 
-  return { lang }
+    return { lang }
+  }
+
+  return { lang: 'eng' }
 }

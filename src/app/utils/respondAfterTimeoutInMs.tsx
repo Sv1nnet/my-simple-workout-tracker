@@ -30,9 +30,8 @@ const respondAfterTimeoutInMs = ({ timeout, ctx, route }, timeToWait = 1000) => 
       })
     }, timeToWait))
 
-    let response
     try {
-      response = await fetch(route, {
+      const response = await fetch(route, {
         headers: {
           Authorization: `Bearer ${ctx.req.session.token}`,
         },
