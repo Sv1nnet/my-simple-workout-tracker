@@ -34,10 +34,12 @@ const Profile = () => {
   const prevLangRef = useRef(lang)
   const credentials = useAppSelector(selectCredentials)
   const [ form ] = useForm()
-  const [ fetchConfig ] = configApi.useLazyGetQuery()
+
   const [ updateConfig ] = configApi.useLazyUpdateQuery()
-  const [ fetchProfile, { isLoading: isProfileLoading, isFetching: isFetchingProfile } ] = profileApi.useLazyGetQuery()
   const [ updateProfile, { isLoading: isUpdatingProfile, isError: isUpdateProfileError, error: updateProfileError, isSuccess: isUpdateProfileSuccess } ] = profileApi.useLazyUpdateQuery()
+
+  const { isLoading: isProfileLoading, isFetching: isFetchingProfile } = profileApi.useGetQuery()
+  configApi.useGetQuery()
 
   const validate = ({ getFieldValue }) => ({
     async validator({ field }, value) {
@@ -102,11 +104,6 @@ const Profile = () => {
       form.setFieldsValue({ password: '', new_password: '', confirm_password: '' })
     }
   }, [ isUpdatingProfile, isUpdateProfileError ])
-
-  useEffect(() => {
-    fetchProfile()
-    fetchConfig()
-  }, [])
 
   return (
     <FormWrapper
