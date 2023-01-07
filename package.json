@@ -4,7 +4,9 @@
     "dev": "next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
     "dev:debug": "NODE_OPTIONS='--inspect' next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
     "build": "next build",
-    "start": "next start -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
+    "start": "next start -p 3004",
+    "build:start": "next build && next start -p 3004",
+    "build:docker:start": "next build && docker build -t mswt-client . && docker run mswt-client",
     "oldstart": "next start",
     "type-check": "tsc",
     "test": "jest"

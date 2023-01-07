@@ -2,6 +2,7 @@ import 'antd/dist/antd.css'
 import 'src/styles/globals.css'
 import 'components/time_picker/style.scss'
 import 'components/date_picker/style.scss'
+import 'components/change_lang_panel/ChangeLangPanel.scss'
 
 import dayjs from 'dayjs'
 import 'dayjs/locale/en'
