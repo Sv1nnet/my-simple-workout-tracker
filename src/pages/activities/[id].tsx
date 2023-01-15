@@ -59,15 +59,15 @@ const EditActivity: NextPage<IActivityPage> & { Layout: FC, layoutProps?: {} } =
   if (errorGet ) {
     error = 'error' in errorGet
       ? errorGet.error
-      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
+      : (errorGet as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
   } else if (errorUpdate) {
     error = 'error' in errorUpdate
       ? errorUpdate.error
-      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
+      : (errorUpdate as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
   } else if (errorDelete) {
     error = 'error' in errorDelete
       ? errorDelete.error
-      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
+      : (errorDelete as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
   }
 
   return (

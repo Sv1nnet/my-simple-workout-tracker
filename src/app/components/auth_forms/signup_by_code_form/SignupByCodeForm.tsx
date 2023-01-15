@@ -38,7 +38,7 @@ const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiVerifySignupCodeError)?.data?.error?.message?.text[lang || 'eng'] })
+      openNotification({ message: modal.common.title.error, description: (error as ApiVerifySignupCodeError)?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ isError ])
 

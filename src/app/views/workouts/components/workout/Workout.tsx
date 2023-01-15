@@ -222,7 +222,6 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
               {fields.map((field, i) => (
                 <Exercise
                   key={field.key}
-                  isNew={!isEdit}
                   exerciseAmount={fields.length}
                   fields={fields}
                   form={form}

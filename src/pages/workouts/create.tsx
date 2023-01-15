@@ -31,7 +31,7 @@ const CreateWorkout: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } = 
       isFetching={isLoading || (!!data && !isError)}
       isError={isError}
       onSubmit={handleSubmit}
-      error={(error as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']}
+      error={(error as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']}
     />
   )
 }

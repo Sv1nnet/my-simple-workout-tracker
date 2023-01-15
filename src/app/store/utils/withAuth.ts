@@ -51,7 +51,7 @@ const refreshToken = async (token): Promise<RefreshTokenResult> => {
 }
 
 const handleRefreshResult = (ctx, refreshRes) => {
-  if (refreshRes.cookies && refreshRes?.body?.data?.token) {
+  if (refreshRes?.cookies && refreshRes?.body?.data?.token) {
     let [ refresh_token, access_token ] = refreshRes.cookies.split('HttpOnly')
     access_token = access_token.substring(2)
 
@@ -71,10 +71,10 @@ export type WithAuthCb = (ctx: GetServerSidePropsContextWithSession) => Promise<
 const withAuth = (cb: WithAuthCb): GetServerSidePropsWithAuth => async (ctx: GetServerSidePropsContextWithSession) => {
   try {
     let refreshRes = null
-    if (!ctx.req?.cookies?.logout && !ctx.req?.cookies?.access_token && ctx.req.cookies.refresh_token) {
+    if (!ctx.req?.cookies?.logout && !ctx.req?.cookies?.access_token && ctx.req?.cookies?.refresh_token) {
       refreshRes = await refreshToken(ctx.req?.cookies?.refresh_token)
       handleRefreshResult(ctx, refreshRes)
-    } else if (!ctx.req?.cookies?.logout && ctx.req.cookies.refresh_token) {
+    } else if (!ctx.req?.cookies?.logout && ctx?.req?.cookies?.refresh_token) {
       ctx.req.session = { token: ctx.req.cookies.access_token ?? null }
     }
 
@@ -93,7 +93,7 @@ const withAuth = (cb: WithAuthCb): GetServerSidePropsWithAuth => async (ctx: Get
             },
           }
         }
-      } else if ('shouldRefresh' in cbRes && !cbRes.shouldRefresh) {
+      } else if (('shouldRefresh' in cbRes && (!cbRes.shouldRefresh || !cbRes.props?.token))) {
         return { props: {} }
       } else {
         return {

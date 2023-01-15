@@ -67,7 +67,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteExerciseError)?.data?.error?.message?.text[lang || 'eng'] })
+      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteExerciseError)?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ error ])
 

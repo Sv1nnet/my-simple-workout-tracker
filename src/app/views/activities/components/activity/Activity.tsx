@@ -257,7 +257,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }
 
   useEffect(() => {
-    const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text[lang || 'eng']
+    const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
     if (error || isError) {
       Modal.error({
         title: title.error,
