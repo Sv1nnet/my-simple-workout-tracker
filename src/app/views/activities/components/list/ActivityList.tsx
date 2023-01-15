@@ -68,7 +68,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteActivityError)?.data?.error?.message?.text[lang || 'eng'] })
+      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteActivityError)?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ error ])
 

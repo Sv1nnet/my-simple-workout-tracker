@@ -59,7 +59,7 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: error?.data?.error?.message?.text[lang || 'eng'] })
+      openNotification({ message: modal.common.title.error, description: error?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ isError ])
 

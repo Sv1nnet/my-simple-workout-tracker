@@ -53,7 +53,6 @@ const Exercise = ({
   errorsDictionary,
   index,
   isEditMode,
-  isNew,
   isFetching,
   payload,
   exerciseList,
@@ -71,7 +70,7 @@ const Exercise = ({
   return (
     <ExerciseContainer ref={$container}>
       <Divider style={{ marginBottom: '16px', marginTop: '6px' }} />
-      {isNew && (
+      {isEditMode && (
         <MoveExerciseButtonContainer $hasBottomButton={hasBottomButton} $hasTopButton={hasTopButton}>
           {hasTopButton && <Button onClick={handleChangeOrder(-1)} size="small" type="text"><UpOutlined /></Button>}
           {hasBottomButton && <Button onClick={handleChangeOrder(1)} size="small" type="text"><DownOutlined /></Button>}

@@ -70,7 +70,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteWorkoutError)?.data?.error?.message?.text[lang || 'eng'] })
+      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteWorkoutError)?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ error ])
 
