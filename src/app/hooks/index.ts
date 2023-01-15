@@ -91,7 +91,7 @@ export const useShowListErrorNotification = ({ isError, error }: { isError: bool
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message?.text[lang || 'eng'] })
+      openNotification({ message: modal.common.title.error, description: (error as ApiGetListError)?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ error ])
 }

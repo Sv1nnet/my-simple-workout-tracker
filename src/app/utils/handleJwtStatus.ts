@@ -12,7 +12,8 @@ const handleJwtStatus = <T = any>(response: ResponseWithMessage | T, cb: GetServ
       shouldRefresh: true,
       props: {},
     }
-  } else if ((response as ResponseWithMessage)?.message === 'jwt malformed') {
+  } else if ((response as ResponseWithMessage)?.message === 'jwt malformed'
+  || (response as ResponseWithMessage)?.message === 'invalid token') {
     return {
       shouldRefresh: false,
       props: {
@@ -20,6 +21,7 @@ const handleJwtStatus = <T = any>(response: ResponseWithMessage | T, cb: GetServ
       },
     }
   }
+
   return cb(response)
 }
 
