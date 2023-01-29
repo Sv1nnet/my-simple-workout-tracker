@@ -27,7 +27,7 @@ export interface IExerciseList {
 }
 
 const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, isDeleting, exercises }) => {
-  const { isMountedRef, useHandleMounted } = useMounted()
+  const { isMounted, useHandleMounted } = useMounted()
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
@@ -50,7 +50,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
     return deleteExercises({
       ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ExerciseForm, 'id'>[],
     }).then((res) => {
-      if (isMountedRef.current && res?.data?.success) {
+      if (isMounted() && res?.data?.success) {
         setExercisesToDelete({})
         selectionRef.current?.handleCancelSelection()
       }
@@ -72,7 +72,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
   }, [ error ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && isMountedRef.current) selectionRef.current.handleCancelSelection()
+    if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.handleCancelSelection()
   }, [ error, isLoading, isDeleting ])
 
   return (

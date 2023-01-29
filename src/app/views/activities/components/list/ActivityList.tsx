@@ -26,7 +26,7 @@ export interface IActivityList {
 }
 
 const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, isDeleting, activities }) => {
-  const { isMountedRef, useHandleMounted } = useMounted()
+  const { isMounted, useHandleMounted } = useMounted()
   const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
@@ -51,7 +51,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
     return deleteActivities({
       ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ActivityForm, 'id'>[],
     }).then((res) => {
-      if (isMountedRef.current && res?.data?.success) {
+      if (isMounted() && res?.data?.success) {
         setActivitiesToDelete({})
         selectionRef.current?.handleCancelSelection()
       }
@@ -73,7 +73,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
   }, [ error ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && isMountedRef.current) selectionRef.current.handleCancelSelection()
+    if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.handleCancelSelection()
   }, [ error, isLoading, isDeleting ])
 
   return (

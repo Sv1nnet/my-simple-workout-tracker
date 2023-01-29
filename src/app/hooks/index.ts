@@ -101,6 +101,7 @@ export const useMounted = ({ initialMounted = false, dependencies = [] }: { init
 
   return {
     isMountedRef,
+    isMounted: useCallback(() => isMountedRef.current, []),
     useHandleMounted() {
       useEffect(() => {
         isMountedRef.current = true
@@ -207,8 +208,8 @@ export const useValidateNumber = ({
   const isPosFloat = (value?: string | number) => _isFloat(value) && isPos(value)
   const isNegFloat = (value?: string | number) => value !== '-' ? _isFloat(value) && (isZero(value) || !isPos(value)) : true
   
-  const withinMax = (v?: string | number) => maxExcluding ? v < max : v <= max
-  const withinMin = (v?: string | number) => (minExcluding && int) ? v > min : v >= min
+  const withinMax = (v?: string | number) => maxExcluding ? +v < max : +v <= max
+  const withinMin = (v?: string | number) => (minExcluding && int) ? +v > min : +v >= min
   
   if (int) {
     if (onlyPositive) return (v?: string | number) => isPosInt(v) && withinMax(v) && withinMin(v)
