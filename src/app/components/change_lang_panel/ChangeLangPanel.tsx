@@ -2,7 +2,6 @@ import Image from 'next/image'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { FC, SyntheticEvent, useEffect, useRef } from 'react'
 import { changeLang, selectLang } from 'store/slices/config'
-import { FlagsContainer, LangButton } from './components/styled'
 
 export interface IChangeLangPanel {
   className?: string;
@@ -40,14 +39,14 @@ const ChangeLangPanel: FC<IChangeLangPanel> = ({ className = '', onChange }) => 
   }, [ lang ])
 
   return (
-    <FlagsContainer className={className} ref={$flagsContainer}>
-      <LangButton type="button" data-lang="eng" onClick={handleChangeLang}>
+    <div className={`flags-container ${className || ''}`} ref={$flagsContainer}>
+      <button className="lang-button" type="button" data-lang="eng" onClick={handleChangeLang}>
         <Image src="/icons/usa_flag.svg" alt="" width={38} height={26} />
-      </LangButton>
-      <LangButton type="button" data-lang="ru" onClick={handleChangeLang}>
+      </button>
+      <button className="lang-button" type="button" data-lang="ru" onClick={handleChangeLang}>
         <Image src="/icons/ru_flag.svg" alt="" width={38} height={26} />
-      </LangButton>
-    </FlagsContainer>
+      </button>
+    </div>
   )
 }
 

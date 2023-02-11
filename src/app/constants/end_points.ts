@@ -1,9 +1,17 @@
 import getConfig from 'next/config'
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const BASE_URL = `${getConfig().publicRuntimeConfig.__API_HOST__}/api`
+
+const isServerEnv = typeof window === 'undefined'
+const isProd = getConfig().publicRuntimeConfig.__IS_PROD__
+let host = getConfig().publicRuntimeConfig.__API_HOST__
+
+if (isProd) {
+  host = isServerEnv ? process.env.INTERNAL_API_HOST : getConfig().publicRuntimeConfig.__API_HOST__
+}
+
+export const BASE_URL = `${host}/api`
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-let _global = typeof window !== 'undefined' ? window : global
+const _global = !isServerEnv ? window : global
 _global.__API__ = _global.__API__ ?? {}
 _global.__API__.BASE_URL = _global.__API__.BASE_URL ?? BASE_URL
 
