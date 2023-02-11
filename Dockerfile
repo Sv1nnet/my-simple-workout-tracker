@@ -1,20 +1,24 @@
-FROM node:14-slim
+FROM node:16
 
-WORKDIR /usr/client
+ENV NODE_ENV production
 
-COPY ./package.json ./
-COPY ./package-lock.json ./
+# Create app directory
+WORKDIR /usr/src/app
 
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
 RUN npm i
 
+# Copy application files
 COPY . .
 
+# Build the application
 RUN npm run build
 
-EXPOSE 3004:3004
+# Expose the app port
+EXPOSE 3004
 
-ENV NODE_ENV=development API_HOST=mswt
-
-# CMD ["npm", "run", "build:start"]
-CMD ["npm", "run", "start"]
-# CMD ["ls", "./.next"]
+# Start the app
+CMD ["npm", "start"]

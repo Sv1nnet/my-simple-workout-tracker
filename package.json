@@ -1,12 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
+    "dev": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next -H $EXTERNAL_API_HOST -p 3004",
     "dev:debug": "NODE_OPTIONS='--inspect' next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
-    "build": "next build",
+    "build": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build",
     "start": "next start -p 3004",
-    "build:start": "next build && next start -p 3004",
-    "build:docker:start": "next build && docker build -t mswt-client . && docker run mswt-client",
+    "build:start": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build && next start -p 3004",
+    "build:docker": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && docker build -t mswt-client_prod .",
+    "build:docker:start": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build && docker build -t mswt-client . && docker run mswt-client",
     "oldstart": "next start",
     "type-check": "tsc",
     "test": "jest"
@@ -24,7 +25,6 @@
     "nanoid": "^3.1.30",
     "next": "^12.2.6",
     "next-compose-plugins": "^2.2.1",
-    "next-pwa": "^5.6.0",
     "next-redux-wrapper": "^7.0.5",
     "rc-picker": "^2.6.1",
     "react": "^17.0.2",
@@ -33,6 +33,9 @@
     "react-redux": "^7.2.0",
     "react-transition-group": "^4.4.2",
     "react-virtualized": "^10.0.0-alpha.17",
+    "next-plugin-antd-less": "^1.5.2",
+    "babel-plugin-import": "^1.13.3",
+    "babel-plugin-styled-components": "^2.0.1",
     "styled-components": "^5.3.3"
   },
   "devDependencies": {
@@ -46,8 +49,6 @@
     "@types/react-redux": "^7.1.18",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "babel-plugin-import": "^1.13.3",
-    "babel-plugin-styled-components": "^2.0.1",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^19.0.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -63,7 +64,6 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "jest": "^27.2.0",
     "jest-css-modules-transform": "^4.2.0",
-    "next-plugin-antd-less": "^1.5.2",
     "sass": "^1.45.0",
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",

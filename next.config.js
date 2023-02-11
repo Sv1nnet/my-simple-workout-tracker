@@ -1,23 +1,11 @@
 const withPlugins = require('next-compose-plugins');
 const withAntdLess = require('./node_modules/next-plugin-antd-less');
 const { firstIp } = require('./src/app/utils/ips.ts')
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  runtimeCaching: [
-    {
-      urlPattern: /\/_next\/data\/.+\/.+\.json$/i,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'next-data',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60 * 365 // 1 year
-        }
-      }
-    },
-  ]
-})
+
+const isProd = process.env.NODE_ENV === 'production'
+const apiHost = isProd
+  ? process.env.EXTERNAL_API_HOST
+  : `http://${process.env.API_HOST || firstIp}:3005`
 
 module.exports = withPlugins(
   [
@@ -38,8 +26,8 @@ module.exports = withPlugins(
     
         // Other Config Here...
         publicRuntimeConfig: {
-          __API_HOST__: `http://${process.env.API_HOST || firstIp}:3005`,
-          // __API_HOST__: `http://localhost:3005`,
+          __IS_PROD__: isProd,
+          __API_HOST__: apiHost,
         },
     
         typescript: {
@@ -55,8 +43,5 @@ module.exports = withPlugins(
         },
       }
     ],
-    // [
-    //   withPWA,
-    // ],
   ],
 );
