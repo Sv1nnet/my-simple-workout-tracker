@@ -15,6 +15,7 @@ const TimerContainer = styled.div`
   border: 1px solid ${theme.borderColorBase};
   font-size: 16px;
   padding-left: 6.5px;
+  box-shadow: ${({ $isFinished }) => $isFinished ? '0px 0px 3px red' : 'none'};
 `
 
 const MS_TO_SET_STATE_WHEN_MS_OFF = 980
@@ -101,9 +102,11 @@ const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPau
       : isFinished
         ? resetButton
           ? {
-            disabled: isFinished,
-            icon: <PauseOutlined style={{ fontSize: 26 }} />,
-            onClick: runTimer,
+            icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
+            onClick: (e) => {
+              resetTimer(e)
+              runTimer(e)
+            },
           }
           : {
             icon: <RedoOutlined style={{ fontSize: 26 }} />,
@@ -202,7 +205,7 @@ const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPau
   }
 
   return (
-    <TimerContainer {...containerProps}>
+    <TimerContainer {...containerProps} $isFinished={isFinished}>
       <span style={{ marginRight: 4 }} {...timeElementProps}>{getFinalValue(value)}</span>
       <Button type="text" size="middle" {...buttonProps} {...buttonAttributes} />
       {resetButton && (
