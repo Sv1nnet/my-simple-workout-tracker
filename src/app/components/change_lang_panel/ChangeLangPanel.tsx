@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
-import { FC, SyntheticEvent, useEffect, useRef } from 'react'
+import { FC, SyntheticEvent, useRef } from 'react'
 import { changeLang, selectLang } from 'store/slices/config'
+import { FlagsContainer, LangButton } from './components/styled'
 
 export interface IChangeLangPanel {
   className?: string;
@@ -19,34 +20,15 @@ const ChangeLangPanel: FC<IChangeLangPanel> = ({ className = '', onChange }) => 
     if (onChange) onChange(dataset.lang)
   }
 
-  useEffect(() => {
-    // I have to use this crutch
-    // since ssr for some reason refuses set
-    // correct class with selected language
-    // to the buttons (on profile page)
-    // after lang settings downloaded
-    // on the client side
-    if ($flagsContainer.current) {
-      const [ eng, ru ] = $flagsContainer.current.children
-      if (lang === 'eng') {
-        eng.classList.add('active')
-        ru.classList.remove('active')
-      } else {
-        ru.classList.add('active')
-        eng.classList.remove('active')
-      }
-    }
-  }, [ lang ])
-
   return (
-    <div className={`flags-container ${className || ''}`} ref={$flagsContainer}>
-      <button className="lang-button" type="button" data-lang="eng" onClick={handleChangeLang}>
+    <FlagsContainer className={className} ref={$flagsContainer}>
+      <LangButton className={lang === 'eng' ? 'active' : ''} type="button" data-lang="eng" onClick={handleChangeLang}>
         <Image src="/icons/usa_flag.svg" alt="" width={38} height={26} />
-      </button>
-      <button className="lang-button" type="button" data-lang="ru" onClick={handleChangeLang}>
+      </LangButton>
+      <LangButton className={lang === 'ru' ? 'active' : ''} type="button" data-lang="ru" onClick={handleChangeLang}>
         <Image src="/icons/ru_flag.svg" alt="" width={38} height={26} />
-      </button>
-    </div>
+      </LangButton>
+    </FlagsContainer>
   )
 }
 
