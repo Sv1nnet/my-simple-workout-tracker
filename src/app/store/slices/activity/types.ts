@@ -63,7 +63,12 @@ export type ActivityListItem = {
   workout_title: string,
 }
 
-export type GetActivityListSuccess = IResponse<ActivityListItem[]>
+export type ActivityListResponseSuccess = {
+  total: number,
+  list: ActivityListItem[],
+}
+
+export type GetActivityListSuccess = IResponse<ActivityListResponseSuccess>
 export type GetActivityListError = IResponse<null>
 
 export type HisotryResult = number | { left: number, right: number }

@@ -245,3 +245,22 @@ export const useValidateNumber = ({
     )
   }
 }, [ int, onlyPositive, onlyNegative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
+
+export const useDebouncedCallback = (callback: Function, delay: number = 100) => {
+  const callbackRef = useRef(callback)
+  const timeoutIdRef = useRef<NodeJS.Timeout>(-1 as unknown as NodeJS.Timeout)
+
+  if (callback !== callbackRef.current) {
+    callbackRef.current = callback
+  }
+
+  useEffect(() => () => clearTimeout(timeoutIdRef.current), [])
+
+  return useCallback((...args: any[]) => {
+    clearTimeout(timeoutIdRef.current)
+
+    timeoutIdRef.current = setTimeout(() => {
+      callbackRef.current(...args)
+    }, delay)
+  }, [])
+}

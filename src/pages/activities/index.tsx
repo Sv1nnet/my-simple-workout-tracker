@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext } from 'react'
+import { FC, useContext, useState } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
@@ -15,6 +15,7 @@ import { Dayjs } from 'dayjs'
 import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
+import { EndlessScrollableContainer } from '@/src/app/components'
 
 export type ExerciseResultsDetails = {
   weight?: number,
@@ -30,10 +31,11 @@ export interface IActivities {
 const CREATE_ROUTE = '/activities/create'
 
 const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ activities: _activities }) => {
+  const [ page, setPage ] = useState(1)
   const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
   const { loading, loadingRoute } = useRouterContext()
-  const [ loadActivities, { error, isError } ] = activityApi.useLazyListQuery()
-  const { data: activitiesInStore, status } = useAppSelector(selectList)
+  const [ loadActivities, { error, isError, isFetching } ] = activityApi.useLazyListQuery()
+  const { data: activitiesInStore, total, status } = useAppSelector(selectList)
   const [
     deleteActivities,
     {
@@ -52,14 +54,27 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
   const handeDeleteActivities = ({ ids }) => deleteActivities({ ids })
     .then((res: any) => {
       if (res.error) return res.error
-      dispatch(updateList(activitiesInStore.filter(activity => !ids.includes(activity.id))))
+      dispatch(updateList({
+        total: res.data.total,
+        list: activitiesInStore.filter(activity => !ids.includes(activity.id)),
+      }))
       return res
     })
+
+  const handleScroll = (e) => {
+    if (activitiesInStore.length < total && e) {
+      const { target } = e
+      if (target.scrollHeight - (target.offsetHeight + target.scrollTop) <= 100 && !isFetching) {
+        setPage(page + 1)
+        loadActivities({ page: page + 1, byPage: 30 })
+      }
+    }
+  }
 
   useShowListErrorNotification({ isError, error: (error as ApiGetListError) })
 
   return (
-    <>
+    <EndlessScrollableContainer callOnMount onScroll={handleScroll}>
       <AddButton loading={loading && loadingRoute === CREATE_ROUTE} href={CREATE_ROUTE} text={add} />
       <ActivityList
         deleteActivities={handeDeleteActivities}
@@ -68,7 +83,7 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
         isDeleting={isDeleting}
         activities={activitiesInStore ?? []}
       />
-    </>
+    </EndlessScrollableContainer>
   )
 }
 
@@ -81,7 +96,7 @@ const timeout = new Timeout()
 
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: routes.activity.v1.list.full })
+    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: `${routes.activity.v1.list.full}?page=1&byPage=30` })
 
     return handleJwtStatus(res, () => ({
       props: {
