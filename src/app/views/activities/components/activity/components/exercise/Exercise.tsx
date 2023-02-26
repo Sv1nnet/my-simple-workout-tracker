@@ -175,7 +175,7 @@ const Exercise: FC<IExerciseProps> = ({
       {isRestTimersVisible && (
         <Timers
           eachSide={exercise.each_side}
-          durationInSeconds={3}
+          durationInSeconds={round_break}
           sideLabels={side_labels}
           onTimeOver={handleTimeOver}
         />
