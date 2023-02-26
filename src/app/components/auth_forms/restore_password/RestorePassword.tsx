@@ -1,7 +1,7 @@
 import Form from '../form/Form'
 import { FC, useEffect } from 'react'
 import { authApi } from 'store/slices/auth/api'
-import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { AUTH_FORM_TABS } from '../template/Template'
 import { notification } from 'antd'
 import { ApiSignupError, IProps } from './types'

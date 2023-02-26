@@ -3,7 +3,7 @@ import Form from '../form/Form'
 import { FC } from 'react'
 import { authApi } from 'store/slices/auth/api'
 import { LoginError } from 'store/slices/auth/types'
-import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 interface IProps {
   active: boolean;

@@ -12,6 +12,7 @@ import { Dayjs } from 'dayjs'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { secondsToDayjs } from 'app/utils/time'
+import { Lang } from '../config/types'
 
 export const EXERCISE_TAG_TYPES = {
   EXERCISE: 'Exercise',
@@ -74,12 +75,30 @@ export const exerciseApi = createApi({
       }),
       invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
-    list: build.query<GetExerciseListSuccess, void>({
-      query: () => ({
-        url: routes.exercise.v1.list.full,
-        method: 'GET',
-      }),
+    list: build.query<GetExerciseListSuccess, { archived?: boolean, workoutId?: string, lang?: Lang } | void>({
+      query: (params) => {
+        let query = '?'
+        if (params) {
+          const { archived, workoutId, lang } = params
+          
+          query += `archived=${!!archived}${workoutId ? `&workoutId=${workoutId}` : ''}${lang ? `&lang=${lang}` : ''}`
+        }
+        return {
+          url: `${routes.exercise.v1.list.full}${query}`,
+          method: 'GET',
+        }
+      },
       providesTags: () => [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
+      // transformResponse(response: GetExerciseListSuccess, { request }: { request: { url: string } }) {
+      //   const { data } = response
+      //   if (request.url.includes('acrhived=true')) {
+      //     response.data = data.map((exercise) => {
+      //       if (exercise.archived) exercise.title = `${exercise.title} (удалено)`
+      //       return exercise
+      //     }) as GetExerciseListSuccess['data']
+      //   }
+      //   return response
+      // },
     }),
   }),
 })

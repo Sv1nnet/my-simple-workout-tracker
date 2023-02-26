@@ -5,11 +5,11 @@ import {
   Button,
   Modal,
 } from 'antd'
-import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 import { dayjsToSeconds, secondsToDayjs } from 'app/utils/time'
 import { DeleteEditPanel, ToggleEdit } from 'app/components'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { WorkoutForm } from 'app/store/slices/workout/types'
 import { useAppSelector } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
@@ -21,8 +21,8 @@ import {
   Exercise,
 } from './components'
 import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
-import { AppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
+import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
@@ -61,9 +61,9 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
-  const { runLoader, stopLoaderById } = useContext(AppLoaderContext)
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
   const exerciseList = useAppSelector(selectList)
-  const { intl } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { loading } = useRouterContext()
   const { payload } = intl.pages.exercises
   const { input_labels, submit_button, error_message, modal, placeholders } = intl.pages.workouts
@@ -182,7 +182,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   }, [ !!error, isError ])
 
   useEffect(() => {
-    if (!exerciseList.data.length) fetchExerciseList()
+    fetchExerciseList({ archived: isEdit, workoutId: initialValues.id, lang: isEdit ? lang : undefined })
   }, [])
   
   useEffect(() => {
@@ -264,16 +264,14 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         </Form.Item>
         {(isEditMode || !isEdit) && (
           <CreateEditFormItem>
-            <>
-              <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
-                {isEdit ? submit_button.save : submit_button.create}
-              </Button>
-              {isEdit && (
-                <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
-                  {submit_button.cancel}
-                </ToggleEdit>
-              )}
-            </>
+            <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
+              {isEdit ? submit_button.save : submit_button.create}
+            </Button>
+            {isEdit && (
+              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
+                {submit_button.cancel}
+              </ToggleEdit>
+            )}
           </CreateEditFormItem>
         )}
         <Modal

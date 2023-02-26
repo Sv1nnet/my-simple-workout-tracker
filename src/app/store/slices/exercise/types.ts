@@ -12,9 +12,12 @@ export type ExerciseType = 'repeats' | 'time' | 'duration' | 'distance' | 'weigh
 export type Exercise<T = number | Dayjs> = {
   _id?: string;
   id?: string;
+  is_in_workout: boolean;
+  in_workouts: string[];
   title: string;
   each_side: boolean;
-  mass_unit: 'kg' | 'lb'
+  mass_unit: 'kg' | 'lb';
+  archived: boolean;
   hours?: boolean;
   type?: ExerciseType;
   time?: T;

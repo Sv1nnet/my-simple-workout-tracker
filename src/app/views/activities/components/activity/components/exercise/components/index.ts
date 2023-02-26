@@ -6,6 +6,8 @@ import PreviousItem from './previous_item/PreviousItem'
 import Chart from './chart/Chart'
 import PreviousRoundsHistory from './previous_rounds_history/PreviousRoundsHistory'
 import Timers from './timers/Timers'
+import BreakTimer from './break_timer/BreakTimer'
+import Note from './note/Note'
 
 export {
   History,
@@ -16,4 +18,6 @@ export {
   Chart,
   PreviousRoundsHistory,
   Timers,
+  BreakTimer,
+  Note,
 }

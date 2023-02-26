@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { WorkoutTemplate } from 'layouts/main'
 import { useRouter } from 'next/router'
@@ -9,7 +9,7 @@ import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { Workout } from 'app/views'
 import routes from 'app/constants/end_points'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 interface IWorkoutPage {
   workout: WorkoutServerPayload;
@@ -18,7 +18,7 @@ interface IWorkoutPage {
 
 const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = ({ workout, error: serverError }) => {
   const router = useRouter()
-  const { lang } = useContext(IntlContext)
+  const { lang } = useIntlContext()
   const [
     get,
     {
@@ -44,7 +44,13 @@ const EditWorkouts: NextPage<IWorkoutPage> & { Layout: FC, layoutProps?: {} } = 
     },
   ] = workoutApi.useDeleteMutation()
 
+  const [ fetchList ] = workoutApi.useLazyListQuery()
+
   const handleSubmit = values => update({ workout: values })
+    .then((res) => {
+      fetchList()
+      return res
+    })
   
   const handleDelete = async id => deleteWorkout({ id }).then((res) => {
     if (!('error' in res)) router.replace('/workouts')

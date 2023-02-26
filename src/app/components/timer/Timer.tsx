@@ -1,12 +1,12 @@
-/** @format */
-
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Button, ButtonProps } from 'antd'
 import { CaretRightOutlined, PauseOutlined, RedoOutlined } from '@ant-design/icons'
-import { getTimeDateUnit, milisecondsToTimeArray, timeArrayToMiliseconds, timeArrayToSeconds } from '../../utils/time'
+import { milisecondsToTimeArray, timeArrayToMiliseconds, timeArrayToSeconds } from 'app/utils/time'
 import { theme } from 'src/styles/vars'
-import isFunc from '../../utils/isFunc'
+import isFunc from 'app/utils/isFunc'
+import { useRequestForNotificationPermission } from 'app/hooks'
+import { defaultNotificationProps, getFinalValue, runCountingDown } from './utils'
 
 const TimerContainer = styled.div`
   position: relative;
@@ -18,12 +18,10 @@ const TimerContainer = styled.div`
   box-shadow: ${({ $isFinished }) => $isFinished ? '0px 0px 3px red' : 'none'};
 `
 
-const MS_TO_SET_STATE_WHEN_MS_OFF = 980
-const MS_TO_SET_STATE_WHEN_MS_ON = 33
-const TIME_IS_OVER_VALUE = milisecondsToTimeArray(0)
-
 export interface ITimer {
   duration: number,
+  notificationTitle?: string,
+  notificationOptions?: NotificationOptions,
   msOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
@@ -31,6 +29,7 @@ export interface ITimer {
   onReset?: VoidFunction,
   onPause?: (timeLeftInMs: number) => void,
   onRunTimer?: (timeLeftInMs: number) => void,
+  onTimeOver?: (duration: number) => void,
   resetButton?: boolean,
   containerProps?: React.HTMLAttributes<HTMLDivElement>,
   timeElementProps?: React.HTMLAttributes<HTMLSpanElement>,
@@ -42,8 +41,27 @@ export interface ITimer {
   }
 }
 
-const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPause, onRunTimer, hoursOn, resetButton, containerProps, timeElementProps, buttonProps, resetButtonProps }) => {
+const Timer: FC<ITimer> = ({
+  notificationTitle = 'Time is over!',
+  notificationOptions = defaultNotificationProps,
+  duration = 0,
+  msOn = true,
+  onChange,
+  onReset,
+  onPause,
+  onRunTimer,
+  onTimeOver,
+  hoursOn,
+  resetButton,
+  containerProps,
+  timeElementProps,
+  buttonProps,
+  resetButtonProps,
+}) => {
   const initialValue = useMemo(() => milisecondsToTimeArray(duration), [ duration ])
+  
+  const { permitted } = useRequestForNotificationPermission()
+
   const [ value, setValue ] = useState(initialValue)
   const [ isRunning, setIsRunning ] = useState(false)
   const [ isPaused, setIsPaused ] = useState(false)
@@ -56,13 +74,22 @@ const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPau
   const valueRef = useRef([ ...value ])
   const rafIdRef = useRef(null)
 
+  const notificationCountRef = useRef(0)
+  const isNotifiedRef = useRef(false)
+  const renotificationTimeoutIdRef = useRef(0 as unknown as NodeJS.Timeout)
+
   const resetTimer = (e) => {
+    clearTimeout(renotificationTimeoutIdRef.current)
+    
     setIsRunning(false)
     setIsFinished(false)
     setIsPaused(false)
     setValue(initialValue)
-
+    
     cancelAnimationFrame(rafIdRef.current)
+    
+    isNotifiedRef.current = false
+    notificationCountRef.current = 0
 
     valueRef.current = initialValue
     newTimeLeftRef.current = duration
@@ -81,6 +108,7 @@ const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPau
     const runTimer = (e) => {
       setIsRunning(true)
       setIsPaused(false)
+      
 
       if (isFunc(onRunTimer)) onRunTimer(newTimeLeftRef.current)
       if (isFunc(buttonProps?.onClick)) buttonProps.onClick(true, e)
@@ -118,6 +146,23 @@ const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPau
         }
   }, [ isRunning, isFinished, resetButton ])
 
+  const notify = () => {
+    navigator.serviceWorker.ready.then(async (registration) => {
+      await registration.showNotification(notificationTitle, notificationOptions)
+
+      isNotifiedRef.current = true
+      notificationCountRef.current++
+
+      if (notificationCountRef.current < 3 ) {
+        renotificationTimeoutIdRef.current = setTimeout(notify, 1500)
+      } else {
+        notificationCountRef.current = 0
+      }
+
+      return registration
+    })
+  }
+
   useEffect(() => {
     if (duration !== timeArrayToMiliseconds(value)) {
       valueRef.current = initialValue
@@ -131,82 +176,36 @@ const Timer: FC<ITimer> = ({ duration = 0, msOn = true, onChange, onReset, onPau
     }
   }, [ duration ])
 
+  useEffect(() => runCountingDown({
+    msOn,
+    isRunning,
+    isPaused,
+    valueRef,
+    newTimeLeftRef,
+    duration,
+    isNotifiedRef,
+    onTimeOver,
+    notify,
+    setIsRunning,
+    setIsFinished,
+    setValue,
+    prevRafMsRef,
+    diffRef,
+    msLeftFromPrevRafRef,
+    onChange,
+    rafIdRef,
+  }), [ isRunning, isPaused, msOn ])
+
   useEffect(() => {
-    const msToSetState = msOn ? MS_TO_SET_STATE_WHEN_MS_ON : MS_TO_SET_STATE_WHEN_MS_OFF
-    const diffStep = msOn ? 16 : 1000
-
-    let _isRunning = isRunning
-    let _isPaused = isPaused
-    newTimeLeftRef.current = timeArrayToMiliseconds(valueRef.current)
-
-    const rafFn: FrameRequestCallback = (ms) => {
-      if (!prevRafMsRef.current) {
-        prevRafMsRef.current = ms - diffRef.current
-        msLeftFromPrevRafRef.current = diffRef.current
-      } else {
-        msLeftFromPrevRafRef.current = ms - prevRafMsRef.current
-      }
-
-      const prevTimeLeft = newTimeLeftRef.current
-      newTimeLeftRef.current -= msLeftFromPrevRafRef.current
-      diffRef.current += prevTimeLeft - newTimeLeftRef.current
-      prevRafMsRef.current = ms
-
-      if (_isRunning && newTimeLeftRef.current > 0) {
-        diffRef.current += diffStep
-
-        if (msLeftFromPrevRafRef.current >= 0 && diffRef.current >= msToSetState) {
-          diffRef.current = 0
-          valueRef.current = milisecondsToTimeArray(newTimeLeftRef.current)
-          setValue(valueRef.current)
-          if (isFunc(onChange)) onChange([ ...valueRef.current ], newTimeLeftRef.current)
-        }
-
-        rafIdRef.current = requestAnimationFrame(rafFn)
-      } else if (!_isPaused && newTimeLeftRef.current <= 0) {
-        setIsRunning(false)
-        setIsFinished(true)
-        setValue(TIME_IS_OVER_VALUE)
-
-        if (isFunc(onChange)) onChange([ ...TIME_IS_OVER_VALUE ], 0)
-      } else if (_isPaused) {
-        prevRafMsRef.current = 0
-      }
+    if (!isNotifiedRef.current && isFinished && permitted && navigator.serviceWorker) {
+      if (isFunc(onTimeOver)) onTimeOver(duration)
+      notify()
     }
-
-    if (isRunning) {
-      rafIdRef.current = requestAnimationFrame(rafFn)
-    } else {
-      prevRafMsRef.current = 0
-      cancelAnimationFrame(rafIdRef.current)
-    }
-
-    return () => {
-      _isRunning = false
-      _isPaused = true
-      cancelAnimationFrame(rafIdRef.current)
-    }
-  }, [ isRunning, isPaused, msOn ])
-
-  const getFinalValue = (_value: number[]) => {
-    let [ h, m, s, ms ] = _value
-
-    // if displaying ms is off then we shoutl show ceil seconds
-    // and only do it if time to display is not initial
-    // and time is not over
-    if (!msOn && !_value.every(time => time === 0) && _value.some((time, index) => time !== initialValue[index])) {
-      ms = ms < 100 ? 900 + ms : ms
-      s = s === 0 && ms === 0 ? 0 : ((s * 1000) + ms) / 1000
-    }
-
-    const result = (hoursOn ? [ h, m, s ] : [ m, s ]).map(time => getTimeDateUnit(Math.ceil(time), true)).join(':')
-    if (msOn) return `${result}.${getTimeDateUnit(Math.floor(ms / 10), true)}`
-    return result
-  }
+  }, [ isFinished, permitted ])
 
   return (
     <TimerContainer {...containerProps} $isFinished={isFinished}>
-      <span style={{ marginRight: 4 }} {...timeElementProps}>{getFinalValue(value)}</span>
+      <span style={{ marginRight: 4 }} {...timeElementProps}>{getFinalValue(value, msOn, hoursOn, initialValue)}</span>
       <Button type="text" size="middle" {...buttonProps} {...buttonAttributes} />
       {resetButton && (
         <Button

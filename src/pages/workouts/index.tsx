@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext } from 'react'
+import { FC } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
@@ -8,7 +8,7 @@ import routes from 'app/constants/end_points'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { GetWorkoutListError, WorkoutListItem } from '@/src/app/store/slices/workout/types'
 import { AddButton } from 'app/components/list_buttons'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { selectList, updateList } from '@/src/app/store/slices/workout'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from '@/src/app/hooks'
 import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
@@ -27,7 +27,7 @@ export type ApiGetWorkoutListError = {
 const CREATE_ROUTE = '/workouts/create'
 
 const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
-  const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
+  const { add } = useIntlContext().intl.pages.workouts.list_buttons
   const { loading, loadingRoute } = useRouterContext()
   const [ loadWorkouts, { error, isError } ] = workoutApi.useLazyListQuery()
   const { data: workoutsInStore, status } = useAppSelector(selectList)

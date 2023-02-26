@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import Form from '../form/Form'
 import { FC, useState } from 'react'
 import { authApi } from 'store/slices/auth/api'
-import { useIntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import SignupByCodeForm from '../signup_by_code_form/SignupByCodeForm'
 import { ApiSignupError, IProps } from './types'
 

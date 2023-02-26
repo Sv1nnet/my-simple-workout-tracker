@@ -1,6 +1,5 @@
 
 import { useRef } from 'react'
-import styled from 'styled-components'
 import TimePicker from 'app/components/time_picker/TimePicker'
 import { DeleteFilled, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Divider, Form, Select } from 'antd'
@@ -12,36 +11,7 @@ import {
   ShortFormItem,
   DeleteButton,
 } from 'app/views/workouts/components/workout/components'
-
-const ExerciseContainer = styled.div`
-  position: relative;
-`
-
-const StyledSelect = styled(Select)`
-  &.ant-select-disabled .ant-typography {
-    color: rgba(0, 0, 0, 0.45);
-  }
-`
-
-const MoveExerciseButtonContainer = styled.div`
-  position: absolute;
-  z-index: 1;
-  top: ${({ $hasTopButton }) => $hasTopButton ? '-24px' : '0px'};
-  left: 50%;
-  background: white;
-  border: 1px lightgrey solid;
-  ${({ $hasBottomButton }) => !$hasBottomButton ? 'border-bottom: white;' : ''}
-  ${({ $hasTopButton }) => !$hasTopButton ? 'border-top: white;' : ''}
-  transform: translateX(-50%);
-  border-radius: ${({ $hasBottomButton, $hasTopButton }) => `${$hasTopButton ? '25px 25px' : '0 0'} ${$hasBottomButton ? '25px 25px' : '0 0'}`};
-  width: 50px;
-  overflow: hidden;
-
-  button {
-    width: 100%;
-    padding: 0;
-  }
-`
+import { ExerciseContainer, MoveExerciseButtonContainer, StyledSelect } from './components/styled'
 
 const Exercise = ({
   exerciseAmount,

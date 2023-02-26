@@ -1,8 +1,8 @@
-import React, { FC, useContext, useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { List, notification } from 'antd'
 import { ActivityItem } from './components'
 import { ActivityDeleteError, ActivityForm, ActivityListItem } from 'app/store/slices/activity/types'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
@@ -30,7 +30,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
   const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { modal } = intl
   const { payload: exercisePayloadDictionary } = intl.pages.exercises
   const { activities: activityDictionary } = intl.pages

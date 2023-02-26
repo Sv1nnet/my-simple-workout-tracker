@@ -1,10 +1,10 @@
-import { FC, useContext, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Tabs } from 'antd'
 import { useRouter } from 'next/router'
 import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import TabLabel from '../tab_label/TabLabel'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useAppSelector } from '@/src/app/hooks'
 import { selectAllLists } from '@/src/app/store/utils/commonSelectors'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
@@ -41,7 +41,7 @@ interface INavTemplate {
 
 const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const router = useRouter()
-  const { intl } = useContext(IntlContext)
+  const { intl } = useIntlContext()
   const { loading, loadingRoute } = useRouterContext()
   const { exerciseList, workoutList, activityList } = useAppSelector(selectAllLists)
   const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
