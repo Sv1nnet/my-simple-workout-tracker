@@ -1,13 +1,13 @@
-import { FC, useContext } from 'react'
+import { FC } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { PageHeader } from 'antd'
 import { useRouter } from 'next/router'
 import { theme } from 'src/styles/vars'
 import { NavTemplate } from 'layouts/nav'
-import UserMenu from '../user_menu/UserMenu'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
-import { TabRoutes } from '../../nav/template/NavTemplate'
+import UserMenu from 'layouts/header/user_menu/UserMenu'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { TabRoutes } from 'layouts/nav/template/NavTemplate'
 
 const StyledPageHeader = styled(PageHeader)`
   background-color: ${theme.primaryColor};
@@ -31,13 +31,12 @@ const StyledPageHeader = styled(PageHeader)`
 `
 
 
-const Header = ({ title, onBack, children }) => {
-  const { intl } = useContext(IntlContext)
+const Header = ({ title, children }) => {
+  const { intl } = useIntlContext()
 
   return (
     <>
       <StyledPageHeader
-        onBack={onBack}
         title={intl.header[title] || <span>&nbsp;</span>}
         ghost={false}
         extra={<UserMenu />}

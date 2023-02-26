@@ -1,7 +1,7 @@
 import { HistoryItemHeader, HistoryItemBody } from '..'
 import { getTimeDateUnit } from 'app/utils/time'
 import { VirtualList } from 'app/components'
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
   COUNT_CELL_WIDTH,
   EACH_SIDE_COUNT_CELL_WIDTH,
@@ -10,7 +10,7 @@ import {
   EACH_SIDE_TIME_WITHOUT_HOUR_CELL_WIDTH,
   EACH_SIDE_TIME_WITH_HOUR_CELL_WIDTH,
 } from 'app/views/activities/components/activity/components/exercise/components/chart/Chart'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { getComparator } from 'app/views/activities/components/activity/utils'
 import { Container, HistoryLoader, ItemContainer, ListContainer } from './compoents/styled'
 
@@ -23,7 +23,7 @@ export const HEADER_HEIGHT = 23
 
 const History = ({ loaderDictionary, isLoading, exerciseRef, history: _history, rounds, total, mode, type, hours, eachSide, isTimeType }) => {
   const [ width, setWidth ] = useState(() => exerciseRef.current ? exerciseRef.current - LIST_OFFSET : window.innerWidth - LIST_OFFSET)
-  const { side_labels } = useContext(IntlContext).intl.pages.activities
+  const { side_labels } = useIntlContext().intl.pages.activities
 
   const [ history, lastHistoryItem ] = useMemo(() => {
     if (isLoading) return [ null, null ]

@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext, useState } from 'react'
+import { FC, useState } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
@@ -10,7 +10,7 @@ import { activityApi } from 'store/slices/activity/api'
 import { selectList, updateList } from 'store/slices/activity'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
 import { AddButton } from 'app/components/list_buttons'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
 import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
@@ -32,7 +32,7 @@ const CREATE_ROUTE = '/activities/create'
 
 const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ activities: _activities }) => {
   const [ page, setPage ] = useState(1)
-  const { add } = useContext(IntlContext).intl.pages.workouts.list_buttons
+  const { add } = useIntlContext().intl.pages.workouts.list_buttons
   const { loading, loadingRoute } = useRouterContext()
   const [ loadActivities, { error, isError, isFetching } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore, total, status } = useAppSelector(selectList)

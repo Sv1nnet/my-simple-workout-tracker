@@ -1,4 +1,4 @@
-import { Button, Radio, Typography } from 'antd'
+import { Radio, Typography } from 'antd'
 import styled from 'styled-components'
 
 export const Header = styled.div`
@@ -26,10 +26,6 @@ export const HistoryButtonIcon = styled.img`
   position: relative;
   top: -2px;
   ${({ $table }) => $table ? 'transform: scale(1, .7);' : ''}
-`
-
-export const AddRemoveNoteButton = styled(Button)`
-  margin-top: 10px;
 `
 
 export const ResultTypeButtonsContainer = styled.div`

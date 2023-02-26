@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { HeaderWithoutNav } from 'layouts/header'
 import { Form, Input, Button, notification } from 'antd'
@@ -9,7 +9,7 @@ import { useAppSelector } from 'app/hooks'
 import { profileApi } from 'store/slices/profile/api'
 import { selectCredentials } from 'store/slices/profile'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ChangeLangPanel } from 'app/components'
 import { configApi } from 'store/slices/config/api'
 import { Lang } from 'store/slices/config/types'
@@ -30,7 +30,7 @@ const StyledChangeLangPanel = styled(ChangeLangPanel)`
 `
 
 const Profile = () => {
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const prevLangRef = useRef(lang)
   const credentials = useAppSelector(selectCredentials)
   const [ form ] = useForm()

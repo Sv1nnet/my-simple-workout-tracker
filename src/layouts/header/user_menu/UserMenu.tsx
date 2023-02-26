@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Avatar, Button, Dropdown, Menu } from 'antd'
@@ -8,7 +8,7 @@ import style from './UserMenu.module.scss'
 import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import { logout } from '@/src/app/store/slices/auth'
 import { useAppDispatch } from '@/src/app/hooks'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 
 const StyledAvatar = styled(Avatar)`
@@ -26,7 +26,7 @@ const ROUTES = {
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
   const { loading, loadingRoute } = useRouterContext()
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { route, push } = useRouter()
   const dispatch = useAppDispatch()
   const avatarFirstClicked = useRef(false)

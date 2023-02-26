@@ -1,7 +1,7 @@
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { HisotryResult, Round as TRound } from '@/src/app/store/slices/activity/types'
 import { ExerciseType } from '@/src/app/store/slices/exercise/types'
-import React, { FC, useContext } from 'react'
+import React, { FC } from 'react'
 import { getComparator } from 'app/views/activities/components/activity/utils'
 import { RoundsTable, THeadCell } from './components/styled'
 import Round from './components/round/Round'
@@ -24,7 +24,7 @@ export interface IRounds {
 }
 
 const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, form, history, rounds, hours, exerciseIndex, eachSide, historyDisplayMode, type, isTimeType }) => {
-  const { side_labels, rounds_section_headers } = useContext(IntlContext).intl.pages.activities
+  const { side_labels, rounds_section_headers } = useIntlContext().intl.pages.activities
 
   const comparator = getComparator(type)
 

@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/en'
 import 'dayjs/locale/ru'
 import Head from 'next/head'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useEffect, useMemo } from 'react'
 import { Provider } from 'react-redux'
 import type { AppProps as NextAppProps } from 'next/app'
 import getStore from 'app/store'
@@ -46,6 +46,12 @@ export default function App({ Component, pageProps, lang }: AppProps) {
   if (pageProps?.token && pageProps.token !== selectToken(store.getState())) {
     store.dispatch(updateToken(pageProps.token))
   }
+
+  useEffect(() => {
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker.register('/sw.js')
+    }
+  }, [])
 
   return (
     <>

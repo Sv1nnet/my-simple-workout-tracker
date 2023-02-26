@@ -12,7 +12,7 @@ import dayjs, { Dayjs, isDayjs } from 'dayjs'
 import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
-import { useAppSelector } from 'app/hooks'
+import { useAppSelector, useMounted, useRequestForNotificationPermission } from 'app/hooks'
 import {
   Exercise,
   StyledForm,
@@ -54,7 +54,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
   
-  const mountedRef = useRef(false)
+  const { isMounted, useHandleMounted } = useMounted()
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
   const history = useMemo<HistoryServerPayload>(() => _history
     ? Object
@@ -168,7 +168,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       }
     }
 
-    if (mountedRef.current) setTimeout(() => form.setFieldsValue(newInitialValues))
+    if (isMounted()) setTimeout(() => form.setFieldsValue(newInitialValues))
     if (newInitialValues.workout_id) {
       setTimeout(() => setSelectedWorkout(newInitialValues.workout_id))
       getHistory({ workoutId: newInitialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: newInitialValues.id })
@@ -327,9 +327,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     }
   }, [ workoutList.status ])
 
-  useEffect(() => {
-    mountedRef.current = true
-  }, [])
+  useRequestForNotificationPermission()
+
+  useHandleMounted()
 
   const isFormItemDisabled = !isEditMode || isFetching || loading
 
@@ -396,16 +396,14 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         </Form.Item>
         {(isEditMode || !isEdit) && (
           <CreateEditFormItem>
-            <>
-              <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
-                {isEdit ? submit_button.save : submit_button.create}
-              </Button>
-              {isEdit && (
-                <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
-                  {submit_button.cancel}
-                </ToggleEdit>
-              )}
-            </>
+            <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
+              {isEdit ? submit_button.save : submit_button.create}
+            </Button>
+            {isEdit && (
+              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
+                {submit_button.cancel}
+              </ToggleEdit>
+            )}
           </CreateEditFormItem>
         )}
         <Modal

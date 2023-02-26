@@ -8,7 +8,7 @@ import {
   Checkbox,
   Modal,
 } from 'antd'
-import { FC, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
 import { DeleteEditPanel, TimePicker } from 'app/components'
 import { Dayjs } from 'dayjs'
@@ -16,7 +16,7 @@ import { isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
 import { ToggleEdit } from 'app/components'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import routes from 'app/constants/end_points'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Input as CustomInput } from 'app/components'
 import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import {
@@ -92,14 +92,19 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
-  const { intl } = useContext(IntlContext)
+  const { intl } = useIntlContext()
   const { loading } = useRouterContext()
   const { input_labels, submit_button, payload, modal } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
   const initialValues = useMemo(() => {
-    const exercise = { ..._initialValues }
+    const {
+      is_in_workout: _is_in_workout,
+      in_workouts: _in_workouts,
+      ...exercise
+    } = { ..._initialValues }
+
     let time: number | Dayjs = exercise.time
     if (time && typeof time !== 'object') {
       time = secondsToDayjs(time)
@@ -248,7 +253,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         <Input disabled={isFormItemDisabled} size="large" />
       </Form.Item>
       <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
-        <Select disabled={isFormItemDisabled} size="large">
+        <Select disabled={isFormItemDisabled || _initialValues.is_in_workout} size="large">
           <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
           <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
           <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
@@ -257,7 +262,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         </Select>
       </Form.Item>
       <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
-        <Checkbox disabled={isFormItemDisabled}>
+        <Checkbox disabled={isFormItemDisabled || _initialValues.is_in_workout}>
           {input_labels.each_side}
         </Checkbox>
       </Form.Item>
@@ -328,16 +333,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       </StyledModal>
       {(isEditMode || !isEdit) && (
         <CreateEditFormItem>
-          <>
-            <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
-              {isEdit ? submit_button.save : submit_button.create}
-            </Button>
-            {isEdit && (
-              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
-                {submit_button.cancel}
-              </ToggleEdit>
-            )}
-          </>
+          <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
+            {isEdit ? submit_button.save : submit_button.create}
+          </Button>
+          {isEdit && (
+            <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
+              {submit_button.cancel}
+            </ToggleEdit>
+          )}
         </CreateEditFormItem>
       )}
       <Modal
@@ -357,9 +360,12 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 Exercise.defaultProps = {
   initialValues: {
     title: '',
+    is_in_workout: false,
+    in_workouts: [],
     type: 'repeats',
     each_side: false,
     mass_unit: 'kg',
+    archived: false,
   },
 }
 

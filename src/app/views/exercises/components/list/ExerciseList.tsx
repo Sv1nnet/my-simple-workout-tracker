@@ -1,8 +1,8 @@
 import { List, notification } from 'antd'
 import { ExerciseItem } from './components'
 import { ExerciseDeleteError, ExerciseForm, ExerciseListItem, Image } from 'app/store/slices/exercise/types'
-import React, { FC, useContext, useEffect, useState } from 'react'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import React, { FC, useEffect, useState } from 'react'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
@@ -31,7 +31,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { modal } = intl
   const { payload, modal: exerciseModal } = intl.pages.exercises
   const {

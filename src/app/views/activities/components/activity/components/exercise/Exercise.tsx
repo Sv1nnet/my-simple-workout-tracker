@@ -1,17 +1,16 @@
 import { FC } from 'react'
-import { Form, FormInstance, Input, Typography } from 'antd'
-import { History, Rounds, Timers } from './components'
+import { FormInstance, Typography } from 'antd'
+import { BreakTimer, History, Note, Rounds, Timers } from './components'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import routes from 'app/constants/end_points'
-import { useContext, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import getWordByNumber from 'app/utils/getWordByNumber'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, Round } from '@/src/app/store/slices/activity/types'
 import { Dayjs } from 'dayjs'
 import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
 import {
-  AddRemoveNoteButton,
   ExerciseTitle,
   Header,
   HistoryButtonIcon,
@@ -20,6 +19,7 @@ import {
   ResultTypeButtonsContainer,
   StyledRadio,
 } from './components/styled'
+import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from './utils'
 
 const modeOptions = [
   { label: <HistoryButtonIcon src="/icons/chart.svg" alt="chart" />, value: 'chart' },
@@ -59,9 +59,9 @@ const Exercise: FC<IExerciseProps> = ({
   rounds,
   exerciseIndex,
 }) => {
-  const [ showNote, setShowNote ] = useState(form.getFieldValue([ 'results', exerciseIndex, 'note' ]))
+  const [ isLastRestOver, setIsLastRestOver ] = useState(false)
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
-  const { exercises, activities, workouts } = useContext(IntlContext).intl.pages
+  const { exercises, activities, workouts } = useIntlContext().intl.pages
   const { payload } = exercises
   const { input_placeholders, input_labels, loader, side_labels } = activities
   const $exercise = useRef(null)
@@ -76,13 +76,6 @@ const Exercise: FC<IExerciseProps> = ({
   }, [ isHistoryLoading, historyByDates ])
 
   const handleHistoryDisplayType = ({ target: { value } }) => setHistoryDisplayMode(value)
-
-  const handleHideNote = () => {
-    setShowNote(false)
-    const results = [ ...form.getFieldValue('results') ]
-    results[exerciseIndex].note = null
-    form.setFieldsValue({ results })
-  }
 
   let { repeats: _repeats, time: _time, weight, mass_unit } = exercise
 
@@ -102,6 +95,14 @@ const Exercise: FC<IExerciseProps> = ({
   weight = weight ? `${weight} ${payload.mass_unit[mass_unit][0]}` : null
 
   const isTimeType = isExerciseTimeType(exercise.type)
+
+  const isAllResultsFilled = getIsAllResultsFilled(form, exercise, exerciseIndex)
+
+  const isAllResultWithoutPenultimateFilled = getIsAllResultWithoutPenultimateFilled(form, exercise, exerciseIndex, isAllResultsFilled)
+
+  const handleTimeOver = () => setIsLastRestOver(isAllResultWithoutPenultimateFilled)
+
+  const isRestTimersVisible = !!round_break && !isEdit && !isAllResultsFilled
 
   return (
     <div ref={$exercise} style={{ marginBottom: '10px' }}>
@@ -171,47 +172,30 @@ const Exercise: FC<IExerciseProps> = ({
         type={exercise.type}
         rounds={roundResults.rounds}
       />
-      {!!round_break && !isEdit && (
-        <Timers eachSide={exercise.each_side} durationInSeconds={round_break} sideLabels={side_labels} />
+      {isRestTimersVisible && (
+        <Timers
+          eachSide={exercise.each_side}
+          durationInSeconds={3}
+          sideLabels={side_labels}
+          onTimeOver={handleTimeOver}
+        />
       )}
       {!!exerciseBreak && (
-        <div style={{ marginTop: '10px' }}>
-          <Typography.Text>
-            {workouts.input_labels.break}: {timeToHms(exerciseBreak, {
-              hms: [
-                payload.time.hour.short,
-                payload.time.minute.short,
-                payload.time.second.short,
-              ],
-            })}
-          </Typography.Text></div>
+        <BreakTimer
+          isLastRestOver={isLastRestOver}
+          isAllResultsFilled={isAllResultsFilled}
+          workoutsDictionary={workouts}
+          payloadDictionary={payload}
+          exerciseBreak={exerciseBreak}
+        />
       )}
-      {
-        !showNote
-          ? (
-            <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={() => setShowNote(true)}>
-              {input_labels.add_note}
-            </AddRemoveNoteButton>
-          )
-          : (
-            <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={handleHideNote}>
-              {input_labels.remove_note}
-            </AddRemoveNoteButton>
-          )
-      }
-      {showNote && (
-        <Form.Item name={[ 'results', exerciseIndex, 'note' ]}>
-          <Input.TextArea
-            disabled={isFormItemDisabled}
-            autoFocus
-            style={{ marginTop: '10px' }}
-            placeholder={input_placeholders.note}
-            showCount
-            maxLength={120}
-            autoSize={{ minRows: 1, maxRows: 4 }}
-          />
-        </Form.Item>
-      )}
+      <Note
+        form={form}
+        isFormItemDisabled={isFormItemDisabled}
+        exerciseIndex={exerciseIndex}
+        inputLabels={input_labels}
+        placeholder={input_placeholders.note}
+      />
     </div>
   )
 }

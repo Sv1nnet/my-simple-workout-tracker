@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { ExerciseTemplate } from 'layouts/main'
 import { Exercise } from 'app/views'
@@ -9,7 +9,7 @@ import routes from 'constants/end_points'
 import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
 import { GetExerciseError, GetExerciseSuccess, IExerciseFormData } from '@/src/app/store/slices/exercise/types'
 import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 interface IExercisePage {
   exercise: IExerciseFormData;
@@ -18,7 +18,7 @@ interface IExercisePage {
 
 const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } = ({ exercise, error: serverError }) => {
   const router = useRouter()
-  const { lang } = useContext(IntlContext)
+  const { lang } = useIntlContext()
   const [
     get,
     {
@@ -44,7 +44,13 @@ const EditExercise: NextPage<IExercisePage> & { Layout: FC, layoutProps?: {} } =
     },
   ] = exerciseApi.useDeleteMutation()
 
+  const [ fetchList ] = exerciseApi.useLazyListQuery()
+
   const handleSubmit = (values: IExerciseFormData) => update({ exercise: values })
+    .then((res) => {
+      fetchList()
+      return res
+    })
 
   const handleDelete = async id => deleteExercise({ id }).then((res) => {
     if (!('error' in res)) router.replace('/exercises')

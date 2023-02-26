@@ -3,8 +3,8 @@ import { List, notification } from 'antd'
 import { WorkoutItem } from './components'
 import { Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from '@/src/app/store/slices/workout/types'
 import { Image } from 'store/slices/exercise/types'
-import React, { FC, useContext, useEffect, useState } from 'react'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import React, { FC, useEffect, useState } from 'react'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
@@ -32,7 +32,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { modal } = intl
   const { payload } = intl.pages.exercises
   const { workouts: workoutDictionary } = intl.pages

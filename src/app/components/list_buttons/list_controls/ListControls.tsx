@@ -1,11 +1,11 @@
 import { MainButtonContainer, MoreOptionsButtonContainer } from '../styled'
-import React, { useContext, useEffect, useState } from 'react'
-import { IntlContext } from '@/src/app/contexts/intl/IntContextProvider'
+import React, { useEffect, useState } from 'react'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import { CancelSelectionButton, CreateButton, DeleteButton, DeselectAllButton, MoreOptionsButton, SelectAllButton } from './components/styled'
 
 const ListControls = ({ createHref, isDeleting, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
-  const { list_buttons } = useContext(IntlContext).intl.pages.exercises
+  const { list_buttons } = useIntlContext().intl.pages.exercises
   const { loading, loadingRoute } = useRouterContext()
   const [ expanded, setExpanded ] = useState(false)
 

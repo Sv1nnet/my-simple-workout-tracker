@@ -1,8 +1,8 @@
 import { notification } from 'antd'
-import { ChangeEvent, useCallback, useContext, useMemo } from 'react'
+import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 import type { AppDispatch, AppState } from '../store'
 import isFunc from '../utils/isFunc'
@@ -80,7 +80,7 @@ export type ApiGetListError = {
 }
 
 export const useShowListErrorNotification = ({ isError, error }: { isError: boolean, error: ApiGetListError }) => {
-  const { intl, lang } = useContext(IntlContext)
+  const { intl, lang } = useIntlContext()
   const { modal } = intl
   
   useEffect(() => {
@@ -263,4 +263,24 @@ export const useDebouncedCallback = (callback: Function, delay: number = 100) =>
       callbackRef.current(...args)
     }, delay)
   }, [])
+}
+
+export const useRequestForNotificationPermission = () => {
+  const [ permission, setPermission ] = useState(typeof Notification !== 'undefined' ? Notification.permission : null)
+
+  useEffect(() => {
+    if (typeof Notification === 'undefined') return setPermission(null)
+    if (Notification.permission === 'denied' || Notification.permission === 'granted') return setPermission(Notification.permission)
+
+    Notification
+      .requestPermission()
+      .then(setPermission)
+
+    setPermission(Notification.permission)
+  }, [])
+
+  return {
+    permission,
+    permitted: permission === 'granted',
+  }
 }

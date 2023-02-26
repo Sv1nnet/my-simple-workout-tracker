@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { FC, useContext, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { MainTemplate } from '@/src/layouts/main'
 import handleJwtStatus from '@/src/app/utils/handleJwtStatus'
@@ -9,7 +9,7 @@ import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
 import { Activity } from '@/src/app/views'
 import { activityApi } from '@/src/app/store/slices/activity/api'
 import { useRouter } from 'next/router'
-import { IntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 interface IActivityPage {
   activity: ActivityForm<string>;
@@ -18,7 +18,7 @@ interface IActivityPage {
 
 const EditActivity: NextPage<IActivityPage> & { Layout: FC, layoutProps?: {} } = ({ activity, error: serverError }) => {
   const router = useRouter()
-  const { lang } = useContext(IntlContext)
+  const { lang } = useIntlContext()
   const [
     get,
     {
