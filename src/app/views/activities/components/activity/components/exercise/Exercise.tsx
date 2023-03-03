@@ -182,6 +182,7 @@ const Exercise: FC<IExerciseProps> = ({
       )}
       {!!exerciseBreak && (
         <BreakTimer
+          isEdit={isEdit}
           isLastRestOver={isLastRestOver}
           isAllResultsFilled={isAllResultsFilled}
           workoutsDictionary={workouts}

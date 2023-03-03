@@ -101,7 +101,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const initialValues = useMemo(() => {
     const {
       is_in_workout: _is_in_workout,
-      in_workouts: _in_workouts,
       ...exercise
     } = { ..._initialValues }
 
@@ -361,7 +360,6 @@ Exercise.defaultProps = {
   initialValues: {
     title: '',
     is_in_workout: false,
-    in_workouts: [],
     type: 'repeats',
     each_side: false,
     mass_unit: 'kg',

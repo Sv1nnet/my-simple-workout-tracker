@@ -28,6 +28,7 @@ const Exercise = ({
   exerciseList,
   onExerciseChange,
   remove,
+  isInActivity,
 }) => {
   const $container = useRef(null)
   const requiredRules = isEditMode ? [ { required: true, message: errorsDictionary.common.required } ] : []
@@ -40,16 +41,16 @@ const Exercise = ({
   return (
     <ExerciseContainer ref={$container}>
       <Divider style={{ marginBottom: '16px', marginTop: '6px' }} />
-      {isEditMode && (
+      {isEditMode && !isInActivity && (
         <MoveExerciseButtonContainer $hasBottomButton={hasBottomButton} $hasTopButton={hasTopButton}>
           {hasTopButton && <Button onClick={handleChangeOrder(-1)} size="small" type="text"><UpOutlined /></Button>}
           {hasBottomButton && <Button onClick={handleChangeOrder(1)} size="small" type="text"><DownOutlined /></Button>}
         </MoveExerciseButtonContainer>
       )}
-      {isEditMode && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
+      {isEditMode && !isInActivity && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
 
       <Form.Item label={dictionary.input_labels.exercise} name={[ index, 'id' ]} rules={requiredRules}>
-        <StyledSelect disabled={isFormItemDisabled} size="large">
+        <StyledSelect disabled={isFormItemDisabled || isInActivity} size="large">
           {exerciseList.data.map(exercise => (
             <Select.Option value={exercise.id} key={exercise.id}>
               <ExerciseOption {...exercise} payloadDictionary={payload} />
@@ -68,7 +69,15 @@ const Exercise = ({
           ]}
           $margin
         >
-          <CustomInput.Number placeholder={dictionary.placeholders.rounds} int onlyPositive disabled={isFormItemDisabled} onChange={handleExerciseChange} onBlur={handleExerciseChange} size="large" />
+          <CustomInput.Number
+            int
+            placeholder={dictionary.placeholders.rounds}
+            onlyPositive
+            disabled={isFormItemDisabled || isInActivity}
+            onChange={handleExerciseChange}
+            onBlur={handleExerciseChange}
+            size="large"
+          />
         </ShortFormItem>
         <ShortFormItem name={[ index, 'round_break' ]} label={dictionary.input_labels.round_break} rules={requiredRules}>
           <TimePicker

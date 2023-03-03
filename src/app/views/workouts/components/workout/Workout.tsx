@@ -47,7 +47,7 @@ export interface IWorkout {
   onSubmit: Function;
 }
 
-const addDefaultExercise = () => ({
+const getDefaultExercise = () => ({
   break_enabled: true,
   id: null,
   rounds: 1,
@@ -74,6 +74,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     if (isEdit && _initialValues === null) {
       return {
         title: '',
+        is_in_activity: false,
         exercises: [],
       }
     }
@@ -87,7 +88,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
       break_enabled,
     }))
 
-    if (!workout.exercises.length) workout.exercises.push(addDefaultExercise())
+    if (!workout.exercises.length) workout.exercises.push(getDefaultExercise())
 
     return workout
   }, [ _initialValues, exerciseList ])
@@ -130,7 +131,8 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   }
 
   const handleSubmit = async (_values) => {
-    const values = { ..._values, id: initialValues.id }
+    let { is_in_activity: _, ...values } = _values
+    values = { ...values, id: initialValues.id }
     values.exercises = values.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled }) => ({
       id,
       rounds,
@@ -226,6 +228,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
                   fields={fields}
                   form={form}
                   index={i}
+                  isInActivity={initialValues.is_in_activity}
                   validate={validate}
                   dictionary={{ input_labels, placeholders }}
                   errorsDictionary={error_message}
@@ -238,10 +241,10 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
                   remove={remove}
                 />
               ))}
-              {isEditMode && (
+              {isEditMode && !initialValues.is_in_activity && (
                 <Button
                   disabled={isFormItemDisabled}
-                  onClick={() => add(addDefaultExercise())}
+                  onClick={() => add(getDefaultExercise())}
                   block
                   size="large"
                   type="dashed"
@@ -292,7 +295,8 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
 Workout.defaultProps = {
   initialValues: {
     title: '',
-    exercises: [ addDefaultExercise() ],
+    is_in_activity: false,
+    exercises: [ getDefaultExercise() ],
     description: '',
   },
 }
