@@ -26,6 +26,7 @@ export type Workout<T = number | Dayjs> = {
   id?: string;
   title: string;
   exercises: WorkoutExercise<T>[];
+  is_in_activity?: boolean;
   description?: string;
 }
 

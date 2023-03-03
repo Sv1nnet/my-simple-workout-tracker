@@ -7,6 +7,7 @@ export interface IBreakTimer {
   isAllResultsFilled: boolean;
   isLastRestOver: boolean;
   exerciseBreak: number;
+  isEdit: boolean;
   workoutsDictionary: {
     input_labels: {
       break: string
@@ -27,9 +28,9 @@ export interface IBreakTimer {
   };
 }
 
-const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, exerciseBreak, workoutsDictionary, payloadDictionary, isLastRestOver }) => {
+const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak, workoutsDictionary, payloadDictionary, isLastRestOver }) => {
   const [ isBreakOver, setIsBreakOver ] = useState(false)
-  const [ isBreakTimerVisible, setIsBreakTimerVisible ] = useState(true)
+  const [ isBreakTimerVisible, setIsBreakTimerVisible ] = useState(!isEdit)
 
   const handleBreakOver = () => setIsBreakOver(true)
   const handleBreakReset = () => isBreakOver && setIsBreakTimerVisible(false)
