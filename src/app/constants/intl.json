@@ -1,5 +1,8 @@
 {
-  "langs": ["ru", "eng"],
+  "langs": [
+    "ru",
+    "eng"
+  ],
   "signup_by_code": {
     "code_label": {
       "ru": "Код",
@@ -200,43 +203,88 @@
     "exercises": {
       "payload": {
         "repeats": {
-          "ru": [ "Повторение", "Повторения", "Повторений" ],
-          "eng": [ "Repeat", "Repeats" ],
+          "ru": [
+            "Повторение",
+            "Повторения",
+            "Повторений"
+          ],
+          "eng": [
+            "Repeat",
+            "Repeats"
+          ],
           "short": {
-            "ru": [ "повт." ],
-            "eng": [ "rep", "reps" ]
+            "ru": [
+              "повт."
+            ],
+            "eng": [
+              "rep",
+              "reps"
+            ]
           }
         },
         "mass_unit": {
           "kg": {
-            "ru": [ "кг" ],
-            "eng": [ "kg", "kgs" ]
+            "ru": [
+              "кг"
+            ],
+            "eng": [
+              "kg",
+              "kgs"
+            ]
           },
           "lb": {
-            "ru": [ "фунт", "фунта", "фунтов" ],
-            "eng": [ "lb", "lbs" ]
+            "ru": [
+              "фунт",
+              "фунта",
+              "фунтов"
+            ],
+            "eng": [
+              "lb",
+              "lbs"
+            ]
           }
         },
         "time": {
           "hour": {
-            "ru": [ "час", "часа", "часов"],
-            "eng": [ "hour", "hours" ],
+            "ru": [
+              "час",
+              "часа",
+              "часов"
+            ],
+            "eng": [
+              "hour",
+              "hours"
+            ],
             "short": {
               "ru": "ч",
               "eng": "h"
             }
           },
           "minute": {
-            "ru": [ "минута", "минуты", "минут"],
-            "eng": [ "minute", "minutes" ],
+            "ru": [
+              "минута",
+              "минуты",
+              "минут"
+            ],
+            "eng": [
+              "minute",
+              "minutes"
+            ],
             "short": {
               "ru": "м",
               "eng": "m"
             }
           },
           "second": {
-            "ru": [ "секунда", "секунды", "секунд"],
-            "eng": [ "second", "seconds" ],
+            "ru": [
+              "секунда",
+              "секунды",
+              "секунд"
+            ],
+            "eng": [
+              "second",
+              "seconds"
+            ],
             "short": {
               "ru": "с",
               "eng": "s"
@@ -502,6 +550,46 @@
       }
     },
     "activities": {
+      "timer": {
+        "side": {
+          "right": {
+            "ru": "Пр",
+            "eng": "R"
+          },
+          "left": {
+            "ru": "Л",
+            "eng": "L"
+          }
+        },
+        "break": {
+          "title": {
+            "ru": "Перерыв окончен!",
+            "eng": "Break is over!"
+          },
+          "message": {
+            "ru": "Следующее упражнение:",
+            "eng": "Next exercise:"
+          },
+          "workout_is_over": {
+            "ru": "Тренировка окончена.",
+            "eng": "Workout is over."
+          }
+        },
+        "round_break": {
+          "title": {
+            "ru": "Отдых окончен!",
+            "eng": "Round rest is over!"
+          },
+          "message": {
+            "ru": "Следующий подход:",
+            "eng": "Next round:"
+          },
+          "no_more_rounds": {
+            "ru": "Подходов больше нет",
+            "eng": "No more rounds"
+          }
+        }
+      },
       "loader": {
         "previous_loading": {
           "ru": "Загрузка...",

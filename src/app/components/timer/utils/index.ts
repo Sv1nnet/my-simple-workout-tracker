@@ -1,9 +1,8 @@
 import isFunc from 'app/utils/isFunc'
-import { getTimeDateUnit, milisecondsToTimeArray, timeArrayToMiliseconds } from 'app/utils/time'
+import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
+import { MS_TO_SET_STATE_WHEN_MS_OFF, MS_TO_SET_STATE_WHEN_MS_ON } from 'app/components/timer_view/utils'
 
-const MS_TO_SET_STATE_WHEN_MS_OFF = 980
-const MS_TO_SET_STATE_WHEN_MS_ON = 33
-const TIME_IS_OVER_VALUE = milisecondsToTimeArray(0)
+const TIME_IS_OVER_VALUE = millisecondsToTimeArray(0)
 
 export const runCountingDown = ({
   msOn,
@@ -29,7 +28,7 @@ export const runCountingDown = ({
 
   let _isRunning = isRunning
   let _isPaused = isPaused
-  newTimeLeftRef.current = timeArrayToMiliseconds(valueRef.current)
+  newTimeLeftRef.current = timeArrayToMilliseconds(valueRef.current)
 
   
   let timeLeftInMs = 0
@@ -52,7 +51,7 @@ export const runCountingDown = ({
       setValue(TIME_IS_OVER_VALUE)
       clearTimeout(timeoutId)
     } else {
-      timeoutId = setTimeout(runTimeout, 16)
+      timeoutId = setTimeout(runTimeout)
     }
   }
 
@@ -79,7 +78,7 @@ export const runCountingDown = ({
 
       if (msLeftFromPrevRafRef.current >= 0 && diffRef.current >= msToSetState) {
         diffRef.current = 0
-        valueRef.current = milisecondsToTimeArray(newTimeLeftRef.current)
+        valueRef.current = millisecondsToTimeArray(newTimeLeftRef.current)
         setValue(valueRef.current)
         if (isFunc(onChange)) onChange([ ...valueRef.current ], newTimeLeftRef.current)
       }
@@ -118,22 +117,6 @@ export const runCountingDown = ({
     document.removeEventListener('visibilitychange', documentVisibilityChange)
     cancelAnimationFrame(rafIdRef.current)
   }
-}
-
-export const getFinalValue = (value: number[], msOn, hoursOn, initialValue) => {
-  let [ h, m, s, ms ] = value
-
-  // if displaying ms is off then we should show ceil seconds
-  // and only do it if time to display is not initial
-  // and time is not over
-  if (!msOn && !value.every(time => time === 0) && value.some((time, index) => time !== initialValue[index])) {
-    ms = ms < 100 ? 900 + ms : ms
-    s = s === 0 && ms === 0 ? 0 : ((s * 1000) + ms) / 1000
-  }
-
-  const result = (hoursOn ? [ h, m, s ] : [ m, s ]).map(time => getTimeDateUnit(Math.ceil(time), true)).join(':')
-  if (msOn) return `${result}.${getTimeDateUnit(Math.floor(ms / 10), true)}`
-  return result
 }
 
 export const defaultNotificationProps: NotificationOptions = {
