@@ -9,7 +9,7 @@ import getWordByNumber from 'app/utils/getWordByNumber'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, Round } from '@/src/app/store/slices/activity/types'
 import { Dayjs } from 'dayjs'
-import { Exercise as TExercise } from '@/src/app/store/slices/exercise/types'
+import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import {
   ExerciseTitle,
   Header,
@@ -20,6 +20,7 @@ import {
   StyledRadio,
 } from './components/styled'
 import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from './utils'
+import { WorkoutListExercise } from 'app/store/slices/workout/types'
 
 const modeOptions = [
   { label: <HistoryButtonIcon src="/icons/chart.svg" alt="chart" />, value: 'chart' },
@@ -37,6 +38,7 @@ export interface IExerciseProps {
   isFormItemDisabled: boolean;
   isHistoryLoading: boolean;
   exercise: TExercise<number | Dayjs>,
+  exerciseList: WorkoutListExercise<number>[],
   history: any; // TODO: define history type
   form: FormInstance<ActivityForm<Dayjs>>;
   round_break: number;
@@ -51,6 +53,7 @@ const Exercise: FC<IExerciseProps> = ({
   isFormItemDisabled,
   isHistoryLoading,
   isEdit,
+  exerciseList,
   break: exerciseBreak,
   exercise,
   history: historyByDates,
@@ -63,7 +66,7 @@ const Exercise: FC<IExerciseProps> = ({
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
   const { exercises, activities, workouts } = useIntlContext().intl.pages
   const { payload } = exercises
-  const { input_placeholders, input_labels, loader, side_labels } = activities
+  const { input_placeholders, input_labels, loader, side_labels, timer } = activities
   const $exercise = useRef(null)
   
   const historyByRounds = useMemo(() => {
@@ -175,6 +178,8 @@ const Exercise: FC<IExerciseProps> = ({
       {isRestTimersVisible && (
         <Timers
           eachSide={exercise.each_side}
+          timerDictionary={timer}
+          totalRounds={rounds}
           durationInSeconds={round_break}
           sideLabels={side_labels}
           onTimeOver={handleTimeOver}
@@ -183,6 +188,7 @@ const Exercise: FC<IExerciseProps> = ({
       {!!exerciseBreak && (
         <BreakTimer
           isEdit={isEdit}
+          nextExerciseTitle={exerciseList[exerciseIndex + 1]?.exercise.title}
           isLastRestOver={isLastRestOver}
           isAllResultsFilled={isAllResultsFilled}
           workoutsDictionary={workouts}

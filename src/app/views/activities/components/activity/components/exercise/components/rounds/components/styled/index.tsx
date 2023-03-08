@@ -3,6 +3,7 @@ import { Typography } from 'antd'
 import { Input } from '@/src/app/components'
 import React, { FC } from 'react'
 import styled from 'styled-components'
+import { INumberInput } from 'app/components/input/number/NumberInput'
 
 export const RoundText = styled(Typography.Text)`
   min-width: 15px;
@@ -59,7 +60,7 @@ export const SideInputContainer = styled.div`
 `
 
 
-export interface ISideNumberInput {
+export interface ISideNumberInput extends INumberInput {
   dataSide: string;
   roundText: string;
   disabled: boolean;

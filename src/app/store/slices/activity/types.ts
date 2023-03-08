@@ -21,6 +21,7 @@ export type Activity<T = string | Dayjs> = {
     rounds: Round[],
     note?: string | null,
   }[];
+  duration?: number;
   description: string | null;
 }
 
@@ -71,13 +72,13 @@ export type ActivityListResponseSuccess = {
 export type GetActivityListSuccess = IResponse<ActivityListResponseSuccess>
 export type GetActivityListError = IResponse<null>
 
-export type HisotryResult = number | { left: number, right: number }
+export type HistoryResult = number | { left: number, right: number }
 
 export type HistoryServerPayload<T = string> = {
   [type: string]: {
     items: {
       date: T,
-      results: HisotryResult[]
+      results: HistoryResult[]
     }[],
     total: 3,
   }

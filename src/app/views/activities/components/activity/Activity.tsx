@@ -7,7 +7,7 @@ import {
   Select,
 } from 'antd'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
-import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
+import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
 import dayjs, { Dayjs, isDayjs } from 'dayjs'
 import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -31,6 +31,7 @@ import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextP
 import { API_STATUS } from '@/src/app/constants/api_statuses'
 import { getResultsFromWorkoutList } from './utils'
 import { IActivityProps, InitialValues } from './types'
+import { StopwatchContainer } from './components/styled'
 
 
 const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
@@ -95,6 +96,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           .find(wk => wk.id === cachedFormValues.workout_id)
   
         newInitialValues = {
+          duration: 0,
           ...cachedFormValues,
           workout_id: selectedWorkout,
           date: dayjs(cachedFormValues.date),
@@ -140,6 +142,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         return {
           _id: undefined,
           workout_id: undefined,
+          duration: 0,
           date: undefined,
           results: [],
           description: '',
@@ -148,6 +151,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     } else if (!isEdit) {
       newInitialValues = {
         id: _initialValues._id,
+        duration: 0,
         date: (form.getFieldValue('date') as Dayjs) || dayjs(),
         workout_id: selectedWorkout,
         results: getResultsFromWorkoutList(workoutList, form.getFieldValue('workout_id')),
@@ -155,6 +159,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       }
     } else {
       newInitialValues = {
+        duration: 0,
         ..._initialValues,
         date: dayjs(_initialValues.date),
         results: _initialValues.results.map(results => isExerciseTimeType(results.type)
@@ -243,6 +248,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       description: '',
       workout_id: value,
       results: getResultsFromWorkoutList(workoutList, value),
+      duration: 0,
     }
     localStorage.setItem('cached_activity', JSON.stringify(newCachedValues))
     setCachedFormValues(newCachedValues)
@@ -252,8 +258,12 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const cacheFormData = (changedValues, allValues) => {
     if (isEdit) return
     if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
-
     localStorage.setItem('cached_activity', JSON.stringify(allValues))
+  }
+
+  const handleDurationChange = (ms: number) => {
+    form.setFieldsValue({ duration: ms })
+    cacheFormData([ 'duration' ], form.getFieldsValue())
   }
 
   useEffect(() => {
@@ -374,8 +384,9 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
               .data
               .find(workout => workout.id === getFieldValue('workout_id'))
               ?.exercises
-              .map((exercise: WorkoutListExercise<number>, i) => (
+              .map((exercise: WorkoutListExercise<number>, i, list) => (
                 <Exercise
+                  exerciseList={list as WorkoutListExercise<number>[]}
                   roundResults={initialValues.results[i]}
                   form={form}
                   exerciseIndex={i}
@@ -406,6 +417,22 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             )}
           </CreateEditFormItem>
         )}
+
+        <Form.Item noStyle name="duration">
+          <StopwatchContainer>
+            <Stopwatch
+              key={`${selectedWorkout}`}
+              hoursOn
+              showResetButton
+              disabled={isEdit || !selectedWorkout}
+              className="activity-timer"
+              initialValue={initialValues.duration}
+              msOn={false}
+              onChange={handleDurationChange}
+            />
+          </StopwatchContainer>
+        </Form.Item>
+        
         <Modal
           visible={isModalVisible}
           okText={modal.delete.ok_button}
@@ -424,6 +451,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 Activity.defaultProps = {
   initialValues: {
     _id: undefined,
+    duration: 0,
     workout_id: undefined,
     date: undefined,
     results: [],

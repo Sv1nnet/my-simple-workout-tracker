@@ -1,22 +1,10 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
-import styled from 'styled-components'
-import { Button, ButtonProps } from 'antd'
-import { CaretRightOutlined, PauseOutlined, RedoOutlined } from '@ant-design/icons'
-import { milisecondsToTimeArray, timeArrayToMiliseconds, timeArrayToSeconds } from 'app/utils/time'
-import { theme } from 'src/styles/vars'
+import { ButtonProps } from 'antd'
+import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import isFunc from 'app/utils/isFunc'
 import { useRequestForNotificationPermission } from 'app/hooks'
-import { defaultNotificationProps, getFinalValue, runCountingDown } from './utils'
-
-const TimerContainer = styled.div`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid ${theme.borderColorBase};
-  font-size: 16px;
-  padding-left: 6.5px;
-  box-shadow: ${({ $isFinished }) => $isFinished ? '0px 0px 3px red' : 'none'};
-`
+import { defaultNotificationProps, runCountingDown } from './utils'
+import { TimerView } from 'app/components'
 
 export interface ITimer {
   duration: number,
@@ -25,7 +13,7 @@ export interface ITimer {
   msOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
-  onChange?: (value: ReturnType<typeof milisecondsToTimeArray>, timeLeftInMs: number) => void,
+  onChange?: (value: ReturnType<typeof millisecondsToTimeArray>, timeLeftInMs: number) => void,
   onReset?: VoidFunction,
   onPause?: (timeLeftInMs: number) => void,
   onRunTimer?: (timeLeftInMs: number) => void,
@@ -53,12 +41,12 @@ const Timer: FC<ITimer> = ({
   onTimeOver,
   hoursOn,
   resetButton,
-  containerProps,
   timeElementProps,
   buttonProps,
   resetButtonProps,
+  ...rest
 }) => {
-  const initialValue = useMemo(() => milisecondsToTimeArray(duration), [ duration ])
+  const initialValue = useMemo(() => millisecondsToTimeArray(duration), [ duration ])
   
   const { permitted } = useRequestForNotificationPermission()
 
@@ -67,18 +55,19 @@ const Timer: FC<ITimer> = ({
   const [ isPaused, setIsPaused ] = useState(false)
   const [ isFinished, setIsFinished ] = useState(false)
 
+  const valueRef = useRef(value)
   const prevRafMsRef = useRef(0)
   const msLeftFromPrevRafRef = useRef(0)
   const newTimeLeftRef = useRef(0)
   const diffRef = useRef(0)
-  const valueRef = useRef([ ...value ])
   const rafIdRef = useRef(null)
 
   const notificationCountRef = useRef(0)
   const isNotifiedRef = useRef(false)
   const renotificationTimeoutIdRef = useRef(0 as unknown as NodeJS.Timeout)
 
-  const resetTimer = (e) => {
+
+  const handleResetTimer = (e) => {
     clearTimeout(renotificationTimeoutIdRef.current)
     
     setIsRunning(false)
@@ -104,47 +93,21 @@ const Timer: FC<ITimer> = ({
     if (!resetButton && isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
   }
 
-  const buttonAttributes = useMemo(() => {
-    const runTimer = (e) => {
-      setIsRunning(true)
-      setIsPaused(false)
-      
+  const handleRunTimer = (e) => {
+    setIsRunning(true)
+    setIsPaused(false)
+    
+    if (isFunc(onRunTimer)) onRunTimer(newTimeLeftRef.current)
+    if (isFunc(buttonProps?.onClick)) buttonProps.onClick(true, e)
+  }
 
-      if (isFunc(onRunTimer)) onRunTimer(newTimeLeftRef.current)
-      if (isFunc(buttonProps?.onClick)) buttonProps.onClick(true, e)
-    }
+  const handlePauseTimer = (e) => {
+    setIsRunning(false)
+    setIsPaused(true)
 
-    const pauseTimer = (e) => {
-      setIsRunning(false)
-      setIsPaused(true)
-
-      if (isFunc(onPause)) onPause(newTimeLeftRef.current)
-      if (isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
-    }
-
-    return isRunning
-      ? {
-        icon: <PauseOutlined style={{ fontSize: 26 }} />,
-        onClick: pauseTimer,
-      }
-      : isFinished
-        ? resetButton
-          ? {
-            icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
-            onClick: (e) => {
-              resetTimer(e)
-              runTimer(e)
-            },
-          }
-          : {
-            icon: <RedoOutlined style={{ fontSize: 26 }} />,
-            onClick: resetTimer,
-          }
-        : {
-          icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
-          onClick: runTimer,
-        }
-  }, [ isRunning, isFinished, resetButton ])
+    if (isFunc(onPause)) onPause(newTimeLeftRef.current)
+    if (isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
+  }
 
   const notify = () => {
     navigator.serviceWorker.ready.then(async (registration) => {
@@ -164,7 +127,7 @@ const Timer: FC<ITimer> = ({
   }
 
   useEffect(() => {
-    if (duration !== timeArrayToMiliseconds(value)) {
+    if (duration !== timeArrayToMilliseconds(value)) {
       valueRef.current = initialValue
       newTimeLeftRef.current = duration
       prevRafMsRef.current = 0
@@ -194,7 +157,7 @@ const Timer: FC<ITimer> = ({
     msLeftFromPrevRafRef,
     onChange,
     rafIdRef,
-  }), [ isRunning, isPaused, msOn ])
+  }), [ isRunning, isPaused, isFinished, duration, msOn ])
 
   useEffect(() => {
     if (!isNotifiedRef.current && isFinished && permitted && navigator.serviceWorker) {
@@ -204,20 +167,24 @@ const Timer: FC<ITimer> = ({
   }, [ isFinished, permitted ])
 
   return (
-    <TimerContainer {...containerProps} $isFinished={isFinished}>
-      <span style={{ marginRight: 4 }} {...timeElementProps}>{getFinalValue(value, msOn, hoursOn, initialValue)}</span>
-      <Button type="text" size="middle" {...buttonProps} {...buttonAttributes} />
-      {resetButton && (
-        <Button
-          type="text"
-          size="middle"
-          disabled={duration === timeArrayToSeconds(valueRef.current) * 1000}
-          icon={<RedoOutlined style={{ fontSize: 26 }} />}
-          {...resetButtonProps}
-          onClick={resetTimer}
-        />
-      )}
-    </TimerContainer>
+    <TimerView
+      onRunTimer={handleRunTimer}
+      onPause={handlePauseTimer}
+      onReset={handleResetTimer}
+      isRunning={isRunning}
+      isPaused={isPaused}
+      isFinished={isFinished}
+      initialValue={initialValue}
+      value={value}
+      duration={duration}
+      msOn={msOn}
+      hoursOn={hoursOn}
+      showResetButton={resetButton}
+      resetButtonProps={resetButtonProps}
+      buttonProps={buttonProps}
+      timeElementProps={timeElementProps}
+      {...rest}
+    />
   )
 }
 

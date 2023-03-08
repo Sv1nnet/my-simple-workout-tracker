@@ -12,10 +12,10 @@ import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotificat
 import { AddButton } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
-import { API_STATUS } from '@/src/app/constants/api_statuses'
-import { EndlessScrollableContainer } from '@/src/app/components'
+import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
+import respondAfterTimeoutInMs, { Timeout } from 'app/utils/respondAfterTimeoutInMs'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { EndlessScrollableContainer } from 'app/components'
 
 export type ExerciseResultsDetails = {
   weight?: number,
@@ -51,7 +51,7 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
     loadList: loadActivities,
   })
 
-  const handeDeleteActivities = ({ ids }) => deleteActivities({ ids })
+  const handleDeleteActivities = ({ ids }) => deleteActivities({ ids })
     .then((res: any) => {
       if (res.error) return res.error
       dispatch(updateList({
@@ -77,7 +77,7 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
     <EndlessScrollableContainer callOnMount onScroll={handleScroll}>
       <AddButton loading={loading && loadingRoute === CREATE_ROUTE} href={CREATE_ROUTE} text={add} />
       <ActivityList
-        deleteActivities={handeDeleteActivities}
+        deleteActivities={handleDeleteActivities}
         error={deleteError}
         isLoading={status === API_STATUS.LOADING}
         isDeleting={isDeleting}

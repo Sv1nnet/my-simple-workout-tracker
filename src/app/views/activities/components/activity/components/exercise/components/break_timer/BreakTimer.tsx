@@ -2,11 +2,13 @@ import { FC, useState } from 'react'
 import { Typography } from 'antd'
 import { timeToHms } from 'app/utils/time'
 import { Timer } from 'app/components'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 export interface IBreakTimer {
   isAllResultsFilled: boolean;
   isLastRestOver: boolean;
   exerciseBreak: number;
+  nextExerciseTitle: string;
   isEdit: boolean;
   workoutsDictionary: {
     input_labels: {
@@ -28,7 +30,8 @@ export interface IBreakTimer {
   };
 }
 
-const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak, workoutsDictionary, payloadDictionary, isLastRestOver }) => {
+const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak, nextExerciseTitle, workoutsDictionary, payloadDictionary, isLastRestOver }) => {
+  const { timer } = useIntlContext().intl.pages.activities
   const [ isBreakOver, setIsBreakOver ] = useState(false)
   const [ isBreakTimerVisible, setIsBreakTimerVisible ] = useState(!isEdit)
 
@@ -49,6 +52,12 @@ const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak
       {isBreakTimerVisible && (isAllResultsFilled || isLastRestOver) && (
         <Timer
           resetButton
+          notificationTitle={timer.break.title}
+          notificationOptions={{
+            tag: 'break_timer',
+            body: nextExerciseTitle ? `${timer.break.message} ${nextExerciseTitle}.` : timer.break.workout_is_over,
+            renotify: true,
+          }}
           duration={exerciseBreak * 1000}
           onTimeOver={handleBreakOver}
           onReset={handleBreakReset}

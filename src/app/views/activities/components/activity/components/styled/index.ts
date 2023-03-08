@@ -75,3 +75,14 @@ export const WorkoutLabelContainer = styled.div`
     text-align: right;
   }
 `
+
+export const StopwatchContainer = styled.div`
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translate(-50%);
+
+  & .activity-timer {
+    background-color: white;
+  }
+`

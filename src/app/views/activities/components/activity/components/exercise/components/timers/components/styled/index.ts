@@ -16,6 +16,7 @@ export const SideLabel = styled(Typography.Paragraph)`
 
 export const EachSideContainer = styled.div`
   margin-left: ${({ $right }) => $right ? '10px' : ''};
+  margin-right: ${({ $right }) => !$right ? '15px' : ''};
 
   ${SideLabel} {
     margin-bottom: 0;

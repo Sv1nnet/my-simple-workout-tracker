@@ -10,6 +10,8 @@ import VirtualList from './virtual_list/VirtualList'
 import ChangeLangPanel from './change_lang_panel/ChangeLangPanel'
 import ErrorBoundary from './error_boundary/ErrorBoundary'
 import Timer from './timer/Timer'
+import Stopwatch from './stopwatch/Stopwatch'
+import TimerView from './timer_view/TimerView'
 import EndlessScrollableContainer from './endless_scrollable_container/EndlessScrollableContainer'
 import {
   FormActionButtonsContainer,
@@ -30,6 +32,8 @@ export {
   VirtualList,
   ChangeLangPanel,
   ErrorBoundary,
+  Stopwatch,
   Timer,
+  TimerView,
   EndlessScrollableContainer,
 }

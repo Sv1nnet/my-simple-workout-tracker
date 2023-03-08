@@ -1,5 +1,5 @@
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { HisotryResult, Round as TRound } from '@/src/app/store/slices/activity/types'
+import { HistoryResult, Round as TRound } from '@/src/app/store/slices/activity/types'
 import { ExerciseType } from '@/src/app/store/slices/exercise/types'
 import React, { FC } from 'react'
 import { getComparator } from 'app/views/activities/components/activity/utils'
@@ -13,7 +13,7 @@ export interface IRounds {
   isFormItemDisabled: boolean;
   isLoading: boolean;
   form;
-  history: HisotryResult;
+  history: HistoryResult;
   rounds: TRound[];
   hours: boolean;
   exerciseIndex: number;

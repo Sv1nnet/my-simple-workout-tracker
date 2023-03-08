@@ -3,7 +3,7 @@ import { colors } from '../../../chart/Chart'
 import { LegendItem, PreviousLoader, SideNumberInput, SideTimePicker, StyledTd, StyledTimePicker } from '../styled'
 import Input from '@/src/app/components/input'
 import PreviousRoundsHistory from '../../../previous_rounds_history/PreviousRoundsHistory'
-import { ActivityForm, HisotryResult } from '@/src/app/store/slices/activity/types'
+import { ActivityForm, HistoryResult } from '@/src/app/store/slices/activity/types'
 import dayjs from 'dayjs'
 
 export interface IRound {
@@ -16,7 +16,7 @@ export interface IRound {
     previous_loading: string,
   };
   isLoading: boolean;
-  history: HisotryResult,
+  history: HistoryResult,
   form: FormInstance<ActivityForm<dayjs.Dayjs>>,
   exerciseIndex: number;
   hours: boolean;
@@ -61,10 +61,22 @@ const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, 
             ? (
               <>
                 <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'right' ]} noStyle>
-                  <SideNumberInput disabled={isFormItemDisabled} dataSide="right" onBlur={handleRepeatsChange} roundText={`${sideLabels.right.short}: `} />
+                  <SideNumberInput
+                    autoComplete="off"
+                    disabled={isFormItemDisabled}
+                    dataSide="right"
+                    onBlur={handleRepeatsChange}
+                    roundText={`${sideLabels.right.short}: `}
+                  />
                 </Form.Item>
                 <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'left' ]} noStyle>
-                  <SideNumberInput disabled={isFormItemDisabled} dataSide="left" onBlur={handleRepeatsChange} roundText={`${sideLabels.left.short}: `} />
+                  <SideNumberInput
+                    autoComplete="off"
+                    disabled={isFormItemDisabled}
+                    dataSide="left"
+                    onBlur={handleRepeatsChange}
+                    roundText={`${sideLabels.left.short}: `}
+                  />
                 </Form.Item>
               </>
             )
@@ -76,6 +88,7 @@ const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, 
                   style={{ textAlign: 'center' }}
                   onBlur={handleRepeatsChange}
                   size="small"
+                  autoComplete="off"
                 />
               </Form.Item>
             )
@@ -83,10 +96,20 @@ const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, 
             ? (
               <>
                 <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'right' ]} noStyle>
-                  <SideTimePicker disabled={isFormItemDisabled} roundText={`${sideLabels.right.short}: `} hours={hours} dataSide="right" />
+                  <SideTimePicker
+                    disabled={isFormItemDisabled}
+                    roundText={`${sideLabels.right.short}: `}
+                    hours={hours}
+                    dataSide="right"
+                  />
                 </Form.Item>
                 <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'left' ]} noStyle>
-                  <SideTimePicker disabled={isFormItemDisabled} roundText={`${sideLabels.left.short}: `} hours={hours} dataSide="left" />
+                  <SideTimePicker
+                    disabled={isFormItemDisabled}
+                    roundText={`${sideLabels.left.short}: `}
+                    hours={hours}
+                    dataSide="left"
+                  />
                 </Form.Item>
               </>
             )
