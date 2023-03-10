@@ -88,3 +88,8 @@ export type GetHistoryListSuccess = IResponse<HistoryServerPayload>
 export type GetHistoryListError = IResponse<null>
 
 export type ActivityError = IResponse
+
+export type SelectedRoundPayload = {
+  index: number | string | null,
+  chartId: string,
+}

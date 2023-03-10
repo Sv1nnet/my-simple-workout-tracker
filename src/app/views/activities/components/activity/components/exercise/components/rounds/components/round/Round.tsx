@@ -1,5 +1,5 @@
 import { Form, FormInstance } from 'antd'
-import { colors } from '../../../chart/Chart'
+import { colors } from '../../../chart/utils'
 import { LegendItem, PreviousLoader, SideNumberInput, SideTimePicker, StyledTd, StyledTimePicker } from '../styled'
 import Input from '@/src/app/components/input'
 import PreviousRoundsHistory from '../../../previous_rounds_history/PreviousRoundsHistory'
@@ -32,9 +32,26 @@ export interface IRound {
       short: string,
     },
   };
+  onResultClick: Function;
 }
 
-const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, isLoading, history, form, exerciseIndex, hours, round, eachSide, isTimeType, historyDisplayMode, sideLabels }) => {
+const Round = ({
+  comparator,
+  onResultClick,
+  totalRounds,
+  isFormItemDisabled,
+  loaderDictionary,
+  isLoading,
+  history,
+  form,
+  exerciseIndex,
+  hours,
+  round,
+  eachSide,
+  isTimeType,
+  historyDisplayMode,
+  sideLabels,
+}) => {
   const handleRepeatsChange = (value, { target }) => {
     const results = [ ...form.getFieldValue('results') ]
 
@@ -44,10 +61,12 @@ const Round = ({ comparator, totalRounds, isFormItemDisabled, loaderDictionary, 
     form.setFieldsValue({ results })
   }
 
+  const isChartMode = historyDisplayMode === 'chart'
+
   return (
     <tr>
-      <StyledTd>
-        {historyDisplayMode === 'chart'
+      <StyledTd data-index={round} onClick={isChartMode ? onResultClick : undefined}>
+        {isChartMode
           ? (
             <LegendItem $color={colors[round]}>
               <span>{round + 1}</span>

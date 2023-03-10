@@ -2,7 +2,7 @@ import { ApiStatus, API_STATUS } from '@/src/app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { activityApi } from './api'
-import { ActivityListItem, ActivityListResponseSuccess } from './types'
+import { ActivityListItem, ActivityListResponseSuccess, SelectedRoundPayload } from './types'
 
 export interface IActivityState {
   list: {
@@ -13,6 +13,11 @@ export interface IActivityState {
   single: {
     data: ActivityListItem;
     status: ApiStatus;
+  }
+  charts: {
+    [key: string]: null | {
+      selectedRoundIndex: null | string | number;
+    };
   }
 }
 
@@ -26,6 +31,7 @@ const initialState: IActivityState = {
     data: null,
     status: API_STATUS.INITIAL,
   },
+  charts: {},
 }
 
 export const activitySlice = createSlice({
@@ -36,6 +42,11 @@ export const activitySlice = createSlice({
       state.list.total = action.payload.total
       state.list.data = action.payload.list
       state.list.status = API_STATUS.LOADED
+    },
+    setSelectedRound: (state, { payload }: PayloadAction<SelectedRoundPayload>) => {
+      state.charts[payload.chartId] = {
+        selectedRoundIndex: payload.index,
+      }
     },
   },
   extraReducers: (builder) => {
@@ -63,8 +74,9 @@ export const activitySlice = createSlice({
   },
 })
 
-export const { updateList } = activitySlice.actions
+export const { updateList, setSelectedRound } = activitySlice.actions
 
 export const selectList = (state: AppState) => state.activity.list
+export const selectSelectedRoundIndex = (chartId: string) => (state: AppState) => state.activity.charts[chartId]?.selectedRoundIndex
 
 export default activitySlice.reducer

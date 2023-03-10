@@ -9,10 +9,13 @@ import {
   TIME_WITH_HOUR_CELL_WIDTH,
   EACH_SIDE_TIME_WITHOUT_HOUR_CELL_WIDTH,
   EACH_SIDE_TIME_WITH_HOUR_CELL_WIDTH,
-} from 'app/views/activities/components/activity/components/exercise/components/chart/Chart'
+} from 'app/views/activities/components/activity/components/exercise/components/chart/utils'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { getComparator } from 'app/views/activities/components/activity/utils'
 import { Container, HistoryLoader, ItemContainer, ListContainer } from './compoents/styled'
+import { useAppSelector } from '@/src/app/hooks'
+import { selectSelectedRoundIndex, setSelectedRound } from '@/src/app/store/slices/activity'
+import { useDispatch } from 'react-redux'
 
 const RESULT_HEIGHT = 22
 const EACH_SIDE_RESULT_HEIGHT = 36
@@ -21,7 +24,7 @@ const LIST_OFFSET = 130
 
 export const HEADER_HEIGHT = 23
 
-const History = ({ loaderDictionary, isLoading, exerciseRef, history: _history, rounds, total, mode, type, hours, eachSide, isTimeType }) => {
+const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, history: _history, rounds, total, mode, type, hours, eachSide, isTimeType }) => {
   const [ width, setWidth ] = useState(() => exerciseRef.current ? exerciseRef.current - LIST_OFFSET : window.innerWidth - LIST_OFFSET)
   const { side_labels } = useIntlContext().intl.pages.activities
 
@@ -42,6 +45,10 @@ const History = ({ loaderDictionary, isLoading, exerciseRef, history: _history, 
 
   const ListComponent = useMemo(() => React.forwardRef(
     function _ListComponent(props, ref) {
+      const dispatch = useDispatch()
+      const selectedRoundIndex = useAppSelector(selectSelectedRoundIndex(exerciseId))
+      const setSelectedRoundIndex = (index: string) => dispatch(setSelectedRound({ chartId: exerciseId, index }))
+
       return (
         <ListContainer
           {...props}
@@ -49,6 +56,8 @@ const History = ({ loaderDictionary, isLoading, exerciseRef, history: _history, 
           data={history}
           type={type}
           hours={hours}
+          opacityIndex={selectedRoundIndex}
+          setSelectedRoundIndex={setSelectedRoundIndex}
           height={listHeight > MIN_LIST_HEIGHT ? listHeight : MIN_LIST_HEIGHT}
           showChart={mode === 'chart'}
           eachSide={eachSide}

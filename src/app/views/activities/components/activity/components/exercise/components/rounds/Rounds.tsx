@@ -21,9 +21,10 @@ export interface IRounds {
   historyDisplayMode: 'table' | 'chart';
   type: ExerciseType;
   isTimeType: boolean;
+  onResultClick: Function;
 }
 
-const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, form, history, rounds, hours, exerciseIndex, eachSide, historyDisplayMode, type, isTimeType }) => {
+const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, form, history, onResultClick, rounds, hours, exerciseIndex, eachSide, historyDisplayMode, type, isTimeType }) => {
   const { side_labels, rounds_section_headers } = useIntlContext().intl.pages.activities
 
   const comparator = getComparator(type)
@@ -40,6 +41,7 @@ const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, 
       <tbody>
         {rounds.map((_, i) => (
           <Round
+            onResultClick={onResultClick}
             isFormItemDisabled={isFormItemDisabled}
             loaderDictionary={loaderDictionary}
             sideLabels={side_labels}

@@ -2,6 +2,7 @@ import isFunc from 'app/utils/isFunc'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { MS_TO_SET_STATE_WHEN_MS_ON } from 'app/components/timer_view/utils'
 
+const SECOND = 1000
 
 export const runCountingUp = ({
   msOn,
@@ -15,7 +16,7 @@ export const runCountingUp = ({
   onChange,
   timeoutIdRef,
 }) => {
-  const msToSetState = msOn ? MS_TO_SET_STATE_WHEN_MS_ON : 1000
+  const msToSetState = msOn ? MS_TO_SET_STATE_WHEN_MS_ON : SECOND
 
   let _isRunning = isRunning
   let _isPaused = isPaused
@@ -33,7 +34,7 @@ export const runCountingUp = ({
       diffRef.current += now - prevTimeoutMsRef.current
       
       if (isDocumentVisible) {
-        timePassedRef.current += Math.ceil((now - prevTimeoutMsRef.current) * 1000) / 1000
+        timePassedRef.current += Math.ceil((now - prevTimeoutMsRef.current) * SECOND) / SECOND
         prevTimeoutMsRef.current = now
 
         if (diffRef.current >= msToSetState) {

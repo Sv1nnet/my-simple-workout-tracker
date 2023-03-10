@@ -21,6 +21,8 @@ import {
 } from './components/styled'
 import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from './utils'
 import { WorkoutListExercise } from 'app/store/slices/workout/types'
+import { useAppDispatch, useAppSelector } from '@/src/app/hooks'
+import { selectSelectedRoundIndex, setSelectedRound } from '@/src/app/store/slices/activity'
 
 const modeOptions = [
   { label: <HistoryButtonIcon src="/icons/chart.svg" alt="chart" />, value: 'chart' },
@@ -61,7 +63,11 @@ const Exercise: FC<IExerciseProps> = ({
   round_break,
   rounds,
   exerciseIndex,
+  id,
 }) => {
+  const dispatch = useAppDispatch()
+  const selectedRoundIndex = useAppSelector(selectSelectedRoundIndex(id as string))
+
   const [ isLastRestOver, setIsLastRestOver ] = useState(false)
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
   const { exercises, activities, workouts } = useIntlContext().intl.pages
@@ -79,6 +85,11 @@ const Exercise: FC<IExerciseProps> = ({
   }, [ isHistoryLoading, historyByDates ])
 
   const handleHistoryDisplayType = ({ target: { value } }) => setHistoryDisplayMode(value)
+
+  const handleResultClick = (e: React.BaseSyntheticEvent<MouseEvent>) => {
+    const index = e.currentTarget.dataset.index
+    dispatch(setSelectedRound({ chartId: id as string, index: index === selectedRoundIndex ? null : index }))
+  }
 
   let { repeats: _repeats, time: _time, weight, mass_unit } = exercise
 
@@ -148,6 +159,7 @@ const Exercise: FC<IExerciseProps> = ({
           src={exercise.image?.url ? `${routes.base}${exercise.image.url}` : itemImagePlaceholder}
         />
         <History
+          exerciseId={id}
           isLoading={isHistoryLoading || !historyByDates}
           total={total}
           exerciseRef={$exercise}
@@ -164,6 +176,7 @@ const Exercise: FC<IExerciseProps> = ({
       <Rounds
         isTimeType={isTimeType}
         hours={exercise.hours}
+        onResultClick={handleResultClick}
         isFormItemDisabled={isFormItemDisabled}
         historyDisplayMode={historyDisplayMode}
         eachSide={exercise.each_side}

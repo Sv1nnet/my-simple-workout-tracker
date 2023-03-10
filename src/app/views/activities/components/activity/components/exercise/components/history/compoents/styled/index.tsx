@@ -51,6 +51,8 @@ export const ListContainer = React.memo(React.forwardRef<{}, any>(function ListC
   type,
   height,
   isTimeType,
+  onResultClick,
+  opacityIndex,
   ...props
 }, ref) {
   return (
@@ -60,11 +62,13 @@ export const ListContainer = React.memo(React.forwardRef<{}, any>(function ListC
         <Chart
           {...props}
           type={type}
+          opacityIndex={opacityIndex}
           isTimeType={isTimeType}
           height={height}
           hours={hours}
           style={style}
           data={data}
+          onResultClick={onResultClick}
           startIndex={startIndex}
           endIndex={endIndex}
           eachSide={eachSide}

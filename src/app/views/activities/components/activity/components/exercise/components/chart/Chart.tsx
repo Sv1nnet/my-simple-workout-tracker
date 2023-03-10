@@ -1,8 +1,27 @@
 import styled from 'styled-components'
 import * as d3 from 'd3'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { ResultTexts, ResultDots } from './components'
 import { HEADER_HEIGHT } from '../history/History'
+import isFunc from '@/src/app/utils/isFunc'
+import {
+  COUNT_CELL_WIDTH, COUNT_IN_CELL_OFFSET,
+  DEFAULT_MAX_HISTORY_VALUE, DEFAULT_OPACITY,
+  EACH_SIDE_COUNT_CELL_WIDTH, EACH_SIDE_COUNT_IN_CELL_OFFSET,
+  EACH_SIDE_TIME_WITHOUT_HOUR_CELL_WIDTH,
+  EACH_SIDE_TIME_WITHOUT_HOUR_IN_CELL_OFFSET,
+  EACH_SIDE_TIME_WITH_HOUR_CELL_WIDTH,
+  EACH_SIDE_TIME_WITH_HOUR_IN_CELL_OFFSET,
+  TEXT_FONT_SIZE,
+  TEXT_GAP_BETWEEN_LOWEST_DOT_POINT_AND_BOTTOM_OF_CHART,
+  TIME_WITHOUT_HOUR_CELL_WIDTH,
+  TIME_WITHOUT_HOUR_IN_CELL_OFFSET,
+  TIME_WITH_HOUR_CELL_WIDTH,
+  TIME_WITH_HOUR_IN_CELL_OFFSET,
+  Lines,
+  Dots,
+  Texts,
+} from './utils'
+
 const { curveMonotoneX } = d3
 
 const SVGChart = styled.svg`
@@ -11,159 +30,10 @@ const SVGChart = styled.svg`
   top: 23px;
 `
 
-export const COUNT_CELL_WIDTH = 50
-export const COUNT_IN_CELL_OFFSET = COUNT_CELL_WIDTH / 2
-export const EACH_SIDE_COUNT_CELL_WIDTH = 65
-export const EACH_SIDE_COUNT_IN_CELL_OFFSET = EACH_SIDE_COUNT_CELL_WIDTH / 2
-export const TIME_WITH_HOUR_CELL_WIDTH = 85
-export const TIME_WITH_HOUR_IN_CELL_OFFSET = TIME_WITH_HOUR_CELL_WIDTH / 2
-export const EACH_SIDE_TIME_WITH_HOUR_CELL_WIDTH = 105
-export const EACH_SIDE_TIME_WITH_HOUR_IN_CELL_OFFSET = EACH_SIDE_TIME_WITH_HOUR_CELL_WIDTH / 2
-export const EACH_SIDE_TIME_WITHOUT_HOUR_CELL_WIDTH = 85
-export const EACH_SIDE_TIME_WITHOUT_HOUR_IN_CELL_OFFSET = EACH_SIDE_TIME_WITHOUT_HOUR_CELL_WIDTH / 2
-export const TIME_WITHOUT_HOUR_CELL_WIDTH = 65
-export const TIME_WITHOUT_HOUR_IN_CELL_OFFSET = TIME_WITHOUT_HOUR_CELL_WIDTH / 2
 
-export const colors = [
-  {
-    line: '#5cbb5c',
-    text: 'green',
-  },
-  {
-    line: '#ff6565',
-    text: 'red',
-  },
-  {
-    line: '#7c7cff',
-    text: 'blue',
-  },
-  {
-    line: '#ff4bff',
-    text: 'purple',
-  },
-  {
-    line: '#abff00',
-    text: '#8acd00',
-  },
-  {
-    line: '#a5c5ff',
-    text: '#2d78ff',
-  },
-  {
-    line: '#ffb988',
-    text: 'chocolate',
-  },
-  {
-    line: '#41fcff',
-    text: 'darkturquoise',
-  },
-  {
-    line: '#c95f7b',
-    text: '#d00037',
-  },
-  {
-    line: '#7d7d7d',
-    text: 'black',
-  },
-]
-
-const DEFAULT_OPACITY = 1
-const TEXT_GAP_BETWEEN_LOWEST_DOT_POINT_AND_BOTTOM_OF_CHART = 6.5
-// If all the history values === 0 then the max value is 0
-// and we need to set max any value (100 as exemple) to correctly
-// display all zero values. Otherwise it would set chart height as 0
-// and display all the values on the top of the chart and user would not see
-// any value
-const DEFAULT_MAX_HISTORY_VALUE = 100
-export const TEXT_FONT_SIZE = 14
-
-const renderLine = ({ dataToRender, handleFocus, opacities, eachSide, line, left, right }) => eachSide
-  ? dataToRender.map((_, i) => (
-    <React.Fragment key={'path_' + i}>
-      <path
-        data-index={i}
-        onClick={handleFocus}
-        fill="none"
-        opacity={opacities[i]}
-        stroke={colors[i].line}
-        strokeWidth={2}
-        d={line(right[i])} />
-      <path
-        data-index={i}
-        onClick={handleFocus}
-        fill="none"
-        opacity={opacities[i]}
-        stroke={colors[i].line}
-        strokeWidth={2}
-        d={line(left[i])}
-      />
-    </React.Fragment>
-  ))
-  : dataToRender.map((d, i) => (
-    <path
-      key={'path_' + i}
-      data-index={i}
-      onClick={handleFocus}
-      fill="none"
-      opacity={opacities[i]}
-      stroke={colors[i].line}
-      strokeWidth={2}
-      d={line(d)}
-    />
-  ))
-
-const renderDots = ({ dataToRender, handleFocus, opacities, eachSide, xScale, yScale, left, right }) => eachSide
-  ? (
-    <React.Fragment>
-      <ResultDots
-        dataToRender={right}
-        xScale={xScale}
-        yScale={yScale}
-        colors={colors}
-        onFocus={handleFocus}
-        opacities={opacities}
-      />
-      <ResultDots
-        dataToRender={left}
-        xScale={xScale}
-        yScale={yScale}
-        colors={colors}
-        onFocus={handleFocus}
-        opacities={opacities}
-      />
-    </React.Fragment>
-  )
-  : (
-    <ResultDots
-      dataToRender={dataToRender}
-      xScale={xScale}
-      yScale={yScale}
-      colors={colors}
-      onFocus={handleFocus}
-      opacities={opacities}
-    />
-  )
-
-const renderTexts = ({ dataToRender, handleFocus, opacities, xScale, yScale, minY, hours, right, left, sideLabels, isTimeType }) => (
-  <ResultTexts
-    isTimeType={isTimeType}
-    hours={hours}
-    minY={minY}
-    dataToRender={dataToRender}
-    right={right}
-    left={left}
-    xScale={xScale}
-    yScale={yScale}
-    colors={colors}
-    onFocus={handleFocus}
-    opacities={opacities}
-    sideLabels={sideLabels}
-  />
-) 
-
-const Chart = ({ style, data, startIndex, endIndex, height, type, hours, eachSide, sideLabels, isTimeType, ...props }) => {
+const Chart = ({ style, data, startIndex, endIndex, height, type, hours, eachSide, sideLabels, isTimeType, onResultClick, opacityIndex, setSelectedRoundIndex, ...props }) => {
   const [ opacities, setOpacities ] = useState(() => new Array((data?.[0]?.results?.length ?? 0)).fill(DEFAULT_OPACITY))
-  const [ fullOpacity, setFullOpacity ] = useState(null)
+  const [ fullOpacityIndex, setFullOpacityIndex ] = useState<string | null>(opacityIndex ?? null)
 
   const prevData = useRef(data)
 
@@ -237,20 +107,42 @@ const Chart = ({ style, data, startIndex, endIndex, height, type, hours, eachSid
     ]
     : [ null, null ], [ eachSide, dataToRender ])
 
-  const handleFocus = (e) => {
-    setOpacities(() => {
-      const turnAllOpacities = fullOpacity === e.target.dataset.index
-      setFullOpacity(turnAllOpacities ? null : e.target.dataset.index)
+  const getResultsOpacity = (event) => {
+    let turnAllOpacities = false
+    let index = event
 
-      if (turnAllOpacities) {
-        const _opacities = opacities.map(() => DEFAULT_OPACITY)
-        return _opacities
+    if (typeof event !== 'string' && event !== null) {
+      index = event.target.dataset.index
+    }
+
+    turnAllOpacities = fullOpacityIndex === index || index === null
+
+    const _fullOpacityIndex = turnAllOpacities ? null : index
+    setFullOpacityIndex(_fullOpacityIndex)
+
+    if (turnAllOpacities) {
+      const _opacities = opacities.map(() => DEFAULT_OPACITY)
+
+      return {
+        opacities: _opacities,
+        fullOpacityIndex: _fullOpacityIndex,
       }
+    }
 
-      const _opacities = opacities.map(() => .1)
-      _opacities[e.target.dataset.index] = DEFAULT_OPACITY
-      return _opacities
-    })
+    const _opacities = opacities.map(() => .1)
+    _opacities[index] = DEFAULT_OPACITY
+
+    return {
+      opacities: _opacities,
+      fullOpacityIndex: _fullOpacityIndex,
+    }
+  }
+
+  const handleFocus = (e) => {
+    if (isFunc(onResultClick)) onResultClick(e)
+    const result = getResultsOpacity(e)
+    setSelectedRoundIndex(result.fullOpacityIndex)
+    setOpacities(result.opacities)
   }
 
   useEffect(() => {
@@ -259,13 +151,50 @@ const Chart = ({ style, data, startIndex, endIndex, height, type, hours, eachSid
     }
     prevData.current = data
   }, [ data ])
+
+  useEffect(() => {
+    if (opacityIndex !== undefined && opacityIndex !== fullOpacityIndex) {
+      setOpacities(getResultsOpacity(opacityIndex).opacities)
+    }
+  }, [ opacityIndex ])
+
+  useEffect(() => () => { setSelectedRoundIndex(null) }, [])
  
   return (
     <SVGChart xmlns="http://www.w3.org/2000/svg" key="svg-container" {...props} width={style.width} height={`calc(100% - ${HEADER_HEIGHT}px)`} viewBox={`0 0 ${style.width} ${height - HEADER_HEIGHT}`}>
       {svgDefs}
-      {renderLine({ dataToRender, handleFocus, opacities, eachSide, line, left, right })}
-      {renderDots({ dataToRender, handleFocus, opacities, eachSide, xScale, yScale, left, right })}
-      {renderTexts({ dataToRender, handleFocus, opacities, xScale, yScale, minY, hours, isTimeType, right, left, sideLabels })}
+      <Lines
+        line={line}
+        eachSide={eachSide}
+        left={left}
+        right={right}
+        dataToRender={dataToRender}
+        onFocus={handleFocus}
+        opacities={opacities}
+      />
+      <Dots
+        eachSide={eachSide}
+        left={left}
+        right={right}
+        dataToRender={dataToRender}
+        xScale={xScale}
+        yScale={yScale}
+        onFocus={handleFocus}
+        opacities={opacities}
+      />
+      <Texts
+        isTimeType={isTimeType}
+        hours={hours}
+        minY={minY}
+        dataToRender={dataToRender}
+        right={right}
+        left={left}
+        xScale={xScale}
+        yScale={yScale}
+        onFocus={handleFocus}
+        opacities={opacities}
+        sideLabels={sideLabels}
+      />
     </SVGChart>
   )
 }
