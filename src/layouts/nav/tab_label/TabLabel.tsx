@@ -2,11 +2,12 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Spin } from 'antd'
 import { FC, HTMLProps } from 'react'
+import { theme } from '@/src/styles/vars'
 
 const LoaderContainer = styled.div`
   position: absolute;
   left: 0;
-  top: 0;
+  top: 2px;
   bottom: 0;
   width: 100%;
   background-color: rgba(255, 255, 255, .8);
@@ -25,6 +26,7 @@ const Text = styled.div`
   align-items: center;
   flex-grow: 1;
   display: grid;
+  border-top: 2px solid ${theme.borderColorBase};
 `
 
 export interface ITabLabel extends Omit<HTMLProps<HTMLSpanElement>, 'onClick'> {

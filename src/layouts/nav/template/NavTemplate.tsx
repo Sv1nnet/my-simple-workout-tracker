@@ -15,8 +15,10 @@ const StyledTabs = styled(Tabs)`
   .ant-tabs-nav {
     margin-bottom: 0;
   }
+
   .ant-tabs-nav-list {
     width: 100%;
+
     .ant-tabs-tab {
       width: 100%;
       height: 59px;
@@ -29,6 +31,11 @@ const StyledTabs = styled(Tabs)`
         width: 100%;
         height: 100%;
       }
+    }
+
+    .ant-tabs-ink-bar.ant-tabs-ink-bar-animated {
+      top: 0;
+      bottom: initial;
     }
   }
 `
@@ -92,7 +99,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const [ ,, subRoute ] = router.route.split('/')
 
   return (
-    <StyledTabs tabBarGutter={0} size="large" activeKey={!subRoute ? activeTab : ''} centered>
+    <StyledTabs tabBarGutter={0} size="large" activeKey={!subRoute ? activeTab : ''} tabPosition="bottom" centered>
       <TabPane
         tab={(
           <TabLabel

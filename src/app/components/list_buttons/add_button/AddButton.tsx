@@ -7,7 +7,7 @@ import { Spin } from 'antd'
 
 const StyledButton = styled(Button)`
   display: block;
-  margin: 2px auto;
+  margin: 5px auto 0;
   width: calc(100% - 10px);
 
   & > span {

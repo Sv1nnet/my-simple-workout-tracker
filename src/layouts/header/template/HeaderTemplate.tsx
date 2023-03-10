@@ -76,8 +76,8 @@ const HeaderTemplateWithNav: FC<{ route: TabRoutes }> = ({ children, route }) =>
 
   return (
     <Header onBack={router.back} title={_title}>
-      <NavTemplate activeTab={_title} />
       {children}
+      <NavTemplate activeTab={_title} />
     </Header>
   )
 }
