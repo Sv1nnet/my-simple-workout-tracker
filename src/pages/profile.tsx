@@ -10,9 +10,7 @@ import { profileApi } from 'store/slices/profile/api'
 import { selectCredentials } from 'store/slices/profile'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ChangeLangPanel } from 'app/components'
 import { configApi } from 'store/slices/config/api'
-import { Lang } from 'store/slices/config/types'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -22,20 +20,12 @@ const FormWrapper = styled(Form)`
   padding: 12px;
 `
 
-const StyledChangeLangPanel = styled(ChangeLangPanel)`
-  position: static;
-  justify-content: center;
-  margin-top: 15px;
-  margin-bottom: 5px;
-`
-
 const Profile = () => {
   const { intl, lang } = useIntlContext()
   const prevLangRef = useRef(lang)
   const credentials = useAppSelector(selectCredentials)
   const [ form ] = useForm()
 
-  const [ updateConfig ] = configApi.useLazyUpdateQuery()
   const [ updateProfile, { isLoading: isUpdatingProfile, isError: isUpdateProfileError, error: updateProfileError, isSuccess: isUpdateProfileSuccess } ] = profileApi.useLazyUpdateQuery()
 
   const { isLoading: isProfileLoading, isFetching: isFetchingProfile } = profileApi.useGetQuery()
@@ -61,10 +51,6 @@ const Profile = () => {
     } catch (err) {
       console.warn('Changing profile info error', err.message)
     }
-  }
-
-  const updateLang = (_lang: Lang) => {
-    updateConfig({ config: { lang: _lang } })
   }
 
   useEffect(() => {
@@ -184,8 +170,6 @@ const Profile = () => {
           {intl.pages.profile.save_button}
         </StyledButton>
       </Form.Item>
-
-      <StyledChangeLangPanel onChange={updateLang} />
     </FormWrapper>
   )
 }

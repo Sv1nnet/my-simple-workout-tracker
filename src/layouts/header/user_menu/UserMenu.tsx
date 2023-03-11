@@ -13,6 +13,7 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const StyledAvatar = styled(Avatar)`
   position: absolute;
+  top: -4px;
   right: 3px;
 `
 
