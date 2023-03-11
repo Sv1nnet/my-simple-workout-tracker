@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import Image from 'next/image'
 import { Select } from 'antd'
-import { selectLang } from 'store/slices/config'
-import { useAppSelector } from 'app/hooks'
+import { changeLang, selectLang } from 'store/slices/config'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import UserMenu from 'layouts/header/user_menu/UserMenu'
 import { configApi } from '@/src/app/store/slices/config/api'
 import { Lang } from '@/src/app/store/slices/config/types'
@@ -42,9 +42,11 @@ const OptionsContainer = styled.div`
 
 const Content = () => {
   const lang = useAppSelector(selectLang)
+  const dispatch = useAppDispatch()
   const [ updateConfig ] = configApi.useLazyUpdateQuery()
 
   const updateLang = (_lang: Lang) => {
+    dispatch(changeLang(_lang))
     updateConfig({ config: { lang: _lang } })
   }
 
