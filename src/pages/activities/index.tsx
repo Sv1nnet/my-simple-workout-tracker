@@ -65,8 +65,10 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
     if (activitiesInStore.length < total && e) {
       const { target } = e
       if (target.scrollHeight - (target.offsetHeight + target.scrollTop) <= 100 && !isFetching) {
-        setPage(page + 1)
-        loadActivities({ page: page + 1, byPage: 30 })
+        loadActivities({ page: page + 1, byPage: 30 }).unwrap().then((res) => {
+          setPage(page + 1)
+          return res
+        })
       }
     }
   }
