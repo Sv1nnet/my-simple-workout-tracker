@@ -36,6 +36,7 @@ export function makeStore() {
       profileApi.middleware,
       exerciseApi.middleware,
       workoutApi.middleware,
+      configApi.middleware,
     ),
   })
 }
