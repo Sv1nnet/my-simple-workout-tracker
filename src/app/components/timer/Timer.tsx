@@ -147,8 +147,6 @@ const Timer: FC<ITimer> = ({
     newTimeLeftRef,
     duration,
     isNotifiedRef,
-    onTimeOver,
-    notify,
     setIsRunning,
     setIsFinished,
     setValue,
@@ -160,8 +158,13 @@ const Timer: FC<ITimer> = ({
   }), [ isRunning, isPaused, isFinished, duration, msOn ])
 
   useEffect(() => {
-    if (!isNotifiedRef.current && isFinished && permitted && navigator.serviceWorker) {
-      if (isFunc(onTimeOver)) onTimeOver(duration)
+    if (isFinished && isFunc(onTimeOver)) {
+      onTimeOver(duration)
+    }
+  }, [ isFinished ])
+
+  useEffect(() => {
+    if (!isNotifiedRef.current && isFinished && permitted) {
       notify()
     }
   }, [ isFinished, permitted ])

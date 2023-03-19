@@ -61,7 +61,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     ? Object
       .entries(_history.data)
       .reduce((acc, [ exercise_id, results ]) => {
-        acc[exercise_id] = results.items.map(item => ({
+        acc[exercise_id] = (results as { items }).items.map(item => ({
           date: dayjs(item.date),
           results: item.results,
         }))

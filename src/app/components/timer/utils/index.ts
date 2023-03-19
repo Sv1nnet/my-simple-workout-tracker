@@ -12,8 +12,6 @@ export const runCountingDown = ({
   newTimeLeftRef,
   duration,
   isNotifiedRef,
-  onTimeOver,
-  notify,
   setIsRunning,
   setIsFinished,
   setValue,
@@ -43,9 +41,6 @@ export const runCountingDown = ({
     prevTimeoutTimestamp = now
 
     if (timeLeftInMs >= duration && !isNotifiedRef.current) {
-      if (isFunc(onTimeOver)) onTimeOver(duration)
-
-      notify()
       setIsRunning(false)
       setIsFinished(true)
       setValue(TIME_IS_OVER_VALUE)
