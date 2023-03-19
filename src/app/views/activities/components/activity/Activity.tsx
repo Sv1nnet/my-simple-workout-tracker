@@ -87,8 +87,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     if (isEdit && _initialValues === null) return {}
     
     let newInitialValues
-    if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current) {
-      try {
+    try {
+      if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current) {
         initFromCacheRef.current = false
   
         const workout = workoutList
@@ -137,49 +137,49 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             })
             : getResultsFromWorkoutList(workoutList, cachedFormValues.workout_id),
         }
-      } catch {
-        handleRestoreFromCacheError()
-        return {
-          _id: undefined,
-          workout_id: undefined,
+      } else if (!isEdit) {
+        newInitialValues = {
+          id: _initialValues._id,
           duration: 0,
-          date: undefined,
-          results: [],
+          date: (form.getFieldValue('date') as Dayjs) || dayjs(),
+          workout_id: selectedWorkout,
+          results: getResultsFromWorkoutList(workoutList, form.getFieldValue('workout_id')),
           description: '',
         }
+      } else {
+        newInitialValues = {
+          duration: 0,
+          ..._initialValues,
+          date: dayjs(_initialValues.date),
+          results: _initialValues.results.map(results => isExerciseTimeType(results.type)
+            ? {
+              ...results,
+              rounds: results.rounds.map((round: number | { right: number, left: number }) => (round !== null && typeof round === 'object')
+                ? { right: secondsToDayjs(round.right), left: secondsToDayjs(round.left) }
+                : secondsToDayjs(round as number)),
+            }
+            : results),
+        }
       }
-    } else if (!isEdit) {
-      newInitialValues = {
-        id: _initialValues._id,
+
+      if (isMounted()) setTimeout(() => form.setFieldsValue(newInitialValues))
+      if (newInitialValues.workout_id) {
+        setTimeout(() => setSelectedWorkout(newInitialValues.workout_id))
+        getHistory({ workoutId: newInitialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: newInitialValues.id })
+      }
+
+      return newInitialValues
+    } catch {
+      handleRestoreFromCacheError()
+      return {
+        _id: undefined,
+        workout_id: undefined,
         duration: 0,
-        date: (form.getFieldValue('date') as Dayjs) || dayjs(),
-        workout_id: selectedWorkout,
-        results: getResultsFromWorkoutList(workoutList, form.getFieldValue('workout_id')),
+        date: undefined,
+        results: [],
         description: '',
       }
-    } else {
-      newInitialValues = {
-        duration: 0,
-        ..._initialValues,
-        date: dayjs(_initialValues.date),
-        results: _initialValues.results.map(results => isExerciseTimeType(results.type)
-          ? {
-            ...results,
-            rounds: results.rounds.map((round: number | { right: number, left: number }) => (round !== null && typeof round === 'object')
-              ? { right: secondsToDayjs(round.right), left: secondsToDayjs(round.left) }
-              : secondsToDayjs(round as number)),
-          }
-          : results),
-      }
     }
-
-    if (isMounted()) setTimeout(() => form.setFieldsValue(newInitialValues))
-    if (newInitialValues.workout_id) {
-      setTimeout(() => setSelectedWorkout(newInitialValues.workout_id))
-      getHistory({ workoutId: newInitialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: newInitialValues.id })
-    }
-
-    return newInitialValues
   }, [ _initialValues, selectedWorkout, workoutList ])
 
   const handleCancelEditing = () => {
@@ -200,7 +200,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         type: details.type,
         rounds: isExerciseTimeType(details.type)
           ? rounds.map((round) => {
-            if (round === null) return 0
+            if (round === null || round === '') return 0
             return isDayjs(round)
               ? dayjsToSeconds(round)
               : {
@@ -209,7 +209,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
               }
           })
           : rounds.map((round) => {
-            if (round === null) return 0
+            if (round === null || round === '') return 0
             return typeof round === 'number'
               ? round
               : {
@@ -262,8 +262,16 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }
 
   const handleDurationChange = (ms: number) => {
+    cacheFormData([ 'duration' ], { ...form.getFieldsValue(), duration: ms })
+  }
+
+  const updateDurationInForm = (ms: number) => {
     form.setFieldsValue({ duration: ms })
-    cacheFormData([ 'duration' ], form.getFieldsValue())
+  }
+
+  const resetDuration = () => {
+    handleDurationChange(0)
+    updateDurationInForm(0)
   }
 
   useEffect(() => {
@@ -288,10 +296,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
   useEffect(() => {
     if (!workoutList.data.length) fetchWorkoutList()
-  }, [])
-
-  useEffect(() => {
     if (isEdit) form.setFieldsValue(initialValues)
+    return () => stopLoaderById('workout_list_loader')
   }, [])
 
   useEffect(() => {
@@ -301,8 +307,6 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       stopLoaderById('workout_list_loader')
     }
   }, [ workoutList.status ])
-
-  useEffect(() => () => stopLoaderById('workout_list_loader'), [])
 
   useEffect(() => {
     if (selectedWorkout) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
@@ -428,6 +432,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
               className="activity-timer"
               initialValue={initialValues.duration}
               msOn={false}
+              onPause={updateDurationInForm}
+              onReset={resetDuration}
               onChange={handleDurationChange}
             />
           </StopwatchContainer>

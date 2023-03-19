@@ -86,6 +86,7 @@ const Round = ({
                     dataSide="right"
                     onBlur={handleRepeatsChange}
                     roundText={`${sideLabels.right.short}: `}
+                    maxDigitsAfterPoint={3}
                   />
                 </Form.Item>
                 <Form.Item name={[ 'results', exerciseIndex, 'rounds', round, 'left' ]} noStyle>
@@ -95,6 +96,7 @@ const Round = ({
                     dataSide="left"
                     onBlur={handleRepeatsChange}
                     roundText={`${sideLabels.left.short}: `}
+                    maxDigitsAfterPoint={3}
                   />
                 </Form.Item>
               </>
@@ -108,6 +110,7 @@ const Round = ({
                   onBlur={handleRepeatsChange}
                   size="small"
                   autoComplete="off"
+                  maxDigitsAfterPoint={3}
                 />
               </Form.Item>
             )

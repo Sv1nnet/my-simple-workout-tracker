@@ -21,7 +21,7 @@ const PreviousItem: FC<IPreviousItem> = ({ comparator, curr, prev, isTimeType, h
   const color = comparator.neg(diff, 0) ? theme.errorColor : comparator.pos(diff, 0) ? theme.resultPositiveColor : theme.textColorSecondary
   const noDiff = Math.abs(diff) === 0
   const sign = diff > 0 ? '+' : '-'
-  diff = Math.abs(diff)
+  diff = Math.abs(Math.floor(diff * 1000) / 1000)
 
   return (
     <Container $mt={marginTop}>

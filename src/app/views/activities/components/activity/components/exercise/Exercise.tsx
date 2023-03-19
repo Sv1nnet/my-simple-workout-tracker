@@ -117,6 +117,11 @@ const Exercise: FC<IExerciseProps> = ({
   const handleTimeOver = () => setIsLastRestOver(isAllResultWithoutPenultimateFilled)
 
   const isRestTimersVisible = !!round_break && !isEdit && !isAllResultsFilled
+  const payloadText = [ repeats, time, weight ].filter(Boolean).map((item, i, arr) => (
+    <span key={item} style={{ whiteSpace: 'nowrap' }}>
+      {item}{`${arr[i + 1] !== undefined ? ' / ' : ''}`}
+    </span>
+  ))
 
   return (
     <div ref={$exercise} style={{ marginBottom: '10px' }}>
@@ -135,11 +140,7 @@ const Exercise: FC<IExerciseProps> = ({
         </div>
         <ResultTypeButtonsContainer>
           <Typography.Text>
-            {[ repeats, time, weight ].filter(Boolean).map((item, i, arr) => (
-              <span key={item} style={{ whiteSpace: 'nowrap' }}>
-                {item}{`${arr[i + 1] !== undefined ? ' / ' : ''}`}
-              </span>
-            )) || <span>&nbsp;</span>}
+            {payloadText.length > 0 ? payloadText : <span>&nbsp;</span>}
           </Typography.Text>
           <HistoryButtonsContainer>
             <StyledRadio
