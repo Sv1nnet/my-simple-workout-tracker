@@ -110,7 +110,21 @@ const NumberInput: FC<INumberInput> = ({
   const handleBlur = (e) => {
     let { value: v } = e.target
     if (v === '' || validate(v)) {
-      v = v ? parseFloat(formatToNumber(v)) : v
+      v = v && (cutEndingZeroes || cutLeadingZeroes) && !cutZeroes
+        ? formatToNumber(v, {
+          cutZeroes,
+          cutEndingZeroes,
+          cutLeadingZeroes,
+        })
+        : v && cutZeroes
+          ? parseFloat(
+            formatToNumber(v, {
+              cutZeroes,
+              cutEndingZeroes,
+              cutLeadingZeroes,
+            }),
+          )
+          : v
       setValue(v)
       if (typeof onBlur === 'function') onBlur(v, e)
     } else {
