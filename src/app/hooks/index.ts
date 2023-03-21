@@ -199,7 +199,7 @@ export const useValidateNumber = ({
     ? isFloat(
       new RegExp(
         FLOAT_REGEX.toString()
-          .replace(/,\)\\d\+/g, `,)\\d{1,${3}}`)
+          .replace(/,\)\\d\+/g, `,)\\d{1,${maxDigitsAfterPoint}}`)
           .slice(1, -1)
           .replace(/\//g, '//'),
       ),
