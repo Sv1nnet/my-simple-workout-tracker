@@ -20,14 +20,22 @@ const SideRoundsContainer = styled.div`
   align-items: center;
 `
 
+const RoundCount = styled(Typography.Text)`
+  color: #a5a3a3;
+`
+
 const Rounds = ({ rounds, type, hours, activityDictionary }) => (
   <RoundsUl>
     {rounds.map((round, i) => (
       <li key={i}>
         {typeof round === 'number' || typeof round === 'string'
           ? isExerciseTimeType(type)
-            ? <Typography.Text>{i + 1}. {timeToHms(round, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })}</Typography.Text>
-            : <Typography.Text>{i + 1}. {round}</Typography.Text>
+            ? (
+              <Typography.Text>
+                <RoundCount>{i + 1}:</RoundCount> {timeToHms(round, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })}
+              </Typography.Text>
+            )
+            : <Typography.Text><RoundCount>{i + 1}:</RoundCount> {round}</Typography.Text>
           : isExerciseTimeType(type)
             ? (
               <SideRoundsContainer>
