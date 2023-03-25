@@ -39,7 +39,9 @@ const Rounds = ({ rounds, type, hours, activityDictionary }) => (
           : isExerciseTimeType(type)
             ? (
               <SideRoundsContainer>
-                <Typography.Text style={{ marginRight: 5 }}>{i + 1}.</Typography.Text>
+                <Typography.Text style={{ marginRight: 5 }}>
+                  <RoundCount>{i + 1}</RoundCount>.
+                </Typography.Text>
                 <div>
                   <StyledText>{activityDictionary.side_labels.right.short}: {timeToHms(round.right, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })}</StyledText>
                   <StyledText>{activityDictionary.side_labels.left.short}: {timeToHms(round.left, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })}</StyledText>
@@ -48,7 +50,9 @@ const Rounds = ({ rounds, type, hours, activityDictionary }) => (
             )
             : (
               <SideRoundsContainer>
-                <Typography.Text style={{ marginRight: 5 }}>{i + 1}.</Typography.Text>
+                <Typography.Text style={{ marginRight: 5 }}>
+                  <RoundCount>{i + 1}.</RoundCount>
+                </Typography.Text>
                 <div>
                   <StyledText>{activityDictionary.side_labels.right.short}: {round.right}</StyledText>
                   <StyledText>{activityDictionary.side_labels.left.short}: {round.left}</StyledText>
