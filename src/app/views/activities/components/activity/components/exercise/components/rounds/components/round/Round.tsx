@@ -51,6 +51,7 @@ const Round = ({
   isTimeType,
   historyDisplayMode,
   sideLabels,
+  cacheFormData,
 }) => {
   const handleRepeatsChange = (value, { target }) => {
     const results = [ ...form.getFieldValue('results') ]
@@ -59,6 +60,7 @@ const Round = ({
     else results[exerciseIndex].rounds[round] = value
 
     form.setFieldsValue({ results })
+    cacheFormData([ 'results' ], form.getFieldsValue())
   }
 
   const isChartMode = historyDisplayMode === 'chart'

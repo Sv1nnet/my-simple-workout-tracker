@@ -24,7 +24,7 @@ const Rounds = ({ rounds, type, hours, activityDictionary }) => (
   <RoundsUl>
     {rounds.map((round, i) => (
       <li key={i}>
-        {typeof round === 'number'
+        {typeof round === 'number' || typeof round === 'string'
           ? isExerciseTimeType(type)
             ? <Typography.Text>{i + 1}. {timeToHms(round, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })}</Typography.Text>
             : <Typography.Text>{i + 1}. {round}</Typography.Text>

@@ -23,6 +23,7 @@ import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from '.
 import { WorkoutListExercise } from 'app/store/slices/workout/types'
 import { useAppDispatch, useAppSelector } from '@/src/app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from '@/src/app/store/slices/activity'
+import { CacheFormData } from '../../types'
 
 const modeOptions = [
   { label: <HistoryButtonIcon src="/icons/chart.svg" alt="chart" />, value: 'chart' },
@@ -47,6 +48,7 @@ export interface IExerciseProps {
   rounds: number;
   id: Pick<TExercise<number | Dayjs>, 'id'>;
   exerciseIndex: number;
+  cacheFormData: CacheFormData;
 }
 
 const Exercise: FC<IExerciseProps> = ({
@@ -64,6 +66,7 @@ const Exercise: FC<IExerciseProps> = ({
   rounds,
   exerciseIndex,
   id,
+  cacheFormData,
 }) => {
   const dispatch = useAppDispatch()
   const selectedRoundIndex = useAppSelector(selectSelectedRoundIndex(id as string))
@@ -188,6 +191,7 @@ const Exercise: FC<IExerciseProps> = ({
         form={form}
         type={exercise.type}
         rounds={roundResults.rounds}
+        cacheFormData={cacheFormData}
       />
       {isRestTimersVisible && (
         <Timers

@@ -5,6 +5,7 @@ import React, { FC } from 'react'
 import { getComparator } from 'app/views/activities/components/activity/utils'
 import { RoundsTable, THeadCell } from './components/styled'
 import Round from './components/round/Round'
+import { CacheFormData } from '../../../../types'
 
 export interface IRounds {
   loaderDictionary: {
@@ -22,9 +23,25 @@ export interface IRounds {
   type: ExerciseType;
   isTimeType: boolean;
   onResultClick: Function;
+  cacheFormData: CacheFormData;
 }
 
-const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, form, history, onResultClick, rounds, hours, exerciseIndex, eachSide, historyDisplayMode, type, isTimeType }) => {
+const Rounds: FC<IRounds> = ({
+  cacheFormData,
+  loaderDictionary,
+  isFormItemDisabled,
+  isLoading,
+  form,
+  history,
+  onResultClick,
+  rounds,
+  hours,
+  exerciseIndex,
+  eachSide,
+  historyDisplayMode,
+  type,
+  isTimeType,
+}) => {
   const { side_labels, rounds_section_headers } = useIntlContext().intl.pages.activities
 
   const comparator = getComparator(type)
@@ -57,6 +74,7 @@ const Rounds: FC<IRounds> = ({ loaderDictionary, isFormItemDisabled, isLoading, 
             exerciseIndex={exerciseIndex}
             round={i}
             history={history}
+            cacheFormData={cacheFormData}
           />
         ))}
       </tbody>

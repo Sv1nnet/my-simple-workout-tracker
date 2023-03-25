@@ -37,9 +37,9 @@ const NumberInput: FC<INumberInput> = ({
   value: propValue,
   onChange,
   onBlur,
-  cutZeroes,
-  cutEndingZeroes,
-  cutLeadingZeroes,
+  cutZeroes = false,
+  cutEndingZeroes = false,
+  cutLeadingZeroes = false,
   ...props
 }) => {
   const $input = useRef(null)
@@ -110,13 +110,13 @@ const NumberInput: FC<INumberInput> = ({
   const handleBlur = (e) => {
     let { value: v } = e.target
     if (v === '' || validate(v)) {
-      v = v && (cutEndingZeroes || cutLeadingZeroes) && !cutZeroes
+      v = v && (cutEndingZeroes && !cutLeadingZeroes) || (cutLeadingZeroes && !cutEndingZeroes) && !cutZeroes
         ? formatToNumber(v, {
           cutZeroes,
           cutEndingZeroes,
           cutLeadingZeroes,
         })
-        : v && cutZeroes
+        : v && (cutZeroes || (cutEndingZeroes && cutLeadingZeroes))
           ? parseFloat(
             formatToNumber(v, {
               cutZeroes,

@@ -19,3 +19,5 @@ export type InitialValues<T = Dayjs> = Omit<ActivityForm<T>, '_id' | 'workout_id
   _id?: string,
   workout_id?: Pick<WorkoutForm, 'id'>,
 }
+
+export type CacheFormData = (changedValue: string[], values: InitialValues) => void

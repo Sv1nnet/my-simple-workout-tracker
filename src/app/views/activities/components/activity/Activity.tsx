@@ -30,7 +30,7 @@ import { WorkoutForm, WorkoutListExercise } from '@/src/app/store/slices/workout
 import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
 import { getResultsFromWorkoutList } from './utils'
-import { IActivityProps, InitialValues } from './types'
+import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
 
 
@@ -210,11 +210,11 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           })
           : rounds.map((round) => {
             if (round === null || round === '') return 0
-            return typeof round === 'number'
-              ? round
+            return typeof round === 'number' || typeof round === 'string'
+              ? +round
               : {
-                right: round.right === null || round.right === '' ? 0 : round.right,
-                left: round.left === null || round.left === '' ? 0 : round.left,
+                right: round.right === null || round.right === '' ? 0 : +round.right,
+                left: round.left === null || round.left === '' ? 0 : +round.left,
               }
           }),
         note,
@@ -255,7 +255,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     return value
   }
 
-  const cacheFormData = (changedValues, allValues) => {
+  const cacheFormData: CacheFormData = (changedValues, allValues) => {
     if (isEdit) return
     if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
     localStorage.setItem('cached_activity', JSON.stringify(allValues))
@@ -401,6 +401,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
                   isEdit={isEdit}
                   total={history?.[exercise._id as string]?.total}
                   history={history?.[exercise._id as string]}
+                  cacheFormData={cacheFormData}
                   {...exercise}
                 />
               ))
