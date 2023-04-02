@@ -15,3 +15,9 @@ export type StateResult<D, A> = {
   startedTimeStamp: number
   status: QueryStatus
 }
+
+export type ListQuery = {
+  page: number;
+  byPage: number;
+  searchValue: string;
+}

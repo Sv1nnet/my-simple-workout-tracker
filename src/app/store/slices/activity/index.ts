@@ -3,12 +3,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { activityApi } from './api'
 import { ActivityListItem, ActivityListResponseSuccess, SelectedRoundPayload } from './types'
+import { ListQuery } from 'store/utils/StateResultTypes'
 
 export interface IActivityState {
   list: {
     total: number,
     data: ActivityListItem[];
     status: ApiStatus;
+    query: ListQuery;
   }
   single: {
     data: ActivityListItem;
@@ -26,6 +28,11 @@ const initialState: IActivityState = {
     total: 0,
     data: [],
     status: API_STATUS.INITIAL,
+    query: {
+      page: 1,
+      byPage: 50,
+      searchValue: '',
+    },
   },
   single: {
     data: null,
@@ -48,12 +55,22 @@ export const activitySlice = createSlice({
         selectedRoundIndex: payload.index,
       }
     },
+    updateQuery: (state, { payload }: PayloadAction<Partial<ListQuery>>) => {
+      state.list.query.page ??= payload.page
+      state.list.query.byPage ??= payload.byPage
+      state.list.query.searchValue ??= payload.searchValue
+    },
   },
   extraReducers: (builder) => {
     builder
       .addMatcher(
         activityApi.endpoints.list.matchPending,
-        (state) => {
+        (state, { meta }) => {
+          if (meta?.arg?.originalArgs) {
+            state.list.query.page = meta?.arg?.originalArgs.page ?? state.list.query.page
+            state.list.query.byPage = meta?.arg?.originalArgs.byPage ?? state.list.query.byPage
+            state.list.query.searchValue = meta?.arg?.originalArgs.searchValue ?? state.list.query.searchValue
+          }
           state.list.status = API_STATUS.LOADING
         },
       )
@@ -75,7 +92,7 @@ export const activitySlice = createSlice({
   },
 })
 
-export const { updateList, setSelectedRound } = activitySlice.actions
+export const { updateList, setSelectedRound, updateQuery } = activitySlice.actions
 
 export const selectList = (state: AppState) => state.activity.list
 export const selectSelectedRoundIndex = (chartId: string) => (state: AppState) => state.activity.charts[chartId]?.selectedRoundIndex

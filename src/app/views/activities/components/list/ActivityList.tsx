@@ -31,7 +31,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useIntlContext()
-  const { modal } = intl
+  const { modal, common } = intl
   const { payload: exercisePayloadDictionary } = intl.pages.exercises
   const { activities: activityDictionary } = intl.pages
   const { modal: activityModal } = activityDictionary
@@ -97,6 +97,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
           <List
             itemLayout="horizontal"
             dataSource={activities}
+            locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: ActivityListItem) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
                 <ActivityItem

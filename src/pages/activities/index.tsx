@@ -5,7 +5,7 @@ import { MainTemplate } from 'layouts/main'
 import handleJwtStatus from 'app/utils/handleJwtStatus'
 import { ActivityList } from 'app/views'
 import { ActivityListItem } from 'app/store/slices/activity/types'
-import routes from 'app/constants/end_points'
+// import routes from 'app/constants/end_points'
 import { activityApi } from 'store/slices/activity/api'
 import { selectList, updateList } from 'store/slices/activity'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
@@ -13,7 +13,7 @@ import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
 import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
-import respondAfterTimeoutInMs, { Timeout } from 'app/utils/respondAfterTimeoutInMs'
+// import respondAfterTimeoutInMs, { Timeout } from 'app/utils/respondAfterTimeoutInMs'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { EndlessScrollableContainer } from 'app/components'
 import { useSearchPanelUtils } from '@/src/app/components/list_buttons/search_panel/SearchPanel'
@@ -41,20 +41,16 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
   const { loading, loadingRoute } = useRouterContext()
   const [ loadActivities, { error, isError, isFetching } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore = [], total, status } = useAppSelector(selectList)
-
-  const { dispatch } = useLoadList({
-    loading,
-    updateList,
-    listFromComponent: _activities,
-    loadList: loadActivities,
-  })
+  const prevRequestRef = useRef<ReturnType<typeof loadActivities>>(null)
 
   const { searchValue, filteredList: activitiesToShow, onSearchInputChange } = useSearchPanelUtils(
     activitiesInStore,
     {
       onChange(_searchValue) {
-        loadActivities({ page: 1, byPage: 50, searchValue: _searchValue })
-          .unwrap()
+        prevRequestRef.current?.abort()
+        prevRequestRef.current = loadActivities({ page: 1, byPage: 50, searchValue: _searchValue })
+
+        prevRequestRef.current.unwrap()
           .then((res) => {
             setPage(1)
             return res
@@ -62,11 +58,19 @@ const Activities: NextPage<IActivities> & { Layout: FC, layoutProps?: {} } = ({ 
       },
     },
     {
-      onChangeDelay: 200,
+      onChangeDelay: 350,
       shouldTrim: true,
       shouldLowerCase: true,
     },
   )
+
+  const { dispatch } = useLoadList({
+    loading,
+    updateList,
+    listFromComponent: _activities,
+    loadList: () => loadActivities({ page: 1, byPage: 50, searchValue }),
+  })
+
   const [
     deleteActivities,
     {
@@ -131,15 +135,16 @@ Activities.layoutProps = { tab: 'activities' }
 
 export default Activities
 
-const timeout = new Timeout()
-
+// const timeout = new Timeout()
+// TODO: implement fetching activities by query
 export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
   if (ctx.req.session) {
-    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: `${routes.activity.v1.list.full}?page=1&byPage=50` })
+    // const res = await respondAfterTimeoutInMs({ timeout, ctx, route: `${routes.activity.v1.list.full}?page=1&byPage=50` })
 
-    return handleJwtStatus(res, () => ({
+    return handleJwtStatus({}, () => ({
       props: {
-        activities: res.data,
+        // activities: res.data,
+        activities: null,
       },
     }))
   }

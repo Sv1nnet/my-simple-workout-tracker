@@ -32,7 +32,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useIntlContext()
-  const { modal } = intl
+  const { modal, common } = intl
   const { payload, modal: exerciseModal } = intl.pages.exercises
   const {
     isModalVisible,
@@ -96,6 +96,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
           <List
             itemLayout="horizontal"
             dataSource={exercises}
+            locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
                 <ExerciseItem

@@ -3,6 +3,16 @@
     "ru",
     "eng"
   ],
+  "common": {
+    "loading": {
+      "ru": "Загрузка...",
+      "eng": "Loading..."
+    },
+    "no_data": {
+      "ru": "Нет данных",
+      "eng": "No Data"
+    }
+  },
   "signup_by_code": {
     "code_label": {
       "ru": "Код",

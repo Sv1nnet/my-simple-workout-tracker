@@ -33,7 +33,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
   const { loading, loadingRoute } = useRouterContext()
   const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useIntlContext()
-  const { modal } = intl
+  const { modal, common } = intl
   const { payload } = intl.pages.exercises
   const { workouts: workoutDictionary } = intl.pages
   const { modal: workoutModal } = workoutDictionary
@@ -99,6 +99,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
           <List
             itemLayout="horizontal"
             dataSource={workouts}
+            locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<WorkoutListItem & { id: number | string }, 'image'> & { image: Image }) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
                 <WorkoutItem
