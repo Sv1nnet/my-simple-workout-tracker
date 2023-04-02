@@ -60,7 +60,7 @@ export const activitySlice = createSlice({
       .addMatcher(
         activityApi.endpoints.list.matchFulfilled,
         (state, { payload, meta }) => {
-          const shouldConcatList = meta.arg.originalArgs.page !== 1
+          const shouldConcatList = !!meta?.arg?.originalArgs?.page && meta?.arg?.originalArgs?.page !== 1
           state.list.total = payload.data.total
           state.list.data = shouldConcatList ? state.list.data.concat(payload.data.list) : payload.data.list
           state.list.status = API_STATUS.LOADED
