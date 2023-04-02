@@ -114,7 +114,7 @@ const SearchPanel = ({ loading, href, addButtonText, onChange }) => {
       </StyledInputGroup>
       <AddButton
         loading={loading}
-        buttonProps={{ type: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
+        buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
         href={href}
         text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
       />

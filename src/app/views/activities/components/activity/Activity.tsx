@@ -9,7 +9,7 @@ import {
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
 import dayjs, { Dayjs, isDayjs } from 'dayjs'
-import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
+import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs, timeArrayToMilliseconds } from 'app/utils/time'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
 import { useAppSelector, useMounted, useRequestForNotificationPermission } from 'app/hooks'
@@ -32,6 +32,7 @@ import { API_STATUS } from '@/src/app/constants/api_statuses'
 import { getResultsFromWorkoutList } from './utils'
 import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
+import { StopwatchRef } from '@/src/app/components/stopwatch/Stopwatch'
 
 
 const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
@@ -72,6 +73,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const [ form ] = Form.useForm<ActivityForm>()
   
   const initFromCacheRef = useRef(false)
+  const durationTimerRef = useRef<StopwatchRef>(null)
 
   const handleRestoreFromCacheError = () => {
     Modal.error({
@@ -188,7 +190,10 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }
 
   const handleSubmit = async ({ ...values }) => {
+    durationTimerRef.current.pauseTimer()
+
     values.id = initialValues.id
+    values.duration = timeArrayToMilliseconds(durationTimerRef.current.valueRef.current)
     values.date = values.date.toJSON()
     values.results = values.results.reduce((acc, { id, rounds, note }, i) => {
       const exercise = workoutList.data.find(workout => workout.id === values.workout_id).exercises[i]
@@ -224,7 +229,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
     return onSubmit(values)
       .then((res) => {
-        if (!isEdit) {
+        if (!isEdit && !res.error && !res.data.error) {
           localStorage.removeItem('cached_activity')
           setCachedFormValues(null)
         }
@@ -427,6 +432,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           <StopwatchContainer>
             <Stopwatch
               key={`${selectedWorkout}`}
+              ref={durationTimerRef}
               hoursOn
               showResetButton
               disabled={isEdit || !selectedWorkout}
