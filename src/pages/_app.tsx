@@ -21,6 +21,7 @@ import isoWeek from 'dayjs/plugin/isoWeek'
 import duration from 'dayjs/plugin/duration'
 import { Lang } from 'app/store/slices/config/types'
 import { ErrorBoundary } from 'app/components'
+import ListContextProvider from '../app/contexts/list/ListContextProvider'
 
 dayjs.extend(duration)
 dayjs.extend(isoWeek)
@@ -61,15 +62,17 @@ export default function App({ Component, pageProps, lang }: AppProps) {
       <Provider store={store}>
         <IntlContextProvider>
           <ErrorBoundary>
-            <AppLoaderProvider>
-              <RouterContextProvider>
-                <AuthLayout>
-                  <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
-                    <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
-                  </Layout>
-                </AuthLayout>
-              </RouterContextProvider>
-            </AppLoaderProvider>
+            <ListContextProvider>
+              <AppLoaderProvider>
+                <RouterContextProvider>
+                  <AuthLayout>
+                    <Layout {...(layoutExists ? pageProps : {})} {...layoutProps}>
+                      <Component {...(layoutExists ? {} : pageProps)} {...componentProps} />
+                    </Layout>
+                  </AuthLayout>
+                </RouterContextProvider>
+              </AppLoaderProvider>
+            </ListContextProvider>
           </ErrorBoundary>
         </IntlContextProvider>
       </Provider>

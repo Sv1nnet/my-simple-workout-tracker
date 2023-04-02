@@ -1,4 +1,4 @@
-import { createContext, FC, useCallback, useContext, useState } from 'react'
+import { createContext, FC, useCallback, useContext, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Spin, SpinProps } from 'antd'
 
@@ -83,8 +83,13 @@ const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps
     setLoaderRunnerId(null)
   }, [])
 
+  const value = useMemo(
+    () => ({ loading, runLoader, stopLoaderById, forceStopLoader }),
+    [ loading, runLoader, stopLoaderById, forceStopLoader ],
+  )
+
   return (
-    <AppLoaderContext.Provider value={{ loading, runLoader, stopLoaderById, forceStopLoader }}>
+    <AppLoaderContext.Provider value={value}>
       <SpinContainer $show={loading}>
         <StyledSpin size="large" {...loaderProps} spinning={loading}>
           <span />

@@ -1,6 +1,6 @@
-import { FC, ReactNode, UIEvent, useEffect, useRef } from 'react'
+import { ReactNode, UIEvent, forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import styled from 'styled-components'
-import { useDebouncedCallback } from '../../hooks'
+import { useDebouncedCallback } from 'app/hooks'
 import isFunc from 'app/utils/isFunc'
 
 const Container = styled.div`
@@ -10,26 +10,43 @@ const Container = styled.div`
 
 export interface IEndlessScrollableContainer {
   children: ReactNode;
-  onScroll: (e: UIEvent<HTMLElement>) => void
+  onScroll?: (e: UIEvent<HTMLElement>) => void
   callOnMount?: boolean;
 }
 
-const EndlessScrollableContainer: FC<IEndlessScrollableContainer> = ({ children, callOnMount = false, onScroll, ...rest }) => {
-  const $container = useRef<HTMLDivElement>(null)
+export type Ref = { $el: HTMLDivElement, scrollTo: (options: ScrollToOptions) => void, scrollTop: number | undefined }
 
-  const handleEndlessScroll = useDebouncedCallback((e) => {
-    if (isFunc(onScroll)) onScroll(e)
-  }, 100)
+const EndlessScrollableContainer = forwardRef<Ref, IEndlessScrollableContainer>(
+  function EndlessScrollableContainer({ children, callOnMount = false, onScroll, ...rest }, ref) {
+    const $container = useRef<HTMLDivElement>(null)
+    const programmaticScrolledRef = useRef(false)
 
-  useEffect(() => {
-    if (callOnMount) handleEndlessScroll({ target: $container.current })
-  }, [])
+    const handleEndlessScroll = useDebouncedCallback((e) => {
+      if (isFunc(onScroll) && !programmaticScrolledRef.current) onScroll(e)
+    }, 100)
 
-  return (
-    <Container ref={$container} onScroll={handleEndlessScroll} {...rest}>
-      {children}
-    </Container>
-  )
-}
+    useImperativeHandle(ref, () => ({
+      $el: $container.current,
+      scrollTo: (options: ScrollToOptions = { left: 0, top: 0 }) => {
+        programmaticScrolledRef.current = true
+        $container.current?.scrollTo(options)
+        programmaticScrolledRef.current = false
+      },
+      get scrollTop() {
+        return $container.current?.scrollTop
+      },
+    }), [ $container.current, $container.current?.scrollTop ])
+
+    useEffect(() => {
+      if (callOnMount) handleEndlessScroll({ target: $container.current })
+    }, [])
+
+    return (
+      <Container ref={$container} onScroll={handleEndlessScroll} {...rest}>
+        {children}
+      </Container>
+    )
+  },
+)
 
 export default EndlessScrollableContainer

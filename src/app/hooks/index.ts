@@ -246,8 +246,8 @@ export const useValidateNumber = ({
   }
 }, [ int, onlyPositive, onlyNegative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
 
-export const useDebouncedCallback = (callback: Function, delay: number = 100) => {
-  const callbackRef = useRef(callback)
+export const useDebouncedCallback = <T extends Function>(callback: T, delay: number = 100) => {
+  const callbackRef = useRef<T>(callback)
   const timeoutIdRef = useRef<NodeJS.Timeout>(-1 as unknown as NodeJS.Timeout)
 
   if (callback !== callbackRef.current) {

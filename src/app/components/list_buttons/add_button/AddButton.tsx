@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, ReactNode } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
@@ -9,6 +9,7 @@ const StyledButton = styled(Button)`
   display: block;
   margin: 5px auto 0;
   width: calc(100% - 10px);
+  overflow: hidden;
 
   & > span {
     position: relative;
@@ -22,10 +23,15 @@ const StyledButton = styled(Button)`
   }
 `
 
+export const Text = styled.span`
+  display: inline-block;
+  margin-left: ${({ $loading }) => $loading ? 0 : 4}px;
+`
+
 export interface IAddButton {
   href: string;
   icon?: string | React.ReactElement;
-  text?: string;
+  text?: ReactNode;
   loading?: boolean;
   buttonProps?: object;
   linkProps?: object;
@@ -37,8 +43,7 @@ const AddButton: FC<IAddButton> = ({ href, icon, text, children, loading, button
       {children || (
         <>
           {loading ? <Spin indicator={<LoadingOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }} />} /> : icon}
-          &nbsp;
-          <span style={{ display: 'inline-block', marginLeft: loading ? 0 : 4 }}>{text}</span>
+          <Text $loading={loading}>&nbsp;{text}</Text>
         </>
       )}
     </StyledButton>

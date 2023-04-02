@@ -1,4 +1,4 @@
-import { useState, createContext, FC, useEffect, useRef, useContext } from 'react'
+import { useState, createContext, FC, useEffect, useRef, useContext, useMemo } from 'react'
 import Router from 'next/router'
 
 const initialContextValue = { loading: false, loadingRoute: null }
@@ -14,6 +14,7 @@ const RouterContextProvider: FC = ({ children }) => {
   const [ loading, setLoading ] = useState(false)
   const [ loadingRoute, setLoadingRoute ] = useState<null | string>(null)
   const loadingRouteRef = useRef<null | string>(loadingRoute)
+  const value = useMemo(() => ({ loading, loadingRoute }), [ loading, loadingRoute ])
   
   useEffect(() => {
     Router.events.on('routeChangeStart', (e) => {
@@ -35,7 +36,7 @@ const RouterContextProvider: FC = ({ children }) => {
     })
   }, [])
 
-  return <RouterContext.Provider value={{ loading, loadingRoute }}>{children}</RouterContext.Provider>
+  return <RouterContext.Provider value={value}>{children}</RouterContext.Provider>
 }
 
 export default RouterContextProvider
