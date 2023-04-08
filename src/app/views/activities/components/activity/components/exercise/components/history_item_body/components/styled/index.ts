@@ -7,9 +7,27 @@ export const Body = styled.div`
   height: 100%;
 `
 
-export const Text = styled.p`
-  margin: 0;
-  color: ${({ $color }) => $color};
-  margin-top: ${({ $mt }) => $mt};
-  ${({ $eachSide }) => $eachSide ? 'line-height: 1;' : ''}
+const TextSide = styled.span`
+  text-align: right;
+  flex-basis: 40%;
 `
+
+const TextResult = styled.span`
+  flex-grow: 1;
+  text-align: left;
+  padding-left: 10px;
+`
+
+export const Text = (() => {
+  const _Text = styled.p`
+    margin: 0;
+    display: ${({ $isTimeType }) => $isTimeType ? '' : 'flex'};
+    justify-content: center;
+    color: ${({ $color }) => $color};
+    margin-top: ${({ $mt }) => $mt};
+    ${({ $eachSide }) => $eachSide ? 'line-height: 1;' : ''}
+  `
+  _Text.Side = TextSide
+  _Text.Result = TextResult
+  return _Text
+})()

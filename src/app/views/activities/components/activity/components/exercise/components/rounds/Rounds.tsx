@@ -51,7 +51,7 @@ const Rounds: FC<IRounds> = ({
       <thead>
         <tr>
           <THeadCell>{rounds_section_headers.rounds}</THeadCell>
-          <THeadCell $isTimeType={isTimeType} $eachSide={eachSide}>{rounds_section_headers.results}</THeadCell>
+          <THeadCell $isTimeType={isTimeType} $isHours={hours} $eachSide={eachSide}>{rounds_section_headers.results}</THeadCell>
           <THeadCell $previous>{rounds_section_headers.previous}</THeadCell>
         </tr>
       </thead>

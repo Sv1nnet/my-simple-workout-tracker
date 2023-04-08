@@ -56,10 +56,10 @@ const HistoryItemBody: FC<IHistoryItemBody> = ({ roundsData, nextRoundsData, ind
         ? roundsData.map((data: EachSideRound<number>, i) => (
           <React.Fragment key={i}>
             <Text $color={getColor(data.right, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.right, index, total, comparator)} $eachSide $mt="6px">
-              {sideLabels.right.short}. {data.right || 0}
+              <Text.Side>{sideLabels.right.short}.</Text.Side> <Text.Result>{data.right || 0}</Text.Result>
             </Text>
             <Text $color={getColor(data.left, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.left, index, total, comparator)} $eachSide>
-              {sideLabels.left.short}. {data.left || 0}
+              <Text.Side>{sideLabels.left.short}.</Text.Side> <Text.Result>{data.left || 0}</Text.Result>
             </Text>
           </React.Fragment>
         ))
@@ -71,11 +71,11 @@ const HistoryItemBody: FC<IHistoryItemBody> = ({ roundsData, nextRoundsData, ind
       : eachSide
         ? roundsData.map((data: EachSideRound<number>, i) => (
           <React.Fragment key={i}>
-            <Text key={i} $color={getColor(data.right, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.right, index, total, comparator)} $eachSide $mt="6px">
-              {sideLabels.right.short}. {timeToHms(data.right, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours }) || 0}
+            <Text $isTimeType key={i} $color={getColor(data.right, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.right, index, total, comparator)} $eachSide $mt="6px">
+              <Text.Side>{sideLabels.right.short}.</Text.Side> <Text.Result>{timeToHms(data.right, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours }) || 0}</Text.Result>
             </Text>
-            <Text key={i} $color={getColor(data.left, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.left,  index, total, comparator)} $eachSide>
-              {sideLabels.left.short}. {timeToHms(data.left, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours }) || 0}
+            <Text $isTimeType key={i} $color={getColor(data.left, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.left,  index, total, comparator)} $eachSide>
+              <Text.Side>{sideLabels.left.short}.</Text.Side> <Text.Result>{timeToHms(data.left, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours }) || 0}</Text.Result>
             </Text>
           </React.Fragment>
         ))

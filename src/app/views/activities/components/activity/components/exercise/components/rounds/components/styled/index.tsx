@@ -112,17 +112,21 @@ export const RoundsTable = styled.table`
 export const THeadCell = styled.th`
   font-weight: normal;
   padding-left: ${({ $eachSide }) => $eachSide ? '15px' : ''};
-  width: ${({ $previous, $eachSide, $isTimeType }) => (
+  width: ${({ $previous, $eachSide, $isTimeType, $isHours }) => (
     !$previous
       ? $isTimeType
-        ? `${$eachSide ? '90px' : '75px'}`
+        ? $isHours
+          ? `${$eachSide ? '110px' : '75px'}`
+          : `${$eachSide ? '90px' : '75px'}`
         : `${$eachSide ? '80px' : '65px'}`
       : ''
   )};
-  min-width: ${({ $previous, $eachSide, $isTimeType }) => (
+  min-width: ${({ $previous, $eachSide, $isTimeType, $isHours }) => (
     !$previous
       ? $isTimeType
-        ? `${$eachSide ? '90px' : '75px'}`
+        ? $isHours
+          ? `${$eachSide ? '110px' : '75px'}`
+          : `${$eachSide ? '90px' : '75px'}`
         : `${$eachSide ? '80px' : '65px'}`
       : ''
   )};
