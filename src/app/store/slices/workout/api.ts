@@ -83,5 +83,13 @@ export const workoutApi = createApi({
       }),
       providesTags: () => [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
+    copy: build.mutation({
+      query: ({ ids }) => ({
+        url: `${routes.workout.v1.copy.full}`,
+        method: 'POST',
+        body: { ids },
+      }),
+      invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
+    }),
   }),
 })

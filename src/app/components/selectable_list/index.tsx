@@ -9,21 +9,27 @@ const ListContainer = styled.div`
   padding-top: 0;
 `
 
+export type SelectedListItems = {
+  [key: string]: boolean | undefined,
+}
+
 export interface ISelectableList {
   list: {
     id: string | number;
   }[];
-  onDelete: Function;
-  onSelect?: Function;
+  onDelete?: Function;
+  onCopy?: Function;
+  onSelect?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, selected: SelectedListItems, isAllSelected: boolean) => void;
   onCancelSelection?: Function;
   onSelectDeselectAll?: Function;
   isLoading?: boolean;
   isDeleting?: boolean;
+  isCopying?: boolean;
   createHref: string;
   children: ((options: {
     selected: object,
     selectionEnabled: boolean,
-    allSelected: boolean,
+    isAllSelected: boolean,
     onSelect: React.MouseEventHandler<HTMLElement>,
     onCancelSelection: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     onContextMenu: MouseEventHandler<HTMLElement>,
@@ -41,23 +47,27 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     children,
     list,
     onDelete,
+    onCopy,
     onSelect,
     onCancelSelection,
     onSelectDeselectAll,
     isDeleting,
+    isCopying,
     createHref,
     style,
     className,
   },
   ref,
 ) => {
-  const [ selected, setSelected ] = useState({})
+  const [ selected, setSelected ] = useState<SelectedListItems>({})
   const [ selectionEnabled, setSelectionEnabled ] = useState(false)
-  const [ allSelected, setAllSelected ] = useState(false)
+  const [ isAllSelected, setIsAllSelected ] = useState(false)
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!selectionEnabled) {
       e.preventDefault()
+      window.getSelection().removeAllRanges()
+
       setSelectionEnabled(true)
 
       const { dataset } = e.currentTarget
@@ -74,7 +84,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     const { dataset } = e.currentTarget
     const { selectableId } = dataset
     
-    let _allSelected = false
+    let _isAllSelected = false
     let newSelected = { ...selected }
 
     if (!selected[selectableId]) {
@@ -84,24 +94,24 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
         .filter(sel => newSelected[sel])
 
       if (selectedKeys.length && selectedKeys.length === list.length) {
-        _allSelected = true
-        setAllSelected(_allSelected)
+        _isAllSelected = true
+        setIsAllSelected(_isAllSelected)
       }
       setSelected(newSelected)
     } else {
       newSelected[selectableId] = false
       setSelected(newSelected)
-      if (allSelected) {
-        _allSelected = false
-        setAllSelected(_allSelected)
+      if (isAllSelected) {
+        _isAllSelected = false
+        setIsAllSelected(_isAllSelected)
       }
     }
-    if (typeof onSelect === 'function') onSelect(e, newSelected, _allSelected)
+    if (typeof onSelect === 'function') onSelect(e, newSelected, _isAllSelected)
   }
 
   const handleSelectDeselectAll = (shouldSelect: boolean) => {
     setSelected(list.reduce((acc, { id }) => { acc[id] = shouldSelect; return acc }, {}))
-    setAllSelected(shouldSelect)
+    setIsAllSelected(shouldSelect)
     if (typeof onSelectDeselectAll === 'function') onSelectDeselectAll(shouldSelect)
   }
 
@@ -114,10 +124,10 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
   useImperativeHandle(ref, () => ({
     selected,
     selectionEnabled,
-    allSelected,
+    isAllSelected,
     handleSelect,
     handleCancelSelection,
-  }), [ selected, selectionEnabled, allSelected, handleSelect, handleCancelSelection ])
+  }), [ selected, selectionEnabled, isAllSelected, handleSelect, handleCancelSelection ])
 
   return (
     <ListContainer style={style} className={className}>
@@ -125,7 +135,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
         ? children({
           selected,
           selectionEnabled,
-          allSelected,
+          isAllSelected,
           onSelect: handleSelect,
           onCancelSelection: handleCancelSelection,
           onContextMenu: handleContextMenu,
@@ -136,7 +146,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
             ...child.props,
             selected,
             selectionEnabled,
-            allSelected,
+            isAllSelected,
             onSelect: handleSelect,
             onCancelSelection: handleCancelSelection,
             onContextMenu: handleContextMenu,
@@ -145,11 +155,13 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
       <ListControls
         createHref={createHref}
         isDeleting={isDeleting}
+        isCopying={isCopying}
         selected={selected}
-        allSelected={allSelected}
+        isAllSelected={isAllSelected}
         onSelect={handleSelectDeselectAll}
         isSelectionActive={selectionEnabled}
         onCancel={handleCancelSelection}
+        onCopy={onCopy}
         onDelete={onDelete}
       />
     </ListContainer>

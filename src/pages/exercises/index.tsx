@@ -43,6 +43,7 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
   )
 
   const [ loadExercises, { error, isError } ] = exerciseApi.useLazyListQuery()
+
   const [
     deleteExercises,
     {
@@ -50,6 +51,15 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
       error: deleteError,
     },
   ] = exerciseApi.useDeleteManyMutation()
+
+  const [ copyExercises, { isLoading: isCopying, error: copyError } ] = exerciseApi.useCopyMutation()
+
+  const handleCopy = ids => copyExercises(ids).then((res: any) => {
+    if (res?.data?.success) {
+      loadExercises()
+    }
+    return res
+  })
 
   const { dispatch } = useLoadList({
     loading,
@@ -85,9 +95,11 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
       />
       <ExerciseList
         deleteExercises={handleDelete}
-        error={deleteError}
+        copyExercises={handleCopy}
+        error={deleteError || copyError}
         isLoading={status === API_STATUS.LOADING}
         isDeleting={isDeleting}
+        isCopying={isCopying}
         exercises={exercisesToShow}
       />
     </EndlessScrollableContainer>

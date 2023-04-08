@@ -15,6 +15,11 @@ const _global = !isServerEnv ? window : global
 _global.__API__ = _global.__API__ ?? {}
 _global.__API__.BASE_URL = _global.__API__.BASE_URL ?? BASE_URL
 
+export type BaseRouteUnit = {
+  full: string,
+  short: string,
+}
+
 const routes = {
   get base() {
     return _global.__API__.BASE_URL
@@ -104,113 +109,199 @@ const routes = {
     },
   },
   exercise: {
-    v1: {
-      get base() {
-        return {
-          full: `${_global.__API__.BASE_URL}/v1/exercise`,
-          path: '/v1/exercise',
-        }
-      },
-      get list() {
-        return {
-          full: `${routes.base}${this.base.path}/list`,
-          path: `${this.base.path}/list`,
-        }
-      },
-      get create() {
-        return {
-          full: `${routes.base}${this.base.path}/create`,
-          path: `${this.base.path}/create`,
-        }
-      },
-      get update() {
-        return {
-          full: `${routes.base}${this.base.path}/update`,
-          path: `${this.base.path}/update`,
-        }
-      },
-      get delete() {
-        return {
-          full: `${routes.base}${this.base.path}/delete`,
-          path: `${this.base.path}/delete`,
-        }
-      },
-    },
+    v1: {},
+    // v1: createBaseRoutes(routes, 'exercise'),
+    // {
+    //   get base() {
+    //     return {
+    //       full: `${_global.__API__.BASE_URL}/v1/exercise`,
+    //       path: '/v1/exercise',
+    //     }
+    //   },
+    //   get list() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/list`,
+    //       path: `${this.base.path}/list`,
+    //     }
+    //   },
+    //   get create() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/create`,
+    //       path: `${this.base.path}/create`,
+    //     }
+    //   },
+    //   get update() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/update`,
+    //       path: `${this.base.path}/update`,
+    //     }
+    //   },
+    //   get delete() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/delete`,
+    //       path: `${this.base.path}/delete`,
+    //     }
+    //   },
+    //   get copy() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/copy`,
+    //       path: `${this.base.path}/copy`,
+    //     }
+    //   },
+    // },
   },
   workout: {
-    v1: {
-      get base() {
-        return {
-          full: `${_global.__API__.BASE_URL}/v1/workout`,
-          path: '/v1/workout',
-        }
-      },
-      get list() {
-        return {
-          full: `${routes.base}${this.base.path}/list`,
-          path: `${this.base.path}/list`,
-        }
-      },
-      get create() {
-        return {
-          full: `${routes.base}${this.base.path}/create`,
-          path: `${this.base.path}/create`,
-        }
-      },
-      get update() {
-        return {
-          full: `${routes.base}${this.base.path}/update`,
-          path: `${this.base.path}/update`,
-        }
-      },
-      get delete() {
-        return {
-          full: `${routes.base}${this.base.path}/delete`,
-          path: `${this.base.path}/delete`,
-        }
-      },
-    },
+    v1: {},
+    // v1: createBaseRoutes(routes, 'workout'),
+    // {
+    //   get base() {
+    //     return {
+    //       full: `${_global.__API__.BASE_URL}/v1/workout`,
+    //       path: '/v1/workout',
+    //     }
+    //   },
+    //   get list() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/list`,
+    //       path: `${this.base.path}/list`,
+    //     }
+    //   },
+    //   get create() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/create`,
+    //       path: `${this.base.path}/create`,
+    //     }
+    //   },
+    //   get update() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/update`,
+    //       path: `${this.base.path}/update`,
+    //     }
+    //   },
+    //   get delete() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/delete`,
+    //       path: `${this.base.path}/delete`,
+    //     }
+    //   }, get copy() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/copy`,
+    //       path: `${this.base.path}/copy`,
+    //     }
+    //   },
+    // },
   },
   activity: {
-    v1: {
-      get base() {
-        return {
-          full: `${_global.__API__.BASE_URL}/v1/activity`,
-          path: '/v1/activity',
-        }
-      },
-      get list() {
-        return {
-          full: `${routes.base}${this.base.path}/list`,
-          path: `${this.base.path}/list`,
-        }
-      },
-      get create() {
-        return {
-          full: `${routes.base}${this.base.path}/create`,
-          path: `${this.base.path}/create`,
-        }
-      },
-      get update() {
-        return {
-          full: `${routes.base}${this.base.path}/update`,
-          path: `${this.base.path}/update`,
-        }
-      },
-      get delete() {
-        return {
-          full: `${routes.base}${this.base.path}/delete`,
-          path: `${this.base.path}/delete`,
-        }
-      },
-      get history() {
-        return {
-          full: `${routes.base}${this.base.path}/history`,
-          path: `${this.base.path}/history`,
-        }
-      },
+    v1: {},
+    // v1: createBaseRoutes(routes, 'activity'),
+    // {
+    //   get base() {
+    //     return {
+    //       full: `${_global.__API__.BASE_URL}/v1/activity`,
+    //       path: '/v1/activity',
+    //     }
+    //   },
+    //   get list() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/list`,
+    //       path: `${this.base.path}/list`,
+    //     }
+    //   },
+    //   get create() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/create`,
+    //       path: `${this.base.path}/create`,
+    //     }
+    //   },
+    //   get update() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/update`,
+    //       path: `${this.base.path}/update`,
+    //     }
+    //   },
+    //   get delete() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/delete`,
+    //       path: `${this.base.path}/delete`,
+    //     }
+    //   },
+    //   get history() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/history`,
+    //       path: `${this.base.path}/history`,
+    //     }
+    //   },
+    //   get copy() {
+    //     return {
+    //       full: `${routes.base}${this.base.path}/copy`,
+    //       path: `${this.base.path}/copy`,
+    //     }
+    //   },
+    // },
+  },
+}
+
+const createBaseRoutes = (base: string) => ({
+  get base() {
+    return {
+      full: `${_global.__API__.BASE_URL}/v1/${base}`,
+      path: `/v1/${base}`,
+    }
+  },
+  get list() {
+    return {
+      full: `${routes.base}${this.base.path}/list`,
+      path: `${this.base.path}/list`,
+    }
+  },
+  get create() {
+    return {
+      full: `${routes.base}${this.base.path}/create`,
+      path: `${this.base.path}/create`,
+    }
+  },
+  get update() {
+    return {
+      full: `${routes.base}${this.base.path}/update`,
+      path: `${this.base.path}/update`,
+    }
+  },
+  get delete() {
+    return {
+      full: `${routes.base}${this.base.path}/delete`,
+      path: `${this.base.path}/delete`,
+    }
+  },
+  get copy() {
+    return {
+      full: `${routes.base}${this.base.path}/copy`,
+      path: `${this.base.path}/copy`,
+    }
+  },
+})
+
+routes.exercise = { v1: createBaseRoutes('exercise') }
+routes.workout = { v1: createBaseRoutes('workout') }
+routes.activity = {
+  v1: {
+    ...createBaseRoutes('activity'),
+    get history() {
+      return {
+        full: `${routes.base}${this.base.path}/history`,
+        path: `${this.base.path}/history`,
+      }
     },
   },
 }
 
-export default routes
+export default routes as typeof routes & {
+  exercise: {
+    v1: ReturnType<typeof createBaseRoutes>
+  },
+  workout: {
+    v1: ReturnType<typeof createBaseRoutes>
+  },
+  activity: {
+    v1: ReturnType<typeof createBaseRoutes> & { history: BaseRouteUnit }
+  },
+}

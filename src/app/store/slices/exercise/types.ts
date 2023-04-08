@@ -47,6 +47,9 @@ export type ExerciseUpdateSuccess = IResponse<ExerciseServerPayload>
 export type ExerciseDeleteSuccess = IResponse<ExerciseServerPayload[]>
 export type ExerciseDeleteError = IResponse<null>
 
+export type ExerciseCopySuccess = IResponse<null>
+export type ExerciseCopyError = IResponse<null>
+
 export type GetExerciseSuccess = IResponse<ExerciseForm>
 export type GetExerciseError = IResponse<null>
 
