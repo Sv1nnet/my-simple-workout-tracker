@@ -55,6 +55,15 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
     },
   ] = workoutApi.useDeleteManyMutation()
 
+  const [ copyWorkouts, { isLoading: isCopying, error: copyError } ] = workoutApi.useCopyMutation()
+
+  const handleCopy = ids => copyWorkouts(ids).then((res: any) => {
+    if (res?.data?.success) {
+      loadWorkouts()
+    }
+    return res
+  })
+
   const { dispatch } = useLoadList({
     loading,
     updateList,
@@ -88,9 +97,11 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
       />
       <WorkoutList
         deleteWorkouts={handleDelete}
-        error={deleteError}
+        copyWorkouts={handleCopy}
+        error={deleteError || copyError}
         isLoading={status === API_STATUS.LOADING}
         isDeleting={isDeleting}
+        isCopying={isCopying}
         workouts={workoutsToShow}
       />
     </EndlessScrollableContainer>

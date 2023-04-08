@@ -7,6 +7,7 @@ import {
   ExerciseDeleteSuccess,
   GetExerciseListSuccess,
   IExerciseFormData,
+  ExerciseCopySuccess,
 } from './types'
 import { Dayjs } from 'dayjs'
 import routes from 'constants/end_points'
@@ -89,16 +90,14 @@ export const exerciseApi = createApi({
         }
       },
       providesTags: () => [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
-      // transformResponse(response: GetExerciseListSuccess, { request }: { request: { url: string } }) {
-      //   const { data } = response
-      //   if (request.url.includes('acrhived=true')) {
-      //     response.data = data.map((exercise) => {
-      //       if (exercise.archived) exercise.title = `${exercise.title} (удалено)`
-      //       return exercise
-      //     }) as GetExerciseListSuccess['data']
-      //   }
-      //   return response
-      // },
+    }),
+    copy: build.mutation<ExerciseCopySuccess, { ids: Pick<ExerciseForm, 'id'>[] }>({
+      query: ({ ids }) => ({
+        url: `${routes.exercise.v1.copy.full}`,
+        method: 'POST',
+        body: { ids },
+      }),
+      invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
   }),
 })

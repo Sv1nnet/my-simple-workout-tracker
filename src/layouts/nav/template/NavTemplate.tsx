@@ -14,6 +14,7 @@ const { TabPane } = Tabs
 
 const StyledTabs = styled(Tabs)`
   .ant-tabs-nav {
+    margin-top: 0;
     margin-bottom: 0;
   }
 

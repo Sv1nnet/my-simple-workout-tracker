@@ -2,14 +2,12 @@ import { MainButtonContainer, MoreOptionsButtonContainer } from '../styled'
 import React, { useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import { CancelSelectionButton, CreateButton, DeleteButton, DeselectAllButton, MoreOptionsButton, SelectAllButton } from './components/styled'
+import { CancelSelectionButton, CopyButton, CreateButton, DeleteButton, DeselectAllButton, SelectAllButton } from './components/styled'
 
-const ListControls = ({ createHref, isDeleting, isSelectionActive, selected, allSelected, onDelete, onCancel, onSelect }) => {
+const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, selected, isAllSelected, onDelete, onCopy, onCancel, onSelect }) => {
   const { list_buttons } = useIntlContext().intl.pages.exercises
   const { loading, loadingRoute } = useRouterContext()
   const [ expanded, setExpanded ] = useState(false)
-
-  const handleShowMoreOptions = () => setExpanded(_expanded => !_expanded)
 
   const handleListAll = () => onSelect(true)
   const handleDeselectAll = () => onSelect(false)
@@ -17,20 +15,28 @@ const ListControls = ({ createHref, isDeleting, isSelectionActive, selected, all
   useEffect(() => {
     if (!isSelectionActive && expanded) setExpanded(false)
   }, [ isSelectionActive ])
+
+  const activeExtraButtons = +!!onCopy + +!!onDelete
+  const buttonPositionShift = activeExtraButtons * 50
+  const style = isSelectionActive ? { transform: `translateX(-${50 + buttonPositionShift}px)` } : {}
   
   return (
     <MainButtonContainer>
       {createHref && <CreateButton loading={loading && loadingRoute === createHref} tooltipTitle={list_buttons.create} href={createHref} />}
-      {isSelectionActive && <MoreOptionsButton $expanded={expanded} tooltipTitle={list_buttons.more_options} onClick={handleShowMoreOptions} />}
-      <MoreOptionsButtonContainer $expanded={expanded}>
+      <MoreOptionsButtonContainer $expanded={isSelectionActive} $items={activeExtraButtons}>
         <MoreOptionsButtonContainer.Inner>
           {
-            allSelected
-              ? <DeselectAllButton tooltipTitle={list_buttons.deselect_all} onClick={handleDeselectAll} />
-              : <SelectAllButton tooltipTitle={list_buttons.select_all} onClick={handleListAll} />
+            isAllSelected
+              ? <DeselectAllButton $activeItems={activeExtraButtons} style={style} tooltipTitle={list_buttons.deselect_all} onClick={handleDeselectAll} />
+              : <SelectAllButton $activeItems={activeExtraButtons} style={style} tooltipTitle={list_buttons.select_all} onClick={handleListAll} />
           }
-          <DeleteButton loading={isDeleting} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
-          <CancelSelectionButton tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
+          {onCopy && (
+            <CopyButton $activeItems={activeExtraButtons} style={style} loading={isCopying} disabled={!Object.values(selected).some(Boolean)} onClick={onCopy} />
+          )}
+          {onDelete && (
+            <DeleteButton $activeItems={activeExtraButtons} style={style} loading={isDeleting} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
+          )}
+          <CancelSelectionButton $activeItems={activeExtraButtons} tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
         </MoreOptionsButtonContainer.Inner>
       </MoreOptionsButtonContainer>
     </MainButtonContainer>

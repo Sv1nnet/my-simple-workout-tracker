@@ -1,4 +1,4 @@
-const getWordByNumber = (words: string[], num: number | string, lang = 'ru') => {
+const getWordByNumber = <T = string>(words: T[], num: number | string, lang = 'ru') => {
   const floatNum = parseFloat(`${num}`)
   num = parseInt(`${num}`, 10)
   if (num !== floatNum) return words[1] ?? words[0]

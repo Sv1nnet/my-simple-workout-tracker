@@ -16,17 +16,20 @@ export type ApiDeleteExerciseError = {
 }
 
 type DeleteExercisePayload = { ids: Pick<ExerciseForm, 'id'>[] } 
+type CopyExercisePayload = { ids: Pick<ExerciseForm, 'id'>[] } 
 type Exercise = (ExerciseListItem & { id: string })
 
 export interface IExerciseList {
   exercises: Exercise[];
   deleteExercises: (ids: DeleteExercisePayload) => any;
+  copyExercises: (ids: CopyExercisePayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
   isDeleting: boolean;
+  isCopying: boolean;
 }
 
-const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, isDeleting, exercises }) => {
+const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error, isLoading, isDeleting, isCopying, exercises }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
@@ -54,6 +57,21 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
         setExercisesToDelete({})
         selectionRef.current?.handleCancelSelection()
       }
+      return res
+    })
+  }
+
+  const handleCopy = () => {
+    const toCopy = selectionRef.current.selected
+
+    return copyExercises({
+      ids: Object.keys(toCopy).filter(id => toCopy[id]) as Pick<ExerciseForm, 'id'>[],
+    }).then((res) => {
+      if (isMounted() && res?.data?.success) {
+        setExercisesToDelete({})
+        selectionRef.current?.handleCancelSelection()
+      }
+      return res
     })
   }
 
@@ -72,7 +90,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
   }, [ error ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.handleCancelSelection()
+    if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.handleCancelSelection()
   }, [ error, isLoading, isDeleting ])
 
   return (
@@ -81,9 +99,11 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, error, isLoading, is
       list={exercises}
       style={{ paddingBottom: 45 }}
       onDelete={openModal}
+      onCopy={handleCopy}
       onCancelSelection={closeModal}
       isLoading={isLoading}
       isDeleting={isDeleting}
+      isCopying={isCopying}
       createHref="/exercises/create"
     >
       {({

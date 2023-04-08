@@ -3,7 +3,7 @@ import { InspectButton } from '@/src/app/components/list_buttons'
 import { ExerciseForm, Image } from '@/src/app/store/slices/exercise/types'
 import getWordByNumber from '@/src/app/utils/getWordByNumber'
 import { timeToHms } from '@/src/app/utils/time'
-import { Checkbox, List, Typography } from 'antd'
+import { Checkbox, List, Typography, Image as AntImage } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import { FC } from 'react'
 import styled from 'styled-components'
@@ -26,14 +26,11 @@ const ImageContainer = styled.div`
   & a {
     margin: 0 auto;
   }
-  & img {
-    max-height: 75px;
-    max-width: 75px;
-  }
 `
 
 const StyledCheckbox = styled(Checkbox)`
   position: absolute;
+  z-index: 100;
   top: -3px;
   left: 0;
 `
@@ -94,7 +91,13 @@ const ExerciseItem: FC<IExerciseForm> = ({
     avatar={(
       <ImageContainer>
         {selectionEnabled && <StyledCheckbox checked={selected} />}
-        <img src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder} />
+        <AntImage
+          style={{
+            maxWidth: 75,
+            maxHeight: 75,
+          }}
+          src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
+        />
       </ImageContainer>
     )}
     title={(

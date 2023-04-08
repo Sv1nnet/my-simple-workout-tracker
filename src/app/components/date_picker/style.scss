@@ -17,7 +17,13 @@
         }
       }
 
-      .ant-picker-date-panel {
+      .ant-picker-decade-panel,
+      .ant-picker-year-panel,
+      .ant-picker-quarter-panel,
+      .ant-picker-month-panel,
+      .ant-picker-week-panel,
+      .ant-picker-date-panel,
+      .ant-picker-time-panel {
         width: 100%;
 
         .ant-picker-body {

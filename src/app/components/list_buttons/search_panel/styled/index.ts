@@ -3,6 +3,7 @@ import { Input, Button } from 'antd'
 
 export const Container = styled.div`
   display: flex;
+  margin-top: 6px;
   padding-left: 15px;
   padding-right: 15px;
 

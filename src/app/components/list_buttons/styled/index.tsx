@@ -18,9 +18,9 @@ export const MoreOptionsButtonContainer = styled.div`
   top: 0;
   transition: .3s all;
   overflow: hidden;
-  width: ${({ $expanded }) => $expanded ? '140px' : '50px'};
+  width: ${({ $expanded, $items }) => $expanded ? `${90 + ($items * 50)}` : '50'}px;
   height: 40px;
-  border-radius: 0 40px 40px 0;
+  border-radius: 40px 40px 40px 40px;
 `
 MoreOptionsButtonContainer.Inner = styled.div`
   display: flex;

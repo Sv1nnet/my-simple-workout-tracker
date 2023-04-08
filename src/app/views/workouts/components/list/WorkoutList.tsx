@@ -22,12 +22,14 @@ type DeleteWorkoutPayload = { ids: Pick<WorkoutForm, 'id'>[] }
 export interface IWorkoutList {
   workouts: WorkoutListItem[];
   deleteWorkouts: (ids: DeleteWorkoutPayload) => any;
+  copyWorkouts: (ids: DeleteWorkoutPayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
   isLoading: boolean;
   isDeleting: boolean;
+  isCopying: boolean;
 }
 
-const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDeleting, workouts }) => {
+const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const { loading, loadingRoute } = useRouterContext()
@@ -60,6 +62,20 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
     })
   }
 
+  const handleCopy = () => {
+    const toCopy = selectionRef.current.selected
+
+    return copyWorkouts({
+      ids: Object.keys(toCopy).filter(id => toCopy[id]) as Pick<WorkoutForm, 'id'>[],
+    }).then((res) => {
+      if (isMounted() && res?.data?.success) {
+        setWorkoutsToDelete({})
+        selectionRef.current?.handleCancelSelection()
+      }
+      return res
+    })
+  }
+
   useHandleMounted()
 
   useEffect(() => {
@@ -75,8 +91,8 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
   }, [ error ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.handleCancelSelection()
-  }, [ error, isLoading, isDeleting ])
+    if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.handleCancelSelection()
+  }, [ error, isLoading, isDeleting, isCopying ])
 
   return (
     <SelectableList
@@ -84,9 +100,11 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, error, isLoading, isDel
       list={workouts}
       style={{ paddingBottom: 45 }}
       onDelete={openModal}
+      onCopy={handleCopy}
       onCancelSelection={closeModal}
       isLoading={isLoading}
       isDeleting={isDeleting}
+      isCopying={isCopying}
       createHref="/workouts/create"
     >
       {({
