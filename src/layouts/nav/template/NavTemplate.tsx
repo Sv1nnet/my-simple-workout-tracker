@@ -9,6 +9,7 @@ import { useAppSelector } from '@/src/app/hooks'
 import { selectAllLists } from '@/src/app/store/utils/commonSelectors'
 import { API_STATUS } from '@/src/app/constants/api_statuses'
 import { useListContext } from '@/src/app/contexts/list/ListContextProvider'
+import hasWindow from 'app/utils/hasWindow'
 
 const { TabPane } = Tabs
 
@@ -53,7 +54,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const { intl } = useIntlContext()
   const { loading, loadingRoute } = useRouterContext()
   const { exerciseList, workoutList, activityList } = useAppSelector(selectAllLists)
-  const [ width, setWidth ] = useState(() => typeof window !== 'undefined' && window.innerWidth < 375 ? 'sm' : 'md')
+  const [ width, setWidth ] = useState(() => hasWindow() && window.innerWidth < 375 ? 'sm' : 'md')
   const { listEl } = useListContext()
 
   const getLoadingTab = ({ activeTab: _activeTab, loading: _loading, loadingRoute: _loadingRoute, exerciseList: _exerciseList, workoutList: _workoutList, activityList: _activityList }) => {

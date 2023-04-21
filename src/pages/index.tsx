@@ -1,10 +1,11 @@
 import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import Activities from './activities'
+import hasWindow from 'app/utils/hasWindow'
 
 export default Activities
 
 export const getServerSideProps = (_ctx) => {
-  if (typeof window !== 'undefined') return { props: {} }
+  if (hasWindow()) return { props: {} }
 
   const { req } = _ctx
   if (!req) return {}

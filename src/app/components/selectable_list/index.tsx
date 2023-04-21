@@ -1,8 +1,9 @@
-import React, { useState, useImperativeHandle, ReactElement, MouseEventHandler, ForwardRefExoticComponent, RefAttributes, FC } from 'react'
+import React, { useState, useImperativeHandle, ReactElement, MouseEventHandler, ForwardRefExoticComponent, RefAttributes, FC, useMemo, TouchEventHandler } from 'react'
 import styled from 'styled-components'
 import { ListControls } from 'app/components'
 import { StyledSelectableListItem, SelectableModal } from './components'
 import { ISelectableModalProps } from './components/modal/SelectableModal'
+import AppleContextMenuHandler from 'app/utils/AppleContextMenuHandler'
 
 const ListContainer = styled.div`
   padding: 15px;
@@ -33,6 +34,12 @@ export interface ISelectableList {
     onSelect: React.MouseEventHandler<HTMLElement>,
     onCancelSelection: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     onContextMenu: MouseEventHandler<HTMLElement>,
+    onTouchHandlers: {
+      onTouchStart: TouchEventHandler;
+      onTouchEnd: TouchEventHandler;
+      onTouchMove: TouchEventHandler;
+      onTouchCancel: TouchEventHandler;
+    }
   }) => ReactElement) | ReactElement | ReactElement[];
   style?: React.CSSProperties,
   className?: string,
@@ -70,11 +77,15 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
 
       setSelectionEnabled(true)
 
-      const { dataset } = e.currentTarget
-      const { selectableId } = dataset
+      const { selectableId } = (e.currentTarget || (e.target as HTMLElement).closest('[data-selectable-id]')).dataset || {}
 
-      if (!selected[selectableId]) setSelected({ ...selected, [selectableId]: true })
-      else setSelected({ ...selected, [selectableId]: false })
+      if (selectableId) {
+        if (!selected[selectableId]) setSelected({ ...selected, [selectableId]: true })
+        else setSelected({ ...selected, [selectableId]: false })
+      } else {
+        setSelected({ ...selected })
+      }
+
     }
   }
 
@@ -109,6 +120,8 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     if (typeof onSelect === 'function') onSelect(e, newSelected, _isAllSelected)
   }
 
+  const contextMenuHandler = useMemo(() => new AppleContextMenuHandler(handleContextMenu), [ handleContextMenu, selectionEnabled, selected ])
+
   const handleSelectDeselectAll = (shouldSelect: boolean) => {
     setSelected(list.reduce((acc, { id }) => { acc[id] = shouldSelect; return acc }, {}))
     setIsAllSelected(shouldSelect)
@@ -139,6 +152,12 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
           onSelect: handleSelect,
           onCancelSelection: handleCancelSelection,
           onContextMenu: handleContextMenu,
+          onTouchHandlers: {
+            onTouchStart: contextMenuHandler.onTouchStart,
+            onTouchCancel: contextMenuHandler.onTouchCancel,
+            onTouchEnd: contextMenuHandler.onTouchEnd,
+            onTouchMove: contextMenuHandler.onTouchMove,
+          },
         })
         : React.Children.map(children, (child: ReactElement) => React.cloneElement(
           child,
@@ -150,6 +169,12 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
             onSelect: handleSelect,
             onCancelSelection: handleCancelSelection,
             onContextMenu: handleContextMenu,
+            onTouchHandlers: {
+              onTouchStart: contextMenuHandler.onTouchStart,
+              onTouchCancel: contextMenuHandler.onTouchCancel,
+              onTouchEnd: contextMenuHandler.onTouchEnd,
+              onTouchMove: contextMenuHandler.onTouchMove,
+            },
           },
         ))}
       <ListControls

@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import Image from 'next/image'
 import { Select } from 'antd'
 import { changeLang, selectLang } from 'store/slices/config'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
@@ -15,15 +14,11 @@ const Wrapper = styled.div`
   width: 100%;
 
   .ant-select {
-    margin-left: 14px;
+    margin-left: 16px;
 
     .ant-select-selector {
       padding-left: 2px;
       padding-right: 2px;
-
-      .ant-select-selection-item {
-        margin-top: 2px;
-      }
     }
   }
 `
@@ -65,11 +60,11 @@ const Content = () => {
         options={[
           {
             value: 'eng',
-            label: <Image src="/icons/usa_flag.svg" alt="" width={38} height={26} />,
+            label: <span style={{ paddingLeft: 12, paddingRight: 12 }}>EN</span>,
           },
           {
             value: 'ru',
-            label: <Image src="/icons/ru_flag.svg" alt="" width={38} height={26} />,
+            label: <span style={{ paddingLeft: 12, paddingRight: 12 }}>РУ</span>,
           },
         ]}
       />

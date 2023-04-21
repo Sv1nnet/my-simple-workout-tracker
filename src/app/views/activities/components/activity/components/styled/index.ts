@@ -78,7 +78,7 @@ export const WorkoutLabelContainer = styled.div`
 
 export const StopwatchContainer = styled.div`
   position: fixed;
-  top: 20px;
+  top: 19px;
   left: 50%;
   transform: translate(-50%);
 

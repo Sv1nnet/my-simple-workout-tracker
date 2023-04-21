@@ -1,25 +1,27 @@
 import styled from 'styled-components'
 
-export const FlagsContainer = styled.div`
+export const SelectorContainer = styled.div`
   display: flex;
+  align-items: center;
   position: absolute;
   right: 15px;
   top: 15px;
+
+  .ant-select-selector {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
 `
 
-export const LangButton = styled.button`
-  width: 42px;
-  height: 30px;
-  font-size: 40px;
-  line-height: 0px;
-  padding: 0;
-  margin-left: 10px;
-  border: none;
-  background-color: transparent;
-  &.active {
-    background-color: skyblue;
-  }
-  &:focus {
-    outline: 1px skyblue solid;
+export const OptionsContainer = styled.div`
+  & .ant-select-item.ant-select-item-option {
+    padding: 0;
+
+    .ant-select-item-option-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
   }
 `

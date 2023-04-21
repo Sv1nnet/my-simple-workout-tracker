@@ -111,6 +111,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
         selectionEnabled,
         onSelect,
         onContextMenu,
+        onTouchHandlers,
       }) => (
         <>
           <List
@@ -118,7 +119,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
             dataSource={exercises}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
-              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]}>
+              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <ExerciseItem
                   loadingExerciseId={loading && loadingId ? loadingId : null}
                   payloadDictionary={payload}

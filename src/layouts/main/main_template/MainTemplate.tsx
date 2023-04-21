@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect } from 'react'
+import React, { FC, ReactElement, useEffect, useLayoutEffect, useState } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
@@ -6,6 +6,7 @@ import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/with
 import { Header } from 'layouts/header'
 import { Tabs } from 'antd'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
+import hasWindow from '@/src/app/utils/hasWindow'
 
 const { TabPane } = Tabs
 
@@ -18,7 +19,7 @@ const StyledTabs = styled(Tabs)`
     margin: 0;
   }
   .ant-tabs-tabpane {
-    height: calc(100vh - 57px - 74px);
+    height: calc(${({ $height }) => `${$height || '100vh'}`} - 57px - 74px);
     overflow-y: scroll;
   }
 `
@@ -31,6 +32,7 @@ const routes = [
 ]
 
 const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC } = ({ tab, children, ...props }) => {
+  const [ height, setHeight ] = useState('100vh')
   const router = useRouter()
   const [ , route, subRoute ] = router.route.split('/') as [any, TabRoutes, string]
 
@@ -48,6 +50,20 @@ const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC }
 
   const getTabComponent = shouldRender => shouldRender ? React.cloneElement(children, { ...children.props, ...props }) : null
 
+  useLayoutEffect(() => {
+    if (hasWindow()) {
+      const setTabsHeight = () => {
+        setHeight(`${document.body.offsetHeight}px`)
+      }
+
+      setTabsHeight()
+
+      window.addEventListener('resize', setTabsHeight)
+
+      return () => window.removeEventListener('resize', setTabsHeight)
+    }
+  }, [])
+
   return (
     <>
       <Head>
@@ -55,7 +71,7 @@ const MainTemplate: FC<{ tab: string, children: ReactElement }> & { Layout: FC }
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header route={route}>
-        <StyledTabs activeKey={activeKey}>
+        <StyledTabs activeKey={activeKey} $height={height}>
           <TabPane key="exercises">
             {getTabComponent(activeKey === 'exercises')}
           </TabPane>

@@ -9,6 +9,7 @@ import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import { logout } from '@/src/app/store/slices/auth'
 import { useAppDispatch } from '@/src/app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { AnyAction } from '@reduxjs/toolkit'
 
 
 const StyledAvatar = styled(Avatar)`
@@ -39,7 +40,7 @@ const UserMenu = () => {
 
   const menu = useMemo(function MenuItself() {
     const handleClick = () => {
-      dispatch(logout())
+      dispatch(logout() as unknown as AnyAction)
       push('/')
     }
     const closeMenu = () => setIsOpen(false)
