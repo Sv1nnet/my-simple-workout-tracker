@@ -106,7 +106,7 @@ const UserMenu = () => {
   return (
     <Dropdown
       visible={isOpen}
-      overlayStyle={{ width: 'calc(100% - 30px)', left: '0', right: '0', margin: 'auto', maxWidth: '768px' }}
+      overlayStyle={{ width: 'calc(100% - 30px)', left: '0', right: '0', margin: 'auto', maxWidth: '475px' }}
       overlayClassName={style['user-menu-dropdown']}
       overlay={menu}
       placement="bottomRight"
