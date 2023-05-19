@@ -11,8 +11,13 @@ export class Timeout {
     return this._timeout
   }
 
-  setTimeout(timeout: number) {
-    this._timeout = timeout
+  setTimeout(...params: Parameters<typeof setTimeout>) {
+    this._timeout = setTimeout.apply(null, params)
+    return this._timeout
+  }
+
+  clearTimeout() {
+    clearTimeout(this._timeout)
   }
 }
 
@@ -22,13 +27,13 @@ const respondAfterTimeoutInMs = ({ timeout, ctx, route }, timeToWait = 1000) => 
   return new Promise<IResponse<null>>(async (res, rej) => {
     // if server response longer then 1s then we return
     // data so a user won't wait for response too long
-    timeout.setTimeout(setTimeout(() => {
+    timeout.setTimeout(() => {
       res({
         error: null,
         data: null,
         success: true,
       })
-    }, timeToWait))
+    }, timeToWait)
 
     try {
       const response = await fetch(route, {
@@ -36,7 +41,7 @@ const respondAfterTimeoutInMs = ({ timeout, ctx, route }, timeToWait = 1000) => 
           Authorization: `Bearer ${ctx.req.session.token}`,
         },
       }).then((r) => {
-        clearTimeout(timeout.getTimeout())
+        timeout.clearTimeout()
         return r.json()
       })
 

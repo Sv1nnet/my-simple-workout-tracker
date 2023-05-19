@@ -213,7 +213,7 @@ export const useValidateNumber = ({
   
   if (int) {
     if (onlyPositive) return (v?: string | number) => isPosInt(v) && withinMax(v) && withinMin(v)
-    if (onlyPositive) return (v?: string | number) => (isNegInt(v) && withinMax(v) && withinMin(v)) || v === '-'
+    if (onlyNegative) return (v?: string | number) => (isNegInt(v) && withinMax(v) && withinMin(v)) || v === '-'
     return (v?: string | number) => (isInt(v) && withinMax(v) && withinMin(v)) || v === '-'
   }
   
