@@ -95,7 +95,7 @@ const SearchPanel = ({ loading, href, addButtonText, onChange }) => {
     const handleClick = () => {
       if (!isOpen) {
         $input.current?.focus()
-      } else {
+      } else if ($input.current?.input?.value) {
         onChange('')
         $input.current.setValue('')
       }
