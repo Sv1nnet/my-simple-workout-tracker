@@ -4,7 +4,7 @@ const { firstIp } = require('./src/app/utils/ips.ts')
 
 const isProd = process.env.NODE_ENV === 'production'
 const apiHost = isProd
-  ? process.env.EXTERNAL_API_HOST
+  ? process.env.PRODUCTION_API_HOST
   : `http://${process.env.API_HOST || firstIp}:3005`
 
 module.exports = withPlugins(

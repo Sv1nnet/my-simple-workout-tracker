@@ -1,13 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "dev": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next -H $EXTERNAL_API_HOST -p 3004",
+    "dev": "export PRODUCTION_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next -H $PRODUCTION_API_HOST -p 3004",
     "dev:debug": "NODE_OPTIONS='--inspect' next -H $(osascript -e \"IPv4 address of (system info)\") -p 3004",
-    "build": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build",
+    "build": "export PRODUCTION_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build",
     "start": "next start -p 3004",
-    "build:start": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build && next start -p 3004",
-    "build:docker": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && docker build -t mswt-client_prod .",
-    "build:docker:start": "export EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build && docker build -t mswt-client . && docker run mswt-client",
+    "build:start": "export PRODUCTION_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build && next start -p 3004",
+    "build:docker": "export PRODUCTION_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && docker build -t mswt-client_prod .",
+    "build:docker:start": "export PRODUCTION_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && next build && docker build -t mswt-client . && docker run mswt-client",
     "oldstart": "next start",
     "type-check": "tsc",
     "test": "jest"
