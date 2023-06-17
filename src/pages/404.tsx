@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import { useNavigate } from 'react-router'
 
 const NotFound404 = () => {
   const [ count, setCount ] = useState(3)
-  const router = useRouter()
+  const navigate = useNavigate()
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout = -1 as unknown as NodeJS.Timeout
+
     if (count > 0) {
-      setTimeout(() => setCount(count - 1), 1000)
-      return
+      timeout = setTimeout(() => setCount(count - 1), 1000)
     }
     
     if (count === 0) {
-      setTimeout(() => router.push('/'), 1000)
+      timeout = setTimeout(() => navigate('/'), 1000)
+    }
+
+    return () => {
+      clearTimeout(timeout)
     }
   }, [ count ])
 

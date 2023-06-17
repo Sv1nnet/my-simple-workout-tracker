@@ -1,4 +1,4 @@
-import { IResponse } from '@/src/app/constants/response_types'
+import { IResponse } from 'app/constants/response_types'
 
 export type ProfileForm = {
   email: string;

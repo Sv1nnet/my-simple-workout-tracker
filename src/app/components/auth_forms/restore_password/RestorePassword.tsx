@@ -6,7 +6,7 @@ import { AUTH_FORM_TABS } from '../template/Template'
 import { notification } from 'antd'
 import { ApiSignupError, IProps } from './types'
 
-const RestorePassword: FC<IProps> = ({ active, loading, onSuccess }) => {
+const RestorePassword: FC<IProps> = ({ active, onSuccess }) => {
   const { intl } = useIntlContext()
   const [ restorePassword, stateResult ] = authApi.useLazyRestorePasswordQuery()
 
@@ -29,7 +29,6 @@ const RestorePassword: FC<IProps> = ({ active, loading, onSuccess }) => {
   return (
     <Form
       data={stateResult.data}
-      loading={loading}
       isFetching={stateResult.isFetching}
       isError={stateResult.isError}
       error={stateResult.error as ApiSignupError}

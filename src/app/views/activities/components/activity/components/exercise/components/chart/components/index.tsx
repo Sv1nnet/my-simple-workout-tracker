@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { SegmentsRange, spreadSegments, DIRECTIONS } from 'app/utils/range'
-import { timeToHms } from '@/src/app/utils/time'
+import { timeToHms } from 'app/utils/time'
 
 const TextShadow = styled.text`
   filter: url(#shadow);

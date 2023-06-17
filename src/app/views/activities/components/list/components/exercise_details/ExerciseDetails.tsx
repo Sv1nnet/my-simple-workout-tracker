@@ -1,8 +1,8 @@
 import { FC } from 'react'
 import styled from 'styled-components'
-import { timeToHms } from '@/src/app/utils/time'
-import { ExerciseResultsDetails } from '@/src/pages/activities'
-import getWordByNumber from '@/src/app/utils/getWordByNumber'
+import { timeToHms } from 'app/utils/time'
+import { ExerciseResultsDetails } from 'src/pages/activities/List'
+import getWordByNumber from 'app/utils/getWordByNumber'
 import { Typography } from 'antd'
 
 const { Text } = Typography

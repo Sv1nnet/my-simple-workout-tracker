@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import {
   Form,
   Input,
@@ -6,13 +5,13 @@ import {
   Modal,
   Select,
 } from 'antd'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
 import dayjs, { Dayjs, isDayjs } from 'dayjs'
 import { dayjsToSeconds, isExerciseTimeType, secondsToDayjs, timeArrayToMilliseconds } from 'app/utils/time'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
-import { useAppSelector, useMounted, useRequestForNotificationPermission } from 'app/hooks'
+import { useAppSelector, useRequestForNotificationPermission } from 'app/hooks'
 import {
   Exercise,
   StyledForm,
@@ -21,22 +20,21 @@ import {
   WorkoutLabelContainer,
   StyledDateFormItem,
 } from './components'
-import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { selectList } from 'app/store/slices/workout'
-import { activityApi } from '@/src/app/store/slices/activity/api'
-import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
-import { WorkoutForm, WorkoutListExercise } from '@/src/app/store/slices/workout/types'
-import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
-import { API_STATUS } from '@/src/app/constants/api_statuses'
+import { activityApi } from 'app/store/slices/activity/api'
+import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
+import { WorkoutForm, WorkoutListExercise } from 'app/store/slices/workout/types'
+import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
+import { API_STATUS } from 'app/constants/api_statuses'
 import { getResultsFromWorkoutList } from './utils'
 import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
-import { StopwatchRef } from '@/src/app/components/stopwatch/Stopwatch'
-
+import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
+import { useNavigate } from 'react-router'
 
 const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
@@ -51,12 +49,10 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
   const { intl, lang } = useIntlContext()
-  const { loading } = useRouterContext()
 
   const { input_labels, submit_button, modal, loader } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
   
-  const { isMounted, useHandleMounted } = useMounted()
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
   const history = useMemo<HistoryServerPayload>(() => _history
     ? Object
@@ -72,6 +68,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   
   const [ form ] = Form.useForm<ActivityForm>()
   
+  const isRestoringActivity = useRef(false)
+  const settingInitialValueTimeout = useRef(null)
   const initFromCacheRef = useRef(false)
   const durationTimerRef = useRef<StopwatchRef>(null)
 
@@ -82,7 +80,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       okText: modal.error.ok_button,
     })
     localStorage.removeItem('cached_activity')
-    setTimeout(() => setSelectedWorkout(null))
+    setSelectedWorkout(null)
   }
 
   const initialValues = useMemo<InitialValues>(() => {
@@ -91,8 +89,6 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     let newInitialValues
     try {
       if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current) {
-        initFromCacheRef.current = false
-  
         const workout = workoutList
           .data
           .find(wk => wk.id === cachedFormValues.workout_id)
@@ -164,11 +160,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         }
       }
 
-      if (isMounted()) setTimeout(() => form.setFieldsValue(newInitialValues))
-      if (newInitialValues.workout_id) {
-        setTimeout(() => setSelectedWorkout(newInitialValues.workout_id))
-        getHistory({ workoutId: newInitialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: newInitialValues.id })
-      }
+      clearTimeout(settingInitialValueTimeout.current)
 
       return newInitialValues
     } catch {
@@ -279,6 +271,14 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     updateDurationInForm(0)
   }
 
+  useLayoutEffect(() => {
+    form.setFieldsValue(initialValues)
+    if (initialValues.workout_id) {
+      setSelectedWorkout(initialValues.workout_id)
+      getHistory({ workoutId: initialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: initialValues.id })
+    }
+  }, [ initialValues ])
+
   useEffect(() => {
     const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
     if (error || isError) {
@@ -287,7 +287,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         content: error || default_content.error,
         okText: ok_text,
         onOk() {
-          if (errorCode === 404) router.push('/activities')
+          if (errorCode === 404) navigate('/activities')
         },
       })
     } else if (!!historyErrorText || isHistoryError) {
@@ -318,8 +318,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [ selectedWorkout ])
 
   useEffect(() => {
-    if (!isEdit && localStorage.getItem('cached_activity') && workoutList.status === API_STATUS.LOADED) {
-      Modal.confirm({
+    if (!isRestoringActivity.current && !isEdit && localStorage.getItem('cached_activity') && workoutList.status === API_STATUS.LOADED) {
+      const _modal = Modal.confirm({
         title: modal.restore.title,
         content: modal.restore.body,
         okText: modal.restore.ok_button,
@@ -343,14 +343,13 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           localStorage.removeItem('cached_activity')
         },
       })
+      return () => _modal.destroy()
     }
   }, [ workoutList.status ])
 
   useRequestForNotificationPermission()
 
-  useHandleMounted()
-
-  const isFormItemDisabled = !isEditMode || isFetching || loading
+  const isFormItemDisabled = !isEditMode || isFetching
 
   return (
     <>
@@ -360,8 +359,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
             isEditMode={isEditMode}
             onEditClick={() => setEditMode(true)}
             onDeleteClick={() => setIsModalVisible(true)}
-            deleteButtonProps={{ disabled: isFetching || loading }}
-            editButtonProps={{ disabled: isFetching || loading }}
+            deleteButtonProps={{ disabled: isFetching }}
+            editButtonProps={{ disabled: isFetching }}
           />
         )}
         <StyledDateFormItem
@@ -417,11 +416,11 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         </Form.Item>
         {(isEditMode || !isEdit) && (
           <CreateEditFormItem>
-            <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
+            <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
               {isEdit ? submit_button.save : submit_button.create}
             </Button>
             {isEdit && (
-              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
+              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>
                 {submit_button.cancel}
               </ToggleEdit>
             )}
@@ -447,7 +446,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         </Form.Item>
         
         <Modal
-          visible={isModalVisible}
+          open={isModalVisible}
           okText={modal.delete.ok_button}
           onOk={handleDelete}
           okButtonProps={{ danger: true, type: 'default', loading: isFetching }}

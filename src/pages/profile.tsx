@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { HeaderWithoutNav } from 'layouts/header'
 import { Form, Input, Button, notification } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
-import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
 import { Rule } from 'antd/lib/form'
 import { useAppSelector } from 'app/hooks'
 import { profileApi } from 'store/slices/profile/api'
@@ -174,17 +172,4 @@ const Profile = () => {
   )
 }
 
-Profile.Layout = HeaderWithoutNav
-
 export default Profile
-
-export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
-  if (ctx.req.session) {
-    return {
-      props: {
-        token: ctx.req.session.token,
-      },
-    }
-  }
-  return ({ props: {} })
-})

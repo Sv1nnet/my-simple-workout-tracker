@@ -19,7 +19,7 @@ const TextResult = styled.span`
 `
 
 export const Text = (() => {
-  const _Text = styled.p`
+  const Component = styled.p<{ $isTimeType?: boolean, $color?: string, $mt?: string, $eachSide?: boolean }>`
     margin: 0;
     display: ${({ $isTimeType }) => $isTimeType ? '' : 'flex'};
     justify-content: center;
@@ -27,7 +27,9 @@ export const Text = (() => {
     margin-top: ${({ $mt }) => $mt};
     ${({ $eachSide }) => $eachSide ? 'line-height: 1;' : ''}
   `
-  _Text.Side = TextSide
-  _Text.Result = TextResult
+
+  const _Text: typeof Component & { Side: typeof TextSide, Result: typeof TextResult }
+    = Object.assign(Component, { Side: TextSide, Result: TextResult })
+
   return _Text
 })()

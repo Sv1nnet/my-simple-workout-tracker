@@ -11,7 +11,7 @@ export const Container = styled.div`
   margin-right: 10px;
 `
 
-export const ItemContainer = styled.div`
+export const ItemContainer = styled.div<{ $last?: boolean }>`
   text-align: center;
   overflow-y: hidden;
   &:last-of-type ${Header}, &:last-of-type ${Body} {

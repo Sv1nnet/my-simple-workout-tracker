@@ -1,6 +1,6 @@
-import Header, { HeaderTemplate as HeaderWithoutNav } from './template/HeaderTemplate'
+import { PageLayoutWithNav, PageLayout } from './layout/PageLayout'
 
 export {
-  Header,
-  HeaderWithoutNav,
+  PageLayoutWithNav,
+  PageLayout,
 }

@@ -829,8 +829,8 @@
         "eng": "Oops! Some error occured. If it happens again try to clear cache and cookie and login again."
       },
       "button": {
-        "ru": "Обновить страницу",
-        "eng": "Refresh the page"
+        "ru": "Перейти на главную",
+        "eng": "Go to main"
       }
     }
   }

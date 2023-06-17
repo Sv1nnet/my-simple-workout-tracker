@@ -1,13 +1,13 @@
 import { Form, Modal } from 'antd'
 import styled from 'styled-components'
 
-export const StyledForm = styled(Form)`
+export const StyledForm = styled(Form)<{ $isEdit: boolean; }>`
   position: relative;
   padding: 15px;
   ${({ $isEdit }) => $isEdit ? 'padding-top: 40px' : ''}
 `
 
-export const StyledDateFormItem = styled(Form.Item)`
+export const StyledDateFormItem = styled(Form.Item)<{ $isEdit: boolean; }>`
   position: absolute;
   right: 7px;
   top: ${({ $isEdit }) => $isEdit ? '35px' : '10px'};
@@ -27,7 +27,7 @@ export const StyledFormItem = styled(Form.Item)`
     width: 100%;
   }
 `
-export const ShortFormItem = styled(Form.Item)`
+export const ShortFormItem = styled(Form.Item)<{ $fullWidth: boolean; $margin: boolean; }>`
   display: ${({ $fullWidth }) => $fullWidth ? 'block' : 'inline-block'};
   width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'calc(50% - 8px)'};
   margin-right: ${({ $margin }) => $margin ? '8px' : ''};

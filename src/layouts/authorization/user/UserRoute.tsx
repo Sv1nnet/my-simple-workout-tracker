@@ -1,17 +1,13 @@
-import { FC, useEffect } from 'react'
-import Cookie from 'js-cookie'
-import React from 'react'
+import { useEffect } from 'react'
+import cookie from 'js-cookie'
+import { MainTemplate } from '../../main'
 
-const UserRoute: FC = ({ children }) => {
+const UserRoute = () => {
   useEffect(() => {
-    Cookie.remove('logout')
+    cookie.remove('logout')
   }, [])
 
-  return (
-    <>
-      {children}
-    </>
-  )
+  return <MainTemplate />
 }
 
 export default UserRoute

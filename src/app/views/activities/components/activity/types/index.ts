@@ -1,5 +1,5 @@
-import { ActivityForm } from '@/src/app/store/slices/activity/types'
-import { WorkoutForm } from '@/src/app/store/slices/workout/types'
+import { ActivityForm } from 'app/store/slices/activity/types'
+import { WorkoutForm } from 'app/store/slices/workout/types'
 import { Dayjs } from 'dayjs'
 
 export interface IActivityProps {

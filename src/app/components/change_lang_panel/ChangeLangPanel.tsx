@@ -5,7 +5,7 @@ import { SelectorContainer, OptionsContainer } from './components/styled'
 import { Lang } from 'store/slices/config/types'
 import { Select } from 'antd'
 import { TranslationOutlined } from '@ant-design/icons'
-import { theme } from '@/src/styles/vars'
+import { theme } from 'styles/vars'
 
 export interface IChangeLangPanel {
   className?: string;

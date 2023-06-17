@@ -1,13 +1,11 @@
 import { ChangeEvent, ChangeEventHandler, useMemo, useRef, useState } from 'react'
-import { CloseOutlined, SearchOutlined } from '@ant-design/icons'
-import { Input } from 'antd'
+import { CloseOutlined, LoadingOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
 import AddButton from '../add_button/AddButton'
-import { AddButtonText, Container, StyledInput, StyledInputGroup, StyledSearchButton } from './styled'
-import { useDebouncedCallback } from '@/src/app/hooks'
-import isFunc from '@/src/app/utils/isFunc'
+import { AddButtonText, Container, ReloadButton, StyledInput, StyledInputGroup, StyledSearchButton } from './styled'
+import { useDebouncedCallback } from 'app/hooks'
+import { Spin } from 'antd'
 
 export type OnChangeHandler = (value: string, e: ChangeEvent<HTMLInputElement>) => void
-
 
 export type UseSearchPanelUtils = <T = any>(
   initialList: T[],
@@ -17,6 +15,7 @@ export type UseSearchPanelUtils = <T = any>(
   }: {
     filterFn?: (searchValue: string) => (item: T, index: number, array: T[]) => boolean
     onChange?: (...args: Parameters<OnChangeHandler>) => unknown
+    refetch?: (...args: any[]) => any
   },
   { shouldLowerCase,
     shouldUpperCase,
@@ -34,6 +33,7 @@ export type UseSearchPanelUtils = <T = any>(
   searchValue: string,
   filteredList: T[],
   onSearchInputChange: OnChangeHandler,
+  onRefetchClick: () => void
 }
 
 export const useSearchPanelUtils: UseSearchPanelUtils = (
@@ -41,6 +41,7 @@ export const useSearchPanelUtils: UseSearchPanelUtils = (
   {
     filterFn,
     onChange,
+    refetch,
   },
   {
     initialSearchValue = '',
@@ -78,26 +79,35 @@ export const useSearchPanelUtils: UseSearchPanelUtils = (
     
     setSearchValue(_value)
 
-    if (isFunc(onChange)) onChange(_value, e)
+    onChange?.(_value, e)
   }, onChangeDelay)
 
-  return { searchValue, filteredList, onSearchInputChange }
+  const onRefetchClick = refetch ? () => refetch() : undefined
+
+  return { searchValue, filteredList, onSearchInputChange, onRefetchClick }
 }
 
-const SearchPanel = ({ loading, href, addButtonText, onChange }) => {
+const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }) => {
   const [ isOpen, setIsOpen ] = useState(false)
-  const $input = useRef<Input>(null)
+  const [ searchValue, setSearchValue ] = useState('')
+  const $input = useRef(null)
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = e => onChange(e.target.value, e)
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setSearchValue(e.target.value)
+    onChange(e.target.value, e)
+  }
 
   const Prefix = useMemo(() => {
     const Icon = isOpen ? <CloseOutlined width="50px" height="40px" style={{ minWidth: 50 }} /> : <SearchOutlined width="50px" height="40px" style={{ minWidth: 50 }} />
     const handleClick = () => {
       if (!isOpen) {
-        $input.current?.focus()
-      } else {
-        onChange('')
-        $input.current.setValue('')
+        $input.current?.input.focus()
+      } else if ($input.current?.input?.value) {
+        const newValue = ''
+
+        onChange(newValue)
+        setSearchValue(newValue)
+        $input.current.input.value = newValue
       }
 
       setIsOpen(!isOpen)
@@ -110,14 +120,25 @@ const SearchPanel = ({ loading, href, addButtonText, onChange }) => {
     <Container>
       <StyledInputGroup $collapsed={!isOpen}>
         {Prefix}
-        <StyledInput ref={$input} size='large' $collapsed={!isOpen} onChange={handleChange} />
+        <StyledInput ref={$input} size='large' $collapsed={!isOpen} value={searchValue} onChange={handleChange} />
       </StyledInputGroup>
       <AddButton
-        loading={loading}
         buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
         href={href}
         text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
       />
+      {loading
+        ? (
+          <ReloadButton>
+            <Spin size="small" indicator={<LoadingOutlined />} />
+          </ReloadButton>
+        )
+        : (
+          <ReloadButton onClick={refetch}>
+            <ReloadOutlined />
+          </ReloadButton>
+        )}
+      
     </Container>
   )
 }

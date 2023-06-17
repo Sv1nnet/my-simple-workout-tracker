@@ -3,14 +3,16 @@ import { Select } from 'antd'
 import { changeLang, selectLang } from 'store/slices/config'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import UserMenu from 'layouts/header/user_menu/UserMenu'
-import { configApi } from '@/src/app/store/slices/config/api'
-import { Lang } from '@/src/app/store/slices/config/types'
+import { configApi } from 'app/store/slices/config/api'
+import { Lang } from 'app/store/slices/config/types'
 
 const Wrapper = styled.div`
   position: absolute;
+  top: 0;
   left: 0;
   display: flex;
   align-items: center;
+  height: 100%;
   width: 100%;
 
   .ant-select {

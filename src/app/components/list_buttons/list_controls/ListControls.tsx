@@ -1,12 +1,10 @@
 import { MainButtonContainer, MoreOptionsButtonContainer } from '../styled'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
 import { CancelSelectionButton, CopyButton, CreateButton, DeleteButton, DeselectAllButton, SelectAllButton } from './components/styled'
 
 const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, selected, isAllSelected, onDelete, onCopy, onCancel, onSelect }) => {
   const { list_buttons } = useIntlContext().intl.pages.exercises
-  const { loading, loadingRoute } = useRouterContext()
   const [ expanded, setExpanded ] = useState(false)
 
   const handleListAll = () => onSelect(true)
@@ -22,7 +20,7 @@ const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, se
   
   return (
     <MainButtonContainer>
-      {createHref && <CreateButton loading={loading && loadingRoute === createHref} tooltipTitle={list_buttons.create} href={createHref} />}
+      {createHref && <CreateButton tooltipTitle={list_buttons.create} href={createHref} />}
       <MoreOptionsButtonContainer $expanded={isSelectionActive} $items={activeExtraButtons}>
         <MoreOptionsButtonContainer.Inner>
           {

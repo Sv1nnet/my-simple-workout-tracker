@@ -1,16 +1,17 @@
-import { TimePicker } from '@/src/app/components'
+import { TimePicker } from 'app/components'
 import { Typography } from 'antd'
-import { Input } from '@/src/app/components'
-import React, { FC } from 'react'
+import { Input } from 'app/components'
+import { FC } from 'react'
 import styled from 'styled-components'
 import { INumberInput } from 'app/components/input/number/NumberInput'
+import { colors } from '../../../chart/utils'
 
 export const RoundText = styled(Typography.Text)`
   min-width: 15px;
   flex-shrink: 0;
 `
 
-export const LegendItem = styled.span`
+export const LegendItem = styled.span<{ $color?: typeof colors[number] }>`
   display: inline-block;
   position: relative;
   bottom: -6px;
@@ -48,12 +49,12 @@ export const PreviousLoader = styled.span`
   text-align: center;
 `
 
-export const StyledTimePicker = styled(TimePicker)`
+export const StyledTimePicker = styled(TimePicker)<{ hours?: boolean }>`
   width: ${({ hours }) => hours ? '95px' : '75px'};
   padding: 1px 7px 1px;
 `
 
-export const SideInputContainer = styled.div`
+export const SideInputContainer = styled.div<{ $hours?: boolean }>`
   margin-top: 5px;
   display: flex;
   justify-content: ${({ $hours }) => $hours ? 'stretch' : 'center' };
@@ -109,7 +110,7 @@ export const RoundsTable = styled.table`
   width: 100%;
 `
 
-export const THeadCell = styled.th`
+export const THeadCell = styled.th<{ $eachSide?: boolean, $previous?: boolean, $isHours?: boolean, $isTimeType?: boolean }>`
   font-weight: normal;
   padding-left: ${({ $eachSide }) => $eachSide ? '15px' : ''};
   width: ${({ $previous, $eachSide, $isTimeType, $isHours }) => (
@@ -132,7 +133,7 @@ export const THeadCell = styled.th`
   )};
 `
 
-export const StyledTd = styled.td`
+export const StyledTd = styled.td<{ $hours?: boolean }>`
   text-align: center;
   padding: 0;
   padding-bottom: 5px;

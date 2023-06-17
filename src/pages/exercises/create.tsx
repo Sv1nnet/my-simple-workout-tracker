@@ -1,28 +1,20 @@
-import type { NextPage } from 'next'
-import React, { FC, useEffect } from 'react'
-import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { ExerciseTemplate } from 'layouts/main'
+import { useEffect } from 'react'
 import { Exercise } from 'app/views'
-import { useRouter } from 'next/router'
+import { useNavigate } from 'react-router-dom'
 import { exerciseApi } from 'store/slices/exercise/api'
-import { IExercise } from '@/src/app/views/exercises/components/exercise/Exercise'
-import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
-import { ExerciseForm } from '@/src/app/store/slices/exercise/types'
+import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
+import { ExerciseForm } from 'app/store/slices/exercise/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
-interface ICreatePage {
-  setExercise: React.Dispatch<React.SetStateAction<IExercise>>
-}
-
-const CreateExercise: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } = () => {
+const CreateExercise = () => {
   const [ create, { data, isLoading, isError, error } ] = exerciseApi.useCreateMutation()
   const { lang } = useIntlContext()
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const handleSubmit = (values: ExerciseForm) => create({ exercise: values })
 
   useEffect(() => {
-    if (!isError && data) router.push('/exercises')
+    if (!isError && data) navigate('/exercises')
   }, [ isLoading ])
 
   return (
@@ -36,18 +28,4 @@ const CreateExercise: NextPage<ICreatePage> & { Layout: FC, layoutProps?: {} } =
   )
 }
 
-CreateExercise.Layout = ExerciseTemplate
-CreateExercise.layoutProps = { tab: 'subRoute' }
-
 export default CreateExercise
-
-export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
-  if (ctx.req.session) {
-    return {
-      props: {
-        token: ctx.req.session.token,
-      },
-    }
-  }
-  return ({ props: {} })
-})

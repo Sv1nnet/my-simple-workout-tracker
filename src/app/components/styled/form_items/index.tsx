@@ -9,7 +9,7 @@ export const FormActionButtonsContainer = styled.div`
   display: flex;
 `
 
-export const ToggleEdit = styled(Button)`
+export const ToggleEdit = styled(Button)<{ $enable?: boolean }>`
   ${({ $enable }) => $enable ? `
     margin-right: 15px;
   ` : `

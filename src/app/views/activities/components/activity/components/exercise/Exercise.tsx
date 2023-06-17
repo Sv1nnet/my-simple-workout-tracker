@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { FormInstance, Typography } from 'antd'
+import { FormInstance, RadioChangeEvent, Typography } from 'antd'
 import { BreakTimer, History, Note, Rounds, Timers } from './components'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import routes from 'app/constants/end_points'
@@ -7,7 +7,7 @@ import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ActivityForm, Round } from '@/src/app/store/slices/activity/types'
+import { ActivityForm, Round } from 'app/store/slices/activity/types'
 import { Dayjs } from 'dayjs'
 import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import {
@@ -21,8 +21,8 @@ import {
 } from './components/styled'
 import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from './utils'
 import { WorkoutListExercise } from 'app/store/slices/workout/types'
-import { useAppDispatch, useAppSelector } from '@/src/app/hooks'
-import { selectSelectedRoundIndex, setSelectedRound } from '@/src/app/store/slices/activity'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { CacheFormData } from '../../types'
 
 const modeOptions = [
@@ -87,7 +87,7 @@ const Exercise: FC<IExerciseProps> = ({
     )
   }, [ isHistoryLoading, historyByDates ])
 
-  const handleHistoryDisplayType = ({ target: { value } }) => setHistoryDisplayMode(value)
+  const handleHistoryDisplayType = ({ target: { value } }: RadioChangeEvent) => setHistoryDisplayMode(value)
 
   const handleResultClick = (e: React.BaseSyntheticEvent<MouseEvent>) => {
     const index = e.currentTarget.dataset.index

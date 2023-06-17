@@ -53,23 +53,15 @@ export const useAppDispatch = () => useDispatch<AppDispatch>()
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
 
 export type UseLoadList = (args: {
-  loading: boolean,
-  updateList: Function,
-  listFromComponent: any[],
   loadList: Function,
 }) => { dispatch: AppDispatch }
 
-export const useLoadList: UseLoadList = ({ loading, updateList, listFromComponent, loadList }) => {
+export const useLoadList: UseLoadList = ({ loadList }) => {
   const dispatch = useAppDispatch()
+
   useEffect(() => {
-    if (!loading) {
-      if (!listFromComponent) {
-        loadList()
-        return
-      }
-      dispatch(updateList(listFromComponent))
-    }
-  }, [ loading ])
+    loadList()
+  }, [])
 
   return { dispatch }
 }

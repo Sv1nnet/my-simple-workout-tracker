@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { List, notification } from 'antd'
 import { ActivityItem } from './components'
 import { ActivityDeleteError, ActivityForm, ActivityListItem } from 'app/store/slices/activity/types'
@@ -7,8 +7,7 @@ import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import { useMounted } from '@/src/app/hooks'
+import { useMounted } from 'app/hooks'
 
 export type ApiDeleteActivityError = {
   data: ActivityDeleteError;
@@ -28,8 +27,6 @@ export interface IActivityList {
 const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, isDeleting, activities }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
-  const { loading, loadingRoute } = useRouterContext()
-  const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
   const { payload: exercisePayloadDictionary } = intl.pages.exercises
@@ -102,12 +99,13 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
             renderItem={(item: ActivityListItem) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <ActivityItem
-                  loadingActivityId={loading && loadingId ? loadingId : null}
+                  // loadingActivityId={loading && loadingId ? loadingId : null}
+                  loadingActivityId={null}
                   activityDictionary={activityDictionary}
                   exercisePayloadDictionary={exercisePayloadDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
-                  isLoading={activitiesToDelete[item.id] && (isDeleting || loading)}
+                  isLoading={activitiesToDelete[item.id] && (isDeleting /* || loading */)}
                   {...item}
                 />
               </SelectableList.Item>
@@ -116,7 +114,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
           <SelectableList.Modal 
             okText={activityModal.delete.ok_button}
             cancelText={activityModal.delete.cancel_button}
-            visible={isModalVisible} 
+            open={isModalVisible} 
             onOk={handleDelete} 
             onCancel={closeModal}
             text={activityModal.delete.body}

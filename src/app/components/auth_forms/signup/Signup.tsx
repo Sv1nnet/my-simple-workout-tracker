@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types'
 import Form from '../form/Form'
 import { FC, useState } from 'react'
 import { authApi } from 'store/slices/auth/api'
@@ -7,7 +6,7 @@ import SignupByCodeForm from '../signup_by_code_form/SignupByCodeForm'
 import { ApiSignupError, IProps } from './types'
 
 
-const Signup: FC<IProps> = ({ active, loading }) => {
+const Signup: FC<IProps> = ({ active }) => {
   const { intl } = useIntlContext()
   const [ codeVerifySuccess, setCodeVerifySuccess ] = useState(false)
   const [ signupCode, setSignupCode ] = useState(null)
@@ -28,7 +27,6 @@ const Signup: FC<IProps> = ({ active, loading }) => {
     : (
       <Form
         data={stateResult.data}
-        loading={loading}
         isFetching={stateResult.isFetching}
         isError={stateResult.isError}
         error={stateResult.error as ApiSignupError}
@@ -39,10 +37,6 @@ const Signup: FC<IProps> = ({ active, loading }) => {
         submitLabel={intl.auth_form.signup_submit_label}
       />
     )
-}
-
-Signup.propTypes = {
-  active: PropTypes.bool.isRequired,
 }
 
 export default Signup

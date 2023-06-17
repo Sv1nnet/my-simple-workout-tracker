@@ -1,92 +1,93 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { Avatar, Button, Dropdown, Menu } from 'antd'
+import { useEffect, useMemo, useState } from 'react'
+import { Avatar, Button, Dropdown } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import style from './UserMenu.module.scss'
-import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
-import { logout } from '@/src/app/store/slices/auth'
-import { useAppDispatch } from '@/src/app/hooks'
+import { logout } from 'app/store/slices/auth'
+import { useAppDispatch } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { AnyAction } from '@reduxjs/toolkit'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { ROUTES } from 'src/router'
 
 
 const StyledAvatar = styled(Avatar)`
   position: absolute;
-  top: -4px;
   right: 3px;
+  cursor: pointer;
 `
 
-const ROUTES = {
-  PROFILE: '/profile',
-  EXERCISES: '/exercises',
-  WORKOUTS: '/workouts',
-  ACTIVITIES: '/activities',
-}
+
 
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)
-  const { loading, loadingRoute } = useRouterContext()
+  const navigate = useNavigate()
+  const location = useLocation()
   const { intl, lang } = useIntlContext()
-  const { route, push } = useRouter()
   const dispatch = useAppDispatch()
-  const avatarFirstClicked = useRef(false)
 
-  const profileLoading = loading && loadingRoute === ROUTES.PROFILE
-  const exercisesLoading = loading && loadingRoute === ROUTES.EXERCISES
-  const workoutsLoading = loading && loadingRoute === ROUTES.WORKOUTS
-  const activitiesLoading = loading && loadingRoute === ROUTES.ACTIVITIES
-
-  const menu = useMemo(function MenuItself() {
+  const items = useMemo(function MenuItself() {
     const handleClick = () => {
       dispatch(logout() as unknown as AnyAction)
-      push('/')
+      navigate('/')
     }
     const closeMenu = () => setIsOpen(false)
 
-    return (
-      <Menu style={{ width: '100%' }}>
-        {route !== ROUTES.PROFILE
-          ? (
-            <Menu.Item key="profile">
-              <Button loading={profileLoading} type="link" block>
-                <Link href={ROUTES.PROFILE}>{intl.header.profile}</Link>
+    return [
+      ...(location.pathname !== ROUTES.PROFILE
+        ? [
+          {
+            key: 'profile',
+            label: (
+              <Button /* loading={profileLoading} */ type="link" block onClick={closeMenu}>
+                <Link to={ROUTES.PROFILE}>{intl.header.profile}</Link>
               </Button>
-            </Menu.Item>
-          )
-          : (
-            <>
-              <Menu.Item key="exercises">
-                <Button loading={exercisesLoading} type="link" block>
-                  <Link href={ROUTES.EXERCISES}>{`${intl.header.exercises}`}</Link>
-                </Button>
-              </Menu.Item>
-              <Menu.Item key="workouts">
-                <Button loading={workoutsLoading} type="link" block>
-                  <Link href={ROUTES.WORKOUTS}>{`${intl.header.workouts}`}</Link>
-                </Button>
-              </Menu.Item>
-              <Menu.Item key="activities">
-                <Button loading={activitiesLoading} type="link" block>
-                  <Link href={ROUTES.ACTIVITIES}>{`${intl.header.activities}`}</Link>
-                </Button>
-              </Menu.Item>
-            </>
-          )}
-        <Menu.Item key="logout" onClick={closeMenu}>
-          <Button type="link" onClick={handleClick} block>{intl.pages.profile.logout}</Button>
-        </Menu.Item>
-      </Menu>
-    )
-  }, [ profileLoading, exercisesLoading, workoutsLoading, activitiesLoading, lang ])
+            ),
+          },
+        ]
+        : [
+          {
+            key: 'exercises',
+            label: (
+              <Button type="link" block onClick={closeMenu}>
+                <Link to={ROUTES.EXERCISES}>{`${intl.header.exercises}`}</Link>
+              </Button>
+            ),
+          },
+          {
+            key: 'workouts',
+            label: (
+              <Button type="link" block onClick={closeMenu}>
+                <Link to={ROUTES.WORKOUTS}>{`${intl.header.workouts}`}</Link>
+              </Button>
+            ),
+          },
+          {
+            key: 'activities',
+            label: (
+              <Button type="link" block onClick={closeMenu}>
+                <Link to={ROUTES.ACTIVITIES}>{`${intl.header.activities}`}</Link>
+              </Button>
+            ),
+          },
+        ]),
+      {
+        key: 'logout',
+        label: <Button type="link" onClick={handleClick} block>{intl.pages.profile.logout}</Button>,
+      },
+    ]
+  }, [ lang, location ])
 
-  const handleAvatarClick = () => !isOpen && setIsOpen(true)
+  const handleAvatarClick = (e) => {
+    e.stopPropagation()
+    setIsOpen(!isOpen)
+  }
 
   useEffect(() => {
     const handleDocumentClick = ({ target }) => {
-      if (avatarFirstClicked.current && !target.closest('.ant-dropdown')) setIsOpen(false)
-      if (!avatarFirstClicked.current) avatarFirstClicked.current = true
+      if (!target.closest('.ant-dropdown')) {
+        setIsOpen(false)
+      }
     }
 
     if (isOpen) {
@@ -95,20 +96,13 @@ const UserMenu = () => {
     }
   }, [ isOpen ])
 
-  // Here is a bug (or "feature", yea sure):
-  // on first Avatar click for some reason
-  // it calls handleDocumentClick as well.
-  // That's why we need avatarFirstClicked.
-  // So that we check if it was the first time
-  // we clicked avatar
-  useEffect(() => () => { avatarFirstClicked.current = false }, [])
-
   return (
     <Dropdown
-      visible={isOpen}
+      destroyPopupOnHide
+      open={isOpen}
       overlayStyle={{ width: 'calc(100% - 30px)', left: '0', right: '0', margin: 'auto', maxWidth: '475px' }}
       overlayClassName={style['user-menu-dropdown']}
-      overlay={menu}
+      menu={{ items }}
       placement="bottomRight"
     >
       <StyledAvatar onClick={handleAvatarClick} size="large" icon={<UserOutlined />} />

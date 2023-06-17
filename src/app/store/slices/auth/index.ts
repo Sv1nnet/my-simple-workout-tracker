@@ -5,7 +5,7 @@ import type { AppState } from 'app/store'
 import { authApi } from './api'
 import { Token } from './types'
 import * as actions from './actions'
-import { ApiStatus, API_STATUS } from '@/src/app/constants/api_statuses'
+import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 
 export interface IAuthState {
   token: null | Token;
@@ -13,7 +13,7 @@ export interface IAuthState {
 }
 
 const initialState: IAuthState = {
-  token: null,
+  token: Cookie.get('access_token') || null,
   status: API_STATUS.INITIAL,
 }
 

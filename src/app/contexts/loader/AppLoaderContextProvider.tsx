@@ -1,4 +1,4 @@
-import { createContext, FC, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Spin, SpinProps } from 'antd'
 
@@ -26,7 +26,7 @@ const StyledSpin = styled(Spin)`
   }
 `
 
-const SpinContainer = styled.div`
+const SpinContainer = styled.div<{ $show: boolean; }>`
   display: ${({ $show }) => $show ? 'block' : 'none'};
   position: fixed;
   top: 72px;
@@ -56,6 +56,7 @@ const SpinContainer = styled.div`
 
 export interface IAppLoader {
   loaderProps?: SpinProps;
+  children?: ReactNode;
 }
 
 const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps }) => {

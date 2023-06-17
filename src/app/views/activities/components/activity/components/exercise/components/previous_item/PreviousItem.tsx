@@ -1,5 +1,5 @@
-import { theme } from '@/src/styles/vars'
-import { timeToHms } from '@/src/app/utils/time'
+import { theme } from 'src/styles/vars'
+import { timeToHms } from 'app/utils/time'
 import { FC } from 'react'
 import { Container, Diff, Value } from './components/styled'
 

@@ -111,21 +111,13 @@ const NumberInput: FC<INumberInput> = ({
     let { value: v } = e.target
     if (v === '' || validate(v)) {
       v = v && (cutEndingZeroes && !cutLeadingZeroes) || (cutLeadingZeroes && !cutEndingZeroes) && !cutZeroes
-        ? formatToNumber(v, {
-          cutZeroes,
-          cutEndingZeroes,
-          cutLeadingZeroes,
-        })
+        ? formatToNumber(v)
         : v && (cutZeroes || (cutEndingZeroes && cutLeadingZeroes))
-          ? parseFloat(
-            formatToNumber(v, {
-              cutZeroes,
-              cutEndingZeroes,
-              cutLeadingZeroes,
-            }),
-          )
+          ? parseFloat(formatToNumber(v))
           : v
+
       setValue(v)
+
       if (typeof onBlur === 'function') onBlur(v, e)
     } else {
       setValue(value)

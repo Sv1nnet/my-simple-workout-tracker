@@ -11,7 +11,7 @@ export const StyledSelect = styled(Select)`
   }
 `
 
-export const MoveExerciseButtonContainer = styled.div`
+export const MoveExerciseButtonContainer = styled.div<{ $hasTopButton?: boolean, $hasBottomButton?: boolean }>`
   position: absolute;
   z-index: 1;
   top: ${({ $hasTopButton }) => $hasTopButton ? '-24px' : '0px'};

@@ -17,9 +17,9 @@ export const StyledFormItem = styled(Form.Item)`
     width: 100%;
   }
 `
-export const ShortFormItem = styled(Form.Item)`
+export const ShortFormItem = styled(Form.Item)<{ $fullWidth?: boolean; $margin?: boolean; }>`
   display: ${({ $fullWidth }) => $fullWidth ? 'block' : 'inline-block'};
-  width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'calc(50% - 8px)'};
+  width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'calc(50% - 4px)'};
   margin-right: ${({ $margin }) => $margin ? '8px' : ''};
 `
 

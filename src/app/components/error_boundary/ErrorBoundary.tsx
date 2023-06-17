@@ -4,7 +4,6 @@ import { IIntlContextValue, withIntlContext } from 'app/contexts/intl/IntContext
 import Face from './components/Face'
 import { ButtonWrapper, ContentContainer, ErrorContainer } from './components/styled'
 
-
 class ErrorBoundary extends Component<PropsWithChildren<{ intlCtx: IIntlContextValue }>, { hasError: boolean }> {
   static getDerivedStateFromError() {
     return { hasError: true }

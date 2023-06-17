@@ -1,4 +1,4 @@
-import { createContext, FC, useContext, useMemo } from 'react'
+import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 import _rawIntl from 'constants/intl.json'
 import { useAppSelector } from 'app/hooks'
 import { selectLang } from 'store/slices/config'
@@ -14,7 +14,7 @@ export interface IIntlContextValue {
 export const IntlContext = createContext<IIntlContextValue>(initialContextValue)
 export type StringWithShort = String & { short?: string }
 
-const IntlContextProvider: FC = ({ children }) => {
+const IntlContextProvider = ({ children }: PropsWithChildren) => {
   const lang = useAppSelector(selectLang)
   const intl = useMemo(() => {
     let _lang = lang

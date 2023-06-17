@@ -13,8 +13,8 @@ import {
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { getComparator } from 'app/views/activities/components/activity/utils'
 import { Container, HistoryLoader, ItemContainer, ListContainer } from './compoents/styled'
-import { useAppSelector } from '@/src/app/hooks'
-import { selectSelectedRoundIndex, setSelectedRound } from '@/src/app/store/slices/activity'
+import { useAppSelector } from 'app/hooks'
+import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { useDispatch } from 'react-redux'
 
 const RESULT_HEIGHT = 22

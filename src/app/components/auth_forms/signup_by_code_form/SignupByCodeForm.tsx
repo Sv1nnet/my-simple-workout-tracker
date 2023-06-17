@@ -1,10 +1,10 @@
-import { FC, useContext, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { Form as AntForm, Input, Button, notification, Typography } from 'antd'
 import styled from 'styled-components'
 import { useForm } from 'antd/lib/form/Form'
 import { VerifySignupCodeError } from 'store/slices/auth/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { AppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
+import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { authApi } from 'app/store/slices/auth/api'
 
 const StyledButton = styled(Button)`
@@ -25,7 +25,7 @@ const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
   const { signup_by_code, modal } = intl
   const [ verify, { data, isLoading, error, isError } ] = authApi.useLazyVerifySignupCodeQuery()
 
-  const { runLoader, stopLoaderById, forceStopLoader } = useContext(AppLoaderContext)
+  const { runLoader, stopLoaderById, forceStopLoader } = useAppLoaderContext()
   const [ form ] = useForm()
 
   const handleSubmit = ({ code }) => verify(code)

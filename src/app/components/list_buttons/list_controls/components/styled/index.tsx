@@ -11,9 +11,18 @@ import {
   RightOutlined,
   CopyOutlined,
 } from '@ant-design/icons'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 
-export const StyledButton = styled(AntButton)`
+export const StyledButton = styled(AntButton)<{
+  $isSelectionActive?: boolean,
+  $isCancel?: boolean,
+  $isDelete?: boolean,
+  $isCopy?: boolean,
+  $isCreate?: boolean,
+  $isMoreOptions?: boolean,
+  $expanded?: boolean,
+  $activeItems?: number,
+}>`
   z-index: 999;
   transform: ${({ $activeItems }) => `translateX(-${50 + $activeItems * 50}px)`};
   ${({ $isSelectionActive, $isCancel, $isDelete, $isCopy, $isCreate, $isMoreOptions, $expanded, $activeItems }) => (
@@ -60,7 +69,7 @@ unknown,
 
 export const MoreOptionsButton = props => <ListButton isMoreOptions type="text" icon={props.expanded ? <RightOutlined /> : <LeftOutlined />} {...props} />
 export const CreateButton = ({ href, ...props }) => (
-  <Link href={href}>
+  <Link to={href}>
     <ListButton $isCreate icon={<PlusOutlined />} {...props} />
   </Link>
 )

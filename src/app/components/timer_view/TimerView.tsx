@@ -2,11 +2,11 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { Button, ButtonProps } from 'antd'
 import { CaretRightOutlined, PauseOutlined, RedoOutlined } from '@ant-design/icons'
-import { millisecondsToTimeArray, timeArrayToSeconds } from 'app/utils/time'
+import { timeArrayToSeconds } from 'app/utils/time'
 import { theme } from 'src/styles/vars'
 import { getFinalValue } from './utils'
 
-const TimerContainer = styled.div`
+const TimerContainer = styled.div<{ $isFinished?: boolean }>`
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -16,7 +16,7 @@ const TimerContainer = styled.div`
   box-shadow: ${({ $isFinished }) => $isFinished ? '0px 0px 3px red' : 'none'};
 `
 
-const TimeText = styled.span`
+const TimeText = styled.span<{ $disabled?: boolean }>`
   margin-right: 4px;
   color: ${({ $disabled }) => $disabled ? theme.textColorSecondary : ''};
 `
@@ -28,7 +28,6 @@ export interface TimerViewProps {
   msOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
-  onChange?: (value: ReturnType<typeof millisecondsToTimeArray>, timeLeftInMs: number) => void,
   onReset?: ButtonProps['onClick'],
   onPause?: ButtonProps['onClick'],
   onRunTimer?: ButtonProps['onClick'],

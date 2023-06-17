@@ -1,4 +1,4 @@
-import { useState, createContext, FC, useEffect, useContext, useMemo } from 'react'
+import { useState, createContext, useEffect, useContext, useMemo, PropsWithChildren } from 'react'
 import { Ref } from 'components/endless_scrollable_container/EndlessScrollableContainer'
 
 const initialContextValue = { listEl: null, setListEl: () => {} }
@@ -12,7 +12,7 @@ export interface IListContextValue {
 
 export const ListContext = createContext<IListContextValue>(initialContextValue)
 
-const ListContextProvider: FC = ({ children }) => {
+const ListContextProvider = ({ children }: PropsWithChildren) => {
   const [ listEl, setListEl ] = useState<ListEl>(null)
   const value = useMemo(() => ({ listEl, setListEl }), [ listEl ])
 

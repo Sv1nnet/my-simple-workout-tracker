@@ -1,7 +1,7 @@
 import { Typography } from 'antd'
 import styled from 'styled-components'
 
-export const Container = styled.div`
+export const Container = styled.div<{ $eachSide?: boolean }>`
   margin-top: ${({ $eachSide }) => $eachSide ? '' : '10px'};
   ${({ $eachSide }) => $eachSide ? `
     display: flex;
@@ -14,7 +14,7 @@ export const SideLabel = styled(Typography.Paragraph)`
   margin-bottom: 0;
 `
 
-export const EachSideContainer = styled.div`
+export const EachSideContainer = styled.div<{ $right?: boolean, $left?: boolean }>`
   margin-left: ${({ $right }) => $right ? '10px' : ''};
   margin-right: ${({ $right }) => !$right ? '15px' : ''};
 

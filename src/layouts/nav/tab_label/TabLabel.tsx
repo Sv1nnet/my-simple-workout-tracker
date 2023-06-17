@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Spin } from 'antd'
 import { FC, HTMLProps } from 'react'
-import { theme } from '@/src/styles/vars'
+import { theme } from 'src/styles/vars'
 
 const LoaderContainer = styled.div`
   position: absolute;
@@ -29,7 +28,7 @@ const Text = styled.div`
   border-top: 2px solid ${theme.borderColorBase};
 `
 
-export interface ITabLabel extends Omit<HTMLProps<HTMLSpanElement>, 'onClick'> {
+export interface ITabLabel extends Omit<HTMLProps<HTMLDivElement>, 'onClick'> {
   label: string;
   tab: string;
   loading?: boolean;
@@ -52,10 +51,6 @@ const TabLabel: FC<ITabLabel> = ({ loading, label, loaderProps, tab, onClick, ..
       )}
     </>
   )
-}
-TabLabel.propTypes = {
-  loading: PropTypes.bool,
-  label: PropTypes.string,
 }
 
 export default TabLabel

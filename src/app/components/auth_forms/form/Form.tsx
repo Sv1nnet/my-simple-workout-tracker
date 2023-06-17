@@ -1,5 +1,4 @@
 import { FC, useEffect } from 'react'
-import PropTypes from 'prop-types'
 import { Form as AntForm, Input, Button, notification } from 'antd'
 import { useAppDispatch } from 'app/hooks'
 import styled from 'styled-components'
@@ -9,9 +8,8 @@ import { Rule } from 'antd/lib/form'
 import { updateToken } from 'store/slices/auth'
 import { ApiLoginError } from '../login/Login'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { useAppLoaderContext } from '@/src/app/contexts/loader/AppLoaderContextProvider'
 import { AUTH_FORM_TABS } from '../template/Template'
-import { changeLang } from '@/src/app/store/slices/config'
+import { changeLang } from 'app/store/slices/config'
 import { ApiSignupError } from '../signup/types'
 
 const StyledButton = styled(Button)`
@@ -25,15 +23,13 @@ interface IFormProps {
   submitLabel: string;
   active: boolean;
   data?: SignupSuccess | LoginSuccess;
-  loading: boolean;
   isFetching: boolean;
   isError: boolean;
   error: ApiSignupError | ApiLoginError | null;
 }
 
-const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
+const Form: FC<IFormProps> = ({ signupCode, type, active, submitLabel, onSubmit, data: resData = { data: null }, isFetching, isError, error }) => {
   const { intl: { auth_form, signup_by_code, restore_password, modal }, lang } = useIntlContext()
-  const { runLoader, stopLoaderById, forceStopLoader } = useAppLoaderContext()
   const dispatch = useAppDispatch()
   const [ form ] = useForm()
   const { data } = resData
@@ -73,13 +69,6 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
   useEffect(() => {
     if (!active) form.resetFields()
   }, [ active ])
-
-  useEffect(() => {
-    if (loading) runLoader('auth', { tip: auth_form.loading, style: { top: '-72px' } })
-    else stopLoaderById('auth')
-
-    return forceStopLoader
-  }, [ loading ])
 
   return (
     <AntForm
@@ -139,13 +128,6 @@ const Form: FC<IFormProps> = ({ signupCode, type, active, loading, submitLabel, 
       </AntForm.Item>
     </AntForm>
   )
-}
-
-Form.propTypes = {
-  type: PropTypes.string.isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  submitLabel: PropTypes.string.isRequired,
-  active: PropTypes.bool.isRequired,
 }
 
 export default Form

@@ -3,21 +3,22 @@ import { Input, Button } from 'antd'
 
 export const Container = styled.div`
   display: flex;
+  align-items: flex-end;
   margin-top: 6px;
   padding-left: 15px;
   padding-right: 15px;
 
   & .minified {
-    width: 48px;
+    width: 52px;
   }
 `
 
-export const AddButtonText = styled.span`
+export const AddButtonText = styled.span<{ $isVisible: boolean }>`
   opacity: ${({ $isVisible }) => $isVisible ? 1 : 0};
   transition: .3s;
 `
 
-export const StyledInput = styled(Input)`
+export const StyledInput = styled(Input)<{ $collapsed: boolean }>`
   position: relative;
   margin-top: 5px;
   z-index: 1001;
@@ -30,7 +31,14 @@ export const StyledInput = styled(Input)`
   ` : ''}
 `
 
-export const StyledInputGroup = styled(Input.Group)`
+export const ReloadButton = styled(Button)`
+  margin-left: 5px;
+  flex-shrink: 0;
+  flex-basis: 46px;
+  height: 40px;
+`
+
+export const StyledInputGroup = styled(Input.Group)<{ $collapsed: boolean }>`
   display: flex;
   flex-wrap: nowrap;
   transition: all .3s cubic-bezier(0.645, 0.045, 0.355, 1);

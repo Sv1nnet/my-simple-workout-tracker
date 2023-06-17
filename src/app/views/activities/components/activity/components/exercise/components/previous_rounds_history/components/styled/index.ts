@@ -8,7 +8,7 @@ padding-left: 25px;
 text-align: center;
 `
 
-export const PreviousItemContainer = styled.div`
+export const PreviousItemContainer = styled.div<{ $eachSide?: boolean, $isTimeType?: boolean }>`
   position: relative;
   margin-right: 8px;
   padding-top: ${({ $eachSide }) => $eachSide ? 1 : 2}px;
@@ -16,12 +16,12 @@ export const PreviousItemContainer = styled.div`
   height: ${({ $isTimeType, $eachSide }) => !$isTimeType && !$eachSide ? '31px' : ''};
 `
 
-export const StyledTd = styled.td`
+export const StyledTd = styled.td<{ $eachSide?: boolean }>`
   padding: 0;
   ${({ $eachSide }) => $eachSide ? '' : 'vertical-align: top;'}
 `
 
-export const StyledTr = styled.tr`
+export const StyledTr = styled.tr<{ $eachSide?: boolean }>`
   position: relative;
   box-sizing: border-box;
   height: ${({ $eachSide }) => $eachSide ? 68 : 31}px;

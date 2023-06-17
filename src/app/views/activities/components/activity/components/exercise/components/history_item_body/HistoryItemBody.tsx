@@ -1,7 +1,7 @@
 import { timeToHms } from 'app/utils/time'
-import { theme } from '@/src/styles/vars'
+import { theme } from 'src/styles/vars'
 import React, { FC } from 'react'
-import { EachSideRound, Round } from '@/src/app/store/slices/activity/types'
+import { EachSideRound, Round } from 'app/store/slices/activity/types'
 import { Body, Text } from './components/styled'
 
 const getColor = (

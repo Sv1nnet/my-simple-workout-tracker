@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { isExerciseTimeType, timeToHms } from '@/src/app/utils/time'
+import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import { Typography } from 'antd'
 import { StyledText } from '../item/ActivityItem'
 

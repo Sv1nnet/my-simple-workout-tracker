@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { List } from 'antd'
 import { theme } from 'src/styles/vars'
 
-export const StyledSelectableListItem = styled(List.Item)`
+export const StyledSelectableListItem = styled(List.Item)<{ $selected?: boolean }>`
   position: relative;
   flex-wrap: wrap;
   transition: all .3s;

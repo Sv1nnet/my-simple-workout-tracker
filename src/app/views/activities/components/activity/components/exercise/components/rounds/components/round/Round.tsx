@@ -1,9 +1,9 @@
 import { Form, FormInstance } from 'antd'
 import { colors } from '../../../chart/utils'
 import { LegendItem, PreviousLoader, SideNumberInput, SideTimePicker, StyledTd, StyledTimePicker } from '../styled'
-import Input from '@/src/app/components/input'
+import Input from 'app/components/input'
 import PreviousRoundsHistory from '../../../previous_rounds_history/PreviousRoundsHistory'
-import { ActivityForm, HistoryResult } from '@/src/app/store/slices/activity/types'
+import { ActivityForm, HistoryResult } from 'app/store/slices/activity/types'
 import dayjs from 'dayjs'
 
 export interface IRound {

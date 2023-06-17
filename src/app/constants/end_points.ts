@@ -1,12 +1,7 @@
-import getConfig from 'next/config'
+const env = import.meta.env
 
 const isServerEnv = typeof window === 'undefined'
-const isProd = getConfig().publicRuntimeConfig.__IS_PROD__
-let host = getConfig().publicRuntimeConfig.__API_HOST__
-
-if (isProd) {
-  host = isServerEnv ? process.env.INTERNAL_API_HOST : getConfig().publicRuntimeConfig.__API_HOST__
-}
+const host = env.VITE_EXTERNAL_API_HOST
 
 export const BASE_URL = `${host}/api`
 
@@ -110,134 +105,12 @@ const routes = {
   },
   exercise: {
     v1: {},
-    // v1: createBaseRoutes(routes, 'exercise'),
-    // {
-    //   get base() {
-    //     return {
-    //       full: `${_global.__API__.BASE_URL}/v1/exercise`,
-    //       path: '/v1/exercise',
-    //     }
-    //   },
-    //   get list() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/list`,
-    //       path: `${this.base.path}/list`,
-    //     }
-    //   },
-    //   get create() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/create`,
-    //       path: `${this.base.path}/create`,
-    //     }
-    //   },
-    //   get update() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/update`,
-    //       path: `${this.base.path}/update`,
-    //     }
-    //   },
-    //   get delete() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/delete`,
-    //       path: `${this.base.path}/delete`,
-    //     }
-    //   },
-    //   get copy() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/copy`,
-    //       path: `${this.base.path}/copy`,
-    //     }
-    //   },
-    // },
   },
   workout: {
     v1: {},
-    // v1: createBaseRoutes(routes, 'workout'),
-    // {
-    //   get base() {
-    //     return {
-    //       full: `${_global.__API__.BASE_URL}/v1/workout`,
-    //       path: '/v1/workout',
-    //     }
-    //   },
-    //   get list() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/list`,
-    //       path: `${this.base.path}/list`,
-    //     }
-    //   },
-    //   get create() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/create`,
-    //       path: `${this.base.path}/create`,
-    //     }
-    //   },
-    //   get update() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/update`,
-    //       path: `${this.base.path}/update`,
-    //     }
-    //   },
-    //   get delete() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/delete`,
-    //       path: `${this.base.path}/delete`,
-    //     }
-    //   }, get copy() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/copy`,
-    //       path: `${this.base.path}/copy`,
-    //     }
-    //   },
-    // },
   },
   activity: {
     v1: {},
-    // v1: createBaseRoutes(routes, 'activity'),
-    // {
-    //   get base() {
-    //     return {
-    //       full: `${_global.__API__.BASE_URL}/v1/activity`,
-    //       path: '/v1/activity',
-    //     }
-    //   },
-    //   get list() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/list`,
-    //       path: `${this.base.path}/list`,
-    //     }
-    //   },
-    //   get create() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/create`,
-    //       path: `${this.base.path}/create`,
-    //     }
-    //   },
-    //   get update() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/update`,
-    //       path: `${this.base.path}/update`,
-    //     }
-    //   },
-    //   get delete() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/delete`,
-    //       path: `${this.base.path}/delete`,
-    //     }
-    //   },
-    //   get history() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/history`,
-    //       path: `${this.base.path}/history`,
-    //     }
-    //   },
-    //   get copy() {
-    //     return {
-    //       full: `${routes.base}${this.base.path}/copy`,
-    //       path: `${this.base.path}/copy`,
-    //     }
-    //   },
-    // },
   },
 }
 

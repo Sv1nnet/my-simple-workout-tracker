@@ -8,7 +8,7 @@ import { updateToken, logout, selectToken } from 'store/slices/auth'
 import routes from 'constants/end_points'
 import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { Token } from 'store/slices/auth/types'
-import { IResponse } from '@/src/app/constants/response_types'
+import { IResponse } from 'app/constants/response_types'
 import { SerializedError } from '@reduxjs/toolkit'
 import { AppState } from '..'
 

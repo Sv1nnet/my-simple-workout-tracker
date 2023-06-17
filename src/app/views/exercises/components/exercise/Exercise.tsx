@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router'
 import {
   Form,
   Input,
@@ -18,7 +17,6 @@ import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import routes from 'app/constants/end_points'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Input as CustomInput } from 'app/components'
-import { useRouterContext } from 'app/contexts/router/RouterContextProvider'
 import {
   StyledForm,
   StyledFormItem,
@@ -28,6 +26,7 @@ import {
   ShortFormItem,
   HoursFormItem,
 } from './components'
+import { useNavigate } from 'react-router'
 
 export type InitialValues = {
   title: string;
@@ -88,12 +87,11 @@ const previewReducer = (state, { type, payload }) => {
 }
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
   const { intl } = useIntlContext()
-  const { loading } = useRouterContext()
   const { input_labels, submit_button, payload, modal } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
@@ -225,7 +223,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         content: error || default_content.error,
         okText: ok_text,
         onOk() {
-          if (errorCode === 404) router.push('/exercises')
+          if (errorCode === 404) navigate('/exercises')
         },
       })
     }
@@ -235,7 +233,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     mountedRef.current = true
   }, [])
 
-  const isFormItemDisabled = !isEditMode || isFetching || loading
+  const isFormItemDisabled = !isEditMode || isFetching
 
   return (
     <StyledForm preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
@@ -244,8 +242,8 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           isEditMode={isEditMode}
           onEditClick={() => setEditMode(true)}
           onDeleteClick={() => setIsModalVisible(true)}
-          deleteButtonProps={{ disabled: isFetching || loading }}
-          editButtonProps={{ disabled: isFetching || loading }}
+          deleteButtonProps={{ disabled: isFetching }}
+          editButtonProps={{ disabled: isFetching }}
         />
       )}
       <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: 'Required' } ]}>
@@ -283,7 +281,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
             <>
               {shouldRenderTimeInput
                 ? (
-                  <ShortFormItem name="time" label={input_labels.time}>
+                  <ShortFormItem $margin name="time" label={input_labels.time}>
                     <TimePicker
                       disabled={isFormItemDisabled}
                       inputReadOnly
@@ -332,11 +330,11 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       </StyledModal>
       {(isEditMode || !isEdit) && (
         <CreateEditFormItem>
-          <Button type="primary" htmlType="submit" size="large" block loading={isFetching || loading}>
+          <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
             {isEdit ? submit_button.save : submit_button.create}
           </Button>
           {isEdit && (
-            <ToggleEdit onClick={handleCancelEditing} disabled={isFetching || loading} size="large" block>
+            <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>
               {submit_button.cancel}
             </ToggleEdit>
           )}

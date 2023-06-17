@@ -1,11 +1,11 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Collapse, Checkbox, List, Typography } from 'antd'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import ExerciseDetails from '../exercise_details/ExerciseDetails'
 import Rounds from '../rounds/Rounds'
-import { ActivityListItem } from '@/src/app/store/slices/activity/types'
-import { InspectButton } from '@/src/app/components/list_buttons'
+import { ActivityListItem } from 'app/store/slices/activity/types'
+import { InspectButton } from 'app/components/list_buttons'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography

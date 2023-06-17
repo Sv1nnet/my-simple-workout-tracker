@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Typography } from 'antd'
-import getWordByNumber from '@/src/app/utils/getWordByNumber'
-import { timeToHms } from '@/src/app/utils/time'
+import getWordByNumber from 'app/utils/getWordByNumber'
+import { timeToHms } from 'app/utils/time'
 import { Dayjs } from 'dayjs'
 import { FC } from 'react'
 

@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "airbnb-typescript"
-  ],
+  "extends": ["airbnb-typescript"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "./tsconfig.json"
@@ -54,8 +52,8 @@
     "no-param-reassign": "off",
     "no-continue": "off",
     "arrow-body-style": ["error", "as-needed"],
-    "prefer-arrow-callback": [ "error", { "allowNamedFunctions": true } ],
-    "arrow-parens": [ 2, "as-needed", { "requireForBlockBody": true }],
+    "prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+    "arrow-parens": [2, "as-needed", { "requireForBlockBody": true }],
     "no-mixed-operators": "off",
     "prefer-destructuring": "off",
     "object-curly-newline": ["error", { "consistent": true }],
@@ -79,6 +77,13 @@
     "react/no-multi-comp": "off",
     "jsx-a11y/alt-text": "off",
     "jsx-a11y/href-no-hash": "off",
+    "react/self-closing-comp": [
+      "error",
+      {
+        "component": true,
+        "html": true
+      }
+    ],
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/mouse-events-have-key-events": "off",
     "jsx-a11y/no-noninteractive-element-interactions": "off",

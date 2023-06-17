@@ -17,7 +17,7 @@ export const StyledFormItem = styled(Form.Item)`
     width: 100%;
   }
 `
-export const ShortFormItem = styled(Form.Item)`
+export const ShortFormItem = styled(Form.Item)<{ $fullWidth?: boolean, $checkbox?: boolean, $margin?: boolean }>`
   display: ${({ $fullWidth, $checkbox }) => $fullWidth ? 'block' : $checkbox ? 'flex' : 'inline-block'};
   width: ${({ $fullWidth }) => $fullWidth ? '100%' : 'calc(50% - 8px)'};
   margin-right: ${({ $margin }) => $margin ? '8px' : ''};

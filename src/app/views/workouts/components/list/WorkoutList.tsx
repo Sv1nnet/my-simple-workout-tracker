@@ -1,16 +1,15 @@
 
 import { List, notification } from 'antd'
 import { WorkoutItem } from './components'
-import { Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from '@/src/app/store/slices/workout/types'
+import { Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from 'app/store/slices/workout/types'
 import { Image } from 'store/slices/exercise/types'
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import { useMounted } from '@/src/app/hooks'
+import { useMounted } from 'app/hooks'
 
 export type ApiDeleteWorkoutError = {
   data: WorkoutDeleteError;
@@ -32,8 +31,7 @@ export interface IWorkoutList {
 const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
-  const { loading, loadingRoute } = useRouterContext()
-  const [ ,, loadingId ] = (loadingRoute || '').split('/')
+  // const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
   const { payload } = intl.pages.exercises
@@ -123,11 +121,11 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <WorkoutItem
                   payloadDictionary={payload}
-                  loadingWorkoutId={loading && loadingId ? loadingId : null}
+                  loadingWorkoutId={/*loading && loadingId ? loadingId :*/ null}
                   workoutDictionary={workoutDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
-                  isLoading={workoutsToDelete[item.id] && (isDeleting || loading)}
+                  isLoading={workoutsToDelete[item.id] && (isDeleting/* || loading*/)}
                   {...item}
                 />
               </SelectableList.Item>

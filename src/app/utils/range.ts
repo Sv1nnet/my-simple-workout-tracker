@@ -1,9 +1,3 @@
-const __RANGE__ = Symbol('range')
-const __START__ = Symbol('start')
-const __END__ = Symbol('end')
-const __RANGE_SET__ = Symbol('range_set')
-const __ADD_RANGES__ = Symbol('add_ranges')
-
 const intersects = ([ start, end ], [ _start, _end ]) => (
   (_end > start && _end < end) ||
   (_start > start && _start < end) ||
@@ -25,8 +19,6 @@ export class SegmentsRange {
   private _rangeSet: number[]
 
   private _get: (el: any) => [number, number]
-
-  private _set: (range: [number, number]) => void
 
   constructor(initial, getter = function rangeGetter(range) { return range }) {
     this.range = [ ...this._convertToArray(getter(initial)) ]

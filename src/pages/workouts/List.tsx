@@ -1,22 +1,15 @@
-import type { NextPage } from 'next'
-import { FC, useEffect, useRef } from 'react'
-import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { MainTemplate } from 'layouts/main'
-import handleJwtStatus from 'app/utils/handleJwtStatus'
+import { useEffect, useRef } from 'react'
 import { WorkoutList } from 'app/views'
-import routes from 'app/constants/end_points'
 import { workoutApi } from 'app/store/slices/workout/api'
-import { GetWorkoutListError, WorkoutListItem } from '@/src/app/store/slices/workout/types'
+import { GetWorkoutListError, WorkoutListItem } from 'app/store/slices/workout/types'
 import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { selectList, updateList } from '@/src/app/store/slices/workout'
-import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from '@/src/app/hooks'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
-import { API_STATUS } from '@/src/app/constants/api_statuses'
-import { useSearchPanelUtils } from '@/src/app/components/list_buttons/search_panel/SearchPanel'
-import EndlessScrollableContainer, { Ref } from '@/src/app/components/endless_scrollable_container/EndlessScrollableContainer'
-import { useListContext } from '@/src/app/contexts/list/ListContextProvider'
+import { selectList, updateList } from 'app/store/slices/workout'
+import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
+import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
+import { useListContext } from 'app/contexts/list/ListContextProvider'
 
 export interface IWorkouts {
   workouts: WorkoutListItem[];
@@ -29,17 +22,17 @@ export type ApiGetWorkoutListError = {
 
 const CREATE_ROUTE = '/workouts/create'
 
-const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ workouts: _workouts }) => {
+const Workouts = () => {
   const { add } = useIntlContext().intl.pages.workouts.list_buttons
-  const { loading, loadingRoute } = useRouterContext()
   const $container = useRef<Ref>(null)
   const { listEl, setListEl } = useListContext($container.current)
-  const [ loadWorkouts, { error, isError } ] = workoutApi.useLazyListQuery()
+  const [ loadWorkouts, { error, isError, isFetching } ] = workoutApi.useLazyListQuery()
   const { data: workoutsInStore = [], status } = useAppSelector(selectList)
-  const { filteredList: workoutsToShow, onSearchInputChange } = useSearchPanelUtils(
+  const { filteredList: workoutsToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     workoutsInStore,
     {
       filterFn: searchValue => exercise => exercise.title.toLowerCase().includes(searchValue),
+      refetch: loadWorkouts,
     },
     {
       onChangeDelay: 200,
@@ -65,9 +58,6 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
   })
 
   const { dispatch } = useLoadList({
-    loading,
-    updateList,
-    listFromComponent: _workouts,
     loadList: loadWorkouts,
   })
 
@@ -91,7 +81,8 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
     <EndlessScrollableContainer ref={$container}>
       <SearchPanel
         onChange={onSearchInputChange}
-        loading={loading && loadingRoute === CREATE_ROUTE}
+        refetch={onRefetchClick}
+        loading={isFetching}
         href={CREATE_ROUTE}
         addButtonText={add}
       />
@@ -108,22 +99,4 @@ const Workouts: NextPage<IWorkouts> & { Layout: FC, layoutProps?: {} } = ({ work
   )
 }
 
-Workouts.Layout = MainTemplate
-Workouts.layoutProps = { tab: 'workouts' }
-
 export default Workouts
-
-const timeout = new Timeout()
-
-export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
-  if (ctx.req.session) {
-    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: routes.workout.v1.list.full })
-
-    return handleJwtStatus(res, () => ({
-      props: {
-        workouts: res.data,
-      },
-    }))
-  }
-  return { props: {} }
-})

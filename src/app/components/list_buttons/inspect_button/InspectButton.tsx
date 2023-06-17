@@ -1,7 +1,7 @@
-import Link from 'next/link'
 import { Button, ButtonProps, Spin, SpinProps } from 'antd'
 import { EyeOutlined, LoadingOutlined } from '@ant-design/icons'
 import { FC } from 'react'
+import { Link } from 'react-router-dom'
 
 export interface IInspectButton {
   loading: boolean;
@@ -17,16 +17,11 @@ const InspectButton: FC<IInspectButton> = ({ loading, href, buttonProps, spinPro
     </Button>
   )
   : (
-    <Link href={href}>
-      <Button onClick={e => e.stopPropagation()} {...buttonProps}>
+    <Button onClick={e => e.stopPropagation()} {...buttonProps}>
+      <Link to={href}>
         <EyeOutlined size={3} />
-      </Button>
-    </Link>
+      </Link>
+    </Button>
   )
-
-InspectButton.defaultProps = {
-  buttonProps: {},
-  spinProps: {},
-}
 
 export default InspectButton

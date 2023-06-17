@@ -1,5 +1,5 @@
-import { Timer } from '@/src/app/components'
-import { SECONDS_IN_HOUR } from '@/src/app/utils/time'
+import { Timer } from 'app/components'
+import { SECONDS_IN_HOUR } from 'app/utils/time'
 import { Container, EachSideContainer, SideLabel } from './components/styled'
 import { useState } from 'react'
 

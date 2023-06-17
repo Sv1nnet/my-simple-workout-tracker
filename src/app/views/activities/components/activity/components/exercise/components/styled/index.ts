@@ -22,7 +22,7 @@ export const StyledRadio = styled(Radio.Group)`
   }
 `
 
-export const HistoryButtonIcon = styled.img`
+export const HistoryButtonIcon = styled.img<{ $table?: boolean }>`
   position: relative;
   top: -2px;
   ${({ $table }) => $table ? 'transform: scale(1, .7);' : ''}

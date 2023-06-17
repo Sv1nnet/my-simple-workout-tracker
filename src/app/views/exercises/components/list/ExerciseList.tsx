@@ -1,14 +1,13 @@
 import { List, notification } from 'antd'
 import { ExerciseItem } from './components'
 import { ExerciseDeleteError, ExerciseForm, ExerciseListItem, Image } from 'app/store/slices/exercise/types'
-import React, { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import { useMounted } from '@/src/app/hooks'
+import { useMounted } from 'app/hooks'
 
 export type ApiDeleteExerciseError = {
   data: ExerciseDeleteError;
@@ -32,8 +31,7 @@ export interface IExerciseList {
 const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error, isLoading, isDeleting, isCopying, exercises }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
-  const { loading, loadingRoute } = useRouterContext()
-  const [ ,, loadingId ] = (loadingRoute || '').split('/')
+  // const [ ,, loadingId ] = (loadingRoute || '').split('/')
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
   const { payload, modal: exerciseModal } = intl.pages.exercises
@@ -121,11 +119,12 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
             renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <ExerciseItem
-                  loadingExerciseId={loading && loadingId ? loadingId : null}
+                  // loadingExerciseId={loading && loadingId ? loadingId : null}
+                  loadingExerciseId={null}
                   payloadDictionary={payload}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
-                  isLoading={exercisesToDelete[item.id] && (isDeleting || loading)}
+                  isLoading={exercisesToDelete[item.id] && (isDeleting/* || loading*/)}
                   {...item}
                 />
               </SelectableList.Item>

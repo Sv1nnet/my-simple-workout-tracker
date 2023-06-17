@@ -1,22 +1,15 @@
-import type { NextPage } from 'next'
-import { FC, useEffect, useRef } from 'react'
-import withAuth, { GetServerSidePropsContextWithSession } from 'store/utils/withAuth'
-import { MainTemplate } from 'layouts/main'
-import handleJwtStatus from 'app/utils/handleJwtStatus'
+import { useEffect, useRef } from 'react'
 import { ExerciseList } from 'app/views'
 import { ExerciseListItem } from 'app/store/slices/exercise/types'
-import routes from 'app/constants/end_points'
 import { exerciseApi } from 'store/slices/exercise/api'
 import { selectList, updateList } from 'store/slices/exercise'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
 import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { useRouterContext } from '@/src/app/contexts/router/RouterContextProvider'
-import respondAfterTimeoutInMs, { Timeout } from '@/src/app/utils/respondAfterTimeoutInMs'
-import { API_STATUS } from '@/src/app/constants/api_statuses'
-import { useSearchPanelUtils } from '@/src/app/components/list_buttons/search_panel/SearchPanel'
-import EndlessScrollableContainer, { Ref } from '@/src/app/components/endless_scrollable_container/EndlessScrollableContainer'
-import { useListContext } from '@/src/app/contexts/list/ListContextProvider'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
+import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
+import { useListContext } from 'app/contexts/list/ListContextProvider'
 
 export interface IExercises {
   exercises: ExerciseListItem<number>[];
@@ -24,16 +17,17 @@ export interface IExercises {
 
 const CREATE_ROUTE = '/exercises/create'
 
-const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ exercises: _exercises }) => {
+const Exercises = () => {
   const { add } = useIntlContext().intl.pages.workouts.list_buttons
-  const { loading, loadingRoute } = useRouterContext()
   const $container = useRef<Ref>(null)
   const { listEl, setListEl } = useListContext($container.current)
+  const [ loadExercises, { error, isError, isFetching } ] = exerciseApi.useLazyListQuery()
   const { data: exercisesInStore = [], status } = useAppSelector(selectList)
-  const { filteredList: exercisesToShow, onSearchInputChange } = useSearchPanelUtils(
+  const { filteredList: exercisesToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     exercisesInStore,
     {
       filterFn: searchValue => exercise => exercise.title.toLowerCase().includes(searchValue),
+      refetch: loadExercises,
     },
     {
       onChangeDelay: 200,
@@ -41,8 +35,6 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
       shouldLowerCase: true,
     },
   )
-
-  const [ loadExercises, { error, isError } ] = exerciseApi.useLazyListQuery()
 
   const [
     deleteExercises,
@@ -62,9 +54,6 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
   })
 
   const { dispatch } = useLoadList({
-    loading,
-    updateList,
-    listFromComponent: _exercises,
     loadList: loadExercises,
   })
 
@@ -89,7 +78,8 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
     <EndlessScrollableContainer ref={$container}>
       <SearchPanel
         onChange={onSearchInputChange}
-        loading={loading && loadingRoute === CREATE_ROUTE}
+        refetch={onRefetchClick}
+        loading={isFetching}
         href={CREATE_ROUTE}
         addButtonText={add}
       />
@@ -106,22 +96,4 @@ const Exercises: NextPage<IExercises> & { Layout: FC, layoutProps?: {} } = ({ ex
   )
 }
 
-Exercises.Layout = MainTemplate
-Exercises.layoutProps = { tab: 'exercises' }
-
 export default Exercises
-
-const timeout = new Timeout()
-
-export const getServerSideProps = withAuth(async (ctx: GetServerSidePropsContextWithSession) => {
-  if (ctx.req.session) {
-    const res = await respondAfterTimeoutInMs({ timeout, ctx, route: routes.exercise.v1.list.full })
-
-    return handleJwtStatus(res, () => ({
-      props: {
-        exercises: res.data,
-      },
-    }))
-  }
-  return { props: {} }
-})

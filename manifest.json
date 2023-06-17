@@ -1,0 +1,42 @@
+{
+  "name": "My Simple Workout Tracker",
+  "short_name": "Simple w-t tracker",
+  "start_url": "/activities",
+  "display": "standalone",
+  "description": "Simple workout tracker. Add your exercises, workout plan and track progress of your activities.",
+  "lang": "en",
+  "dir": "auto",
+  "theme_color": "#0aa679",
+  "background_color": "#0aa679",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/manifest-icon-512.maskable",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/manifest-icon-192.maskable",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/chart.svg",
+      "type": "image/svg",
+      "sizes": "26x20",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/table.svg",
+      "type": "image/svg",
+      "sizes": "26x20",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.svg",
+      "type": "image/svg"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { ApiStatus, API_STATUS } from '@/src/app/constants/api_statuses'
+import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { exerciseApi } from './api'
