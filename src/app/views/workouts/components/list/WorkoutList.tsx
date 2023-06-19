@@ -1,7 +1,7 @@
 
 import { List, notification } from 'antd'
 import { WorkoutItem } from './components'
-import { Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from 'app/store/slices/workout/types'
+import { GetWorkoutError, Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from 'app/store/slices/workout/types'
 import { Image } from 'store/slices/exercise/types'
 import { FC, useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -10,9 +10,16 @@ import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
 import { useMounted } from 'app/hooks'
+import { workoutApi } from 'app/store/slices/workout/api'
+import { useNavigate } from 'react-router'
 
 export type ApiDeleteWorkoutError = {
   data: WorkoutDeleteError;
+  status: number;
+}
+
+export type ApiGetWorkoutError = {
+  data: GetWorkoutError;
   status: number;
 }
 
@@ -31,7 +38,9 @@ export interface IWorkoutList {
 const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
-  // const [ ,, loadingId ] = (loadingRoute || '').split('/')
+  const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = workoutApi.useLazyGetQuery()
+  const navigate = useNavigate()
+  const [ loadingId, setLoadingId ] = useState(null)
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
   const { payload } = intl.pages.exercises
@@ -74,7 +83,18 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
     })
   }
 
+  const handleLoadWorkout = (id: string) => {
+    loadItem({ id })
+    setLoadingId(id)
+  }
+
   useHandleMounted()
+
+  useEffect(() => {
+    if (!isItemLoading && isSuccess && data.success) {
+      navigate(data.data.id)
+    }
+  }, [ isSuccess, data ])
 
   useEffect(() => {
     if (error) {
@@ -87,6 +107,21 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
       openNotification({ message: modal.common.title.error, description: (error as ApiDeleteWorkoutError)?.data?.error?.message?.text?.[lang || 'eng'] })
     }
   }, [ error ])
+
+  useEffect(() => {
+    if (itemLoadingError) {
+      const openNotification = ({ message, description }) => {
+        notification.error({
+          message,
+          description,
+        })
+      }
+      openNotification({
+        message: modal.common.title.error,
+        description: (itemLoadingError as ApiGetWorkoutError)?.data?.error?.message?.text?.[lang || 'eng'],
+      })
+    }
+  }, [ itemLoadingError ])
 
   useEffect(() => {
     if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.handleCancelSelection()
@@ -120,12 +155,13 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
             renderItem={(item: Omit<WorkoutListItem & { id: number | string }, 'image'> & { image: Image }) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <WorkoutItem
+                  loadWorkout={handleLoadWorkout}
                   payloadDictionary={payload}
-                  loadingWorkoutId={/*loading && loadingId ? loadingId :*/ null}
+                  loadingWorkoutId={loadingId}
                   workoutDictionary={workoutDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
-                  isLoading={workoutsToDelete[item.id] && (isDeleting/* || loading*/)}
+                  isLoading={workoutsToDelete[item.id] && isDeleting}
                   {...item}
                 />
               </SelectableList.Item>
@@ -134,7 +170,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
           <SelectableList.Modal
             okText={workoutModal.delete.ok_button}
             cancelText={workoutModal.delete.cancel_button}
-            visible={isModalVisible} 
+            open={isModalVisible} 
             onOk={handleDelete} 
             onCancel={closeModal}
             text={workoutModal.delete.body_many}

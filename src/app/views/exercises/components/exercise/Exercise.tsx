@@ -7,7 +7,7 @@ import {
   Checkbox,
   Modal,
 } from 'antd'
-import { FC, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { FC, useEffect, useMemo, useReducer, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
 import { DeleteEditPanel, TimePicker } from 'app/components'
 import { Dayjs } from 'dayjs'
@@ -27,6 +27,7 @@ import {
   HoursFormItem,
 } from './components'
 import { useNavigate } from 'react-router'
+import { useMounted } from 'app/hooks'
 
 export type InitialValues = {
   title: string;
@@ -87,6 +88,7 @@ const previewReducer = (state, { type, payload }) => {
 }
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
+  const { isMounted, useHandleMounted } = useMounted()
   const navigate = useNavigate()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
@@ -127,8 +129,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       </Select>
     </Form.Item>
   ), [ isEditMode, isFetching ])
-
-  const mountedRef = useRef(false)
 
   const handleWeightChange = value => form.setFieldsValue({ weight: value })
 
@@ -211,10 +211,8 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   })
 
   useEffect(() => {
-    if (mountedRef.current) {
-      form.setFieldsValue(initialValues)
-    }
-  }, [ initialValues ])
+    if (isMounted() && !isFetching) form.setFieldsValue(initialValues)
+  }, [ initialValues, isFetching ])
 
   useEffect(() => {
     if (error || isError) {
@@ -229,9 +227,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     }
   }, [ !!error, isError ])
 
-  useEffect(() => {
-    mountedRef.current = true
-  }, [])
+  useHandleMounted()
 
   const isFormItemDisabled = !isEditMode || isFetching
 

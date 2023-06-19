@@ -33,7 +33,16 @@ import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { useNavigate } from 'react-router'
 
-const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
+const Activity: FC<IActivityProps> = ({
+  initialValues: _initialValues,
+  isEdit,
+  isFetching,
+  onSubmit,
+  deleteActivity,
+  isError,
+  error,
+  errorCode,
+}) => {
   const navigate = useNavigate()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
@@ -45,7 +54,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       return null
     }
   })
-  const workoutList = useAppSelector(selectList)
+  const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
   const { intl, lang } = useIntlContext()
@@ -68,8 +77,6 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   
   const [ form ] = Form.useForm<ActivityForm>()
   
-  const isRestoringActivity = useRef(false)
-  const settingInitialValueTimeout = useRef(null)
   const initFromCacheRef = useRef(false)
   const durationTimerRef = useRef<StopwatchRef>(null)
 
@@ -90,7 +97,6 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     try {
       if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current) {
         const workout = workoutList
-          .data
           .find(wk => wk.id === cachedFormValues.workout_id)
   
         newInitialValues = {
@@ -160,10 +166,8 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         }
       }
 
-      clearTimeout(settingInitialValueTimeout.current)
-
       return newInitialValues
-    } catch {
+    } catch (e) {
       handleRestoreFromCacheError()
       return {
         _id: undefined,
@@ -188,7 +192,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     values.duration = timeArrayToMilliseconds(durationTimerRef.current.valueRef.current)
     values.date = values.date.toJSON()
     values.results = values.results.reduce((acc, { id, rounds, note }, i) => {
-      const exercise = workoutList.data.find(workout => workout.id === values.workout_id).exercises[i]
+      const exercise = workoutList.find(workout => workout.id === values.workout_id).exercises[i]
       const { exercise: details } = exercise
 
       acc.push({
@@ -272,12 +276,12 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }
 
   useLayoutEffect(() => {
-    form.setFieldsValue(initialValues)
+    if (!isFetching) form.setFieldsValue(initialValues)
     if (initialValues.workout_id) {
       setSelectedWorkout(initialValues.workout_id)
       getHistory({ workoutId: initialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: initialValues.id })
     }
-  }, [ initialValues ])
+  }, [ initialValues, isFetching ])
 
   useEffect(() => {
     const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
@@ -300,25 +304,25 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   }, [ !!error, isError, isHistoryError, historyError ])
 
   useEffect(() => {
-    if (!workoutList.data.length) fetchWorkoutList()
+    if (workoutListStatus !== API_STATUS.LOADED) fetchWorkoutList()
     if (isEdit) form.setFieldsValue(initialValues)
     return () => stopLoaderById('workout_list_loader')
   }, [])
 
-  useEffect(() => {
-    if (workoutList.status === API_STATUS.LOADING) {
+  useLayoutEffect(() => {
+    if (workoutListStatus === API_STATUS.LOADING) {
       runLoader('workout_list_loader', { tip: loader.workouts_loading })
-    } else if (workoutList.status === API_STATUS.LOADED || workoutList.status === API_STATUS.ERROR) {
+    } else if (workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR) {
       stopLoaderById('workout_list_loader')
     }
-  }, [ workoutList.status ])
+  }, [ workoutListStatus ])
 
   useEffect(() => {
     if (selectedWorkout) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
   }, [ selectedWorkout ])
 
   useEffect(() => {
-    if (!isRestoringActivity.current && !isEdit && localStorage.getItem('cached_activity') && workoutList.status === API_STATUS.LOADED) {
+    if (!isEdit && localStorage.getItem('cached_activity') && workoutListStatus === API_STATUS.LOADED) {
       const _modal = Modal.confirm({
         title: modal.restore.title,
         content: modal.restore.body,
@@ -345,7 +349,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
       })
       return () => _modal.destroy()
     }
-  }, [ workoutList.status ])
+  }, [ workoutListStatus ])
 
   useRequestForNotificationPermission()
 
@@ -381,7 +385,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
           rules={[ { required: true, message: 'Required' } ]}
         >
           <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={handleSelectedWorkoutChange}>
-            {workoutList.data.map(workout => (
+            {workoutList.map(workout => (
               <Select.Option key={workout.id} value={workout.id}>{workout.title}</Select.Option>
             ))}
           </Select>
@@ -389,7 +393,6 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
         <Form.Item noStyle shouldUpdate>
           {
             ({ getFieldValue }) => workoutList
-              .data
               .find(workout => workout.id === getFieldValue('workout_id'))
               ?.exercises
               .map((exercise: WorkoutListExercise<number>, i, list) => (

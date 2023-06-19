@@ -11,6 +11,7 @@ import {
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { secondsToDayjs } from 'app/utils/time'
+import { Dayjs } from 'dayjs'
 
 export const WORKOUT_TAG_TYPES = {
   WORKOUT: 'Workout',
@@ -23,12 +24,12 @@ export const workoutApi = createApi({
   refetchOnMountOrArgChange: true,
   tagTypes: [ WORKOUT_TAG_TYPES.WORKOUT, WORKOUT_TAG_TYPES.WORKOUT_LIST ],
   endpoints: build => ({
-    get: build.query<GetWorkoutSuccess, { id: string }>({
+    get: build.query<GetWorkoutSuccess<Dayjs>, { id: string }>({
       query: ({ id }) => ({
         url: `${routes.workout.v1.base.full}/${id}`,
         method: 'GET',
       }),
-      transformResponse: (response: GetWorkoutSuccess) => {
+      transformResponse: (response: GetWorkoutSuccess<Dayjs>) => {
         if (response.success) {
           const workout = { ...response.data }
           workout.exercises = workout.exercises.map(({ id, rounds, exercise,  round_break, break: exercise_break, break_enabled }) => ({

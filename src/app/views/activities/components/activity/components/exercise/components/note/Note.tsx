@@ -4,7 +4,7 @@ import { Button } from 'antd'
 import { Form, Input } from 'antd'
 
 const AddRemoveNoteButton = styled(Button)`
-  margin-top: 10px;
+  margin-top: 8px;
 `
 
 const Note = ({ form, exerciseIndex, isFormItemDisabled, inputLabels, placeholder }) => {

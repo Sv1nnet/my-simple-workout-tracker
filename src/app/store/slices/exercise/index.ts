@@ -2,7 +2,7 @@ import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { exerciseApi } from './api'
-import { ExerciseListItem, ExerciseServerPayload } from './types'
+import { ExerciseForm, ExerciseListItem } from './types'
 
 export interface IExerciseState {
   list: {
@@ -10,7 +10,7 @@ export interface IExerciseState {
     status: ApiStatus;
   }
   single: {
-    data: ExerciseServerPayload;
+    data: ExerciseForm;
     status: ApiStatus;
   }
 }
@@ -56,11 +56,32 @@ export const exerciseSlice = createSlice({
           state.list.status = API_STATUS.ERROR
         },
       )
+      .addMatcher(
+        exerciseApi.endpoints.get.matchPending,
+        (state) => {
+          state.single.status = API_STATUS.LOADING
+        },
+      )
+      .addMatcher(
+        exerciseApi.endpoints.get.matchFulfilled,
+        (state, { payload }) => {
+          state.single.status = API_STATUS.LOADING
+          state.single.data = payload.data
+        },
+      )
+      .addMatcher(
+        exerciseApi.endpoints.get.matchRejected,
+        (state) => {
+          state.list.status = API_STATUS.ERROR
+          state.single.data = null
+        },
+      )
   },
 })
 
 export const { updateList } = exerciseSlice.actions
 
+export const selectExercise = (state: AppState) => state.exercise.single
 export const selectList = (state: AppState) => state.exercise.list
 
 export default exerciseSlice.reducer

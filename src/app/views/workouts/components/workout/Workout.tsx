@@ -4,13 +4,13 @@ import {
   Button,
   Modal,
 } from 'antd'
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 import { dayjsToSeconds, secondsToDayjs } from 'app/utils/time'
 import { DeleteEditPanel, ToggleEdit } from 'app/components'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { WorkoutForm } from 'app/store/slices/workout/types'
-import { useAppSelector } from 'app/hooks'
+import { useAppSelector, useMounted } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
 import { exerciseApi } from 'app/store/slices/exercise/api'
 import {
@@ -56,6 +56,7 @@ const getDefaultExercise = () => ({
 })
 
 const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }) => {
+  const { isMounted, useHandleMounted } = useMounted()
   const navigate = useNavigate()
   const $container = useRef(null)
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
@@ -91,8 +92,6 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
 
     return workout
   }, [ _initialValues, exerciseList ])
-
-  const mountedRef = useRef(false)
 
   const handleExerciseChange = (i, name, order, ref) => (value) => {
     let exercises = [ ...form.getFieldValue('exercises') ]
@@ -166,8 +165,8 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   })
 
   useEffect(() => {
-    if (mountedRef.current) form.setFieldsValue(initialValues)
-  }, [ initialValues ])
+    if (isMounted() && !isFetching) form.setFieldsValue(initialValues)
+  }, [ initialValues, isFetching ])
 
   useEffect(() => {
     if (error || isError) {
@@ -186,7 +185,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     fetchExerciseList({ archived: isEdit, workoutId: initialValues.id, lang: isEdit ? lang : undefined })
   }, [])
   
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (exerciseList.status === API_STATUS.LOADING) {
       runLoader('exercise_list_loader', { tip: 'Loading exercise list...' })
     } else if (exerciseList.status === API_STATUS.LOADED || exerciseList.status === API_STATUS.ERROR) {
@@ -196,9 +195,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
 
   useEffect(() => () => stopLoaderById('exercise_list_loader'), [])
 
-  useEffect(() => {
-    mountedRef.current = true
-  }, [])
+  useHandleMounted()
 
   const isFormItemDisabled = !isEditMode || isFetching
 
@@ -277,7 +274,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
           </CreateEditFormItem>
         )}
         <Modal
-          visible={isModalVisible}
+          open={isModalVisible}
           okText={modal.delete.ok_button}
           onOk={handleDelete}
           okButtonProps={{ danger: true, type: 'default', loading: isFetching }}

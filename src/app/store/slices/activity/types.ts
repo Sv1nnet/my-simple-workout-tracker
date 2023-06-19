@@ -1,6 +1,7 @@
 import { IResponse } from 'app/constants/response_types'
 import { Dayjs } from 'dayjs'
 import { WorkoutForm } from 'store/slices/workout/types'
+import { Exercise } from '../exercise/types'
 
 export type Image = {
   uid: string,
@@ -13,10 +14,10 @@ export type Activity<T = string | Dayjs> = {
   date: T,
   workout_id: Pick<WorkoutForm, 'id'>;
   results: {
-    _id: string,
+    _id: Pick<Exercise<number | Dayjs>, 'id'>,
     hours?: boolean,
     original_id: string,
-    id_in_workout: string,
+    id_in_workout: Pick<Exercise<number | Dayjs>, 'id'>,
     type: string,
     rounds: Round[],
     note?: string | null,

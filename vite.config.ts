@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { VitePWA } from 'vite-plugin-pwa'
+// import { VitePWA } from 'vite-plugin-pwa'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
