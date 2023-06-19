@@ -121,6 +121,7 @@ interface IWorkout extends WorkoutListItem {
   selectionEnabled: boolean;
   selected: boolean;
   image: Image;
+  loadWorkout: (id: string) => void;
   isLoading?: boolean;
 }
 
@@ -134,6 +135,7 @@ const WorkoutItem: FC<IWorkout> = ({
   selected,
   payloadDictionary,
   workoutDictionary,
+  loadWorkout,
   isLoading,
 }) => (
   <>
@@ -141,7 +143,7 @@ const WorkoutItem: FC<IWorkout> = ({
       <StyledPanel key="exercises" header={(
         <HeaderContainer>
           <Typography.Title level={3}>{title}</Typography.Title>
-          <InspectButton loading={loadingWorkoutId === id || isLoading} href={`/workouts/${id}`} />
+          <InspectButton onClick={loadWorkout} id={id} loading={loadingWorkoutId === id || isLoading} href={`/workouts/${id}`} />
         </HeaderContainer>
       )}>
         {/* render every exercise */}

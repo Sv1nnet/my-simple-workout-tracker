@@ -5,8 +5,12 @@ import { exerciseApi } from 'app/store/slices/exercise/api'
 import { IExerciseFormData } from 'app/store/slices/exercise/types'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useAppSelector } from 'app/hooks'
+import { selectExercise } from 'app/store/slices/exercise'
+import { API_STATUS } from 'app/constants/api_statuses'
 
 const ExerciseItem = () => {
+  const { status, data: exercise } = useAppSelector(selectExercise)
   const navigate = useNavigate()
   const params = useParams()
 
@@ -50,8 +54,8 @@ const ExerciseItem = () => {
   })
 
   useEffect(() => {
-    get({ id: params.id })
-  }, [])
+    if (!exercise && status !== API_STATUS.LOADED && status !== API_STATUS.LOADING) get({ id: params.id })
+  }, [ exercise, status ])
 
   let error: string | undefined
   if (errorGet ) {
@@ -74,7 +78,7 @@ const ExerciseItem = () => {
       isError={!!error}
       errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
       errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
-      initialValues={dataOfUpdate?.data ?? dataOfGet?.data}
+      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? exercise}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}
       error={error}

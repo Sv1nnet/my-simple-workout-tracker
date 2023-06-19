@@ -2,7 +2,8 @@ import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { workoutApi } from './api'
-import { WorkoutListItem, WorkoutServerPayload } from './types'
+import { Workout, WorkoutListItem } from './types'
+import { Dayjs } from 'dayjs'
 
 export interface IWorkoutState {
   list: {
@@ -10,7 +11,7 @@ export interface IWorkoutState {
     status: ApiStatus;
   }
   single: {
-    data: WorkoutServerPayload;
+    data: Workout<Dayjs>;
     status: ApiStatus;
   }
 }
@@ -57,11 +58,32 @@ export const workoutSlice = createSlice({
           state.list.status = API_STATUS.ERROR
         },
       )
+      .addMatcher(
+        workoutApi.endpoints.get.matchPending,
+        (state) => {
+          state.single.status = API_STATUS.LOADING
+        },
+      )
+      .addMatcher(
+        workoutApi.endpoints.get.matchFulfilled,
+        (state, { payload }) => {
+          state.single.status = API_STATUS.LOADING
+          state.single.data = payload.data
+        },
+      )
+      .addMatcher(
+        workoutApi.endpoints.get.matchRejected,
+        (state) => {
+          state.list.status = API_STATUS.ERROR
+          state.single.data = null
+        },
+      )
   },
 })
 
 export const { updateList } = workoutSlice.actions
 
+export const selectWorkout = (state: AppState) => state.workout.single
 export const selectList = (state: AppState) => state.workout.list
 
 export default workoutSlice.reducer

@@ -50,7 +50,7 @@ export type ExerciseDeleteError = IResponse<null>
 export type ExerciseCopySuccess = IResponse<null>
 export type ExerciseCopyError = IResponse<null>
 
-export type GetExerciseSuccess = IResponse<ExerciseForm>
+export type GetExerciseSuccess = IResponse<ExerciseForm<number | Dayjs>>
 export type GetExerciseError = IResponse<null>
 
 export type GetExerciseListSuccess = IResponse<ExerciseListItem<number>[]>

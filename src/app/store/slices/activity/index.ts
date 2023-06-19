@@ -2,7 +2,7 @@ import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { activityApi } from './api'
-import { ActivityListItem, ActivityListResponseSuccess, SelectedRoundPayload } from './types'
+import { ActivityForm, ActivityListItem, ActivityListResponseSuccess, SelectedRoundPayload } from './types'
 import { ListQuery } from 'store/utils/StateResultTypes'
 
 export interface IActivityState {
@@ -13,7 +13,7 @@ export interface IActivityState {
     query: ListQuery;
   }
   single: {
-    data: ActivityListItem;
+    data: ActivityForm<string>;
     status: ApiStatus;
   }
   charts: {
@@ -89,11 +89,32 @@ export const activitySlice = createSlice({
           state.list.status = API_STATUS.ERROR
         },
       )
+      .addMatcher(
+        activityApi.endpoints.get.matchPending,
+        (state) => {
+          state.single.status = API_STATUS.LOADING
+        },
+      )
+      .addMatcher(
+        activityApi.endpoints.get.matchFulfilled,
+        (state, { payload }) => {
+          state.single.status = API_STATUS.LOADING
+          state.single.data = payload.data
+        },
+      )
+      .addMatcher(
+        activityApi.endpoints.get.matchRejected,
+        (state) => {
+          state.list.status = API_STATUS.ERROR
+          state.single.data = null
+        },
+      )
   },
 })
 
 export const { updateList, setSelectedRound, updateQuery } = activitySlice.actions
 
+export const selectActivity = (state: AppState) => state.activity.single
 export const selectList = (state: AppState) => state.activity.list
 export const selectSelectedRoundIndex = (chartId: string) => (state: AppState) => state.activity.charts[chartId]?.selectedRoundIndex
 

@@ -5,8 +5,12 @@ import { Activity } from 'app/views'
 import { activityApi } from 'app/store/slices/activity/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useAppSelector } from 'app/hooks'
+import { selectActivity } from 'app/store/slices/activity'
+import { API_STATUS } from 'app/constants/api_statuses'
 
 const ActivityItem = () => {
+  const { status, data: activity } = useAppSelector(selectActivity)
   const navigate = useNavigate()
   const params = useParams()
 
@@ -44,8 +48,8 @@ const ActivityItem = () => {
   })
 
   useEffect(() => {
-    get({ id: params.id })
-  }, [])
+    if (!activity && status !== API_STATUS.LOADED && status !== API_STATUS.LOADING) get({ id: params.id })
+  }, [ activity, status ])
 
   let error: string | undefined
   if (errorGet ) {
@@ -68,7 +72,7 @@ const ActivityItem = () => {
       isError={!!error}
       errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
       errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
-      initialValues={dataOfUpdate?.data ?? dataOfGet?.data}
+      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? activity}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}
       error={error}

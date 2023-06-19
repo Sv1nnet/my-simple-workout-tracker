@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import { Typography } from 'antd'
-import { StyledText } from '../item/ActivityItem'
+import { StyledText } from '../item/components/styled'
 
 const RoundsUl = styled.ul`
   margin: 0;

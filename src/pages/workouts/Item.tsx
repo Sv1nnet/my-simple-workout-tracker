@@ -4,8 +4,12 @@ import { workoutApi } from 'app/store/slices/workout/api'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { Workout } from 'app/views'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { useAppSelector } from 'app/hooks'
+import { selectWorkout } from 'app/store/slices/workout'
 
 const WorkoutItem = () => {
+  const { status, data: workout } = useAppSelector(selectWorkout)
   const navigate = useNavigate()
   const params = useParams()
 
@@ -49,8 +53,8 @@ const WorkoutItem = () => {
   })
 
   useEffect(() => {
-    get({ id: params.id })
-  }, [])
+    if (!workout && status !== API_STATUS.LOADED && status !== API_STATUS.LOADING) get({ id: params.id })
+  }, [ workout, status ])
 
   let error: string | undefined
   if (errorGet ) {
@@ -73,7 +77,7 @@ const WorkoutItem = () => {
       isError={!!error}
       errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
       errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
-      initialValues={dataOfUpdate?.data ?? dataOfGet?.data}
+      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? workout}
       isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
       onSubmit={handleSubmit}
       error={error}

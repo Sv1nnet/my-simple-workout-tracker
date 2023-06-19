@@ -1,16 +1,26 @@
 import { FC, useEffect, useState } from 'react'
 import { List, notification } from 'antd'
 import { ActivityItem } from './components'
-import { ActivityDeleteError, ActivityForm, ActivityListItem } from 'app/store/slices/activity/types'
+import { ActivityDeleteError, ActivityForm, ActivityListItem, GetActivityError } from 'app/store/slices/activity/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { SerializedError } from '@reduxjs/toolkit'
 import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
 import { SelectableList } from 'app/components'
-import { useMounted } from 'app/hooks'
+import { useAppSelector, useMounted } from 'app/hooks'
+import { activityApi } from 'app/store/slices/activity/api'
+import { useNavigate } from 'react-router'
+import { selectList } from 'app/store/slices/workout'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { workoutApi } from 'app/store/slices/workout/api'
 
 export type ApiDeleteActivityError = {
   data: ActivityDeleteError;
+  status: number;
+}
+
+export type ApiGetActivityError = {
+  data: GetActivityError;
   status: number;
 }
 
@@ -25,6 +35,11 @@ export interface IActivityList {
 }
 
 const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, isDeleting, activities }) => {
+  const { status: workoutListStatus } = useAppSelector(selectList)
+  const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
+  const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = activityApi.useLazyGetQuery()
+  const navigate = useNavigate()
+  const [ loadingId, setLoadingId ] = useState(null)
   const { isMounted, useHandleMounted } = useMounted()
   const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
   const { intl, lang } = useIntlContext()
@@ -55,7 +70,25 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
     })
   }
 
+  const handleLoadActivity = (id: string) => {
+    if (workoutListStatus !== API_STATUS.LOADED && workoutListStatus !== API_STATUS.LOADING) {
+      fetchWorkoutList().then((res) => {
+        loadItem({ id })
+        return res
+      })
+    } else {
+      loadItem({ id })
+    }
+    setLoadingId(id)
+  }
+
   useHandleMounted()
+
+  useEffect(() => {
+    if (!isItemLoading && isSuccess && data.success) {
+      navigate(data.data.id)
+    }
+  }, [ isSuccess, data ])
 
   useEffect(() => {
     if (error) {
@@ -65,9 +98,27 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
           description,
         })
       }
-      openNotification({ message: modal.common.title.error, description: (error as ApiDeleteActivityError)?.data?.error?.message?.text?.[lang || 'eng'] })
+      openNotification({
+        message: modal.common.title.error,
+        description: (error as ApiDeleteActivityError)?.data?.error?.message?.text?.[lang || 'eng'],
+      })
     }
   }, [ error ])
+
+  useEffect(() => {
+    if (itemLoadingError) {
+      const openNotification = ({ message, description }) => {
+        notification.error({
+          message,
+          description,
+        })
+      }
+      openNotification({
+        message: modal.common.title.error,
+        description: (itemLoadingError as ApiGetActivityError)?.data?.error?.message?.text?.[lang || 'eng'],
+      })
+    }
+  }, [ itemLoadingError ])
 
   useEffect(() => {
     if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.handleCancelSelection()
@@ -99,13 +150,13 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
             renderItem={(item: ActivityListItem) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <ActivityItem
-                  // loadingActivityId={loading && loadingId ? loadingId : null}
-                  loadingActivityId={null}
+                  loadingActivityId={loadingId}
+                  loadActivity={handleLoadActivity}
                   activityDictionary={activityDictionary}
                   exercisePayloadDictionary={exercisePayloadDictionary}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
-                  isLoading={activitiesToDelete[item.id] && (isDeleting /* || loading */)}
+                  isLoading={activitiesToDelete[item.id] && isDeleting}
                   {...item}
                 />
               </SelectableList.Item>

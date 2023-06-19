@@ -39,7 +39,7 @@ const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak
   const handleBreakReset = () => isBreakOver && setIsBreakTimerVisible(false)
 
   return (
-    <div style={{ marginTop: '10px' }}>
+    <div style={{ marginTop: '6px' }}>
       <Typography.Text style={{ display: 'block' }}>
         {workoutsDictionary.input_labels.break}: {timeToHms(exerciseBreak, {
           hms: [

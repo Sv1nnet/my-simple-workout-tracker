@@ -35,7 +35,7 @@ const StyledCheckbox = styled(Checkbox)`
   left: 0;
 `
 
-const StyledTitle = ({ id, loadingExerciseId, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary }) => {
+const StyledTitle = ({ id, loadExercise, loadingExerciseId, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary }) => {
   repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
   time = time
     ? timeToHms(
@@ -58,7 +58,7 @@ const StyledTitle = ({ id, loadingExerciseId, isLoading, title, repeats, time, w
       </LoadType>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Title level={4}>{title}</Title>
-        <InspectButton loading={loadingExerciseId === id || isLoading} href={`/exercises/${id}`} />
+        <InspectButton onClick={loadExercise} id={id} loading={loadingExerciseId === id || isLoading} href={`/exercises/${id}`} />
       </div>
     </div>
   )
@@ -70,6 +70,7 @@ interface IExerciseForm extends ExerciseForm {
   selectionEnabled: boolean;
   selected: boolean;
   image: Image;
+  loadExercise: (id: string) => void;
   isLoading?: boolean;
 }
 
@@ -85,6 +86,7 @@ const ExerciseItem: FC<IExerciseForm> = ({
   image,
   selectionEnabled,
   selected,
+  loadExercise,
   payloadDictionary,
 }) => (
   <List.Item.Meta
@@ -103,6 +105,7 @@ const ExerciseItem: FC<IExerciseForm> = ({
     title={(
       <StyledTitle
         id={id}
+        loadExercise={loadExercise}
         isLoading={isLoading}
         title={title}
         repeats={repeats}

@@ -47,7 +47,7 @@ const Rounds: FC<IRounds> = ({
   const comparator = getComparator(type)
 
   return (
-    <RoundsTable style={{ tableLayout: 'fixed' }}>
+    <RoundsTable>
       <thead>
         <tr>
           <THeadCell>{rounds_section_headers.rounds}</THeadCell>

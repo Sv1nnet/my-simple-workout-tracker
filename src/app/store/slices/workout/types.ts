@@ -50,7 +50,7 @@ export type WorkoutUpdateSuccess = IResponse<WorkoutServerPayload>
 export type WorkoutDeleteSuccess = IResponse<WorkoutServerPayload[]>
 export type WorkoutDeleteError = IResponse<null>
 
-export type GetWorkoutSuccess = IResponse<Workout>
+export type GetWorkoutSuccess<T = number> = IResponse<Workout<T>>
 export type GetWorkoutError = IResponse<null>
 
 export type GetWorkoutListSuccess = IResponse<WorkoutListItem[]>
