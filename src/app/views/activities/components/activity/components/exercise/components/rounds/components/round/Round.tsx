@@ -5,6 +5,7 @@ import Input from 'app/components/input'
 import PreviousRoundsHistory from '../../../previous_rounds_history/PreviousRoundsHistory'
 import { ActivityForm, HistoryResult } from 'app/store/slices/activity/types'
 import dayjs from 'dayjs'
+import { useMemo } from 'react'
 
 export interface IRound {
   comparator: {
@@ -53,13 +54,20 @@ const Round = ({
   sideLabels,
   cacheFormData,
 }) => {
+  const results = Form.useWatch([ 'results', exerciseIndex, 'rounds' ], form)
+  // const results = useMemo(() => {
+  //   if (!rawResults) return []
+  //   // return rawResults.map(result => [ result ])
+  //   return rawResults.map(result => result)
+  // }, [ rawResults ])
+
   const handleRepeatsChange = (value, { target }) => {
-    const results = [ ...form.getFieldValue('results') ]
+    const _results = [ ...form.getFieldValue('results') ]
 
-    if (eachSide) results[exerciseIndex].rounds[round][target.dataset.side] = value
-    else results[exerciseIndex].rounds[round] = value
+    if (eachSide) _results[exerciseIndex].rounds[round][target.dataset.side] = value
+    else _results[exerciseIndex].rounds[round] = value
 
-    form.setFieldsValue({ results })
+    form.setFieldsValue({ results: _results })
     cacheFormData([ 'results' ], form.getFieldsValue())
   }
 
@@ -159,6 +167,7 @@ const Round = ({
               <div style={{ overflow: 'hidden', paddingLeft: 5 }}>
                 <div style={{ overflow: 'scroll' }}>
                   <PreviousRoundsHistory
+                    current={results}
                     isLoading={isLoading}
                     history={history}
                     comparator={comparator}
