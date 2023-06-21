@@ -28,10 +28,10 @@ export const secondsToTimeArray = (seconds: number) => {
   return [ h, m, s ]
 }
 
-export const millisecondsToTimeArray = (miliseconds: number) => {
-  let [ h, m, s ] = secondsToTimeArray(miliseconds / 1000)
+export const millisecondsToTimeArray = (milliseconds: number) => {
+  let [ h, m, s ] = secondsToTimeArray(milliseconds / 1000)
   s = Math.floor(s)
-  const ms = miliseconds - (s * 1000) - (m * 60 * 1000) - (h * 60 * 60 * 1000)
+  const ms = milliseconds - (s * 1000) - (m * 60 * 1000) - (h * 60 * 60 * 1000)
   return [ h, m, s, ms ]
 }
 
