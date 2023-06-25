@@ -1,5 +1,4 @@
 import { TouchEventHandler } from 'react'
-import isFunc from './isFunc'
 
 const longPressDuration = 610
 
@@ -39,7 +38,7 @@ export default class AppleContextMenuHandler {
   onTouchStart: TouchEventHandler = (e) => {
     this.contextMenuPossible = true
 
-    if (isFunc(this.onTouchStartCb)) this.onTouchStartCb(e)
+    this.onTouchStartCb?.(e)
 
     this.longPressCountdown = setTimeout(() => {
       this.contextMenuPossible = false
@@ -48,19 +47,19 @@ export default class AppleContextMenuHandler {
   }
 
   onTouchMove: TouchEventHandler = (e) => {
-    if (isFunc(this.onTouchMoveCb)) this.onTouchMoveCb(e)
+    this.onTouchMoveCb?.(e)
     clearTimeout(this.longPressCountdown)
   }
 
   onTouchCancel: TouchEventHandler = (e) => {
     this.contextMenuPossible = false
-    if (isFunc(this.onTouchCancelCb)) this.onTouchCancelCb(e)
+    this.onTouchCancelCb?.(e)
     clearTimeout(this.longPressCountdown)
   }
 
   onTouchEnd: TouchEventHandler = (e) => {
     this.contextMenuPossible = false
-    if (isFunc(this.onTouchEndCb)) this.onTouchEndCb(e)
+    this.onTouchEndCb?.(e)
     clearTimeout(this.longPressCountdown)
   }
 }

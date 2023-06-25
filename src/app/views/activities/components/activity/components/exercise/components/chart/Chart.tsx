@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import * as d3 from 'd3'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { HEADER_HEIGHT } from '../history/History'
-import isFunc from 'app/utils/isFunc'
 import {
   COUNT_CELL_WIDTH, COUNT_IN_CELL_OFFSET,
   DEFAULT_MAX_HISTORY_VALUE, DEFAULT_OPACITY,
@@ -139,8 +138,10 @@ const Chart = ({ style, data, startIndex, endIndex, height, type, hours, eachSid
   }
 
   const handleFocus = (e) => {
-    if (isFunc(onResultClick)) onResultClick(e)
+    onResultClick?.(e)
+
     const result = getResultsOpacity(e)
+
     setSelectedRoundIndex(result.fullOpacityIndex)
     setOpacities(result.opacities)
   }

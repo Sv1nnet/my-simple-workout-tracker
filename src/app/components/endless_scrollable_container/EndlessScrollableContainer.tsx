@@ -1,7 +1,6 @@
 import { ReactNode, UIEvent, forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import styled from 'styled-components'
 import { useDebouncedCallback } from 'app/hooks'
-import isFunc from 'app/utils/isFunc'
 
 const Container = styled.div`
   height: 100%;
@@ -22,7 +21,7 @@ const EndlessScrollableContainer = forwardRef<Ref, IEndlessScrollableContainer>(
     const programmaticScrolledRef = useRef(false)
 
     const handleEndlessScroll = useDebouncedCallback((e) => {
-      if (isFunc(onScroll) && !programmaticScrolledRef.current) onScroll(e)
+      if (!programmaticScrolledRef.current) onScroll?.(e)
     }, 100)
 
     useImperativeHandle(ref, () => ({

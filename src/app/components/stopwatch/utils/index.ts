@@ -1,4 +1,3 @@
-import isFunc from 'app/utils/isFunc'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { MS_TO_SET_STATE_WHEN_MS_ON } from 'app/components/timer_view/utils'
 
@@ -41,7 +40,7 @@ export const runCountingUp = ({
           valueRef.current = millisecondsToTimeArray(timePassedRef.current)
           setValue(valueRef.current)
           diffRef.current = 0
-          if (isFunc(onChange)) onChange(timeArrayToMilliseconds(valueRef.current))
+          onChange?.(timeArrayToMilliseconds(valueRef.current))
         }
       }    
 

@@ -1,5 +1,4 @@
 import { useFormatToNumber, useValidateNumber } from 'app/hooks'
-import isFunc from 'app/utils/isFunc'
 import { stringifyValue } from 'app/utils/validateNumberUtils'
 import { Input, InputProps } from 'antd'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -72,7 +71,7 @@ const NumberInput: FC<INumberInput> = ({
     let v = e.target.value
     if (v === '') {
       setValue(v)
-      if (isFunc(onChange)) onChange(v, e)
+      onChange?.(v, e)
       return
     }
 
@@ -84,7 +83,7 @@ const NumberInput: FC<INumberInput> = ({
       caret += 1
     }
 
-    const isValid = isFunc(shouldUpdate)
+    const isValid = shouldUpdate
       ? validate(v, value)
       : validate(v)
 
@@ -104,7 +103,7 @@ const NumberInput: FC<INumberInput> = ({
     })
 
     setValue(v)
-    if (isFunc(onChange)) onChange(v, e)
+    onChange?.(v, e)
   }
 
   const handleBlur = (e) => {
@@ -138,7 +137,7 @@ const NumberInput: FC<INumberInput> = ({
           return
         }
 
-        const isValid = isFunc(shouldUpdate)
+        const isValid = shouldUpdate
           ? validate(propValueStr, value)
           : validate(propValueStr)
 

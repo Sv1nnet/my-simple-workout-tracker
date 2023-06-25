@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
-import isFunc from 'app/utils/isFunc'
 import { useRequestForNotificationPermission } from 'app/hooks'
 import { defaultNotificationProps, runCountingDown } from './utils'
 import { TimerView } from 'app/components'
@@ -87,26 +86,27 @@ const Timer: FC<ITimer> = ({
     msLeftFromPrevRafRef.current = 0
     diffRef.current = 0
     
-    if (isFunc(onChange)) onChange([ ...initialValue ], newTimeLeftRef.current)
-    if (isFunc(onReset)) onReset()
-    if (resetButton && isFunc(resetButtonProps?.onClick)) resetButtonProps.onClick(false, e)
-    if (!resetButton && isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
+    onChange?.([ ...initialValue ], newTimeLeftRef.current)
+    onReset?.()
+
+    if (resetButton) resetButtonProps?.onClick?.(false, e)
+    if (!resetButton) buttonProps?.onClick?.(false, e)
   }
 
   const handleRunTimer = (e) => {
     setIsRunning(true)
     setIsPaused(false)
     
-    if (isFunc(onRunTimer)) onRunTimer(newTimeLeftRef.current)
-    if (isFunc(buttonProps?.onClick)) buttonProps.onClick(true, e)
+    onRunTimer?.(newTimeLeftRef.current)
+    buttonProps?.onClick?.(true, e)
   }
 
   const handlePauseTimer = (e) => {
     setIsRunning(false)
     setIsPaused(true)
 
-    if (isFunc(onPause)) onPause(newTimeLeftRef.current)
-    if (isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
+    onPause?.(newTimeLeftRef.current)
+    buttonProps?.onClick?.(false, e)
   }
 
   const notify = () => {
@@ -135,7 +135,7 @@ const Timer: FC<ITimer> = ({
       diffRef.current = 0
 
       setValue(valueRef.current)
-      if (isFunc(onChange)) onChange([ ...valueRef.current ], newTimeLeftRef.current)
+      onChange?.([ ...valueRef.current ], newTimeLeftRef.current)
     }
   }, [ duration ])
 
@@ -158,9 +158,7 @@ const Timer: FC<ITimer> = ({
   }), [ isRunning, isPaused, isFinished, duration, msOn ])
 
   useEffect(() => {
-    if (isFinished && isFunc(onTimeOver)) {
-      onTimeOver(duration)
-    }
+    if (isFinished) onTimeOver?.(duration)
   }, [ isFinished ])
 
   useEffect(() => {
