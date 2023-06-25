@@ -5,7 +5,6 @@ import Input from 'app/components/input'
 import PreviousRoundsHistory from '../../../previous_rounds_history/PreviousRoundsHistory'
 import { ActivityForm, HistoryResult } from 'app/store/slices/activity/types'
 import dayjs from 'dayjs'
-import { useMemo } from 'react'
 
 export interface IRound {
   comparator: {
@@ -55,11 +54,6 @@ const Round = ({
   cacheFormData,
 }) => {
   const results = Form.useWatch([ 'results', exerciseIndex, 'rounds' ], form)
-  // const results = useMemo(() => {
-  //   if (!rawResults) return []
-  //   // return rawResults.map(result => [ result ])
-  //   return rawResults.map(result => result)
-  // }, [ rawResults ])
 
   const handleRepeatsChange = (value, { target }) => {
     const _results = [ ...form.getFieldValue('results') ]
