@@ -5,7 +5,6 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 import type { AppDispatch, AppState } from '../store'
-import isFunc from '../utils/isFunc'
 import { FLOAT_REGEX, isFloat, isInt, isNegInt, isPos, isPosInt, isSeparator, isSignedSeparator, isZero, stringifyValue } from '../utils/validateNumberUtils'
 
 export const useForm = <TContent>(defaultValues: TContent) =>
@@ -184,7 +183,7 @@ export const useValidateNumber = ({
   min?: number,
   max?: number,
 }) => useMemo(() => {
-  if (isFunc(shouldUpdate)) return (curValue?: any, prevValue?: any): boolean => shouldUpdate(curValue, prevValue)
+  if (shouldUpdate) return (curValue?: any, prevValue?: any): boolean => shouldUpdate(curValue, prevValue)
   
   const _isFloat = typeof maxDigitsAfterPoint === 'number' &&
       !Number.isNaN(maxDigitsAfterPoint)

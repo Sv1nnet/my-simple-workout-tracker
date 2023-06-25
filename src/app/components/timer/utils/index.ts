@@ -1,8 +1,8 @@
-import isFunc from 'app/utils/isFunc'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { MS_TO_SET_STATE_WHEN_MS_OFF, MS_TO_SET_STATE_WHEN_MS_ON } from 'app/components/timer_view/utils'
 
 const TIME_IS_OVER_VALUE = millisecondsToTimeArray(0)
+const SECOND = 1000
 
 export const runCountingDown = ({
   msOn,
@@ -22,19 +22,19 @@ export const runCountingDown = ({
   rafIdRef,
 }) => {
   const msToSetState = msOn ? MS_TO_SET_STATE_WHEN_MS_ON : MS_TO_SET_STATE_WHEN_MS_OFF
-  const diffStep = msOn ? 16 : 1000
+  const diffStep = msOn ? 16 : SECOND
 
   let _isRunning = isRunning
   let _isPaused = isPaused
   newTimeLeftRef.current = timeArrayToMilliseconds(valueRef.current)
 
-  
+  let isDocumentVisible = true
   let timeLeftInMs = 0
   let prevTimeoutTimestamp = Date.now()
   let timeoutId: NodeJS.Timeout = 0 as unknown as NodeJS.Timeout
 
   const runTimeout = () => {
-    if (!_isRunning || _isPaused) return
+    if (!_isRunning || _isPaused || isDocumentVisible) return
 
     const now = Date.now()
     timeLeftInMs += now - prevTimeoutTimestamp
@@ -55,18 +55,20 @@ export const runCountingDown = ({
     setTimeout(runTimeout, 16)
   }
   
-  const rafFn: FrameRequestCallback = (ms) => {
+  const rafFn: FrameRequestCallback = () => {
+    const now = Date.now()
+
     if (!prevRafMsRef.current) {
-      prevRafMsRef.current = ms - diffRef.current
+      prevRafMsRef.current = now - diffRef.current
       msLeftFromPrevRafRef.current = diffRef.current
     } else {
-      msLeftFromPrevRafRef.current = ms - prevRafMsRef.current
+      msLeftFromPrevRafRef.current = now - prevRafMsRef.current
     }
 
     const prevTimeLeft = newTimeLeftRef.current
     newTimeLeftRef.current -= msLeftFromPrevRafRef.current
     diffRef.current += prevTimeLeft - newTimeLeftRef.current
-    prevRafMsRef.current = ms
+    prevRafMsRef.current = now
 
     if (_isRunning && newTimeLeftRef.current > 0) {
       diffRef.current += diffStep
@@ -74,8 +76,9 @@ export const runCountingDown = ({
       if (msLeftFromPrevRafRef.current >= 0 && diffRef.current >= msToSetState) {
         diffRef.current = 0
         valueRef.current = millisecondsToTimeArray(newTimeLeftRef.current)
+
         setValue(valueRef.current)
-        if (isFunc(onChange)) onChange([ ...valueRef.current ], newTimeLeftRef.current)
+        onChange?.([ ...valueRef.current ], newTimeLeftRef.current)
       }
 
       rafIdRef.current = requestAnimationFrame(rafFn)
@@ -85,7 +88,7 @@ export const runCountingDown = ({
       setValue(TIME_IS_OVER_VALUE)
       clearTimeout(timeoutId)
 
-      if (isFunc(onChange)) onChange([ ...TIME_IS_OVER_VALUE ], 0)
+      onChange?.([ ...TIME_IS_OVER_VALUE ], 0)
     } else if (_isPaused) {
       prevRafMsRef.current = 0
     }
@@ -100,7 +103,16 @@ export const runCountingDown = ({
   }
 
   const documentVisibilityChange = () => {
-    if (document.visibilityState === 'visible') return clearTimeout(timeoutId)
+    if (document.visibilityState === 'visible') {
+      isDocumentVisible = true
+      clearTimeout(timeoutId)
+      return
+    }
+
+    const now = Date.now()
+    diffRef.current = now
+    prevRafMsRef.current = now
+    isDocumentVisible = false
     runBackgroundTimer()
   }
 

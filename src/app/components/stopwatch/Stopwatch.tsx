@@ -1,7 +1,6 @@
 import { RefObject, forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
-import isFunc from 'app/utils/isFunc'
 import { TimerView } from 'app/components'
 import { runCountingUp } from './utils'
 
@@ -87,26 +86,27 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
 
       timePassedRef.current = 0
     
-      if (isFunc(onChange)) onChange(timeArrayToMilliseconds(value))
-      if (isFunc(onReset)) onReset()
-      if (showResetButton && isFunc(resetButtonProps?.onClick)) resetButtonProps.onClick(false, e)
-      if (!showResetButton && isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
+      onChange?.(timeArrayToMilliseconds(value))
+      onReset?.()
+
+      if (showResetButton) resetButtonProps?.onClick?.(false, e)
+      if (!showResetButton) buttonProps?.onClick?.(false, e)
     }
 
     const handleRunTimer = (e?: React.MouseEvent<HTMLElement>) => {
       setIsRunning(true)
       setIsPaused(false)
     
-      if (isFunc(onRunTimer)) onRunTimer(timeArrayToMilliseconds(value))
-      if (isFunc(buttonProps?.onClick)) buttonProps.onClick(true, e)
+      onRunTimer?.(timeArrayToMilliseconds(value))
+      buttonProps?.onClick?.(true, e)
     }
 
     const handlePauseTimer = (e?: React.MouseEvent<HTMLElement>) => {
       setIsRunning(false)
       setIsPaused(true)
 
-      if (isFunc(onPause)) onPause(timeArrayToMilliseconds(value))
-      if (isFunc(buttonProps?.onClick)) buttonProps.onClick(false, e)
+      onPause?.(timeArrayToMilliseconds(value))
+      buttonProps?.onClick?.(false, e)
     }
 
     useImperativeHandle(ref, () => ({
@@ -122,8 +122,9 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
     useEffect(() => {
       if (initialValue !== timeArrayToMilliseconds(value)) {
         const newValue = resetTimerValues()
+
         setValue(newValue)
-        if (isFunc(onChange)) onChange(initialValue)
+        onChange?.(initialValue)
       }
     }, [ initialValue ])
 
