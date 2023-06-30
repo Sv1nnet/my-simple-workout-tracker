@@ -109,11 +109,13 @@ export const runCountingDown = ({
       return
     }
 
-    const now = Date.now()
-    diffRef.current = now
-    prevRafMsRef.current = now
-    isDocumentVisible = false
-    runBackgroundTimer()
+    if (_isRunning && !_isPaused) {
+      const now = Date.now()
+      diffRef.current = now
+      prevRafMsRef.current = now
+      isDocumentVisible = false
+      runBackgroundTimer()
+    }
   }
 
   document.addEventListener('visibilitychange', documentVisibilityChange)
