@@ -23,18 +23,6 @@
       "purpose": "maskable"
     },
     {
-      "src": "/icons/chart.svg",
-      "type": "image/svg",
-      "sizes": "26x20",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/table.svg",
-      "type": "image/svg",
-      "sizes": "26x20",
-      "purpose": "any"
-    },
-    {
       "src": "/logo.svg",
       "type": "image/svg"
     }

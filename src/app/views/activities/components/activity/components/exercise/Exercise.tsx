@@ -13,7 +13,6 @@ import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import {
   ExerciseTitle,
   Header,
-  HistoryButtonIcon,
   HistoryButtonsContainer,
   HistoryContainer,
   ResultTypeButtonsContainer,
@@ -24,10 +23,11 @@ import { WorkoutListExercise } from 'app/store/slices/workout/types'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { CacheFormData } from '../../types'
+import { ChartIcon, TableIcon } from 'src/assets/icons'
 
 const modeOptions = [
-  { label: <HistoryButtonIcon src="/icons/chart.svg" alt="chart" />, value: 'chart' },
-  { label: <HistoryButtonIcon $table src="/icons/table.svg" alt="table" />, value: 'table' },
+  { label: <ChartIcon />, value: 'chart' },
+  { label: <TableIcon style={{ transform: 'scale(1, .7)' }} />, value: 'table' },
 ]
 
 export interface IExerciseProps {

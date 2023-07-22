@@ -6,6 +6,6 @@ import { PickerProps } from 'antd/es/date-picker/generatePicker'
 
 const DefaultDatePicker = generatePicker<Dayjs>(dayjsGenerateConfig)
 
-const DatePicker = (props: PickerProps<Dayjs>) => <DefaultDatePicker dropdownClassName="stylized-date-picker" {...props} />
+const DatePicker = (props: PickerProps<Dayjs> & { popupClassName?: string }) => <DefaultDatePicker popupClassName="stylized-date-picker" {...props} />
 
 export default DatePicker

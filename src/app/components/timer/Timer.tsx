@@ -173,7 +173,6 @@ const Timer: FC<ITimer> = ({
       onPause={handlePauseTimer}
       onReset={handleResetTimer}
       isRunning={isRunning}
-      isPaused={isPaused}
       isFinished={isFinished}
       initialValue={initialValue}
       value={value}

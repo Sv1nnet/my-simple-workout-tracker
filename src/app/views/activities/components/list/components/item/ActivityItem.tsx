@@ -42,7 +42,7 @@ const ActivityItem: FC<ActivityItemProps> = ({
   exercisePayloadDictionary,
 }) => (
   <>
-    <Collapse style={{ width: '100%' }} ghost expandIconPosition="left" collapsible={selectionEnabled ? 'disabled' : undefined}>
+    <Collapse style={{ width: '100%' }} ghost expandIconPosition="start" collapsible={selectionEnabled ? 'disabled' : undefined}>
       <StyledPanel key="exercises" header={(
         <HeaderContainer>
           <div>

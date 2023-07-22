@@ -64,6 +64,7 @@ const Timers = ({ eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOv
               tag: 'break_timer_left',
               body: getNotificationBody(Side.LEFT),
               renotify: true,
+              icon: '/manifest-icon-192.maskable.png',
             }}
             hoursOn={hoursOn}
             duration={duration}
@@ -80,6 +81,7 @@ const Timers = ({ eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOv
               tag: 'break_timer_right',
               body: getNotificationBody(Side.RIGHT),
               renotify: true,
+              icon: '/manifest-icon-192.maskable.png',
             }}
             hoursOn={hoursOn}
             duration={duration}
@@ -98,6 +100,7 @@ const Timers = ({ eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOv
             tag: 'break_timer',
             body: getNotificationBody(Side.NON_SIDE),
             renotify: true,
+            icon: '/manifest-icon-192.maskable.png',
           }}
           hoursOn={hoursOn}
           duration={duration}

@@ -43,7 +43,6 @@ export interface TimerViewProps {
   value: number[],
   showResetButton: boolean,
   isRunning: boolean,
-  isPaused: boolean,
   disabled?: boolean,
   isFinished?: boolean,
 }
@@ -76,8 +75,8 @@ const TimerView = ({
         ? {
           icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
           onClick: (e) => {
-            onReset(e)
-            onRunTimer(e)
+            onReset?.(e)
+            onRunTimer?.(e)
           },
         }
         : {

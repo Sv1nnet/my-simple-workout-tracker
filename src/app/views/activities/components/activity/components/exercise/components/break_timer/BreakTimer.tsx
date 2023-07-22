@@ -57,6 +57,7 @@ const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak
             tag: 'break_timer',
             body: nextExerciseTitle ? `${timer.break.message} ${nextExerciseTitle}.` : timer.break.workout_is_over,
             renotify: true,
+            icon: '/manifest-icon-192.maskable.png',
           }}
           duration={exerciseBreak * 1000}
           onTimeOver={handleBreakOver}

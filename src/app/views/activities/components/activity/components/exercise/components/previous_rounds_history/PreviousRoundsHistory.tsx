@@ -17,7 +17,7 @@ const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, com
       : current[i],
     ...result,
   ]), [ _history, current ])
-  
+
   return (isLoading || !_history)
     ? <PreviousLoader>{loaderDictionary.previous_loading}</PreviousLoader>
     : (
@@ -30,8 +30,24 @@ const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, com
                   {previous.map((el, i, arr) => (
                     <StyledTd $eachSide key={i}>
                       <PreviousItemContainer $isTimeType={isTimeType} $eachSide key={i}>
-                        <PreviousItem omitValue={i === 0} comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} marginTop="-1px" />
-                        <PreviousItem omitValue={i === 0} comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={isTimeType ? '9px' : '7px'} />
+                        <PreviousItem
+                          omitValue={i === 0}
+                          comparator={comparator}
+                          curr={el?.right}
+                          prev={arr[i + 1]?.right}
+                          isTimeType={isTimeType}
+                          hours={hours}
+                          marginTop="-1px"
+                        />
+                        <PreviousItem
+                          omitValue={i === 0}
+                          comparator={comparator}
+                          curr={el?.left}
+                          prev={arr[i + 1]?.left}
+                          isTimeType={isTimeType}
+                          hours={hours}
+                          marginTop={isTimeType ? '9px' : '7px'}
+                        />
                       </PreviousItemContainer>
                     </StyledTd>
                   ))}
@@ -42,8 +58,24 @@ const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, com
                   {(previous ?? []).map((el, i, arr) => i !== arr.length - 1 && (
                     <StyledTd $eachSide key={i}>
                       <PreviousItemContainer $isTimeType={isTimeType} $eachSide key={i}>
-                        <PreviousItem omitValue={i === 0} comparator={comparator} curr={el.right} prev={arr[i + 1]?.right} isTimeType={isTimeType} hours={hours} marginTop="-1px" />
-                        <PreviousItem omitValue={i === 0} comparator={comparator} curr={el.left} prev={arr[i + 1]?.left} isTimeType={isTimeType} hours={hours} marginTop={isTimeType ? '9px' : '7px'} />
+                        <PreviousItem
+                          omitValue={i === 0}
+                          comparator={comparator}
+                          curr={el?.right}
+                          prev={arr[i + 1]?.right}
+                          isTimeType={isTimeType}
+                          hours={hours}
+                          marginTop="-1px"
+                        />
+                        <PreviousItem
+                          omitValue={i === 0}
+                          comparator={comparator}
+                          curr={el?.left}
+                          prev={arr[i + 1]?.left}
+                          isTimeType={isTimeType}
+                          hours={hours}
+                          marginTop={isTimeType ? '9px' : '7px'}
+                        />
                       </PreviousItemContainer>
                     </StyledTd>
                   ))}

@@ -147,7 +147,6 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
         onPause={handlePauseTimer}
         onReset={handleResetTimer}
         isRunning={isRunning}
-        isPaused={isPaused}
         initialValue={initialValuesTimeArray}
         value={value}
         msOn={msOn}

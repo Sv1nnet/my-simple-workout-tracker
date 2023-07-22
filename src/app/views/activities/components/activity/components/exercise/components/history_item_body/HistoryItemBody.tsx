@@ -71,10 +71,10 @@ const HistoryItemBody: FC<IHistoryItemBody> = ({ roundsData, nextRoundsData, ind
       : eachSide
         ? roundsData.map((data: EachSideRound<number>, i) => (
           <React.Fragment key={i}>
-            <Text $isTimeType key={i} $color={getColor(data.right, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.right, index, total, comparator)} $eachSide $mt="6px">
+            <Text $isTimeType $color={getColor(data.right, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.right, index, total, comparator)} $eachSide $mt="6px">
               <Text.Side>{sideLabels.right.short}.</Text.Side> <Text.Result>{timeToHms(data.right, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours }) || 0}</Text.Result>
             </Text>
-            <Text $isTimeType key={i} $color={getColor(data.left, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.left,  index, total, comparator)} $eachSide>
+            <Text $isTimeType $color={getColor(data.left, (nextRoundsData as unknown as EachSideRound<number> ?? [])[i]?.left,  index, total, comparator)} $eachSide>
               <Text.Side>{sideLabels.left.short}.</Text.Side> <Text.Result>{timeToHms(data.left, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours }) || 0}</Text.Result>
             </Text>
           </React.Fragment>

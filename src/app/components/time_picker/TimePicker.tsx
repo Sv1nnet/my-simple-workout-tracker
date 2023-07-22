@@ -8,7 +8,7 @@ export interface TimePickerProps extends Omit<PickerTimeProps<Dayjs>, 'picker'> 
 
 const TimePicker: React.FC<TimePickerProps> = (props) => {
   if (typeof props.value !== 'undefined' && !(props.value instanceof dayjs)) console.warn('Value of TimePicker is not a dayjs instance')
-  return <DatePicker {...props} dropdownClassName="stylized-time-picker" picker="time" mode={undefined} />
+  return <DatePicker {...props} popupClassName="stylized-time-picker" picker="time" mode={undefined} />
 }
 
 TimePicker.displayName = 'TimePicker'

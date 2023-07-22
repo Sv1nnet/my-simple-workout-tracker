@@ -38,7 +38,7 @@ export const HistoryLoader = styled.div`
   text-align: center;
 `
 
-export const ListContainer = React.memo(React.forwardRef<{}, any>(function ListContainer({
+export const ListContainer = React.memo(React.forwardRef<React.HTMLAttributes<HTMLDivElement>, any>(function ListContainer({
   children,
   sideLabels,
   showChart,
@@ -53,10 +53,11 @@ export const ListContainer = React.memo(React.forwardRef<{}, any>(function ListC
   isTimeType,
   onResultClick,
   opacityIndex,
+  containerProps,
   ...props
 }, ref) {
   return (
-    <div {...props} style={style} ref={ref}>
+    <div {...containerProps} style={style} ref={ref}>
       {children}
       {showChart && (
         <Chart

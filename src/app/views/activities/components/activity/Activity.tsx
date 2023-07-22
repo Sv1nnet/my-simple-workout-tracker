@@ -116,10 +116,10 @@ const Activity: FC<IActivityProps> = ({
                   type: exercise.type,
                   ...results,
                   rounds: results.rounds.map((round: string | { right: string, left: string }) => {
-                    if (round === null) return round
+                    if (round === null) return ''
   
                     return (typeof round === 'object')
-                      ? { right: round.right !== null ? dayjs(round.right) : null, left: round.left !== null ? dayjs(round.left) : null }
+                      ? { right: round.right !== null ? dayjs(round.right) : '', left: round.left !== null ? dayjs(round.left) : '' }
                       : dayjs(round as string)
                   }),
                 }
@@ -131,10 +131,10 @@ const Activity: FC<IActivityProps> = ({
                   id_in_workout: _id,
                   type: exercise.type,
                   rounds: results.rounds.map((round: string | { right: string, left: string }) => {
-                    if (round === null) return round
+                    if (round === null) return ''
   
                     return (typeof round === 'object')
-                      ? { right: round.right !== null ? +round.right : null, left: round.left !== null ? +round.left : null }
+                      ? { right: round.right !== null ? +round.right : '', left: round.left !== null ? +round.left : '' }
                       : +round
                   }),
                 }
@@ -321,33 +321,21 @@ const Activity: FC<IActivityProps> = ({
     if (selectedWorkout) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
   }, [ selectedWorkout ])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isEdit && localStorage.getItem('cached_activity') && workoutListStatus === API_STATUS.LOADED) {
-      const _modal = Modal.confirm({
-        title: modal.restore.title,
-        content: modal.restore.body,
-        okText: modal.restore.ok_button,
-        cancelText: modal.restore.cancel_button,
-        onOk() {
-          try {
-            const _cachedFormValues = JSON.parse(localStorage.getItem('cached_activity') || 'null')
+      try {
+        const _cachedFormValues = JSON.parse(localStorage.getItem('cached_activity') || 'null')
 
-            if (!_cachedFormValues) {
-              throw new Error('No cached form values')
-            }
+        if (!_cachedFormValues) {
+          throw new Error('No cached form values')
+        }
 
-            setSelectedWorkout(_cachedFormValues.workout_id)
-            setCachedFormValues(_cachedFormValues)
-            initFromCacheRef.current = true
-          } catch {
-            handleRestoreFromCacheError()
-          }
-        },
-        onCancel() {
-          localStorage.removeItem('cached_activity')
-        },
-      })
-      return () => _modal.destroy()
+        setSelectedWorkout(_cachedFormValues.workout_id)
+        setCachedFormValues(_cachedFormValues)
+        initFromCacheRef.current = true
+      } catch {
+        handleRestoreFromCacheError()
+      }
     }
   }, [ workoutListStatus ])
 

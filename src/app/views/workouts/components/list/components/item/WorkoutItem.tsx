@@ -139,7 +139,7 @@ const WorkoutItem: FC<IWorkout> = ({
   isLoading,
 }) => (
   <>
-    <Collapse style={{ width: '100%' }} ghost expandIconPosition="left" collapsible={selectionEnabled ? 'disabled' : undefined}>
+    <Collapse style={{ width: '100%' }} ghost expandIconPosition="start" collapsible={selectionEnabled ? 'disabled' : undefined}>
       <StyledPanel key="exercises" header={(
         <HeaderContainer>
           <Typography.Title level={3}>{title}</Typography.Title>
