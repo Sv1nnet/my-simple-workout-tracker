@@ -6,6 +6,7 @@ import {
   Upload,
   Checkbox,
   Modal,
+  notification,
 } from 'antd'
 import { FC, useEffect, useMemo, useReducer, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
@@ -94,7 +95,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
   const { intl } = useIntlContext()
-  const { input_labels, submit_button, payload, modal } = intl.pages.exercises
+  const { input_labels, submit_button, payload, modal, notifications } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
@@ -200,6 +201,12 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
     return onSubmit(values)
       .then((res) => {
+        if (!res.error && !res.data.error) {
+          notification.success({
+            message: notifications[isEdit ? 'update' : 'create'].success,
+            placement: 'top',
+          })
+        } 
         if (isEdit && !res.error && !res.data.error) setEditMode(false)
         return res
       })
@@ -312,12 +319,12 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
       </Form.Item>
       <ImageFormItem label={input_labels.image} style={{ marginBottom: isEditMode ? '' : '0' }} name="image" valuePropName="fileList" getValueFromEvent={({ fileList }) => fileList}>
-        <Upload.Dragger onPreview={handlePreviewOpen} listType="picture-card" maxCount={1} accept="image/*" disabled={!isEditMode || isFetching}>
+        <Upload.Dragger beforeUpload={() => false} onPreview={handlePreviewOpen} listType="picture-card" maxCount={1} accept="image/*" disabled={!isEditMode || isFetching}>
           <PlusOutlined />
         </Upload.Dragger>
       </ImageFormItem>
       <StyledModal
-        visible={preview.visible}
+        open={preview.visible}
         title={preview.title}
         footer={null}
         onCancel={handlePreviewClose}
@@ -337,7 +344,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         </CreateEditFormItem>
       )}
       <Modal
-        visible={isModalVisible}
+        open={isModalVisible}
         okText={modal.delete.ok_button}
         onOk={handleDelete}
         okButtonProps={{ danger: true, type: 'default', loading: isFetching }}

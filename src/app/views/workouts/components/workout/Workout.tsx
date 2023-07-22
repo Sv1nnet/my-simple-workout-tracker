@@ -3,6 +3,7 @@ import {
   Input,
   Button,
   Modal,
+  notification,
 } from 'antd'
 import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
@@ -66,7 +67,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const exerciseList = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
   const { payload } = intl.pages.exercises
-  const { input_labels, submit_button, error_message, modal, placeholders } = intl.pages.workouts
+  const { input_labels, submit_button, error_message, modal, placeholders, notifications } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<InitialValues>()
@@ -141,6 +142,12 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
 
     return onSubmit(values)
       .then((res) => {
+        if (!res.error && !res.data.error) {
+          notification.success({
+            message: notifications[isEdit ? 'update' : 'create'].success,
+            placement: 'top',
+          })
+        } 
         if (isEdit && !res.error && !res.data.error) setEditMode(false)
         return res
       })

@@ -4,6 +4,7 @@ import {
   Button,
   Modal,
   Select,
+  notification,
 } from 'antd'
 import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
@@ -59,7 +60,7 @@ const Activity: FC<IActivityProps> = ({
   const { runLoader, stopLoaderById } = useAppLoaderContext()
   const { intl, lang } = useIntlContext()
 
-  const { input_labels, submit_button, modal, loader } = intl.pages.activities
+  const { input_labels, submit_button, modal, loader, notifications } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
   
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
@@ -225,6 +226,12 @@ const Activity: FC<IActivityProps> = ({
 
     return onSubmit(values)
       .then((res) => {
+        if (!res.error && !res.data.error) {
+          notification.success({
+            message: notifications[isEdit ? 'update' : 'create'].success,
+            placement: 'top',
+          })
+        } 
         if (!isEdit && !res.error && !res.data.error) {
           localStorage.removeItem('cached_activity')
           setCachedFormValues(null)
@@ -286,7 +293,7 @@ const Activity: FC<IActivityProps> = ({
   useEffect(() => {
     const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
     if (error || isError) {
-      Modal.error({
+      const _modal = Modal.error({
         title: title.error,
         content: error || default_content.error,
         okText: ok_text,
@@ -294,12 +301,16 @@ const Activity: FC<IActivityProps> = ({
           if (errorCode === 404) navigate('/activities')
         },
       })
+
+      return () => _modal.destroy()
     } else if (!!historyErrorText || isHistoryError) {
-      Modal.error({
+      const _modal = Modal.error({
         title: title.error,
         content: historyErrorText || default_content.error,
         okText: ok_text,
       })
+
+      return () => _modal.destroy()
     }
   }, [ !!error, isError, isHistoryError, historyError ])
 

@@ -211,6 +211,20 @@
       }
     },
     "exercises": {
+      "notifications": {
+        "create": {
+          "success": {
+            "ru": "Упражнение создано",
+            "eng": "Exercise created"
+          }
+        },
+        "update": {
+          "success": {
+            "ru": "Упражнение обновлено",
+            "eng": "Exercise updated"
+          }
+        }
+      },
       "payload": {
         "repeats": {
           "ru": [
@@ -432,6 +446,20 @@
       }
     },
     "workouts": {
+      "notifications": {
+        "create": {
+          "success": {
+            "ru": "Тренировка создана",
+            "eng": "Wokrout created"
+          }
+        },
+        "update": {
+          "success": {
+            "ru": "Тренировка обновлена",
+            "eng": "Wokrout updated"
+          }
+        }
+      },
       "input_labels": {
         "title": {
           "ru": "Название",
@@ -560,6 +588,20 @@
       }
     },
     "activities": {
+      "notifications": {
+        "create": {
+          "success": {
+            "ru": "Активность создана",
+            "eng": "Activity created"
+          }
+        },
+        "update": {
+          "success": {
+            "ru": "Активность обновлена",
+            "eng": "Activity updated"
+          }
+        }
+      },
       "timer": {
         "side": {
           "right": {
