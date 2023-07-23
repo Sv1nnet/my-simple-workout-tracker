@@ -1,20 +1,32 @@
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import styled from 'styled-components'
-import { Button } from 'antd'
+import { Button, FormInstance } from 'antd'
 import { Form, Input } from 'antd'
+import { CacheFormData } from 'app/views/activities/components/activity/types'
+import { ActivityForm } from 'app/store/slices/activity/types'
+import { Dayjs } from 'dayjs'
 
 const AddRemoveNoteButton = styled(Button)`
   margin-top: 8px;
 `
+export interface INoteProps {
+  form: FormInstance<ActivityForm<Dayjs>>;
+  cacheFormData: CacheFormData;
+  exerciseIndex: number;
+  isFormItemDisabled: boolean;
+  inputLabels: { add_note: string, remove_note: string };
+  placeholder?: string;
+}
 
-const Note = ({ form, exerciseIndex, isFormItemDisabled, inputLabels, placeholder }) => {
+const Note: FC<INoteProps> = ({ form, cacheFormData, exerciseIndex, isFormItemDisabled, inputLabels, placeholder }) => {
   const [ showNote, setShowNote ] = useState(form.getFieldValue([ 'results', exerciseIndex, 'note' ]))
 
-  const handleHideNote = () => {
+  const handleRemoveNote = () => {
     setShowNote(false)
     const results = [ ...form.getFieldValue('results') ]
     results[exerciseIndex].note = null
     form.setFieldsValue({ results })
+    cacheFormData([ 'results', `${exerciseIndex}`, 'note' ], { ...form.getFieldsValue(), results })
   }
 
   return (
@@ -26,7 +38,7 @@ const Note = ({ form, exerciseIndex, isFormItemDisabled, inputLabels, placeholde
           </AddRemoveNoteButton>
         )
         : (
-          <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={handleHideNote}>
+          <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={handleRemoveNote}>
             {inputLabels.remove_note}
           </AddRemoveNoteButton>
         )}

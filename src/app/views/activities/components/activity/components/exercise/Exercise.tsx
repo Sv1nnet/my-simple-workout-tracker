@@ -33,7 +33,7 @@ const modeOptions = [
 export interface IExerciseProps {
   roundResults: {
     rounds: Round[],
-    note?: string,
+    note?: string | null,
   };
   total: number;
   break?: number;
@@ -220,6 +220,7 @@ const Exercise: FC<IExerciseProps> = ({
         exerciseIndex={exerciseIndex}
         inputLabels={input_labels}
         placeholder={input_placeholders.note}
+        cacheFormData={cacheFormData}
       />
     </div>
   )
