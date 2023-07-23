@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 // eslint-disable-next-line import/no-extraneous-dependencies
-// import { VitePWA } from 'vite-plugin-pwa'
+import { VitePWA } from 'vite-plugin-pwa'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
@@ -9,47 +9,77 @@ export default defineConfig({
   plugins: [
     react(),
     // eslint-disable-next-line new-cap
-    // VitePWA({
-    //   registerType: 'autoUpdate',
-    //   devOptions: {
-    //     enabled: true,
-    //   },
-    //   workbox: {
-    //     globPatterns: [ '**/*.{js,css,html,ico,png,svg}' ],
-    //   },
-    //   manifest: {
-    //     'name': 'My Simple Workout Tracker',
-    //     'short_name': 'MSWT',
-    //     'theme_color': '#ffffff',
-    //     'background_color': '#004740',
-    //     'display': 'fullscreen',
-    //     'orientation': 'portrait',
-    //     'scope': '/',
-    //     'start_url': '/',
-    //     'icons': [
-    //       {
-    //         'src': 'icons/chart.svg',
-    //         'type': 'image/svg',
-    //       },
-    //       {
-    //         'src': '/icons/ruflag.svg',
-    //         'type': 'image/svg',
-    //       },
-    //       {
-    //         'src': 'icons/table.svg',
-    //         'type': 'image/svg',
-    //       },
-    //       {
-    //         'src': '/icons/usa_flag.svg',
-    //         'type': 'image/svg',
-    //       },
-    //       {
-    //         'src': 'logo.svg',
-    //         'type': 'image/svg',
-    //       },
-    //     ],
-    //   },
-    // }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              cacheableResponse: {
+                statuses: [ 0, 200 ],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => /^(\/assets\/index)/.test(url.pathname),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'static-cache',
+              cacheableResponse: {
+                statuses: [ 0, 200 ],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/manifest.webmanifest'),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'manifest-cache',
+              cacheableResponse: {
+                statuses: [ 0, 200 ],
+              },
+            },
+          },
+        ],
+        globPatterns: [ '**/*.{ts,tsx,js,css,html}' ],
+      },
+      manifest: {
+        name: 'My Simple Workout Tracker',
+        short_name: 'Simple w-t tracker',
+        start_url: '/',
+        // scope: '../',
+        display: 'standalone',
+        description: 'Simple workout tracker. Add your exercises, workout plan and track progress of your activities.',
+        lang: 'en',
+        theme_color: '#0aa679',
+        background_color: '#0aa679',
+        orientation: 'portrait',
+        icons: [
+          {
+            src: '/manifest-icon-512.maskable',
+            type: 'image/png',
+            sizes: '512x512',
+            purpose: 'maskable',
+          },
+          {
+            src: '/manifest-icon-192.maskable',
+            type: 'image/png',
+            sizes: '192x192',
+            purpose: 'maskable',
+          },
+          {
+            src: '/logo.svg',
+            type: 'image/svg',
+          },
+        ],
+      },
+    }),
   ],
   resolve: {
     alias: {
