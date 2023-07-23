@@ -21,4 +21,4 @@ RUN npm run build
 EXPOSE 3004
 
 # Start the app
-CMD ["npm", "start"]
+CMD ["npm", "dev"]
