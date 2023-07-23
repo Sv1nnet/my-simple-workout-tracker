@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
-import { useRequestForNotificationPermission } from 'app/hooks'
+import { useNotificationPermissionRequest } from 'app/hooks'
 import { defaultNotificationProps, runCountingDown } from './utils'
 import { TimerView } from 'app/components'
 
@@ -47,7 +47,7 @@ const Timer: FC<ITimer> = ({
 }) => {
   const initialValue = useMemo(() => millisecondsToTimeArray(duration), [ duration ])
   
-  const { permitted } = useRequestForNotificationPermission()
+  const { permitted } = useNotificationPermissionRequest()
 
   const [ value, setValue ] = useState(initialValue)
   const [ isRunning, setIsRunning ] = useState(false)

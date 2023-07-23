@@ -11,7 +11,7 @@ import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/componen
 import dayjs from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
-import { useAppSelector, useRequestForNotificationPermission } from 'app/hooks'
+import { useAppSelector, useNotificationPermissionRequest } from 'app/hooks'
 import {
   Exercise,
   StyledForm,
@@ -235,7 +235,7 @@ const Activity: FC<IActivityProps> = ({
     }
   }, [ workoutListStatus ])
 
-  useRequestForNotificationPermission()
+  useNotificationPermissionRequest()
 
   const isFormItemDisabled = !isEditMode || isFetching
 

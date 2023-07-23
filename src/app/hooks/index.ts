@@ -1,5 +1,5 @@
 import { notification } from 'antd'
-import { ChangeEvent, useCallback, useMemo, useState } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react'
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -256,7 +256,7 @@ export const useDebouncedCallback = <T extends Function>(callback: T, delay: num
   }, [])
 }
 
-export const useRequestForNotificationPermission = () => {
+export const useNotificationPermissionRequest = () => {
   const [ permission, setPermission ] = useState(typeof Notification !== 'undefined' ? Notification.permission : null)
 
   useEffect(() => {
@@ -275,3 +275,41 @@ export const useRequestForNotificationPermission = () => {
     permitted: permission === 'granted',
   }
 }
+
+type SetValue<T> = Dispatch<SetStateAction<T>>
+
+export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, SetValue<T>, () => boolean] => {
+  const [ storedValue, setStoredValue ] = useState<T | null>(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch (error) {
+      return initialValue
+    }
+  })
+
+  const setValue = (value: unknown) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value
+      setStoredValue(valueToStore)
+      window.localStorage.setItem(key, JSON.stringify(valueToStore))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const removeItem = () => {
+    try {
+      window.localStorage.removeItem(key)
+      setStoredValue(null)
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  }
+
+  return [ storedValue, setValue, removeItem ]
+}
+
+
