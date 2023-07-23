@@ -38,27 +38,43 @@ export const baseQueryWithoutCreds = fetchBaseQuery({
 
 export type CustomBaseQueryError = FetchBaseQueryError & { data: IResponse<null, any> } | SerializedError & { data: IResponse<null, any> }
 
-const getBaseQueryWithReauth = (creds = true): BaseQueryFn<
-string | FetchArgs,
-unknown,
-FetchBaseQueryError | SerializedError | CustomBaseQueryError
-> => async (args, api, extraOptions) => {
-  const query = creds ? baseQuery : baseQueryWithoutCreds
-  let result = await query(args, api, extraOptions)
-  if (result.error && result.error.status === 401) {
-    // try to get a new token
-    const refreshResult = (await baseQuery(routes.auth.v1.refresh.path, api, extraOptions)) as QueryReturnValue<{ data: { token: Token } }>
-    if (refreshResult.data) {
-      const { token } = (refreshResult.data?.data || { token: null })
-      // store the new token
-      api.dispatch(updateToken(token))
-      // retry the initial query
-      result = await query(typeof args === 'object' ? { ...args, headers: { ...args.headers, Authorization: `Bearer ${token}` } } : args, api, extraOptions)
-    } else {
-      api.dispatch(logout())
+const getBaseQueryWithReauth = (() => {
+  let refreshRequest = null
+
+  return (creds = true): BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError | SerializedError | CustomBaseQueryError
+  > => async (args, api, extraOptions) => {
+    const query = creds ? baseQuery : baseQueryWithoutCreds
+    let result = await query(args, api, extraOptions)
+    if (result.error && result.error.status === 401) {
+      // try to get a new token
+      if (!refreshRequest) {
+        refreshRequest = (baseQuery(routes.auth.v1.refresh.path, api, extraOptions)) as QueryReturnValue<{ data: { token: Token } }>
+
+        if (refreshRequest instanceof Promise) {
+          refreshRequest = refreshRequest.then((res) => {
+            refreshRequest = null
+            return res
+          })
+        }
+      }
+      
+      const refreshResult = await refreshRequest
+  
+      if (refreshResult.data) {
+        const { token } = (refreshResult.data?.data || { token: null })
+        // store the new token
+        api.dispatch(updateToken(token))
+        // retry the initial query
+        result = await query(typeof args === 'object' ? { ...args, headers: { ...args.headers, Authorization: `Bearer ${token}` } } : args, api, extraOptions)
+      } else {
+        api.dispatch(logout())
+      }
     }
+    return result
   }
-  return result
-}
+})()
 
 export default getBaseQueryWithReauth
