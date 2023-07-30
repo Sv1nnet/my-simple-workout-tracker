@@ -137,9 +137,8 @@ export const useFormatToNumber = ({
         return formatToNumber(!cutValue.length ? '0' : `-${v.slice(2)}`)
       }
     }
-    // 10.00 or 10,00
-    if (v === '-' || v === '-.' || v === '-,') {
-      return ''
+    if (v === '-' || v === '-.' || v === '-,' || v === '.') {
+      return '0'
     }
     // 123. or 123,
     if (v.endsWith(',') || v.endsWith('.')) {
@@ -236,6 +235,156 @@ export const useValidateNumber = ({
     )
   }
 }, [ int, onlyPositive, onlyNegative, shouldUpdate, maxDigitsAfterPoint, maxExcluding, minExcluding, min, max ])
+
+export const useNumberInput = ({
+  int,
+  onlyPositive,
+  onlyNegative,
+  shouldUpdate,
+  maxDigitsAfterPoint,
+  maxExcluding,
+  minExcluding,
+  commaSeparator,
+  min,
+  max,
+  value: propValue,
+  onChange,
+  onBlur,
+  cutZeroes = false,
+  cutEndingZeroes = false,
+  cutLeadingZeroes = false,
+}: {
+  int?: boolean;
+  value?: number | string;
+  onChange?: (v: string | number | null, e: ChangeEvent) => unknown;
+  onBlur?: (v: string | number | null, e: ChangeEvent) => unknown;
+  min?: number;
+  max?: number;
+  onlyPositive?: boolean;
+  onlyNegative?: boolean;
+  shouldUpdate?: (currValue?: number | string | null, prevValue?: number | string | null) => boolean;
+  maxDigitsAfterPoint?: number;
+  maxExcluding?: boolean;
+  minExcluding?: boolean;
+  commaSeparator?: boolean;
+  cutZeroes?: boolean;
+  cutEndingZeroes?: boolean;
+  cutLeadingZeroes?: boolean;
+}) => {
+  const $input = useRef(null)
+
+  const formatToNumber = useFormatToNumber({
+    cutZeroes,
+    cutEndingZeroes,
+    cutLeadingZeroes,
+  })
+
+  const validate = useValidateNumber({
+    shouldUpdate,
+    maxDigitsAfterPoint,
+    int,
+    maxExcluding,
+    minExcluding,
+    onlyPositive,
+    onlyNegative,
+    min,
+    max,
+  })
+
+  const [ value, setValue ] = useState(() => {
+    const v = formatToNumber(stringifyValue(propValue))
+    if (!Number.isNaN(v)) return v
+    return ''
+  })
+
+  const handleChange = (e) => {
+    let v = e.target.value
+    if (v === '') {
+      setValue(v)
+      onChange?.(v, e)
+      return
+    }
+
+    const element = $input.current.input
+    let caret = element.selectionStart
+
+    if (onlyNegative && !v.startsWith('-') && !v.startsWith('0')) {
+      v = `-${v}`
+      caret += 1
+    }
+
+    const isValid = shouldUpdate
+      ? validate(v, value)
+      : validate(v)
+
+    if (!isValid) {
+      requestAnimationFrame(() => {
+        element.selectionStart = caret - 1
+        element.selectionEnd = caret - 1
+      })
+      return
+    }
+
+    v = commaSeparator ? v.replace('.', ',') : v.replace(',', '.')
+
+    requestAnimationFrame(() => {
+      element.selectionStart = caret
+      element.selectionEnd = caret
+    })
+
+    setValue(v)
+    onChange?.(v, e)
+  }
+
+  const handleBlur = (e) => {
+    let { value: v } = e.target
+    if (v === '' || validate(v)) {
+      v = v && (cutEndingZeroes && !cutLeadingZeroes) || (cutLeadingZeroes && !cutEndingZeroes) && !cutZeroes
+        ? formatToNumber(v)
+        : v && (cutZeroes || (cutEndingZeroes && cutLeadingZeroes))
+          ? parseFloat(formatToNumber(v))
+          : v
+
+      setValue(v)
+
+      if (typeof onBlur === 'function') onBlur(v, e)
+    } else {
+      setValue(value)
+      if (typeof onBlur === 'function') onBlur(value, e)
+    }
+  }
+
+  useEffect(() => {
+    if (propValue === undefined || propValue === null) return
+
+    let propValueStr = stringifyValue(propValue)
+    const stateValueStr = stringifyValue(value)
+
+    if (propValueStr !== stateValueStr) {
+      if (propValueStr.replace(',', '.') !== stateValueStr.replace(',', '.')) {
+        if (propValueStr === '') {
+          setValue(propValueStr)
+          return
+        }
+
+        const isValid = shouldUpdate
+          ? validate(propValueStr, value)
+          : validate(propValueStr)
+
+        if (!isValid) {
+          return
+        }
+
+        propValueStr = commaSeparator
+          ? propValueStr.replace('.', ',')
+          : propValueStr
+        setValue(propValueStr)
+      }
+    }
+  }, [ propValue, commaSeparator, shouldUpdate, validate, value ])
+
+  return { ref: $input, value, onChange: handleChange, onBlur: handleBlur }
+}
 
 export const useDebouncedCallback = <T extends Function>(callback: T, delay: number = 100) => {
   const callbackRef = useRef<T>(callback)

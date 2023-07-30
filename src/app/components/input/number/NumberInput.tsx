@@ -1,13 +1,13 @@
-import { useFormatToNumber, useValidateNumber } from 'app/hooks'
-import { stringifyValue } from 'app/utils/validateNumberUtils'
+import { useNumberInput } from 'app/hooks'
 import { Input, InputProps } from 'antd'
-import { FC, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, FC } from 'react'
+import { isMobileOrTablet } from 'app/utils/isMobile'
 
 export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
   int?: boolean;
   value?: number | string;
-  onChange?: Function;
-  onBlur?: Function;
+  onChange?: (v: string | number | null, e: ChangeEvent) => unknown;
+  onBlur?: (v: string | number | null, e: ChangeEvent) => unknown;
   min?: number;
   max?: number;
   onlyPositive?: boolean;
@@ -33,127 +33,35 @@ const NumberInput: FC<INumberInput> = ({
   commaSeparator,
   min,
   max,
-  value: propValue,
+  value,
   onChange,
   onBlur,
-  cutZeroes = false,
-  cutEndingZeroes = false,
-  cutLeadingZeroes = false,
+  cutZeroes,
+  cutEndingZeroes,
+  cutLeadingZeroes,
+  type,
   ...props
 }) => {
-  const $input = useRef(null)
-
-  const formatToNumber = useFormatToNumber({
+  const inputProps = useNumberInput({
+    int,
+    onlyPositive,
+    onlyNegative,
+    shouldUpdate,
+    maxDigitsAfterPoint,
+    maxExcluding,
+    minExcluding,
+    commaSeparator,
+    min,
+    max,
+    value,
+    onChange,
+    onBlur,
     cutZeroes,
     cutEndingZeroes,
     cutLeadingZeroes,
   })
 
-  const validate = useValidateNumber({
-    shouldUpdate,
-    maxDigitsAfterPoint,
-    int,
-    maxExcluding,
-    minExcluding,
-    onlyPositive,
-    onlyNegative,
-    min,
-    max,
-  })
-
-  const [ value, setValue ] = useState(() => {
-    const v = formatToNumber(stringifyValue(propValue))
-    if (!Number.isNaN(v)) return v
-    return ''
-  })
-
-  const handleChange = (e) => {
-    let v = e.target.value
-    if (v === '') {
-      setValue(v)
-      onChange?.(v, e)
-      return
-    }
-
-    const element = $input.current.input
-    let caret = element.selectionStart
-
-    if (onlyNegative && !v.startsWith('-') && !v.startsWith('0')) {
-      v = `-${v}`
-      caret += 1
-    }
-
-    const isValid = shouldUpdate
-      ? validate(v, value)
-      : validate(v)
-
-    if (!isValid) {
-      requestAnimationFrame(() => {
-        element.selectionStart = caret - 1
-        element.selectionEnd = caret - 1
-      })
-      return
-    }
-
-    v = commaSeparator ? v.replace('.', ',') : v.replace(',', '.')
-
-    requestAnimationFrame(() => {
-      element.selectionStart = caret
-      element.selectionEnd = caret
-    })
-
-    setValue(v)
-    onChange?.(v, e)
-  }
-
-  const handleBlur = (e) => {
-    let { value: v } = e.target
-    if (v === '' || validate(v)) {
-      v = v && (cutEndingZeroes && !cutLeadingZeroes) || (cutLeadingZeroes && !cutEndingZeroes) && !cutZeroes
-        ? formatToNumber(v)
-        : v && (cutZeroes || (cutEndingZeroes && cutLeadingZeroes))
-          ? parseFloat(formatToNumber(v))
-          : v
-
-      setValue(v)
-
-      if (typeof onBlur === 'function') onBlur(v, e)
-    } else {
-      setValue(value)
-      if (typeof onBlur === 'function') onBlur(value, e)
-    }
-  }
-
-  useEffect(() => {
-    if (propValue === undefined || propValue === null) return
-
-    let propValueStr = stringifyValue(propValue)
-    const stateValueStr = stringifyValue(value)
-
-    if (propValueStr !== stateValueStr) {
-      if (propValueStr.replace(',', '.') !== stateValueStr.replace(',', '.')) {
-        if (propValueStr === '') {
-          setValue(propValueStr)
-          return
-        }
-
-        const isValid = shouldUpdate
-          ? validate(propValueStr, value)
-          : validate(propValueStr)
-
-        if (!isValid) {
-          return
-        }
-
-        propValueStr = commaSeparator
-          ? propValueStr.replace('.', ',')
-          : propValueStr
-        setValue(propValueStr)
-      }
-    }
-  }, [ propValue, commaSeparator, shouldUpdate, validate, value ])
-
-  return <Input ref={$input} value={value} onChange={handleChange} onBlur={handleBlur} {...props} />
+  return <Input {...inputProps} type={type || (isMobileOrTablet ? 'number' : 'text')} {...props} />
 }
 
 NumberInput.defaultProps = {

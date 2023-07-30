@@ -17,8 +17,10 @@ export interface IPreviousItem {
   marginTop?: number | string;
 }
 
+const zeroEqualValues = [ null, '', '.', '.-', '-.', '-' ]
+
 const PreviousItem: FC<IPreviousItem> = ({ omitValue, comparator, curr, prev, isTimeType, hours, marginTop }) => {
-  let diff = (curr === null || curr === '') ? 0 : ((+curr * 1000) - ((prev ?? +curr) * 1000)) / 1000
+  let diff = zeroEqualValues.some(value => curr === value) ? 0 : ((+curr * 1000) - ((prev ?? +curr) * 1000)) / 1000
   const color = comparator.neg(diff, 0) ? theme.errorColor : comparator.pos(diff, 0) ? theme.resultPositiveColor : theme.textColorSecondary
   const noDiff = Math.abs(diff) === 0
   const sign = diff > 0 ? '+' : '-'
