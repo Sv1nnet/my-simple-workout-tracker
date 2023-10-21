@@ -53,7 +53,6 @@ export default defineConfig({
         name: 'My Simple Workout Tracker',
         short_name: 'Simple w-t tracker',
         start_url: '/',
-        // scope: '../',
         display: 'standalone',
         description: 'Simple workout tracker. Add your exercises, workout plan and track progress of your activities.',
         lang: 'en',

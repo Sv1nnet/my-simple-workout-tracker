@@ -1,7 +1,7 @@
 import { TimePicker } from 'app/components'
 import { Typography } from 'antd'
 import { Input } from 'app/components'
-import { FC } from 'react'
+import { ChangeEvent, FC } from 'react'
 import styled from 'styled-components'
 import { INumberInput } from 'app/components/input/number/NumberInput'
 import { colors } from '../../../chart/utils'
@@ -65,7 +65,7 @@ export interface ISideNumberInput extends INumberInput {
   dataSide: string;
   roundText: string;
   disabled: boolean;
-  onBlur: Function;
+  onBlur: (v: string, e: ChangeEvent) => unknown;
 }
 
 export const SideNumberInput: FC<ISideNumberInput> = ({ dataSide, roundText, ...props }) => (

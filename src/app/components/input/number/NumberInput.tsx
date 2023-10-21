@@ -1,26 +1,9 @@
-import { useNumberInput } from 'app/hooks'
-import { Input, InputProps } from 'antd'
-import { ChangeEvent, FC } from 'react'
+import { UseNumberInputArgs, useNumberInput } from 'app/hooks'
+import { Input, InputProps, InputRef } from 'antd'
+import { FC } from 'react'
 import { isMobileOrTablet } from 'app/utils/isMobile'
 
-export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur'> {
-  int?: boolean;
-  value?: number | string;
-  onChange?: (v: string | number | null, e: ChangeEvent) => unknown;
-  onBlur?: (v: string | number | null, e: ChangeEvent) => unknown;
-  min?: number;
-  max?: number;
-  onlyPositive?: boolean;
-  onlyNegative?: boolean;
-  shouldUpdate?: (currValue?: number | string | null, prevValue?: number | string | null) => boolean;
-  maxDigitsAfterPoint?: number;
-  maxExcluding?: boolean;
-  minExcluding?: boolean;
-  commaSeparator?: boolean;
-  cutZeroes?: boolean;
-  cutEndingZeroes?: boolean;
-  cutLeadingZeroes?: boolean;
-}
+export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur' | 'min' | 'max' | 'value'>, UseNumberInputArgs {}
 
 const NumberInput: FC<INumberInput> = ({
   int,
@@ -30,19 +13,21 @@ const NumberInput: FC<INumberInput> = ({
   maxDigitsAfterPoint,
   maxExcluding,
   minExcluding,
-  commaSeparator,
-  min,
-  max,
+  isCommaDecimalPoint,
+  min = -Infinity,
+  max = Infinity,
   value,
   onChange,
   onBlur,
+  onValueChange,
   cutZeroes,
-  cutEndingZeroes,
-  cutLeadingZeroes,
+  cutEndingZeroes = true,
+  cutLeadingZeroes = true,
   type,
   ...props
 }) => {
-  const inputProps = useNumberInput({
+  const inputProps = useNumberInput<InputRef>({
+    getElement: ref => ref.current.input,
     int,
     onlyPositive,
     onlyNegative,
@@ -50,25 +35,19 @@ const NumberInput: FC<INumberInput> = ({
     maxDigitsAfterPoint,
     maxExcluding,
     minExcluding,
-    commaSeparator,
+    isCommaDecimalPoint,
     min,
     max,
     value,
     onChange,
     onBlur,
+    onValueChange,
     cutZeroes,
     cutEndingZeroes,
     cutLeadingZeroes,
   })
 
-  return <Input {...inputProps} type={type || (isMobileOrTablet ? 'number' : 'text')} {...props} />
-}
-
-NumberInput.defaultProps = {
-  min: -Infinity,
-  max: Infinity,
-  cutEndingZeroes: true,
-  cutLeadingZeroes: true,
+  return <Input {...inputProps} type={type || (isMobileOrTablet ? 'tel' : 'text')} {...props} />
 }
 
 export default NumberInput
