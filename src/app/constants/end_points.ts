@@ -167,14 +167,16 @@ routes.activity = {
   },
 }
 
+type BaseRoutes = ReturnType<typeof createBaseRoutes>
+
 export default routes as typeof routes & {
   exercise: {
-    v1: ReturnType<typeof createBaseRoutes>
+    v1: BaseRoutes
   },
   workout: {
-    v1: ReturnType<typeof createBaseRoutes>
+    v1: BaseRoutes
   },
   activity: {
-    v1: ReturnType<typeof createBaseRoutes> & { history: BaseRouteUnit }
+    v1: BaseRoutes & { history: BaseRouteUnit }
   },
 }

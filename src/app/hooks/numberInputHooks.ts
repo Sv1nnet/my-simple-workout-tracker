@@ -158,7 +158,7 @@ export type UseNumberInputArgs<R = HTMLInputElement> = {
 const defaultGetElement = <R>(ref: MutableRefObject<R & HTMLInputElement>) => ref.current
 
 export const useNumberInput = <R = HTMLInputElement>({
-  getElement = defaultGetElement<R>,
+  getElement = defaultGetElement,
   int,
   onlyPositive,
   onlyNegative,

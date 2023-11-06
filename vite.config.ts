@@ -73,8 +73,9 @@ export default defineConfig({
             purpose: 'maskable',
           },
           {
-            src: '/logo.svg',
-            type: 'image/svg',
+            src: '/logo.png',
+            sizes: '512x512',
+            type: 'image/png',
           },
         ],
       },
