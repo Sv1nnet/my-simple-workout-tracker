@@ -234,7 +234,7 @@ export const shiftSegments = <S = Range>(
           segment: S,
           adjusted: [boolean, boolean],
         }
-      } = new Error(`Segment [${segment[0]}, ${segment[1]}] with index "${index}" is larger then low and high range [${low}, ${high}]`)
+      } = new Error(`Segment [${start}, ${end}] with index "${index}" is larger then low and high range [${low}, ${high}]`)
       error.data = {
         originalRange: [ start, end ],
         shiftedRange: [ newStart, newEnd ],
