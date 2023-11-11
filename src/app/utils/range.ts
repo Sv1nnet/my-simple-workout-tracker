@@ -1,16 +1,18 @@
-const intersects = ([ start, end ], [ _start, _end ]) => (
-  (_end > start && _end < end) ||
-  (_start > start && _start < end) ||
-  (_start < start && _end > end) ||
-  (_start === start && _end > end) ||
-  (_start === start && _end < end) ||
-  (_start < start && _end === end) ||
-  (_start > start && _end === end) ||
-  (_start === start && _end === end)
+const intersects = ([ startA, endA ], [ startB, endB ]) => (
+  (endB > startA && endB < endA) ||
+  (startB > startA && startB < endA) ||
+  (startB < startA && endB > endA) ||
+  (startB === startA && endB > endA) ||
+  (startB === startA && endB < endA) ||
+  (startB < startA && endB === endA) ||
+  (startB > startA && endB === endA) ||
+  (startB === startA && endB === endA)
 )
 
+export type Range = [number, number]
+
 export class SegmentsRange {
-  private _range: [number, number]
+  private _range: Range
 
   private _start: number
 
@@ -18,7 +20,7 @@ export class SegmentsRange {
 
   private _rangeSet: number[]
 
-  private _get: (el: any) => [number, number]
+  private _get: (el: any) => Range
 
   constructor(initial, getter = function rangeGetter(range) { return range }) {
     this.range = [ ...this._convertToArray(getter(initial)) ]
@@ -63,7 +65,7 @@ export class SegmentsRange {
     return this._end
   }
 
-  intersects(segment: number | [number, number]) {
+  intersects(segment: number | Range) {
     segment = this._convertToArray(segment)
     return intersects(this.range, segment)
   }
@@ -79,7 +81,7 @@ export class SegmentsRange {
     return true
   }
 
-  add(segment: number | [number, number]) {
+  add(segment: number | Range) {
     const _segment = this._convertToArray(this._get(segment))
 
     const [ start, end ] = this.range
@@ -95,13 +97,13 @@ export class SegmentsRange {
     return this
   }
 
-  private _convertToArray(segment: number | [number, number]) {
+  private _convertToArray(segment: number | Range) {
     if (!Array.isArray(segment)) segment = [ segment, segment ]
     return segment
   }
 }
 
-export const recomposeSegments = (segments: [number, number][]) => {
+export const recomposeSegments = (segments: Range[]) => {
   if (!segments.length) return []
 
   return segments
@@ -119,15 +121,16 @@ export const recomposeSegments = (segments: [number, number][]) => {
     }, [])
 }
 
-export const getIntersections = (segments: [number, number][] | { index: number, segment: [number, number] }[]) => {
+export type IndexedRange = { index: number, segment: Range }
+
+export const getIntersections = (segments: IndexedRange[]) => {
   const intersections = {}
   segments.forEach((segment, _index) => {
     if (!segments[_index + 1]) return
 
     for (let i = _index + 1; i < segments.length; i++) {
-      const _segment = Array.isArray(segments[i])
-        ? segments[i] as [number, number]
-        : (segments[i] as { index: number, segment: [number, number] }).segment
+      const _segment = segments[i].segment
+
       const [ _start, _end ] = _segment
       const hasIntersection = intersects(segment.segment, _segment)
 
@@ -145,21 +148,21 @@ export const DIRECTIONS = {
   FORTH: 'forth',
   BACK: 'back',
 }
-let c = 0
-export const spreadSegments = (segments: [number, number][], { gap = 1, dir = DIRECTIONS.FORTH } = {}) => {
+
+export const spreadSegments = (segments: Range[], { gap = 1, dir = DIRECTIONS.FORTH } = {}) => {
   segments = [ ...segments ]
-  const _segments = segments.map((segment, index) => ({ index, segment })).sort((a, b) => a.segment[0] - b.segment[0])
-  let intersections = {} as { [key: string]: [number, number] }
-  c = 0
+  const _segments = segments.map<IndexedRange>((segment, index) => ({ index, segment })).sort((a, b) => a.segment[0] - b.segment[0])
+  let intersections = {} as { [key: string]: Range }
+  let c = 0
   do {
     intersections = getIntersections(_segments)
     for (let indexToMoveFrom in intersections) {
-      const rangeToMoveFrom: { index: number, segment: [number, number] } = _segments[indexToMoveFrom]
+      const rangeToMoveFrom: { index: number, segment: Range } = _segments[indexToMoveFrom]
       const [ startOfRange, endOfRange ] = rangeToMoveFrom.segment
 
       for (let range of intersections[indexToMoveFrom]) {
-        const [ _index, _range ] = range as unknown as [number, number]
-        const newRange: [number, number] = dir === DIRECTIONS.FORTH 
+        const [ _index, _range ] = range as unknown as Range
+        const newRange: Range = dir === DIRECTIONS.FORTH 
           ? [
             endOfRange + gap,
             endOfRange + (_range[1] - _range[0]) + gap,
@@ -183,14 +186,18 @@ export const spreadSegments = (segments: [number, number][], { gap = 1, dir = DI
   return _segments.sort((a, b) => a.index - b.index).map(({ segment }) => segment)
 }
 
-export const shiftSegments = (
-  segments,
+export type RangeGetter<T = Range> = (segment: T) => Range
+const rangeGetter: RangeGetter = (segment: Range) => segment
+
+// move segments by (range size * coefficient)
+export const shiftSegments = <S = Range>(
+  segments: S[],
   {
     coefficient = .5,
     low = -Infinity,
     high = Infinity,
-    getter = segment => segment,
-    returnResult = (range, _initial, _adjusted) => range,
+    getter = rangeGetter as RangeGetter<S>,
+    returnResult = (range: Range, _initial: S, _adjusted: [boolean, boolean]) => range,
   } = {},
 ) => segments.map((segment, index) => {
   const [ start, end ] = getter(segment)
@@ -199,38 +206,38 @@ export const shiftSegments = (
   let startAdjusted = false
   let endAdjusted = false
 
-  let _start = start - bias
-  let _end = end - bias
+  let newStart = start - bias
+  let newEnd = end - bias
   let diff = 0
 
-  if (_start < low) {
-    diff = low - _start
-    _start = _start + diff
-    _end = _end + diff
+  if (newStart < low) {
+    diff = low - newStart
+    newStart = newStart + diff
+    newEnd = newEnd + diff
 
     startAdjusted = true
   }
 
-  if (_end > high) {
-    diff = _end - high
-    _end = _end - diff
-    _start = _start - diff
+  if (newEnd > high) {
+    diff = newEnd - high
+    newEnd = newEnd - diff
+    newStart = newStart - diff
 
     startAdjusted = true
     endAdjusted = true
 
-    if (startAdjusted && _start < low) {
+    if (startAdjusted && newStart < low) {
       const error: Error & {
         data?: {
-          originalRange: [number, number],
-          shiftedRange: [number, number],
-          segment: any,
+          originalRange: Range,
+          shiftedRange: Range,
+          segment: S,
           adjusted: [boolean, boolean],
         }
       } = new Error(`Segment [${segment[0]}, ${segment[1]}] with index "${index}" is larger then low and high range [${low}, ${high}]`)
       error.data = {
         originalRange: [ start, end ],
-        shiftedRange: [ _start, _end ],
+        shiftedRange: [ newStart, newEnd ],
         segment,
         adjusted: [ startAdjusted, endAdjusted ],
       }
@@ -239,5 +246,5 @@ export const shiftSegments = (
     }
   }
 
-  return returnResult([ _start, _end ], segment, [ startAdjusted, endAdjusted ])
+  return returnResult([ newStart, newEnd ], segment, [ startAdjusted, endAdjusted ])
 })
