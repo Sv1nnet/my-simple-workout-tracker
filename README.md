@@ -17,3 +17,5 @@ To run it locally you have to have [Backend](https://github.com/Sv1nnet/mswt-ser
 Then:
 1. Run `npm i`
 2. Run `npm run dev`
+
+For non-commercial use only.
