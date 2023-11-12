@@ -20,3 +20,5 @@ Then:
 2. Rename `EXAMPLE.env` file to `.env` and configure it.
 3. Run `npm i`
 4. Run `npm run dev`
+
+For non-commercial use only.
