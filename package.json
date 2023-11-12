@@ -1,7 +1,7 @@
 {
   "name": "vite-project",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "EXTERNAL_API_HOST=$(osascript -e \"IPv4 address of (system info)\") && vite --force --host=$EXTERNAL_API_HOST --port 3004",
