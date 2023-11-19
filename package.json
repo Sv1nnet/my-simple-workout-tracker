@@ -8,6 +8,7 @@
     "build": "tsc --declaration && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview --host",
+    "docker-build:prod:local": "docker build -f Dockerfile.local -t mswt-client_prod-local .",
     "docker-build:prod": "docker build -t mswt-client_prod ."
   },
   "dependencies": {
