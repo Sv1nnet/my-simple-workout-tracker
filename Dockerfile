@@ -8,17 +8,16 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --only=prod
+# Install production dependencies
+RUN npm ci --only=prod
 
 # Copy application files
 COPY . .
 
-# Add TypeScript compiler (tsc) to the container (you can remove this line if tsc is globally available in the base image)
-RUN npm install --only=dev
-
 # Build the application
 RUN npm run build
+
+RUN rm -rf node_modules
 
 # Expose the app port
 # EXPOSE 4173
