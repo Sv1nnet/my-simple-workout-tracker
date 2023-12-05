@@ -7,8 +7,8 @@ import { ExerciseForm } from 'app/store/slices/exercise/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const CreateExercise = () => {
-  const [ create, { data, isLoading, isError, error } ] = exerciseApi.useCreateMutation()
-  const { lang } = useIntlContext()
+  const [ create, { data, isLoading, isError, error: serverError } ] = exerciseApi.useCreateMutation()
+  const { lang, intl } = useIntlContext()
   const navigate = useNavigate()
 
   const handleSubmit = (values: ExerciseForm) => create({ exercise: values })
@@ -17,13 +17,22 @@ const CreateExercise = () => {
     if (!isError && data) navigate('/exercises')
   }, [ isLoading ])
 
+
+  let error = (serverError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
+
+  if (!error) {
+    error = (serverError as { originalStatus?: number })?.originalStatus === 413
+      ? intl.pages.exercises.notifications.error.max_image_size
+      : null
+  }
+
   return (
     <Exercise
       initialValues={data?.data}
       isFetching={isLoading || (!!data && !isError)}
       isError={isError}
       onSubmit={handleSubmit}
-      error={(error as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']}
+      error={error}
     />
   )
 }

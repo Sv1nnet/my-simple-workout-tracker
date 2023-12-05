@@ -223,6 +223,12 @@
             "ru": "Упражнение обновлено",
             "eng": "Exercise updated"
           }
+        },
+        "error": {
+          "max_image_size": {
+            "ru": "Не удалось загрузить изображение. Максимальный размер 50 мб.",
+            "eng": "Could not upload image. Maximum size is 50 mb."
+          }
         }
       },
       "payload": {

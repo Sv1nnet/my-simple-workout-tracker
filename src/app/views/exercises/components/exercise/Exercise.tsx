@@ -218,7 +218,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   })
 
   useEffect(() => {
-    if (isMounted() && !isFetching) form.setFieldsValue(initialValues)
+    if (isMounted() && !isFetching && !isError) form.setFieldsValue(initialValues)
   }, [ initialValues, isFetching ])
 
   useEffect(() => {
