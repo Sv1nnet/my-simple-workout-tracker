@@ -29,7 +29,7 @@ FROM nginx:stable-alpine
 
 COPY --from=build /usr/src/app /bin/www
 
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 443
 
