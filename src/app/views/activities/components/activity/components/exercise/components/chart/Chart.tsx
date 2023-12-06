@@ -17,7 +17,6 @@ import {
   TIME_WITH_HOUR_CELL_WIDTH,
   TIME_WITH_HOUR_IN_CELL_OFFSET,
   Lines,
-  Dots,
   Texts,
 } from './utils'
 
@@ -170,16 +169,6 @@ const Chart = ({ style, data, startIndex, endIndex, height, type, hours, eachSid
         left={left}
         right={right}
         dataToRender={dataToRender}
-        onFocus={handleFocus}
-        opacities={opacities}
-      />
-      <Dots
-        eachSide={eachSide}
-        left={left}
-        right={right}
-        dataToRender={dataToRender}
-        xScale={xScale}
-        yScale={yScale}
         onFocus={handleFocus}
         opacities={opacities}
       />

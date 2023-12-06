@@ -141,9 +141,3 @@ export const ResultTexts = ({ dataToRender: _dataToRender, left, right, minY, xS
     })
   })
 }
-
-export const ResultDots = ({ dataToRender, xScale, yScale, colors, onFocus, opacities }) => dataToRender.map((d, i) => d.map(({ results, index }) => (
-  <g key={`circle_${i}_${index}`} transform={`translate(${xScale({ index })}, ${yScale({ results })})`}>
-    <circle data-index={i} onClick={onFocus} fill={colors[i].line} cx={0} cy={0} r="2" opacity={opacities[i]} stroke={colors[i].line} strokeWidth={2} />
-  </g>
-)))

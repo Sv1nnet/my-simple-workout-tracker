@@ -19,6 +19,7 @@ export const LegendItem = styled.span<{ $color?: typeof colors[number] }>`
   width: 30px;
   height: 2px;
   background-color: ${({ $color }) => $color.line};
+  cursor: pointer;
 
   span {
     position: absolute;
@@ -26,18 +27,6 @@ export const LegendItem = styled.span<{ $color?: typeof colors[number] }>`
     left: 50%;
     transform: translate(-50%, -90%);
     color: ${({ $color }) => $color.text};
-  }
-
-  &:after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 6px;
-    width: 6px;
-    background-color: ${({ $color }) => $color.line};
   }
 `
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ResultDots, ResultTexts } from '../components'
+import { ResultTexts } from '../components'
 
 export const COUNT_CELL_WIDTH = 50
 export const COUNT_IN_CELL_OFFSET = COUNT_CELL_WIDTH / 2
@@ -101,38 +101,6 @@ export const Lines = ({ dataToRender, onFocus, opacities, eachSide, line, left, 
       d={line(d)}
     />
   ))
-
-export const Dots = ({ dataToRender, onFocus, opacities, eachSide, xScale, yScale, left, right }) => eachSide
-  ? (
-    <React.Fragment>
-      <ResultDots
-        dataToRender={right}
-        xScale={xScale}
-        yScale={yScale}
-        colors={colors}
-        onFocus={onFocus}
-        opacities={opacities}
-      />
-      <ResultDots
-        dataToRender={left}
-        xScale={xScale}
-        yScale={yScale}
-        colors={colors}
-        onFocus={onFocus}
-        opacities={opacities}
-      />
-    </React.Fragment>
-  )
-  : (
-    <ResultDots
-      dataToRender={dataToRender}
-      xScale={xScale}
-      yScale={yScale}
-      colors={colors}
-      onFocus={onFocus}
-      opacities={opacities}
-    />
-  )
 
 export const Texts = ({ dataToRender, onFocus, opacities, xScale, yScale, minY, hours, right, left, sideLabels, isTimeType }) => (
   <ResultTexts
