@@ -3,8 +3,9 @@ import { WorkoutForm, WorkoutListItem } from 'app/store/slices/workout/types'
 import dayjs, { Dayjs, isDayjs } from 'dayjs'
 import { InitialValues } from '../types'
 import { MutableRefObject } from 'react'
-import { FormInstance } from 'antd'
+import { FormInstance, Modal } from 'antd'
 import { ActivityForm } from 'app/store/slices/activity/types'
+import { NavigateFunction } from 'react-router'
 
 export const getComparator = (type: string) => type === 'time' 
   ? {
@@ -49,11 +50,21 @@ export const getInitialActivityValues = ({
   handleRestoreFromCacheError: VoidFunction,
   isEdit?: boolean,
 }) => {
-  if (isEdit && initialValues === null) return {}
-  
-  let newInitialValues
+  if (isEdit && initialValues === null) {
+    return {
+      _id: undefined,
+      workout_id: undefined,
+      duration: 0,
+      date: undefined,
+      results: [],
+      description: '',
+    }
+  }
+
+  let newInitialValues: InitialValues<Dayjs>
   try {
-    if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current) {
+    debugger
+    if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current && workoutList.length) {
       const workout = workoutList
         .find(wk => wk.id === cachedFormValues.workout_id)
 
@@ -113,7 +124,7 @@ export const getInitialActivityValues = ({
         duration: 0,
         ...initialValues,
         date: dayjs(initialValues.date),
-        results: initialValues.results.map(results => isExerciseTimeType(results.type)
+        results: initialValues.results?.map(results => isExerciseTimeType(results.type)
           ? {
             ...results,
             rounds: results.rounds.map((round: number | { right: number, left: number }) => (round !== null && typeof round === 'object')
@@ -175,4 +186,66 @@ export const getActivityValuesToSubmit = ({ ...values }, initialValues, workoutL
   }, [])
 
   return values
+}
+
+export const showActivityErrors = (
+  restoreError: { error?: string, isError?: boolean },
+  historyError: { error?: string, isError?: boolean },
+  errorCode: number,
+  errorModalsRef: React.MutableRefObject<{
+    restoreActivity: {
+      destroy: () => void;
+      update: (configUpdate: object) => void;
+    };
+    history: {
+      destroy: () => void;
+      update: (configUpdate: object) => void;
+    };
+  }>,
+  dict: {
+    title: { error: string },
+    default_content: { error: string },
+    ok_text: string,
+  },
+  navigate: NavigateFunction,
+) => {
+  const { error, isError } = restoreError
+  const { error: historyErrorText, isError: isHistoryError } = historyError
+
+  if (error || isError) {
+    if (errorModalsRef.current.restoreActivity) {
+      errorModalsRef.current.restoreActivity.destroy()
+      errorModalsRef.current.restoreActivity = null
+    }
+
+    errorModalsRef.current.restoreActivity = Modal.error({
+      title: dict.title.error,
+      content: error || dict.default_content.error,
+      okText: dict.ok_text,
+      onOk() {
+        if (errorCode === 404) navigate('/activities')
+      },
+    })
+
+    return () => {
+      errorModalsRef.current.restoreActivity?.destroy()
+      errorModalsRef.current.restoreActivity = null
+    }
+  } else if (historyErrorText || isHistoryError) {
+    if (errorModalsRef.current.history) {
+      errorModalsRef.current.history.destroy()
+      errorModalsRef.current.history = null
+    }
+
+    errorModalsRef.current.history = Modal.error({
+      title: dict.title.error,
+      content: historyErrorText || dict.default_content.error,
+      okText: dict.ok_text,
+    })
+
+    return () => {
+      errorModalsRef.current.history?.destroy()
+      errorModalsRef.current.history = null
+    }
+  }
 }

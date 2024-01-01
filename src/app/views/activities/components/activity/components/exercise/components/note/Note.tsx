@@ -20,9 +20,16 @@ export interface INoteProps {
 
 const Note: FC<INoteProps> = ({ form, cacheFormData, exerciseIndex, isFormItemDisabled, inputLabels, placeholder }) => {
   const [ showNote, setShowNote ] = useState(form.getFieldValue([ 'results', exerciseIndex, 'note' ]))
+  const [ shouldBeFocused, setShouldBeFocused ] = useState(false)
+
+  const handleShowNote = () => {
+    setShowNote(true)
+    setShouldBeFocused(true)
+  }
 
   const handleRemoveNote = () => {
     setShowNote(false)
+    setShouldBeFocused(false)
     const results = [ ...form.getFieldValue('results') ]
     results[exerciseIndex].note = null
     form.setFieldsValue({ results })
@@ -33,7 +40,7 @@ const Note: FC<INoteProps> = ({ form, cacheFormData, exerciseIndex, isFormItemDi
     <>
       {!showNote
         ? (
-          <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={() => setShowNote(true)}>
+          <AddRemoveNoteButton disabled={isFormItemDisabled} size="small" onClick={handleShowNote}>
             {inputLabels.add_note}
           </AddRemoveNoteButton>
         )
@@ -46,7 +53,7 @@ const Note: FC<INoteProps> = ({ form, cacheFormData, exerciseIndex, isFormItemDi
         <Form.Item name={[ 'results', exerciseIndex, 'note' ]}>
           <Input.TextArea
             disabled={isFormItemDisabled}
-            autoFocus
+            autoFocus={shouldBeFocused}
             style={{ marginTop: '10px' }}
             placeholder={placeholder}
             showCount

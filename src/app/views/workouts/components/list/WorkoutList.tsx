@@ -23,7 +23,7 @@ export type ApiGetWorkoutError = {
   status: number;
 }
 
-type DeleteWorkoutPayload = { ids: Pick<WorkoutForm, 'id'>[] } 
+export type DeleteWorkoutPayload = { ids: Pick<WorkoutForm, 'id'>[] } 
 
 export interface IWorkoutList {
   workouts: WorkoutListItem[];

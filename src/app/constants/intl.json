@@ -92,6 +92,10 @@
       "ru": "Зарегистрироваться",
       "eng": "Sign up"
     },
+    "continue_without_login": {
+      "ru": "Продолжить без входа",
+      "eng": "Continue without login"
+    },
     "error_message": {
       "email": {
         "required": {
@@ -170,6 +174,10 @@
       "logout": {
         "ru": "Выйти",
         "eng": "Logout"
+      },
+      "login": {
+        "ru": "Войти",
+        "eng": "Login"
       },
       "save_button": {
         "ru": "Сохранить",

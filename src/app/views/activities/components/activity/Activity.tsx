@@ -1,105 +1,97 @@
-import {
-  Form,
-  Input,
-  Button,
-  Modal,
-  Select,
-  notification,
-} from 'antd'
+/** @format */
+
+import { Form, Input, Button, Modal, Select, notification } from 'antd'
 import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
-import { useAppSelector, useNotificationPermissionRequest } from 'app/hooks'
-import {
-  Exercise,
-  StyledForm,
-  CreateEditFormItem,
-  WorkoutFormItem,
-  WorkoutLabelContainer,
-  StyledDateFormItem,
-} from './components'
-import { workoutApi } from 'app/store/slices/workout/api'
-import { selectList } from 'app/store/slices/workout'
+import { useAppDispatch, useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
+import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem } from './components'
+import { WORKOUT_TAG_TYPES, workoutApi } from 'app/store/slices/workout/api'
+import { resetListState, selectList } from 'app/store/slices/workout'
 import { activityApi } from 'app/store/slices/activity/api'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { WorkoutForm, WorkoutListExercise } from 'app/store/slices/workout/types'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWorkoutList } from './utils'
+import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWorkoutList, showActivityErrors } from './utils'
 import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { useNavigate } from 'react-router'
 
-const Activity: FC<IActivityProps> = ({
-  initialValues: _initialValues,
-  isEdit,
-  isFetching,
-  onSubmit,
-  deleteActivity,
-  isError,
-  error,
-  errorCode,
-}) => {
+export type ErrorModalTypes = 'restoreActivity' | 'history'
+
+const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const [ cachedFormValues, setCachedFormValues, removeCachedFormValues, getCachedFormValues ] = useLocalStorage<InitialValues | null>('cached_activity', null)
+
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
-  const [ cachedFormValues, setCachedFormValues ] = useState<InitialValues | null>(() => {
-    try {
-      return JSON.parse(typeof localStorage !== 'undefined' ? (localStorage.getItem('cached_activity') || 'null') : 'null')
-    } catch {
-      return null
-    }
-  })
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
   const { intl, lang } = useIntlContext()
 
+  const errorModalsRef = useRef<{ [key in ErrorModalTypes]: ReturnType<typeof Modal.error> | null }>({
+    restoreActivity: null,
+    history: null,
+  })
+
   const { input_labels, submit_button, modal, loader, notifications } = intl.pages.activities
   const { title, ok_text, default_content } = intl.modal.common
-  
+
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
-  const history = useMemo<HistoryServerPayload>(() => _history
-    ? Object
-      .entries(_history.data)
-      .reduce((acc, [ exercise_id, results ]) => {
-        acc[exercise_id] = (results as { items }).items.map(item => ({
-          date: dayjs(item.date),
-          results: item.results,
-        }))
-        return acc
-      }, {})
-    : _history, [ _history ])
-  
+  const history = useMemo<HistoryServerPayload>(
+    () =>
+      _history
+        ? Object.entries(_history.data).reduce((acc, [ exercise_id, results ]) => {
+          acc[exercise_id] = (results as { items }).items.map(item => ({
+            date: dayjs(item.date),
+            results: item.results,
+          }))
+          return acc
+        }, {})
+        : _history,
+    [ _history ],
+  )
+
   const [ form ] = Form.useForm<ActivityForm>()
-  
+
   const initFromCacheRef = useRef(false)
   const durationTimerRef = useRef<StopwatchRef>(null)
 
   const handleRestoreFromCacheError = () => {
-    Modal.error({
+    if (errorModalsRef.current.restoreActivity) {
+      errorModalsRef.current.restoreActivity.destroy()
+      errorModalsRef.current.restoreActivity = null
+    }
+    errorModalsRef.current.restoreActivity = Modal.error({
       title: modal.error.title,
       content: modal.error.body,
       okText: modal.error.ok_button,
     })
-    localStorage.removeItem('cached_activity')
+    removeCachedFormValues()
     setSelectedWorkout(null)
   }
 
-  const initialValues = useMemo<InitialValues>(() => getInitialActivityValues({
-    isEdit,
-    initialValues: _initialValues,
-    workoutList,
-    cachedFormValues,
-    selectedWorkout,
-    initFromCacheRef,
-    form,
-    handleRestoreFromCacheError,
-  }), [ _initialValues, selectedWorkout, workoutList ])
+  const initialValues = useMemo<InitialValues<Dayjs>>(
+    () =>
+      getInitialActivityValues({
+        isEdit,
+        initialValues: _initialValues,
+        workoutList,
+        cachedFormValues,
+        selectedWorkout,
+        initFromCacheRef,
+        form,
+        handleRestoreFromCacheError,
+      }),
+    [ _initialValues, selectedWorkout, workoutList ],
+  )
 
   const handleCancelEditing = () => {
     setEditMode(false)
@@ -109,30 +101,29 @@ const Activity: FC<IActivityProps> = ({
   const handleSubmit = async (values) => {
     durationTimerRef.current.pauseTimer()
 
-    return onSubmit(getActivityValuesToSubmit(values, initialValues, workoutList, durationTimerRef))
-      .then((res) => {
-        if (!res.error && !res.data.error) {
-          notification.success({
-            message: notifications[isEdit ? 'update' : 'create'].success,
-            placement: 'top',
-          })
-        } 
-        if (!isEdit && !res.error && !res.data.error) {
-          localStorage.removeItem('cached_activity')
-          setCachedFormValues(null)
-        }
-        if (isEdit && !res.error && !res.data.error) {
-          setEditMode(false)
-          if (selectedWorkout && initialValues.date.toString() !== values.date.toString()) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
-        }
-        return res
-      })
+    return onSubmit(getActivityValuesToSubmit(values, initialValues, workoutList, durationTimerRef)).then((res) => {
+      if (!res.error && !res.data.error) {
+        notification.success({
+          message: notifications[isEdit ? 'update' : 'create'].success,
+          placement: 'top',
+        })
+      }
+      if (!isEdit && !res.error && !res.data.error) {
+        setCachedFormValues(null)
+      }
+      if (isEdit && !res.error && !res.data.error) {
+        setEditMode(false)
+        if (selectedWorkout && initialValues.date.toString() !== values.date.toString()) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
+      }
+      return res
+    })
   }
 
-  const handleDelete = () => deleteActivity(initialValues.id).then((res) => {
-    setIsModalVisible(false)
-    return res
-  })
+  const handleDelete = () =>
+    deleteActivity(initialValues.id).then((res) => {
+      setIsModalVisible(false)
+      return res
+    })
 
   const handleSelectedWorkoutChange = (value) => {
     setSelectedWorkout(value)
@@ -143,7 +134,6 @@ const Activity: FC<IActivityProps> = ({
       results: getResultsFromWorkoutList(workoutList, value),
       duration: 0,
     }
-    localStorage.setItem('cached_activity', JSON.stringify(newCachedValues))
     setCachedFormValues(newCachedValues)
     return value
   }
@@ -151,7 +141,7 @@ const Activity: FC<IActivityProps> = ({
   const cacheFormData: CacheFormData = (changedValues, allValues) => {
     if (isEdit) return
     if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
-    localStorage.setItem('cached_activity', JSON.stringify(allValues))
+    setCachedFormValues(allValues)
   }
 
   const handleDurationChange = (ms: number) => {
@@ -177,32 +167,46 @@ const Activity: FC<IActivityProps> = ({
 
   useEffect(() => {
     const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
-    if (error || isError) {
-      const _modal = Modal.error({
-        title: title.error,
-        content: error || default_content.error,
-        okText: ok_text,
-        onOk() {
-          if (errorCode === 404) navigate('/activities')
-        },
-      })
-
-      return () => _modal.destroy()
-    } else if (!!historyErrorText || isHistoryError) {
-      const _modal = Modal.error({
-        title: title.error,
-        content: historyErrorText || default_content.error,
-        okText: ok_text,
-      })
-
-      return () => _modal.destroy()
-    }
+    return showActivityErrors(
+      {
+        error,
+        isError,
+      },
+      {
+        error: historyErrorText,
+        isError: isHistoryError,
+      },
+      errorCode,
+      errorModalsRef,
+      {
+        title,
+        default_content,
+        ok_text,
+      },
+      navigate,
+    )
   }, [ !!error, isError, isHistoryError, historyError ])
 
   useEffect(() => {
-    if (workoutListStatus !== API_STATUS.LOADED) fetchWorkoutList()
+    let isArchivedWorkoutInActivity = false
+    if (isEdit || workoutListStatus !== API_STATUS.LOADED) {
+      fetchWorkoutList({ inActivity: initialValues.id })
+        .unwrap()
+        .then(({ data }) => {
+          isArchivedWorkoutInActivity = data.some(workout => workout.archived)
+        })
+    }
+
     if (isEdit) form.setFieldsValue(initialValues)
-    return () => stopLoaderById('workout_list_loader')
+
+    return () => {
+      stopLoaderById('workout_list_loader')
+
+      if (isArchivedWorkoutInActivity) {
+        workoutApi.util.invalidateTags([ WORKOUT_TAG_TYPES.WORKOUT_LIST ])
+        dispatch(resetListState())
+      }
+    }
   }, [])
 
   useLayoutEffect(() => {
@@ -218,10 +222,10 @@ const Activity: FC<IActivityProps> = ({
   }, [ selectedWorkout ])
 
   useLayoutEffect(() => {
-    if (!isEdit && localStorage.getItem('cached_activity') && workoutListStatus === API_STATUS.LOADED) {
-      try {
-        const _cachedFormValues = JSON.parse(localStorage.getItem('cached_activity') || 'null')
+    const _cachedFormValues = getCachedFormValues()
 
+    if (!isEdit && _cachedFormValues && workoutListStatus === API_STATUS.LOADED) {
+      try {
         if (!_cachedFormValues) {
           throw new Error('No cached form values')
         }
@@ -251,35 +255,29 @@ const Activity: FC<IActivityProps> = ({
             editButtonProps={{ disabled: isFetching }}
           />
         )}
-        <StyledDateFormItem
-          required
-          name="date"
-          $isEdit={isEdit}
-        >
+        <StyledDateFormItem required name="date" $isEdit={isEdit}>
           <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
         </StyledDateFormItem>
-        <WorkoutFormItem
-          required
-          label={(
-            <WorkoutLabelContainer>
-              {input_labels.workout}
-            </WorkoutLabelContainer>
-          )}
-          name="workout_id"
-          rules={[ { required: true, message: 'Required' } ]}
-        >
+        <WorkoutFormItem required label={<WorkoutLabelContainer>{input_labels.workout}</WorkoutLabelContainer>} name="workout_id" rules={[ { required: true, message: 'Required' } ]}>
           <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={handleSelectedWorkoutChange}>
-            {workoutList.map(workout => (
-              <Select.Option key={workout.id} value={workout.id}>{workout.title}</Select.Option>
-            ))}
+            {workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR
+              ? workoutList.map(workout => (
+                <Select.Option key={workout.id} value={workout.id}>
+                  {workout.title}
+                </Select.Option>
+              ))
+              : (
+                <Select.Option value={initialValues.workout_id}>
+                  {intl.common.loading}
+                </Select.Option>
+              )}
           </Select>
         </WorkoutFormItem>
         <Form.Item noStyle shouldUpdate>
-          {
-            ({ getFieldValue }) => workoutList
+          {({ getFieldValue }) =>
+            workoutList
               .find(workout => workout.id === getFieldValue('workout_id'))
-              ?.exercises
-              .map((exercise: WorkoutListExercise<number>, i, list) => (
+              ?.exercises.map((exercise: WorkoutListExercise<number>, i, list) => (
                 <Exercise
                   exerciseList={list as WorkoutListExercise<number>[]}
                   roundResults={initialValues.results[i]}
@@ -331,7 +329,7 @@ const Activity: FC<IActivityProps> = ({
             />
           </StopwatchContainer>
         </Form.Item>
-        
+
         <Modal
           open={isModalVisible}
           okText={modal.delete.ok_button}

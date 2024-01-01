@@ -65,7 +65,7 @@ export const exerciseSlice = createSlice({
       .addMatcher(
         exerciseApi.endpoints.get.matchFulfilled,
         (state, { payload }) => {
-          state.single.status = API_STATUS.LOADING
+          state.single.status = API_STATUS.LOADED
           state.single.data = payload.data
         },
       )
@@ -83,5 +83,7 @@ export const { updateList } = exerciseSlice.actions
 
 export const selectExercise = (state: AppState) => state.exercise.single
 export const selectList = (state: AppState) => state.exercise.list
+
+export * as exerciseHandlers from './noCredsLoginRequestHandlers'
 
 export default exerciseSlice.reducer

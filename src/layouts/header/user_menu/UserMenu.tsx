@@ -10,14 +10,11 @@ import { AnyAction } from '@reduxjs/toolkit'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ROUTES } from 'src/router'
 
-
 const StyledAvatar = styled(Avatar)`
   position: absolute;
   right: 3px;
   cursor: pointer;
 `
-
-
 
 const UserMenu = () => {
   const [ isOpen, setIsOpen ] = useState<boolean>(false)

@@ -218,7 +218,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
             editButtonProps={{ disabled: isFetching }}
           />
         )}
-        <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: 'Required' } ] : []}>
+        <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: error_message.common.required } ] : []}>
           <Input disabled={isFormItemDisabled} size="large" />
         </Form.Item>
         <Form.List name="exercises">
