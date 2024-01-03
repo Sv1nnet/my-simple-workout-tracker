@@ -6,34 +6,27 @@ import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/componen
 import dayjs, { Dayjs } from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
-import { useAppDispatch, useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
+import { useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
 import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem } from './components'
-import { WORKOUT_TAG_TYPES, workoutApi } from 'app/store/slices/workout/api'
-import { resetListState, selectList } from 'app/store/slices/workout'
+import { selectList } from 'app/store/slices/workout'
 import { activityApi } from 'app/store/slices/activity/api'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { WorkoutForm, WorkoutListExercise } from 'app/store/slices/workout/types'
-import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWorkoutList, showActivityErrors } from './utils'
+import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWorkoutList, useLoadWorkoutList, useRestoreActivityFromCacheOnWorkoutListLoaded, useShowActivityError } from './utils'
 import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
-import { useNavigate } from 'react-router'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
 const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
   const [ cachedFormValues, setCachedFormValues, removeCachedFormValues, getCachedFormValues ] = useLocalStorage<InitialValues | null>('cached_activity', null)
 
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
-  const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
-  const { runLoader, stopLoaderById } = useAppLoaderContext()
   const { intl, lang } = useIntlContext()
 
   const errorModalsRef = useRef<{ [key in ErrorModalTypes]: ReturnType<typeof Modal.error> | null }>({
@@ -41,8 +34,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     history: null,
   })
 
-  const { input_labels, submit_button, modal, loader, notifications } = intl.pages.activities
-  const { title, ok_text, default_content } = intl.modal.common
+  const { input_labels, submit_button, modal, notifications } = intl.pages.activities
 
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
   const history = useMemo<HistoryServerPayload>(
@@ -165,79 +157,48 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     }
   }, [ initialValues, isFetching ])
 
-  useEffect(() => {
-    const historyErrorText = (historyError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
-    return showActivityErrors(
-      {
-        error,
-        isError,
-      },
-      {
-        error: historyErrorText,
-        isError: isHistoryError,
-      },
-      errorCode,
-      errorModalsRef,
-      {
-        title,
-        default_content,
-        ok_text,
-      },
-      navigate,
-    )
-  }, [ !!error, isError, isHistoryError, historyError ])
+  useShowActivityError({
+    lang,
+    historyError: historyError as CustomBaseQueryError,
+    error,
+    isError,
+    isHistoryError,
+    errorCode,
+    errorModalsRef,
+    intl,
+  })
 
-  useEffect(() => {
-    let isArchivedWorkoutInActivity = false
-    if (isEdit || workoutListStatus !== API_STATUS.LOADED) {
-      fetchWorkoutList({ inActivity: initialValues.id })
-        .unwrap()
-        .then(({ data }) => {
-          isArchivedWorkoutInActivity = data.some(workout => workout.archived)
-        })
-    }
-
-    if (isEdit) form.setFieldsValue(initialValues)
-
-    return () => {
-      stopLoaderById('workout_list_loader')
-
-      if (isArchivedWorkoutInActivity) {
-        workoutApi.util.invalidateTags([ WORKOUT_TAG_TYPES.WORKOUT_LIST ])
-        dispatch(resetListState())
-      }
-    }
-  }, [])
-
-  useLayoutEffect(() => {
-    if (workoutListStatus === API_STATUS.LOADING) {
-      runLoader('workout_list_loader', { tip: loader.workouts_loading })
-    } else if (workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR) {
-      stopLoaderById('workout_list_loader')
-    }
-  }, [ workoutListStatus ])
+  useLoadWorkoutList({
+    isEdit,
+    workoutList,
+    workoutListStatus,
+    initialValues,
+    form,
+    intl,
+  })
+  
+  useLoadWorkoutList({
+    isEdit,
+    workoutList,
+    workoutListStatus,
+    initialValues,
+    form,
+    intl,
+  })
 
   useEffect(() => {
     if (selectedWorkout) getHistory({ workoutId: selectedWorkout, activityId: initialValues.id })
   }, [ selectedWorkout ])
 
-  useLayoutEffect(() => {
-    const _cachedFormValues = getCachedFormValues()
-
-    if (!isEdit && _cachedFormValues && workoutListStatus === API_STATUS.LOADED) {
-      try {
-        if (!_cachedFormValues) {
-          throw new Error('No cached form values')
-        }
-
-        setSelectedWorkout(_cachedFormValues.workout_id)
-        setCachedFormValues(_cachedFormValues)
-        initFromCacheRef.current = true
-      } catch {
-        handleRestoreFromCacheError()
-      }
-    }
-  }, [ workoutListStatus ])
+  useRestoreActivityFromCacheOnWorkoutListLoaded({
+    isEdit,
+    getCachedFormValues,
+    workoutListStatus,
+    setSelectedWorkout,
+    setCachedFormValues,
+    initFromCacheRef,
+    handleRestoreFromCacheError,
+  })
 
   useNotificationPermissionRequest()
 
