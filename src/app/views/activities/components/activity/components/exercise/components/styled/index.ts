@@ -11,6 +11,17 @@ export const HistoryContainer = styled.div`
   overflow: hidden;
 `
 
+export const ImageContainer = styled.div`
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 120px;
+  width: 120px;
+  background-color: #f5f5f5;
+`
+
 export const HistoryButtonsContainer = styled.div`
   text-align: right;
   margin-bottom: 5px;

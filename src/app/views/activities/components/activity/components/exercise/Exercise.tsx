@@ -15,6 +15,7 @@ import {
   Header,
   HistoryButtonsContainer,
   HistoryContainer,
+  ImageContainer,
   ResultTypeButtonsContainer,
   StyledRadio,
 } from './components/styled'
@@ -157,11 +158,16 @@ const Exercise: FC<IExerciseProps> = ({
         </ResultTypeButtonsContainer>
       </Header>
       <HistoryContainer>
-        <img
-          width={120}
-          height={120}
-          src={exercise.image?.url ? `${routes.base}${exercise.image.url}` : itemImagePlaceholder}
-        />
+        <ImageContainer>
+          <img
+            style={{ maxHeight: 120, maxWidth: 120 }}
+            src={exercise.image?.url
+              ? exercise.image.url.startsWith('data:image/')
+                ? exercise.image.url
+                : `${routes.base}${exercise.image.url}`
+              : itemImagePlaceholder}
+          />
+        </ImageContainer>
         <History
           exerciseId={id}
           isLoading={isHistoryLoading || !historyByDates}

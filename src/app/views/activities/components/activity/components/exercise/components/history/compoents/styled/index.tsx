@@ -6,6 +6,7 @@ import { Body } from '../../../history_item_body/components/styled'
 
 export const Container = styled.div`
   width: 100%;
+  min-height: 120px;
   position: relative;
   margin-left: 10px;
   margin-right: 10px;
