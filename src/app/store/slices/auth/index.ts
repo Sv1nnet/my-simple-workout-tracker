@@ -8,11 +8,13 @@ import * as actions from './actions'
 import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 
 export interface IAuthState {
+  isNoCredsLogin: boolean;
   token: null | Token;
   status: ApiStatus;
 }
 
 const initialState: IAuthState = {
+  isNoCredsLogin: false,
   token: Cookie.get('access_token') || null,
   status: API_STATUS.INITIAL,
 }
@@ -21,6 +23,16 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    loginWithNoCreds: (state) => {
+      state.isNoCredsLogin = true
+      state.token = null
+      localStorage.setItem('isNoCredsLogin', JSON.stringify(state.isNoCredsLogin))
+    },
+    logoutWithNoCreds: (state) => {
+      state.isNoCredsLogin = false
+      state.token = null
+      localStorage.setItem('isNoCredsLogin', JSON.stringify(state.isNoCredsLogin))
+    },
     updateToken: (state, action: PayloadAction<Token>) => {
       state.token = action.payload
       state.status = API_STATUS.LOADED
@@ -69,9 +81,10 @@ export const authSlice = createSlice({
   },
 })
 
-export const { updateToken } = authSlice.actions
+export const { updateToken, loginWithNoCreds, logoutWithNoCreds } = authSlice.actions
 export const { logout } = actions
 
+export const selectIsNoCredsLogin = (state: AppState) => state.auth.isNoCredsLogin
 export const selectToken = (state: AppState) => state.auth.token
 export const selectAuthStatus = (state: AppState) => state.auth.status
 

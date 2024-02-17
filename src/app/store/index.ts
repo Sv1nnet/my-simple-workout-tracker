@@ -3,11 +3,11 @@ import { authApi } from './slices/auth/api'
 import { profileApi } from './slices/profile/api'
 import { exerciseApi } from './slices/exercise/api'
 import { activityApi } from './slices/activity/api'
-import auth from './slices/auth'
+import auth, { loginWithNoCreds } from './slices/auth'
 import profile from './slices/profile'
-import exercise from './slices/exercise'
-import workout from './slices/workout'
-import activity from './slices/activity'
+import exercise, { exerciseHandlers } from './slices/exercise'
+import workout, { workoutHandlers } from './slices/workout'
+import activity, { activityHandlers } from './slices/activity'
 import config, { changeLang } from './slices/config'
 import { workoutApi } from './slices/workout/api'
 import { configApi } from './slices/config/api'
@@ -54,7 +54,14 @@ unknown,
 Action<string>
 >
 
-export default ({ lang }) => {
+export const handlers = {
+  exercise: exerciseHandlers.default,
+  workout: workoutHandlers.default,
+  activity: activityHandlers.default,
+}
+
+export default ({ lang, isNoCredsLogin }: { lang: AppState['config']['data']['lang'], isNoCredsLogin: AppState['auth']['isNoCredsLogin'] }) => {
   if (store.getState().config.data.lang !== lang) store.dispatch(changeLang(lang))
+  if (store.getState().auth.isNoCredsLogin !== isNoCredsLogin) store.dispatch(loginWithNoCreds())
   return store
 }

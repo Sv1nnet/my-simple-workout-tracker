@@ -26,6 +26,7 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
+
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
 
@@ -168,15 +169,6 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
     intl,
   })
 
-  useLoadWorkoutList({
-    isEdit,
-    workoutList,
-    workoutListStatus,
-    initialValues,
-    form,
-    intl,
-  })
-  
   useLoadWorkoutList({
     isEdit,
     workoutList,

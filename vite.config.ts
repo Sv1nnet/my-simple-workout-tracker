@@ -105,3 +105,179 @@ export default defineConfig({
     },
   },
 })
+
+
+class IndexedDBTable {
+  constructor(db, tableName) {
+    this.db = db
+    this.name = tableName
+  }
+
+  getAllKeys() {
+    return this.db.getAllKeys(this.name)
+  }
+
+  get(key) {
+    return this.db.get(this.name, key)
+  }
+
+  remove(key) {
+    return this.db.remove(this.name, key)
+  }
+
+  set(key, value) {
+    return this.db.set(this.name, key, value)
+  }
+}
+
+class IndexedDB {
+  static initialize(dbName, tableNames) {
+    return new Promise((resolve, reject) => {
+      try {
+        const connection = window.indexedDB.open(dbName)
+  
+        connection.addEventListener('success', (event) => {
+          const request = event.target
+          resolve(request.result)
+        })
+  
+        connection.addEventListener('error', (event) => {
+          reject(event)
+        })
+  
+        connection.addEventListener('blocked', () => {
+          reject(new Error('IndexedDB initialization blocked'))
+        })
+  
+        connection.addEventListener('upgradeneeded', (event) => {
+          const request = event.target
+          tableNames?.forEach((name) => {
+            request.result.createObjectStore(name)
+          })
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  static getAllKeys(dbName, tableName) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await IndexedDB.initialize(dbName, [ tableName ])
+        const transaction = db.transaction(tableName, 'readonly')
+        const objectStore = transaction.objectStore(tableName)
+        const request = objectStore.getAllKeys()
+  
+        request.addEventListener('success', () => {
+          const keys = request.result
+          db.close()
+          resolve(keys)
+        })
+        request.addEventListener('error', (e) => {
+          db.close()
+          reject(e)
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  static get(dbName, tableName, key) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await IndexedDB.initialize(dbName, [ tableName ])
+        const transaction = db.transaction([ tableName ], 'readonly')
+        const objectStore = transaction.objectStore(tableName)
+        const request = objectStore.getAll(key)
+  
+        request.addEventListener('success', () => {
+          const result = request.result[0]
+          db.close()
+          resolve(result)
+        })
+        request.addEventListener('error', (e) => {
+          db.close()
+          reject(e)
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  static remove(dbName, tableName, key) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await IndexedDB.initialize(dbName, [ tableName ])
+        const transaction = db.transaction(tableName, 'readwrite')
+        const objectStore = transaction.objectStore(tableName)
+        const request = objectStore.delete(key)
+  
+        request.addEventListener('success', () => {
+          db.close()
+          resolve()
+        })
+        request.addEventListener('error', (e) => {
+          db.close()
+          reject(e)
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  static set(dbName, tableName, key, value) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const db = await IndexedDB.initialize(dbName, [ tableName ])
+        const transaction = db.transaction(tableName, 'readwrite')
+        const objectStore = transaction.objectStore(tableName)
+        const request = objectStore.put(value, key)
+  
+        request.addEventListener('success', () => {
+          db.close()
+          resolve()
+        })
+        request.addEventListener('error', (e) => {
+          db.close()
+          reject(e)
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
+  constructor(dbName, tableNames) {
+    this.name = dbName
+    this.tableNames = tableNames
+    this.initialize()
+    this.tables = tableNames.reduce((acc, name) => {
+      acc[name] = new IndexedDBTable(this, name)
+      return acc
+    }, {})
+  }
+
+  initialize() {
+    return IndexedDB.initialize(this.name, this.tableNames)
+  }
+
+  getAllKeys(tableName) {
+    return IndexedDB.getAllKeys(this.name, tableName)
+  }
+
+  get(tableName, key) {
+    return IndexedDB.get(this.name, tableName, key)
+  }
+
+  remove(tableName, key) {
+    return IndexedDB.remove(this.name, tableName, key)
+  }
+
+  set(tableName, key, value) {
+    return IndexedDB.set(this.name, tableName, key, value)
+  }
+}

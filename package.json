@@ -27,6 +27,7 @@
     "@vitejs/plugin-react-swc": "^3.3.1",
     "antd": "^4.24.10",
     "antd-dayjs-webpack-plugin": "^1.0.6",
+    "bson": "^4.7.2",
     "d3": "^7.8.4",
     "dayjs": "^1.11.7",
     "eslint": "^8.41.0",
@@ -54,9 +55,9 @@
     "react-router": "^6.11.2",
     "react-router-dom": "^6.11.2",
     "sass": "^1.62.1",
+    "styled-components": "^6.0.0-rc.1",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "styled-components": "^6.0.0-rc.1",
     "vite": "^4.3.2",
     "vite-plugin-pwa": "^0.16.3",
     "workbox-precaching": "^7.0.0"

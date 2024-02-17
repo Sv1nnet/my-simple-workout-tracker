@@ -70,7 +70,6 @@ export const getInitialActivityValues = ({
 
   let newInitialValues: InitialValues<Dayjs>
   try {
-    debugger
     if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current && workoutList.length) {
       const workout = workoutList
         .find(wk => wk.id === cachedFormValues.workout_id)
@@ -307,13 +306,11 @@ export const useLoadWorkoutList = ({
 
   useEffect(() => {
     let isArchivedWorkoutInActivity = false
-    if (isEdit || workoutListStatus !== API_STATUS.LOADED) {
-      fetchWorkoutList({ inActivity: initialValues.id })
-        .unwrap()
-        .then(({ data }) => {
-          isArchivedWorkoutInActivity = data.some(workout => workout.archived)
-        })
-    }
+    fetchWorkoutList({ inActivity: initialValues.id })
+      .unwrap()
+      .then(({ data }) => {
+        isArchivedWorkoutInActivity = data.some(workout => workout.archived)
+      })
 
     if (isEdit) form.setFieldsValue(initialValues)
 

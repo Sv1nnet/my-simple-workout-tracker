@@ -36,7 +36,7 @@ const initialState: IConfigState = {
   status: API_STATUS.INITIAL,
 }
 
-const updateConfigLocally = (state) => {
+const updateConfigLocally = (state: IConfigState) => {
   try {
     if (typeof localStorage !== 'undefined') localStorage.setItem('config', JSON.stringify(state.data))
     cookie.set('lang', state.data.lang)

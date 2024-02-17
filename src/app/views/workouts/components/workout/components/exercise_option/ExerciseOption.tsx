@@ -4,18 +4,23 @@ import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
 import { Dayjs } from 'dayjs'
 import { FC } from 'react'
+import { theme } from 'src/styles/vars'
 
-const OptionContainer = styled.div`
+const OptionContainer = styled.div<{ $disabled: boolean }>`
   display: flex;
   flex-wrap: wrap;
   height: 100%;
   align-items: center;
+  .ant-typography {
+    color: ${({ $disabled }) => $disabled ? theme.disabledColor : ''};
+  }
   .ant-typography-secondary {
     font-size: 14px;
   }
 `
 
 export interface IExerciseOption {
+  archived: boolean;
   title: string;
   repeats?: number | string;
   payloadDictionary: {
@@ -36,7 +41,7 @@ export interface IExerciseOption {
   mass_unit?: string;
 }
 
-const ExerciseOption: FC<IExerciseOption> = ({ title, repeats, payloadDictionary, time, weight, mass_unit }) => {
+const ExerciseOption: FC<IExerciseOption> = ({ archived, title, repeats, payloadDictionary, time, weight, mass_unit }) => {
   repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
   time = time
     ? timeToHms(
@@ -54,7 +59,7 @@ const ExerciseOption: FC<IExerciseOption> = ({ title, repeats, payloadDictionary
 
   const text = [ repeats, time, weight ].filter(Boolean).join(' / ')
   return (
-    <OptionContainer>
+    <OptionContainer $disabled={archived}>
       <Typography.Title level={5} style={{ width: '100%', margin: 0, lineHeight: 1 }}>{title}</Typography.Title>
       {text && <Typography.Text type="secondary" style={{ display: 'block', lineHeight: 1 }}>{text}</Typography.Text>}
     </OptionContainer>

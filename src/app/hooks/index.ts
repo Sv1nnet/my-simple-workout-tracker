@@ -143,7 +143,7 @@ export const useNotificationPermissionRequest = () => {
   }
 }
 
-type SetValue<T> = Dispatch<SetStateAction<T>>
+export type SetValue<T> = Dispatch<SetStateAction<T>>
 
 export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, SetValue<T>, () => boolean, () => T] => {
   const [ storedValue, setStoredValue ] = useState<T | null>(() => {

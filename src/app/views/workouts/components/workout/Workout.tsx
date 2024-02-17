@@ -22,7 +22,7 @@ import {
 import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { ROUTES } from 'src/router'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
@@ -58,6 +58,7 @@ const getDefaultExercise = () => ({
 
 const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }) => {
   const { isMounted, useHandleMounted } = useMounted()
+  const params = useParams()
   const navigate = useNavigate()
   const $container = useRef(null)
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
@@ -77,6 +78,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         title: '',
         is_in_activity: false,
         exercises: [],
+        id: params.id,
       }
     }
 

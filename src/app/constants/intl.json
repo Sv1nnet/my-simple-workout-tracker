@@ -239,6 +239,12 @@
           }
         }
       },
+      "state": {
+        "archived": {
+          "ru": "удалено",
+          "eng": "deleted"
+        }
+      },
       "payload": {
         "repeats": {
           "ru": [

@@ -52,7 +52,7 @@ const Exercise = ({
       <Form.Item label={dictionary.input_labels.exercise} name={[ index, 'id' ]} rules={requiredRules}>
         <StyledSelect disabled={isFormItemDisabled || isInActivity} size="large">
           {exerciseList.data.map(exercise => (
-            <Select.Option value={exercise.id} key={exercise.id}>
+            <Select.Option value={exercise.id} key={exercise.id} disabled={exercise.archived}>
               <ExerciseOption {...exercise} payloadDictionary={payload} />
             </Select.Option>
           ))}

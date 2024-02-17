@@ -9,13 +9,15 @@ export type Image = {
 
 export type ExerciseType = 'repeats' | 'time' | 'duration' | 'distance' | 'weight' | 'time_distance' | 'time_repeats'
 
+export type MassUnit = 'kg' | 'lb'
+
 export type Exercise<T = number | Dayjs> = {
   _id?: string;
   id?: string;
   is_in_workout: boolean;
   title: string;
   each_side: boolean;
-  mass_unit: 'kg' | 'lb';
+  mass_unit: MassUnit;
   archived: boolean;
   hours?: boolean;
   type?: ExerciseType;
