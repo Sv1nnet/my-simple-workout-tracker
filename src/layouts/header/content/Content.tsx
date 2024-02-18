@@ -1,12 +1,12 @@
 import styled from 'styled-components'
-import { Button, Select } from 'antd'
+import { Select } from 'antd'
 import { changeLang, selectLang } from 'store/slices/config'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import UserMenu from 'layouts/header/user_menu/UserMenu'
 import { configApi } from 'app/store/slices/config/api'
 import { Lang } from 'app/store/slices/config/types'
-import { LoginOutlined } from '@ant-design/icons'
-import { logoutWithNoCreds, selectIsNoCredsLogin } from 'app/store/slices/auth'
+import { selectIsNoAuthLogin } from 'app/store/slices/auth'
+import { NoAuthLogoutButton } from './components'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -27,13 +27,6 @@ const Wrapper = styled.div`
   }
 `
 
-const StyledButton = styled(Button)`
-  position: absolute;
-  margin-right: 13px;
-  right: 3px;
-  cursor: pointer;
-`
-
 const OptionsContainer = styled.div`
   & .ant-select-item.ant-select-item-option {
     padding: 0;
@@ -47,7 +40,7 @@ const OptionsContainer = styled.div`
 `
 
 const Content = () => {
-  const isNoCredsLogin = useAppSelector(selectIsNoCredsLogin)
+  const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const lang = useAppSelector(selectLang)
   const dispatch = useAppDispatch()
   const [ updateConfig ] = configApi.useLazyUpdateQuery()
@@ -57,15 +50,11 @@ const Content = () => {
     updateConfig({ config: { lang: _lang } })
   }
 
-  const logout = () => {
-    dispatch(logoutWithNoCreds())
-  }
-
   return (
     <Wrapper>
       {
-        isNoCredsLogin ?
-          <StyledButton shape="circle" onClick={logout} icon={<LoginOutlined />} size="large" />
+        isNoAuthLogin
+          ? <NoAuthLogoutButton />
           : <UserMenu />
       }
       <Select

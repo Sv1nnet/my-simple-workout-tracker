@@ -1,14 +1,14 @@
 import GuestRoute from '../guest/GuestRoute'
 import UserRoute from '../user/UserRoute'
-import { selectIsNoCredsLogin, selectToken } from 'app/store/slices/auth'
+import { selectIsNoAuthLogin, selectToken } from 'app/store/slices/auth'
 import { useAppSelector } from 'app/hooks'
 
 const AuthLayout = () => {
-  const isNoCredsLogin = useAppSelector(selectIsNoCredsLogin)
+  const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const token = useAppSelector(selectToken)
   
   return (
-    isNoCredsLogin || token
+    isNoAuthLogin || token
       ? <UserRoute />
       : <GuestRoute />
   )

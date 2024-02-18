@@ -11,7 +11,7 @@ import { Token } from 'store/slices/auth/types'
 import { IResponse } from 'app/constants/response_types'
 import { SerializedError } from '@reduxjs/toolkit'
 import { AppState, handlers } from '..'
-import { getIsNoCredsLoginFromLocalStorage } from 'app/utils/getIsNoCredsLoginFromLocalStorage'
+import { getIsNoAuthLoginFromLocalStorage } from 'app/utils/getIsNoAuthLoginFromLocalStorage'
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: routes.base,
@@ -49,7 +49,7 @@ const getBaseQueryWithReauth = (() => {
   unknown,
   FetchBaseQueryError | SerializedError | CustomBaseQueryError
   > => async (args, api, extraOptions) => {
-    if (getIsNoCredsLoginFromLocalStorage()) {
+    if (getIsNoAuthLoginFromLocalStorage()) {
       if (typeof args !== 'string') {
         const url = new URL(args.url)
         const { endpoint: handlerName } = api

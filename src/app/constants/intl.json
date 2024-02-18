@@ -11,6 +11,14 @@
     "no_data": {
       "ru": "Нет данных",
       "eng": "No Data"
+    },
+    "yes": {
+      "ru": "Да",
+      "eng": "Yes"
+    },
+    "no": {
+      "ru": "Нет",
+      "eng": "No"
     }
   },
   "signup_by_code": {
@@ -159,6 +167,18 @@
     "profile": {
       "ru": "Профиль",
       "eng": "Profile"
+    },
+    "modal": {
+      "delete_data": {
+        "title": {
+          "ru": "Удалить текущие данные?",
+          "eng": "Delete stored data?"
+        },
+        "content": {
+          "ru": "Это приведет к удалению с устройства всех упражнений, тренировок и активностей.",
+          "eng": "Deleting will erase all exercises, workouts, and activities from device."
+        }
+      }
     }
   },
   "pages": {

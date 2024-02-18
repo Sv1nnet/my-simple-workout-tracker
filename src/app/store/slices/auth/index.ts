@@ -8,13 +8,13 @@ import * as actions from './actions'
 import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 
 export interface IAuthState {
-  isNoCredsLogin: boolean;
+  isNoAuthLogin: boolean;
   token: null | Token;
   status: ApiStatus;
 }
 
 const initialState: IAuthState = {
-  isNoCredsLogin: false,
+  isNoAuthLogin: false,
   token: Cookie.get('access_token') || null,
   status: API_STATUS.INITIAL,
 }
@@ -23,15 +23,15 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginWithNoCreds: (state) => {
-      state.isNoCredsLogin = true
+    loginWithNoAuth: (state) => {
+      state.isNoAuthLogin = true
       state.token = null
-      localStorage.setItem('isNoCredsLogin', JSON.stringify(state.isNoCredsLogin))
+      localStorage.setItem('isNoAuthLogin', JSON.stringify(state.isNoAuthLogin))
     },
-    logoutWithNoCreds: (state) => {
-      state.isNoCredsLogin = false
+    logoutWithNoAuth: (state) => {
+      state.isNoAuthLogin = false
       state.token = null
-      localStorage.setItem('isNoCredsLogin', JSON.stringify(state.isNoCredsLogin))
+      localStorage.setItem('isNoAuthLogin', JSON.stringify(state.isNoAuthLogin))
     },
     updateToken: (state, action: PayloadAction<Token>) => {
       state.token = action.payload
@@ -81,10 +81,10 @@ export const authSlice = createSlice({
   },
 })
 
-export const { updateToken, loginWithNoCreds, logoutWithNoCreds } = authSlice.actions
+export const { updateToken, loginWithNoAuth, logoutWithNoAuth } = authSlice.actions
 export const { logout } = actions
 
-export const selectIsNoCredsLogin = (state: AppState) => state.auth.isNoCredsLogin
+export const selectIsNoAuthLogin = (state: AppState) => state.auth.isNoAuthLogin
 export const selectToken = (state: AppState) => state.auth.token
 export const selectAuthStatus = (state: AppState) => state.auth.status
 

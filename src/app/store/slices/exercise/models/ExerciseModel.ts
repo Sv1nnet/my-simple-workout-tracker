@@ -1,10 +1,9 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
 import { ExerciseType, MassUnit } from '../types'
-import db from 'app/store/BrowserDB'
+import browserDB from 'app/store/BrowserDB'
 import { ImageConstructorParameter, ImageModel } from './ImageModel'
 import { WorkoutModel } from '../../workout/models/WorkoutModel'
-import { table, workoutTable } from '../utils'
 
 export type ExerciseModelConstructorParameter = Omit<ExerciseModel, 'image'> & { image: ImageConstructorParameter }
 
@@ -66,16 +65,20 @@ export class ExerciseModel extends EntityModel {
   }
 
   async isInWorkout(workouts?: WorkoutModel[]) {
-    workouts = workouts || (await db.getAllValues(workoutTable)).map(workout => JSON.parse(workout))
+    const { workoutsTable } = browserDB.getTables()
+    workouts = workouts || (await browserDB.db?.getAllValues(workoutsTable)).map(workout => JSON.parse(workout))
     return !!workouts.find(workout => workout.exercises.find(exercise => exercise.id === this.id))
   }
 
   async inWorkouts(workouts?: WorkoutModel[]) {
-    workouts = workouts || (await db.getAllValues(workoutTable)).map(workout => JSON.parse(workout))
+    const { workoutsTable } = browserDB.getTables()
+    workouts = workouts || (await browserDB.db?.getAllValues(workoutsTable)).map(workout => JSON.parse(workout))
     return workouts.filter(workout => !!workout.exercises.find(exercise => exercise.id === this.id))
   }
 
   async delete(workouts?: any[]) {
+    const { exercisesTable } = browserDB.getTables()
+
     if (await this.isInWorkout(workouts)) {
       this.archived = true
 
@@ -84,7 +87,7 @@ export class ExerciseModel extends EntityModel {
       return this
     }
 
-    await db.remove(table, this.id)
+    await browserDB.db?.remove(exercisesTable, this.id)
     return this
   }
   
@@ -100,7 +103,8 @@ export class ExerciseModel extends EntityModel {
   }
 
   async save() {
-    db.set(table, this.id, this.toString())
+    const { exercisesTable } = browserDB.getTables()
+    browserDB.db?.set(exercisesTable, this.id, this.toString())
     return this
   }
 }

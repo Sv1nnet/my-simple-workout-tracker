@@ -1,8 +1,7 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
-import db from 'app/store/BrowserDB'
+import browserDB from 'app/store/BrowserDB'
 import { ActivityExerciseModel } from './ActivityExerciseModel'
-import { table } from '../utils'
 
 export type ActivityModelConstructorParameter = Pick<ActivityModel, 'id' | 'created_at' | 'updated_at' | 'workout_id' | 'index' | 'date' | 'results' | 'description' | 'duration'>
 
@@ -40,12 +39,14 @@ export class ActivityModel extends EntityModel {
   }
 
   async delete() {
-    await db.remove(table, this.id)
+    const { activitiesTable } = browserDB.getTables()
+    await browserDB.db?.remove(activitiesTable, this.id)
     return this
   }
 
   async save() {
-    db.set(table, this.id, this.toString())
+    const { activitiesTable } = browserDB.getTables()
+    browserDB.db?.set(activitiesTable, this.id, this.toString())
     return this
   }
 }

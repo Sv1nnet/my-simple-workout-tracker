@@ -1,10 +1,4 @@
-/** @format */
-
 import { ImageFields } from './models/ImageModel'
-import db from '../../BrowserDB'
-
-export const table = db.tables.exercises
-export const workoutTable = db.tables.workouts
 
 export const fieldsToFormat = { each_side: 'bool', hours: 'bool', archived: 'bool', weight: 'number', time: 'number' }
 

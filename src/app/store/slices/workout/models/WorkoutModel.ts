@@ -1,8 +1,7 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
-import db from 'app/store/BrowserDB'
 import { WorkoutExerciseModel } from './WorkoutExerciseModel'
-import { activityTable, table } from '../utils'
+import browserDB from 'app/store/BrowserDB'
 
 export type WorkoutModelConstructorParameter = WorkoutModel
 
@@ -53,16 +52,19 @@ export class WorkoutModel extends EntityModel {
   }
 
   async isInActivity(activities?: any[]) {
-    activities = activities || (await db.getAllValues(activityTable)).map(activity => JSON.parse(activity))
+    const { activitiesTable } = browserDB.getTables()
+    activities = activities || (await browserDB.db.getAllValues(activitiesTable)).map(activity => JSON.parse(activity))
     return !!activities.find(activity => activity.workout_id === this.id)
   }
 
   async inActivities(activities?: any[]) {
-    activities = activities || (await db.getAllValues(activityTable)).map(activity => JSON.parse(activity))
+    const { activitiesTable } = browserDB.getTables()
+    activities = activities || (await browserDB.db.getAllValues(activitiesTable)).map(activity => JSON.parse(activity))
     return activities.filter(activity => activity.workout_id === this.id)
   }
 
   async delete(activities?: any[]) {
+    const { workoutsTable } = browserDB.getTables()
     if (await this.isInActivity(activities)) {
       this.archived = true
 
@@ -71,12 +73,13 @@ export class WorkoutModel extends EntityModel {
       return this
     }
 
-    await db.remove(table, this.id)
+    await browserDB.db.remove(workoutsTable, this.id)
     return this
   }
 
   async save() {
-    db.set(table, this.id, this.toString())
+    const { workoutsTable } = browserDB.getTables()
+    browserDB.db.set(workoutsTable, this.id, this.toString())
     return this
   }
 }

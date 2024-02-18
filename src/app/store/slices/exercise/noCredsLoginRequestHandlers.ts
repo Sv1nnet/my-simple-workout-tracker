@@ -1,10 +1,10 @@
 
-import db from '../../BrowserDB'
+import browserDB from '../../BrowserDB'
 import formatFormData from '../../utils/formatFormData'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
 import { ExerciseModel, ExerciseModelConstructorParameter } from './models/ExerciseModel'
 import { ImageFields, ImageModel, imageSizeErrorText } from './models/ImageModel'
-import { fieldsToFormat, imageSizeError, mapFormDataToImageAndRestForm, table, workoutTable } from './utils'
+import { fieldsToFormat, imageSizeError, mapFormDataToImageAndRestForm } from './utils'
 import { UUID_REGEX } from '../../utils/baseQueryWithReauth'
 // eslint-disable-next-line import/extensions
 import intl from 'app/constants/intl.json'
@@ -12,7 +12,8 @@ import intl from 'app/constants/intl.json'
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
     const [ ,,,id ] = args
-    const exercise = JSON.parse(await db.get(table, id))
+    const { exercisesTable } = browserDB.getTables()
+    const exercise = JSON.parse(await browserDB.db?.get(exercisesTable, id))
 
     return {
       data: {
@@ -23,6 +24,8 @@ const handlers = {
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
+    const { exercisesTable } = browserDB.getTables()
+    
     let archived = false
     let workoutId = params?.get('workoutId') || ''
     let lang = params?.get('lang') || 'eng'
@@ -37,7 +40,7 @@ const handlers = {
       ))
     }
 
-    const list = (await db.getAllValues(table))
+    const list = (await browserDB.db?.getAllValues(exercisesTable))
       .filter(Boolean)
       .map((exerciseStr) => {
         const parsed: ExerciseModel = JSON.parse(exerciseStr)
@@ -79,6 +82,8 @@ const handlers = {
     }
   },
   update: async ({ body }: { body: FormData }) => {
+    const { exercisesTable, workoutsTable } = browserDB.getTables()
+    
     const bodyKeys = body.keys()
     let data: Partial<ExerciseModel & Partial<ImageFields>> = {}
 
@@ -93,14 +98,14 @@ const handlers = {
       ({ image, restForm } = mapFormDataToImageAndRestForm(restForm))
     }
 
-    const exerciseFromDb = JSON.parse(await db.get(table, data.id))
+    const exerciseFromDb = JSON.parse(await browserDB.db?.get(exercisesTable, data.id))
 
     /**
      * if the same image is sent, then just save itself.
      */
     try {
       const exercise = new ExerciseModel(exerciseFromDb)
-      const workouts = (await db.getAllValues(workoutTable)).map(value => JSON.parse(value))
+      const workouts = (await browserDB.db?.getAllValues(workoutsTable)).map(value => JSON.parse(value))
   
       if (exercise.image) {
         await exercise.image.imageSetter
@@ -126,11 +131,13 @@ const handlers = {
     return handlers.deleteMany({ body: { ids: [ id ] } })
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
+    const { exercisesTable, workoutsTable } = browserDB.getTables()
+    
     const { ids } = body
-    const workouts = (await db.getAllValues(workoutTable))
+    const workouts = (await browserDB.db?.getAllValues(workoutsTable))
       .map(workout => JSON.parse(workout))
 
-    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => db.get(table, id))))
+    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(exercisesTable, id))))
       .map(exercise => new ExerciseModel(JSON.parse(exercise)))
       .map(exercise => exercise.delete(workouts))
     

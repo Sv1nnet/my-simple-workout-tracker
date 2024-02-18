@@ -1,16 +1,17 @@
 import { WorkoutModel } from './../workout/models/WorkoutModel'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
-import db from '../../BrowserDB'
+import browserDB from '../../BrowserDB'
 import { ActivityModelConstructorParameter, ActivityModel } from './models/ActivityModel'
-import { table, workoutsTable, exercisesTable } from './utils'
 import { ExerciseModel } from '../exercise/models/ExerciseModel'
 import { UUID_REGEX } from '../../utils/baseQueryWithReauth'
 import formatFormData from '../../utils/formatFormData'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
+    const { activitiesTable } = browserDB.getTables()
+
     const [ ,,,id ] = args
-    const activity = JSON.parse(await db.get(table, id))
+    const activity = JSON.parse(await browserDB.db?.get(activitiesTable, id))
 
     return {
       data: {
@@ -21,6 +22,8 @@ const handlers = {
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
+    const { activitiesTable, workoutsTable, exercisesTable } = browserDB.getTables()
+    
     let page = 1
     let byPage = 30
     let searchValue = ''
@@ -38,16 +41,16 @@ const handlers = {
     const startIndex = ((page - 1) * byPage)
     const endIndex = startIndex + byPage
 
-    const allActivities = (await db.getAllValues(table))
+    const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
       .filter(Boolean)
       .map(activityStr => new ActivityModel(JSON.parse(activityStr)))
       .sort((a, b) => b.index - a.index)
   
-    const allExercises = (await db.getAllValues(exercisesTable))
+    const allExercises = (await browserDB.db?.getAllValues(exercisesTable))
       .filter(Boolean)
       .map(exercise => new ExerciseModel(JSON.parse(exercise)))
 
-    const allWorkouts = (await db.getAllValues(workoutsTable))
+    const allWorkouts = (await browserDB.db?.getAllValues(workoutsTable))
       .filter(Boolean)
       .map(workout => new WorkoutModel(JSON.parse(workout)))
       .filter(workout => workout.is_in_activity && workout.title.toLocaleLowerCase().includes(searchValue))
@@ -88,13 +91,15 @@ const handlers = {
     return { data: { data: { list: activitiesByPage, total: totalActivities }, success: true, error: null } }
   },
   create: async ({ body }: { body: ActivityModelConstructorParameter }) => {
+    const { workoutsTable } = browserDB.getTables()
+
     const activity = new ActivityModel({
       ...body,
       index: new Date(body.date).valueOf(),
     })
     await activity.save()
 
-    const workout = await db.get(workoutsTable, activity.workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
+    const workout = await browserDB.db?.get(workoutsTable, activity.workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
     await workout
       .addActivity(activity.id)
       .save()
@@ -102,7 +107,9 @@ const handlers = {
     return { data: activity }
   },
   update: async ({ body }: { body: Partial<ActivityModel> }) => {
-    const rawActivity = JSON.parse(await db.get(table, body.id))
+    const { activitiesTable } = browserDB.getTables()
+    
+    const rawActivity = JSON.parse(await browserDB.db?.get(activitiesTable, body.id))
     const activity = new ActivityModel(rawActivity)
 
     await activity
@@ -116,14 +123,16 @@ const handlers = {
     return handlers.deleteMany({ body: { ids: [ id ] } })
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
+    const { activitiesTable, workoutsTable } = browserDB.getTables()
+
     const { ids } = body
 
-    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => db.get(table, id))))
+    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(activitiesTable, id))))
       .map(activity => new ActivityModel(JSON.parse(activity)))
       .map(async (activity) => {
         await activity.delete()
 
-        const workoutInActivity = await db.get(workoutsTable, activity.workout_id).then(workout => new WorkoutModel(JSON.parse(workout)))
+        const workoutInActivity = await browserDB.db?.get(workoutsTable, activity.workout_id).then(workout => new WorkoutModel(JSON.parse(workout)))
         await workoutInActivity
           .removeFromActivity(activity.id)
           .save()
@@ -136,6 +145,8 @@ const handlers = {
     return handlers.list()
   },
   getHistory: async (_body: FetchArgs, url: URL, params: URLSearchParams) => {
+    const { activitiesTable, workoutsTable } = browserDB.getTables()
+
     const [ workout_id ] = url.pathname.match(UUID_REGEX)
 
     let page = 1
@@ -153,7 +164,7 @@ const handlers = {
       ))
     }
 
-    const allActivities = (await db.getAllValues(table))
+    const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
     const totalActivities = allActivities.length
     const activitiesWithWorkout = allActivities
       .map(activity => new ActivityModel(JSON.parse(activity)))
@@ -166,7 +177,7 @@ const handlers = {
     const endIndex = startIndex + offset + (byPage + 2) // byPage (30 by default) + 2 to get byPage + 1 activities
     const activitiesByPage = activitiesWithWorkout.slice(startIndex, endIndex)
 
-    const workout = await db.get(workoutsTable, workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
+    const workout = await browserDB.db?.get(workoutsTable, workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
     
     const results = activitiesByPage.reduce((acc, activity) => {
       activity.results.forEach((exerciseResults) => {

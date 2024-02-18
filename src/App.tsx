@@ -24,8 +24,8 @@ type AppProps = {
 }
 
 export default function App({ lang }: AppProps) {
-  const [ isNoCredsLogin ] = useLocalStorage('isNoCredsLogin', false)
-  const store = useMemo(() => getStore({ lang, isNoCredsLogin }), [])
+  const [ isNoAuthLogin ] = useLocalStorage('isNoAuthLogin', false)
+  const store = useMemo(() => getStore({ lang, isNoAuthLogin }), [])
 
   return (
     <Provider store={store}>
