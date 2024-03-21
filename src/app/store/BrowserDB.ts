@@ -2,21 +2,31 @@ import { IndexedDB } from '../utils/IndexedDBUtils'
 
 const browserDb = (() => ({
   onInit: null,
-  initNoAuthDB(onInit: (db: IDBDatabase) => void) {
+  onDisconnect: null,
+  initNoAuthDB(onInit?: (db: IDBDatabase) => void, onDisconnect?: (db?: IDBDatabase) => void) {
     if (!this.db) {
       this.db = new IndexedDB('noAuth', [ 'exercises', 'workouts', 'activities' ], onInit)
       this.onInit = onInit
+      this.onDisconnect = onDisconnect
     } else {
-      this.onInit(this.db.db)
+      this.onInit?.(this.db.db)
     }
     return this.db
+  },
+  disconnectNoAuthDB() {
+    const db = this.db
+    if (this.db) {
+      this.db = null
+      this.onInit = null
+    }
+    this.onDisconnect?.(db?.db)
   },
   async dropDB() {
     if (this.db) {
       const db = this.db
       this.db = null
       this.onInit = null
-      db.dropDB()
+      await db.dropDB()
       window.location.reload()
     }
 

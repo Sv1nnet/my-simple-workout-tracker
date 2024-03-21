@@ -40,9 +40,11 @@ const NoAuthLogoutButton = () => {
         completeLogout(modal)
         runLoader('erasingDb')
         browserDB.dropDB()
+        browserDB.disconnectNoAuthDB()
       },
       cancelButtonProps: {
         onClick: () => {
+          browserDB.disconnectNoAuthDB()
           completeLogout(modal)
         },
       },
