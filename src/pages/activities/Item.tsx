@@ -25,8 +25,8 @@ const ActivityItem = () => {
     get,
     {
       data: dataOfGet,
-      isLoading: isLoading_get,
-      isFetching: isFetching_get,
+      isLoading: isGetLoading,
+      isFetching: isGetFetching,
       error: errorGet,
     },
   ] = activityApi.useLazyGetQuery()
@@ -34,14 +34,15 @@ const ActivityItem = () => {
     update,
     {
       data: dataOfUpdate,
-      isLoading: isLoading_update,
+      isLoading: isUpdateLoading,
       error: errorUpdate,
     },
   ] = activityApi.useUpdateMutation()
   const [
     deleteActivity,
     {
-      isLoading: isLoading_delete,
+      status: deleteStatus,
+      isLoading: isDeleteLoading,
       error: errorDelete,
     },
   ] = activityApi.useDeleteMutation()
@@ -79,7 +80,8 @@ const ActivityItem = () => {
       errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
       errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
       initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? activityWithParamsId}
-      isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
+      isFetching={isGetLoading || isGetFetching || isUpdateLoading || isDeleteLoading}
+      deleteStatus={deleteStatus}
       onSubmit={handleSubmit}
       error={error}
       deleteActivity={handleDelete}

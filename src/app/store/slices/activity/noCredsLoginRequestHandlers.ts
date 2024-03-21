@@ -132,10 +132,14 @@ const handlers = {
       .map(async (activity) => {
         await activity.delete()
 
-        const workoutInActivity = await browserDB.db?.get(workoutsTable, activity.workout_id).then(workout => new WorkoutModel(JSON.parse(workout)))
-        await workoutInActivity
+        let workoutInActivity: WorkoutModel = await browserDB.db?.get(workoutsTable, activity.workout_id).then(workout => new WorkoutModel(JSON.parse(workout)))
+        workoutInActivity = await workoutInActivity
           .removeFromActivity(activity.id)
           .save()
+        
+        if (workoutInActivity.archived && !workoutInActivity.is_in_activity) {
+          await workoutInActivity.delete([])
+        }
         
         return activity
       })

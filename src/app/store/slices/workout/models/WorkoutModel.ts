@@ -2,6 +2,7 @@
 import EntityModel from 'app/store/utils/EntityModel'
 import { WorkoutExerciseModel } from './WorkoutExerciseModel'
 import browserDB from 'app/store/BrowserDB'
+import { ActivityModel } from '../../activity/models/ActivityModel'
 
 export type WorkoutModelConstructorParameter = WorkoutModel
 
@@ -51,19 +52,24 @@ export class WorkoutModel extends EntityModel {
     return this
   }
 
-  async isInActivity(activities?: any[]) {
+  async isInActivity(activities?: Partial<ActivityModel>[]) {
     const { activitiesTable } = browserDB.getTables()
     activities = activities || (await browserDB.db.getAllValues(activitiesTable)).map(activity => JSON.parse(activity))
     return !!activities.find(activity => activity.workout_id === this.id)
   }
 
-  async inActivities(activities?: any[]) {
+  async inActivities(activities?: Partial<ActivityModel>[]) {
     const { activitiesTable } = browserDB.getTables()
     activities = activities || (await browserDB.db.getAllValues(activitiesTable)).map(activity => JSON.parse(activity))
     return activities.filter(activity => activity.workout_id === this.id)
   }
 
-  async delete(activities?: any[]) {
+  /**
+   * Для принудительного удаления нужно передать пустой массив.
+   * Это  нужно, когда, например, мы точно знаем, что тренировки нет
+   * ни в одной активности.
+   */
+  async delete(activities?: Partial<ActivityModel>[]) {
     const { workoutsTable } = browserDB.getTables()
     if (await this.isInActivity(activities)) {
       this.archived = true

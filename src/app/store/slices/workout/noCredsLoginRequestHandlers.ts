@@ -26,7 +26,7 @@ const handlers = {
 
     let archived = false
     let all = false
-    let in_activity = params.get('in_activity')
+    let in_activity = params?.get('in_activity') ?? ''
 
     if (params) {
       ({ archived, all } = formatFormData<
@@ -83,6 +83,7 @@ const handlers = {
 
     await Promise.all(exercisesInWorkout.map(async exercise => 
       (await exercise.update({
+        image: exercise.image,
         is_in_workout: true,
         in_workouts: [ ...exercise.in_workouts, workout.id ],
       })).save()))

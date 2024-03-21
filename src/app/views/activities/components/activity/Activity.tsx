@@ -17,10 +17,11 @@ import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWork
 import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
+import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
-const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
+const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
   const [ cachedFormValues, setCachedFormValues, removeCachedFormValues, getCachedFormValues ] = useLocalStorage<InitialValues | null>('cached_activity', null)
 
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
@@ -152,11 +153,11 @@ const Activity: FC<IActivityProps> = ({ initialValues: _initialValues, isEdit, i
 
   useLayoutEffect(() => {
     if (!isFetching) form.setFieldsValue(initialValues)
-    if (initialValues.workout_id) {
-      setSelectedWorkout(initialValues.workout_id)
+    if (deleteStatus !== QueryStatus.pending && deleteStatus !== QueryStatus.fulfilled && initialValues.workout_id) {
+      if (selectedWorkout !== initialValues.workout_id) setSelectedWorkout(initialValues.workout_id)
       getHistory({ workoutId: initialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: initialValues.id })
     }
-  }, [ initialValues, isFetching ])
+  }, [ deleteStatus, selectedWorkout, initialValues, isFetching ])
 
   useShowActivityError({
     lang,

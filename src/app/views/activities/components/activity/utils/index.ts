@@ -38,6 +38,15 @@ export const getResultsFromWorkoutList = (workoutList: WorkoutListItem[], workou
     note: undefined,
   })) || []
 
+const defaultInitialValues = {
+  _id: undefined,
+  workout_id: '',
+  duration: 0,
+  date: undefined,
+  results: [],
+  description: '',
+} as InitialValues<Dayjs>
+
 export const getInitialActivityValues = ({
   initialValues,
   workoutList,
@@ -56,16 +65,9 @@ export const getInitialActivityValues = ({
   form: FormInstance<ActivityForm>,
   handleRestoreFromCacheError: VoidFunction,
   isEdit?: boolean,
-}) => {
+}): InitialValues<Dayjs> => {
   if (isEdit && initialValues === null) {
-    return {
-      _id: undefined,
-      workout_id: undefined,
-      duration: 0,
-      date: undefined,
-      results: [],
-      description: '',
-    }
+    return { ...defaultInitialValues }
   }
 
   let newInitialValues: InitialValues<Dayjs>
@@ -144,14 +146,7 @@ export const getInitialActivityValues = ({
     return newInitialValues
   } catch (e) {
     handleRestoreFromCacheError()
-    return {
-      _id: undefined,
-      workout_id: undefined,
-      duration: 0,
-      date: undefined,
-      results: [],
-      description: '',
-    }
+    return { ...defaultInitialValues }
   }
 }
 
