@@ -14,12 +14,12 @@ export const StyledSelect = styled(Select)`
 export const MoveExerciseButtonContainer = styled.div<{ $hasTopButton?: boolean, $hasBottomButton?: boolean }>`
   position: absolute;
   z-index: 1;
-  top: ${({ $hasTopButton }) => $hasTopButton ? '-24px' : '0px'};
+  top: ${({ $hasTopButton }) => $hasTopButton ? '-25px' : '0px'};
   left: 50%;
   background: white;
   border: 1px lightgrey solid;
-  ${({ $hasBottomButton }) => !$hasBottomButton ? 'border-bottom: white;' : ''}
-  ${({ $hasTopButton }) => !$hasTopButton ? 'border-top: white;' : ''}
+  ${({ $hasBottomButton }) => !$hasBottomButton ? 'border-bottom: 1px white solid;' : ''}
+  ${({ $hasTopButton }) => !$hasTopButton ? 'border-top: 1px white solid;' : ''}
   transform: translateX(-50%);
   border-radius: ${({ $hasBottomButton, $hasTopButton }) => `${$hasTopButton ? '25px 25px' : '0 0'} ${$hasBottomButton ? '25px 25px' : '0 0'}`};
   width: 50px;
