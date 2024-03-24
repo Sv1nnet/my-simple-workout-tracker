@@ -439,6 +439,10 @@
           "ru": "Выделить все",
           "eng": "Select all"
         },
+        "create_copy": {
+          "ru": "Создать копию",
+          "eng": "Create copy"
+        },
         "deselect_all": {
           "ru": "Убрать выделение",
           "eng": "Deselect all"
@@ -446,10 +450,6 @@
         "delete": {
           "ru": "Удалить упражнение",
           "eng": "Delete exercise"
-        },
-        "cancel": {
-          "ru": "Отменить выделение",
-          "eng": "Cancel selection"
         },
         "more_options": {
           "ru": "Больше вариантов",
