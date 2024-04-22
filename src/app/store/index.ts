@@ -5,9 +5,9 @@ import { exerciseApi } from './slices/exercise/api'
 import { activityApi } from './slices/activity/api'
 import auth, { loginWithNoAuth } from './slices/auth'
 import profile from './slices/profile'
-import exercise, { exerciseHandlers } from './slices/exercise'
-import workout, { workoutHandlers } from './slices/workout'
-import activity, { activityHandlers } from './slices/activity'
+import exercise from './slices/exercise'
+import workout from './slices/workout'
+import activity from './slices/activity'
 import config, { changeLang } from './slices/config'
 import { workoutApi } from './slices/workout/api'
 import { configApi } from './slices/config/api'
@@ -53,12 +53,6 @@ AppState,
 unknown,
 Action<string>
 >
-
-export const handlers = {
-  exercise: exerciseHandlers.default,
-  workout: workoutHandlers.default,
-  activity: activityHandlers.default,
-}
 
 export default ({ lang, isNoAuthLogin }: { lang: AppState['config']['data']['lang'], isNoAuthLogin: AppState['auth']['isNoAuthLogin'] }) => {
   if (store.getState().config.data.lang !== lang) store.dispatch(changeLang(lang))

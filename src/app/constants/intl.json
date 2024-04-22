@@ -625,6 +625,12 @@
             "eng": "Cancel"
           }
         }
+      },
+      "loader_text": {
+        "loading_exercise_list": {
+          "ru": "Загрузка списка упражнений",
+          "eng": "Loading exercise list..."
+        }
       }
     },
     "activities": {

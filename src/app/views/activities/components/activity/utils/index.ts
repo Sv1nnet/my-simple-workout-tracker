@@ -321,7 +321,7 @@ export const useLoadWorkoutList = ({
 
   useLayoutEffect(() => {
     if (workoutListStatus === API_STATUS.LOADING) {
-      runLoader('workout_list_loader', { tip: intl.pages.activities.loader.workouts_loading })
+      runLoader('workout_list_loader', { spinProps: { tip: intl.pages.activities.loader.workouts_loading } })
     } else if (workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR) {
       stopLoaderById('workout_list_loader')
     }

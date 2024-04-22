@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Spin, SpinProps } from 'antd'
 
@@ -6,9 +6,9 @@ const initialContextValue = { loading: false, forceStopLoader: () => {}, stopLoa
 
 export interface IAppLoaderContextValue {
   loading: boolean;
-  forceStopLoader: (props?: SpinProps) => void;
-  runLoader: (id: number | string, props?: SpinProps) => void;
-  stopLoaderById: (id: number | string, props?: SpinProps) => void;
+  forceStopLoader: (props?: IAppLoader['loaderProps']) => void;
+  runLoader: (id: number | string, props?: IAppLoader['loaderProps']) => void;
+  stopLoaderById: (id: number | string, props?: IAppLoader['loaderProps']) => void;
 }
 
 export const AppLoaderContext = createContext<IAppLoaderContextValue>(initialContextValue)
@@ -55,30 +55,35 @@ const SpinContainer = styled.div<{ $show: boolean; }>`
 `
 
 export interface IAppLoader {
-  loaderProps?: SpinProps;
+  loaderProps?: {
+    containerProps?: React.ClassAttributes<HTMLDivElement> & React.HTMLAttributes<HTMLDivElement>,
+    spinProps?: SpinProps
+  };
   children?: ReactNode;
 }
 
 const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps }) => {
   const [ loading, setLoading ] = useState(false)
   const [ loaderRunnerId, setLoaderRunnerId ] = useState(null)
-  const [ loaderProps, setLoaderProps ] = useState<SpinProps>(_loaderProps)
+  const loaderRunnerIdRef = useRef(loaderRunnerId)
+  const [ loaderProps, setLoaderProps ] = useState<IAppLoader['loaderProps']>(_loaderProps)
 
-  const runLoader = useCallback((id, props = {}) => {
+  const runLoader = useCallback((id, props: IAppLoader['loaderProps'] = {}) => {
     setLoading(true)
     setLoaderProps(props)
     setLoaderRunnerId(id)
+    loaderRunnerIdRef.current = id
   }, [])
 
-  const stopLoaderById = useCallback((id, props = {}) => {
-    if (id !== loaderRunnerId) return
+  const stopLoaderById = useCallback((id, props: IAppLoader['loaderProps'] = {}) => {
+    if (id !== loaderRunnerIdRef.current) return
 
     setLoaderRunnerId(null)
     setLoading(false)
     setLoaderProps(props)
-  }, [ loaderRunnerId ])
+  }, [])
 
-  const forceStopLoader = useCallback((props = {}) => {
+  const forceStopLoader = useCallback((props: IAppLoader['loaderProps'] = {}) => {
     setLoading(false)
     setLoaderProps(props)
     setLoaderRunnerId(null)
@@ -91,8 +96,8 @@ const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps
 
   return (
     <AppLoaderContext.Provider value={value}>
-      <SpinContainer $show={loading}>
-        <StyledSpin size="large" {...loaderProps} spinning={loading}>
+      <SpinContainer $show={loading} {...loaderProps.containerProps}>
+        <StyledSpin size="large" {...loaderProps.spinProps} spinning={loading}>
           <span />
         </StyledSpin>
       </SpinContainer>

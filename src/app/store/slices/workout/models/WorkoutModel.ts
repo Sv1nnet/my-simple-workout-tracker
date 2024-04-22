@@ -1,8 +1,8 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
 import { WorkoutExerciseModel } from './WorkoutExerciseModel'
-import browserDB from 'app/store/BrowserDB'
-import { ActivityModel } from '../../activity/models/ActivityModel'
+import browserDB from 'app/store/utils/BrowserDB'
+import { ActivityModel } from 'app/store/slices/activity/models/ActivityModel'
 
 export type WorkoutModelConstructorParameter = WorkoutModel
 

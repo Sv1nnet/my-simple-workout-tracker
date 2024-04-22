@@ -1,10 +1,10 @@
-import { WorkoutModel } from './../workout/models/WorkoutModel'
+import { WorkoutModel } from 'app/store/slices/workout/models/WorkoutModel'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
-import browserDB from '../../BrowserDB'
+import browserDB from 'app/store/utils/BrowserDB'
 import { ActivityModelConstructorParameter, ActivityModel } from './models/ActivityModel'
-import { ExerciseModel } from '../exercise/models/ExerciseModel'
-import { UUID_REGEX } from '../../utils/baseQueryWithReauth'
-import formatFormData from '../../utils/formatFormData'
+import { ExerciseModel } from 'app/store/slices/exercise/models/ExerciseModel'
+import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
+import formatFormData from 'app/store/utils/formatFormData'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {

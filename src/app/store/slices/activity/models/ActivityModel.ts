@@ -1,6 +1,6 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
-import browserDB from 'app/store/BrowserDB'
+import browserDB from 'app/store/utils/BrowserDB'
 import { ActivityExerciseModel } from './ActivityExerciseModel'
 
 export type ActivityModelConstructorParameter = Pick<ActivityModel, 'id' | 'created_at' | 'updated_at' | 'workout_id' | 'index' | 'date' | 'results' | 'description' | 'duration'>

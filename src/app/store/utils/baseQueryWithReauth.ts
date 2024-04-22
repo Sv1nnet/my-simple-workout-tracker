@@ -10,8 +10,9 @@ import { QueryReturnValue } from '@reduxjs/toolkit/dist/query/baseQueryTypes'
 import { Token } from 'store/slices/auth/types'
 import { IResponse } from 'app/constants/response_types'
 import { SerializedError } from '@reduxjs/toolkit'
-import { AppState, handlers } from '..'
+import { AppState } from '..'
 import { getIsNoAuthLoginFromLocalStorage } from 'app/utils/getIsNoAuthLoginFromLocalStorage'
+import handlersLoader from './noAuthHandlers/noAuthHandlers.loader'
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: routes.base,
@@ -54,6 +55,8 @@ const getBaseQueryWithReauth = (() => {
         const url = new URL(args.url)
         const { endpoint: handlerName } = api
         const [ , _api, _v, routeName, rest ] = url.pathname.split('/')
+
+        const handlers = await handlersLoader.get()
 
         const result = await handlers[routeName][handlerName](
           args,

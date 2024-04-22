@@ -1,11 +1,11 @@
 
-import browserDB from '../../BrowserDB'
-import formatFormData from '../../utils/formatFormData'
+import browserDB from 'app/store/utils/BrowserDB'
+import formatFormData from 'app/store/utils/formatFormData'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
 import { ExerciseModel, ExerciseModelConstructorParameter } from './models/ExerciseModel'
 import { ImageFields, ImageModel, imageSizeErrorText } from './models/ImageModel'
 import { fieldsToFormat, imageSizeError, mapFormDataToImageAndRestForm } from './utils'
-import { UUID_REGEX } from '../../utils/baseQueryWithReauth'
+import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 // eslint-disable-next-line import/extensions
 import intl from 'app/constants/intl.json'
 

@@ -1,9 +1,9 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
 import { ExerciseType, MassUnit } from '../types'
-import browserDB from 'app/store/BrowserDB'
+import browserDB from 'app/store/utils/BrowserDB'
 import { ImageConstructorParameter, ImageModel } from './ImageModel'
-import { WorkoutModel } from '../../workout/models/WorkoutModel'
+import { WorkoutModel } from 'app/store/slices/workout/models/WorkoutModel'
 
 export type ExerciseModelConstructorParameter = Omit<ExerciseModel, 'image'> & { image: ImageConstructorParameter }
 

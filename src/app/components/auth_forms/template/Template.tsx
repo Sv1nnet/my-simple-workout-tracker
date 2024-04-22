@@ -9,7 +9,9 @@ import ChangeLangPanel from 'components/change_lang_panel/ChangeLangPanel'
 import { Container, FormContainer, StyledTabs } from './components/styled'
 import { useAppDispatch } from 'app/hooks'
 import { loginWithNoAuth } from 'app/store/slices/auth'
-import browserDB from 'app/store/BrowserDB'
+import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
+import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
+import noAuthHandlersLoader from 'app/store/utils/noAuthHandlers/noAuthHandlers.loader'
 
 export enum AUTH_FORM_TABS {
   LOGIN = 'login',
@@ -23,14 +25,23 @@ const AuthTemplate = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
 
   const handleRestorePasswordLinkClick = () => setTab(AUTH_FORM_TABS.RESTORE_PASSWORD)
 
   const handleSuccessRestorePassword = () => setTab(AUTH_FORM_TABS.LOGIN)
 
-  const handleLoginWithoutCreds = () => {
-    browserDB.initNoAuthDB(() => {
+  const handleLoginWithoutCreds = async () => {
+    runLoader('initNoAuthaDB', { containerProps: { style: { top: 0 } } })
+
+    const db = await browserDBLoader.get()
+
+    await db.droppingPromise
+    await noAuthHandlersLoader.get()
+
+    db.initNoAuthDB(() => {
       dispatch(loginWithNoAuth())
+      stopLoaderById('initNoAuthaDB')
     })
   }
 

@@ -68,7 +68,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const exerciseList = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
   const { payload } = intl.pages.exercises
-  const { input_labels, submit_button, error_message, modal, placeholders, notifications } = intl.pages.workouts
+  const { input_labels, submit_button, error_message, modal, placeholders, notifications, loader_text } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<InitialValues>()
@@ -196,7 +196,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   
   useLayoutEffect(() => {
     if (exerciseList.status === API_STATUS.LOADING) {
-      runLoader('exercise_list_loader', { tip: 'Loading exercise list...' })
+      runLoader('exercise_list_loader', { spinProps: { tip: loader_text.loading_exercise_list } })
     } else if (exerciseList.status === API_STATUS.LOADED || exerciseList.status === API_STATUS.ERROR) {
       stopLoaderById('exercise_list_loader')
     }

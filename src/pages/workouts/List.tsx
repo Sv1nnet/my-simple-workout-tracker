@@ -10,7 +10,7 @@ import { API_STATUS } from 'app/constants/api_statuses'
 import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
 import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
-import { DeleteWorkoutPayload } from '@/src/app/views/workouts/components/list/WorkoutList'
+import { DeleteWorkoutPayload } from 'app/views/workouts/components/list/WorkoutList'
 
 export interface IWorkouts {
   workouts: WorkoutListItem[];
