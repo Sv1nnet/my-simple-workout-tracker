@@ -34,6 +34,7 @@ export type WorkoutListItem<T = number | Dayjs> = {
   id: string;
   title: string;
   exercises: WorkoutListExercise<T>[];
+  archived?: boolean;
   description?: string;
 }
 
@@ -57,3 +58,5 @@ export type GetWorkoutListSuccess = IResponse<WorkoutListItem[]>
 export type GetWorkoutListError = IResponse<null>
 
 export type WorkoutError = IResponse
+
+export type WorkoutListParams = { archived?: boolean, inActivity?: string, include?: string }

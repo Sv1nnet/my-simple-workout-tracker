@@ -8,11 +8,13 @@ import * as actions from './actions'
 import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 
 export interface IAuthState {
+  isNoAuthLogin: boolean;
   token: null | Token;
   status: ApiStatus;
 }
 
 const initialState: IAuthState = {
+  isNoAuthLogin: false,
   token: Cookie.get('access_token') || null,
   status: API_STATUS.INITIAL,
 }
@@ -21,6 +23,16 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    loginWithNoAuth: (state) => {
+      state.isNoAuthLogin = true
+      state.token = null
+      localStorage.setItem('isNoAuthLogin', JSON.stringify(state.isNoAuthLogin))
+    },
+    logoutWithNoAuth: (state) => {
+      state.isNoAuthLogin = false
+      state.token = null
+      localStorage.setItem('isNoAuthLogin', JSON.stringify(state.isNoAuthLogin))
+    },
     updateToken: (state, action: PayloadAction<Token>) => {
       state.token = action.payload
       state.status = API_STATUS.LOADED
@@ -69,9 +81,10 @@ export const authSlice = createSlice({
   },
 })
 
-export const { updateToken } = authSlice.actions
+export const { updateToken, loginWithNoAuth, logoutWithNoAuth } = authSlice.actions
 export const { logout } = actions
 
+export const selectIsNoAuthLogin = (state: AppState) => state.auth.isNoAuthLogin
 export const selectToken = (state: AppState) => state.auth.token
 export const selectAuthStatus = (state: AppState) => state.auth.status
 

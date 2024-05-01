@@ -31,6 +31,12 @@ export const workoutSlice = createSlice({
   name: 'workout',
   initialState,
   reducers: {
+    resetListState: (state) => {
+      state.list = initialState.list
+    },
+    resetSingleState: (state) => {
+      state.single = initialState.single
+    },
     updateList: (state, action: PayloadAction<WorkoutListItem[]>) => {
       state.list.data = action.payload
       state.list.status = API_STATUS.LOADED
@@ -47,7 +53,7 @@ export const workoutSlice = createSlice({
       .addMatcher(
         workoutApi.endpoints.list.matchFulfilled,
         (state, { payload }) => {
-          state.list.data = payload.data
+          state.list.data = payload.data || []
           state.list.status = API_STATUS.LOADED
         },
       )
@@ -67,7 +73,7 @@ export const workoutSlice = createSlice({
       .addMatcher(
         workoutApi.endpoints.get.matchFulfilled,
         (state, { payload }) => {
-          state.single.status = API_STATUS.LOADING
+          state.single.status = API_STATUS.LOADED
           state.single.data = payload.data
         },
       )
@@ -81,9 +87,11 @@ export const workoutSlice = createSlice({
   },
 })
 
-export const { updateList } = workoutSlice.actions
+export const { updateList, resetListState, resetSingleState } = workoutSlice.actions
 
 export const selectWorkout = (state: AppState) => state.workout.single
 export const selectList = (state: AppState) => state.workout.list
+
+export * as workoutHandlers from './noCredsLoginRequestHandlers'
 
 export default workoutSlice.reducer

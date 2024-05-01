@@ -1,3 +1,4 @@
+import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 import { ActivityForm } from 'app/store/slices/activity/types'
 import { WorkoutForm } from 'app/store/slices/workout/types'
 import { Dayjs } from 'dayjs'
@@ -8,6 +9,7 @@ export interface IActivityProps {
   isFetching?: boolean;
   initialValues?: InitialValues<string>;
   isError: boolean;
+  deleteStatus?: QueryStatus;
   error?: string;
   errorCode?: number;
   errorAppCode?: number;

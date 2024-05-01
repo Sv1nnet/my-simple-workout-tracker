@@ -29,12 +29,30 @@ const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, se
               : <SelectAllButton $activeItems={activeExtraButtons} style={style} tooltipTitle={list_buttons.select_all} onClick={handleListAll} />
           }
           {onCopy && (
-            <CopyButton $activeItems={activeExtraButtons} style={style} loading={isCopying} disabled={!Object.values(selected).some(Boolean)} onClick={onCopy} />
+            <CopyButton
+              $activeItems={activeExtraButtons}
+              style={style}
+              loading={isCopying}
+              disabled={!Object.values(selected).some(Boolean)}
+              onClick={onCopy}
+              tooltipTitle={list_buttons.create_copy}
+            />
           )}
           {onDelete && (
-            <DeleteButton $activeItems={activeExtraButtons} style={style} loading={isDeleting} disabled={!Object.values(selected).some(Boolean)} onClick={onDelete} />
+            <DeleteButton
+              $activeItems={activeExtraButtons}
+              style={style}
+              loading={isDeleting}
+              disabled={!Object.values(selected).some(Boolean)}
+              onClick={onDelete}
+              tooltipTitle={list_buttons.delete}
+            />
           )}
-          <CancelSelectionButton $activeItems={activeExtraButtons} tooltipTitle={list_buttons.cancel_selection} $isSelectionActive={isSelectionActive} onClick={onCancel} />
+          <CancelSelectionButton
+            $activeItems={activeExtraButtons}
+            $isSelectionActive={isSelectionActive}
+            onClick={onCancel}
+          />
         </MoreOptionsButtonContainer.Inner>
       </MoreOptionsButtonContainer>
     </MainButtonContainer>

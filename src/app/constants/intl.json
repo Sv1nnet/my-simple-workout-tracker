@@ -11,6 +11,14 @@
     "no_data": {
       "ru": "Нет данных",
       "eng": "No Data"
+    },
+    "yes": {
+      "ru": "Да",
+      "eng": "Yes"
+    },
+    "no": {
+      "ru": "Нет",
+      "eng": "No"
     }
   },
   "signup_by_code": {
@@ -92,6 +100,10 @@
       "ru": "Зарегистрироваться",
       "eng": "Sign up"
     },
+    "continue_without_login": {
+      "ru": "Продолжить без входа",
+      "eng": "Continue without login"
+    },
     "error_message": {
       "email": {
         "required": {
@@ -155,6 +167,18 @@
     "profile": {
       "ru": "Профиль",
       "eng": "Profile"
+    },
+    "modal": {
+      "delete_data": {
+        "title": {
+          "ru": "Удалить текущие данные?",
+          "eng": "Delete stored data?"
+        },
+        "content": {
+          "ru": "Это приведет к удалению с устройства всех упражнений, тренировок и активностей.",
+          "eng": "Deleting will erase all exercises, workouts, and activities from device."
+        }
+      }
     }
   },
   "pages": {
@@ -170,6 +194,10 @@
       "logout": {
         "ru": "Выйти",
         "eng": "Logout"
+      },
+      "login": {
+        "ru": "Войти",
+        "eng": "Login"
       },
       "save_button": {
         "ru": "Сохранить",
@@ -229,6 +257,12 @@
             "ru": "Не удалось загрузить изображение. Максимальный размер 50 мб.",
             "eng": "Could not upload image. Maximum size is 50 mb."
           }
+        }
+      },
+      "state": {
+        "archived": {
+          "ru": "удалено",
+          "eng": "deleted"
         }
       },
       "payload": {
@@ -405,6 +439,10 @@
           "ru": "Выделить все",
           "eng": "Select all"
         },
+        "create_copy": {
+          "ru": "Создать копию",
+          "eng": "Create copy"
+        },
         "deselect_all": {
           "ru": "Убрать выделение",
           "eng": "Deselect all"
@@ -412,10 +450,6 @@
         "delete": {
           "ru": "Удалить упражнение",
           "eng": "Delete exercise"
-        },
-        "cancel": {
-          "ru": "Отменить выделение",
-          "eng": "Cancel selection"
         },
         "more_options": {
           "ru": "Больше вариантов",
@@ -590,6 +624,12 @@
             "ru": "Отмена",
             "eng": "Cancel"
           }
+        }
+      },
+      "loader_text": {
+        "loading_exercise_list": {
+          "ru": "Загрузка списка упражнений",
+          "eng": "Loading exercise list..."
         }
       }
     },

@@ -11,6 +11,8 @@ import { Token } from 'store/slices/auth/types'
 import { IResponse } from 'app/constants/response_types'
 import { SerializedError } from '@reduxjs/toolkit'
 import { AppState } from '..'
+import { getIsNoAuthLoginFromLocalStorage } from 'app/utils/getIsNoAuthLoginFromLocalStorage'
+import handlersLoader from './noAuthHandlers/noAuthHandlers.loader'
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: routes.base,
@@ -36,6 +38,8 @@ export const baseQueryWithoutCreds = fetchBaseQuery({
   },
 })
 
+export const UUID_REGEX = /[a-f0-9]{24}/
+
 export type CustomBaseQueryError = FetchBaseQueryError & { data: IResponse<null, any> } | SerializedError & { data: IResponse<null, any> }
 
 const getBaseQueryWithReauth = (() => {
@@ -46,8 +50,27 @@ const getBaseQueryWithReauth = (() => {
   unknown,
   FetchBaseQueryError | SerializedError | CustomBaseQueryError
   > => async (args, api, extraOptions) => {
+    if (getIsNoAuthLoginFromLocalStorage()) {
+      if (typeof args !== 'string') {
+        const url = new URL(args.url)
+        const { endpoint: handlerName } = api
+        const [ , _api, _v, routeName, rest ] = url.pathname.split('/')
+
+        const handlers = await handlersLoader.get()
+
+        const result = await handlers[routeName][handlerName](
+          args,
+          url,
+          new URLSearchParams(url.searchParams),
+          rest,
+        )
+
+        return result
+      }
+    }
     const query = creds ? baseQuery : baseQueryWithoutCreds
     let result = await query(args, api, extraOptions)
+
     if (result.error && result.error.status === 401) {
       // try to get a new token
       if (!refreshRequest) {

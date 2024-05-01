@@ -143,9 +143,9 @@ export const useNotificationPermissionRequest = () => {
   }
 }
 
-type SetValue<T> = Dispatch<SetStateAction<T>>
+export type SetValue<T> = Dispatch<SetStateAction<T>>
 
-export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, SetValue<T>, () => boolean] => {
+export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, SetValue<T>, () => boolean, () => T] => {
   const [ storedValue, setStoredValue ] = useState<T | null>(() => {
     try {
       const item = window.localStorage.getItem(key)
@@ -155,7 +155,7 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, Set
     }
   })
 
-  const setValue = (value: unknown) => {
+  const setValue = useCallback((value: unknown) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value
       setStoredValue(valueToStore)
@@ -163,9 +163,9 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, Set
     } catch (error) {
       console.error(error)
     }
-  }
+  }, [ key, storedValue ])
 
-  const removeItem = () => {
+  const removeItem = useCallback(() => {
     try {
       window.localStorage.removeItem(key)
       setStoredValue(null)
@@ -174,9 +174,18 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, Set
       console.error(error)
       return false
     }
-  }
+  }, [ key ])
 
-  return [ storedValue, setValue, removeItem ]
+  const getStoredValue = useCallback(() => {
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch (error) {
+      return initialValue
+    }
+  }, [ key ])
+
+  return [ storedValue, setValue, removeItem,  getStoredValue ]
 }
 
 

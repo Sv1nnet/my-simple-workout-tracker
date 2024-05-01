@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { IActivityFormData } from 'app/store/slices/activity/types'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { Activity } from 'app/views'
@@ -10,17 +10,23 @@ import { selectActivity } from 'app/store/slices/activity'
 import { API_STATUS } from 'app/constants/api_statuses'
 
 const ActivityItem = () => {
-  const { status, data: activity } = useAppSelector(selectActivity)
   const navigate = useNavigate()
   const params = useParams()
+
+  const { status, data: activity } = useAppSelector(selectActivity)
+
+  const activityWithParamsId = useMemo(() => ({
+    ...(params.id === activity?.id ? activity : null),
+    id: params.id,
+  }), [ activity, params.id, status ])
 
   const { lang } = useIntlContext()
   const [
     get,
     {
       data: dataOfGet,
-      isLoading: isLoading_get,
-      isFetching: isFetching_get,
+      isLoading: isGetLoading,
+      isFetching: isGetFetching,
       error: errorGet,
     },
   ] = activityApi.useLazyGetQuery()
@@ -28,14 +34,15 @@ const ActivityItem = () => {
     update,
     {
       data: dataOfUpdate,
-      isLoading: isLoading_update,
+      isLoading: isUpdateLoading,
       error: errorUpdate,
     },
   ] = activityApi.useUpdateMutation()
   const [
     deleteActivity,
     {
-      isLoading: isLoading_delete,
+      status: deleteStatus,
+      isLoading: isDeleteLoading,
       error: errorDelete,
     },
   ] = activityApi.useDeleteMutation()
@@ -72,8 +79,9 @@ const ActivityItem = () => {
       isError={!!error}
       errorCode={(errorGet as CustomBaseQueryError)?.data?.error?.code}
       errorAppCode={(errorGet as CustomBaseQueryError)?.data?.error?.appCode}
-      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? activity}
-      isFetching={isLoading_get || isFetching_get || isLoading_update || isLoading_delete}
+      initialValues={dataOfUpdate?.data ?? dataOfGet?.data ?? activityWithParamsId}
+      isFetching={isGetLoading || isGetFetching || isUpdateLoading || isDeleteLoading}
+      deleteStatus={deleteStatus}
       onSubmit={handleSubmit}
       error={error}
       deleteActivity={handleDelete}

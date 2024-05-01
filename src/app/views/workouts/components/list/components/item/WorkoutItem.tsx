@@ -159,7 +159,11 @@ const WorkoutItem: FC<IWorkout> = ({
             <List.Item.Meta
               avatar={(
                 <ImageContainer>
-                  <img src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}/>
+                  <img src={image?.url
+                    ? image.url.startsWith('data:image/')
+                      ? image.url
+                      : `${routes.base}${image.url}`
+                    : itemImagePlaceholder}/>
                 </ImageContainer>
               )}
               title={(

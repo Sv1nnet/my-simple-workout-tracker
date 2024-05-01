@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import UserMenu from 'layouts/header/user_menu/UserMenu'
 import { configApi } from 'app/store/slices/config/api'
 import { Lang } from 'app/store/slices/config/types'
+import { selectIsNoAuthLogin } from 'app/store/slices/auth'
+import { NoAuthLogoutButton } from './components'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -38,6 +40,7 @@ const OptionsContainer = styled.div`
 `
 
 const Content = () => {
+  const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const lang = useAppSelector(selectLang)
   const dispatch = useAppDispatch()
   const [ updateConfig ] = configApi.useLazyUpdateQuery()
@@ -49,7 +52,11 @@ const Content = () => {
 
   return (
     <Wrapper>
-      <UserMenu />
+      {
+        isNoAuthLogin
+          ? <NoAuthLogoutButton />
+          : <UserMenu />
+      }
       <Select
         showArrow={false}
         value={lang}

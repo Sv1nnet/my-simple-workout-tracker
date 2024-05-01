@@ -43,8 +43,16 @@ const Exercise = ({
       <Divider style={{ marginBottom: '16px', marginTop: '6px' }} />
       {isEditMode && !isInActivity && (
         <MoveExerciseButtonContainer $hasBottomButton={hasBottomButton} $hasTopButton={hasTopButton}>
-          {hasTopButton && <Button onClick={handleChangeOrder(-1)} size="small" type="text"><UpOutlined /></Button>}
-          {hasBottomButton && <Button onClick={handleChangeOrder(1)} size="small" type="text"><DownOutlined /></Button>}
+          {hasTopButton && (
+            <Button onClick={handleChangeOrder(-1)} size="small" type="text">
+              <UpOutlined />
+            </Button>
+          )}
+          {hasBottomButton && (
+            <Button onClick={handleChangeOrder(1)} size="small" type="text">
+              <DownOutlined />
+            </Button>
+          )}
         </MoveExerciseButtonContainer>
       )}
       {isEditMode && !isInActivity && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
@@ -52,7 +60,7 @@ const Exercise = ({
       <Form.Item label={dictionary.input_labels.exercise} name={[ index, 'id' ]} rules={requiredRules}>
         <StyledSelect disabled={isFormItemDisabled || isInActivity} size="large">
           {exerciseList.data.map(exercise => (
-            <Select.Option value={exercise.id} key={exercise.id}>
+            <Select.Option value={exercise.id} key={exercise.id} disabled={exercise.archived}>
               <ExerciseOption {...exercise} payloadDictionary={payload} />
             </Select.Option>
           ))}

@@ -98,7 +98,11 @@ const ExerciseItem: FC<IExerciseForm> = ({
             maxWidth: 75,
             maxHeight: 75,
           }}
-          src={image?.url ? `${routes.base}${image.url}` : itemImagePlaceholder}
+          src={image?.url
+            ? image.url.startsWith('data:image/')
+              ? image.url
+              : `${routes.base}${image.url}`
+            : itemImagePlaceholder}
         />
       </ImageContainer>
     )}

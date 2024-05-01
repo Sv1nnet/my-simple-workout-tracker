@@ -29,6 +29,7 @@ import {
 } from './components'
 import { useNavigate } from 'react-router'
 import { useMounted } from 'app/hooks'
+import getBase64 from 'app/utils/getBase64'
 
 export type InitialValues = {
   title: string;
@@ -56,15 +57,6 @@ export interface IExercise {
   errorAppCode?: number;
   deleteExercise?: Function;
   onSubmit: Function;
-}
-
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = error => reject(error)
-  })
 }
 
 const previewReducer = (state, { type, payload }) => {
@@ -112,11 +104,16 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     }
 
     if (exercise.image) {
+      const image = exercise.image as Image
       exercise.image = {
-        ...exercise.image,
-        url: `${routes.base}${(exercise.image as Image).url}`,
+        ...image,
+        url: image.url
+          ? image.url.startsWith('data:image/')
+            ? image.url
+            : `${routes.base}${image.url}`
+          : '',
       }
-      exercise.image = [ (exercise.image as Image) ]
+      exercise.image = [ image ]
       return exercise
     }
     return exercise

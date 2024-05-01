@@ -7,6 +7,11 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import RestorePassword from 'components/auth_forms/restore_password/RestorePassword'
 import ChangeLangPanel from 'components/change_lang_panel/ChangeLangPanel'
 import { Container, FormContainer, StyledTabs } from './components/styled'
+import { useAppDispatch } from 'app/hooks'
+import { loginWithNoAuth } from 'app/store/slices/auth'
+import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
+import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
+import noAuthHandlersLoader from 'app/store/utils/noAuthHandlers/noAuthHandlers.loader'
 
 export enum AUTH_FORM_TABS {
   LOGIN = 'login',
@@ -17,12 +22,28 @@ export enum AUTH_FORM_TABS {
 const AuthTemplate = () => {
   const { intl } = useIntlContext()
   const [ tab, setTab ] = useState(AUTH_FORM_TABS.LOGIN)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
 
   const handleRestorePasswordLinkClick = () => setTab(AUTH_FORM_TABS.RESTORE_PASSWORD)
 
   const handleSuccessRestorePassword = () => setTab(AUTH_FORM_TABS.LOGIN)
+
+  const handleLoginWithoutCreds = async () => {
+    runLoader('initNoAuthaDB', { containerProps: { style: { top: 0 } } })
+
+    const db = await browserDBLoader.get()
+
+    await db.droppingPromise
+    await noAuthHandlersLoader.get()
+
+    db.initNoAuthDB(() => {
+      dispatch(loginWithNoAuth())
+      stopLoaderById('initNoAuthaDB')
+    })
+  }
 
   const items = useMemo(() => (
     [
@@ -63,8 +84,11 @@ const AuthTemplate = () => {
             defaultActiveKey={AUTH_FORM_TABS.LOGIN}
             items={items}
           />
+          <Button block type="link" onClick={handleLoginWithoutCreds}>
+            {intl.auth_form.continue_without_login}
+          </Button>
           {tab !== AUTH_FORM_TABS.RESTORE_PASSWORD && (
-            <Button block type="link" onClick={handleRestorePasswordLinkClick}>
+            <Button block style={{ marginTop: 8 }} type="link" onClick={handleRestorePasswordLinkClick}>
               {intl.auth_form.restore_password}
             </Button>
           )}

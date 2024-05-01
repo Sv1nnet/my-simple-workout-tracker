@@ -98,7 +98,7 @@ export const activitySlice = createSlice({
       .addMatcher(
         activityApi.endpoints.get.matchFulfilled,
         (state, { payload }) => {
-          state.single.status = API_STATUS.LOADING
+          state.single.status = API_STATUS.LOADED
           state.single.data = payload.data
         },
       )
@@ -117,5 +117,7 @@ export const { updateList, setSelectedRound, updateQuery } = activitySlice.actio
 export const selectActivity = (state: AppState) => state.activity.single
 export const selectList = (state: AppState) => state.activity.list
 export const selectSelectedRoundIndex = (chartId: string) => (state: AppState) => state.activity.charts[chartId]?.selectedRoundIndex
+
+export * as activityHandlers from './noCredsLoginRequestHandlers'
 
 export default activitySlice.reducer

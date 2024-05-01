@@ -10,6 +10,7 @@ import { API_STATUS } from 'app/constants/api_statuses'
 import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
 import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
+import { DeleteWorkoutPayload } from 'app/views/workouts/components/list/WorkoutList'
 
 export interface IWorkouts {
   workouts: WorkoutListItem[];
@@ -27,7 +28,7 @@ const Workouts = () => {
   const $container = useRef<Ref>(null)
   const { listEl, setListEl } = useListContext($container.current)
   const [ loadWorkouts, { error, isError, isFetching } ] = workoutApi.useLazyListQuery()
-  const { data: workoutsInStore = [], status } = useAppSelector(selectList)
+  const { data: workoutsInStore, status } = useAppSelector(selectList)
   const { filteredList: workoutsToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     workoutsInStore,
     {
@@ -50,7 +51,7 @@ const Workouts = () => {
 
   const [ copyWorkouts, { isLoading: isCopying, error: copyError } ] = workoutApi.useCopyMutation()
 
-  const handleCopy = ids => copyWorkouts(ids).then((res: any) => {
+  const handleCopy = (ids: DeleteWorkoutPayload) => copyWorkouts(ids).then((res: any) => {
     if (res?.data?.success) {
       loadWorkouts()
     }

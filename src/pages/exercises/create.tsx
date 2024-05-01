@@ -17,7 +17,6 @@ const CreateExercise = () => {
     if (!isError && data) navigate('/exercises')
   }, [ isLoading ])
 
-
   let error = (serverError as CustomBaseQueryError)?.data?.error?.message?.text?.[lang || 'eng']
 
   if (!error) {

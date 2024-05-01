@@ -22,7 +22,7 @@ import {
 import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
-import { useNavigate } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { ROUTES } from 'src/router'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
@@ -58,6 +58,7 @@ const getDefaultExercise = () => ({
 
 const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }) => {
   const { isMounted, useHandleMounted } = useMounted()
+  const params = useParams()
   const navigate = useNavigate()
   const $container = useRef(null)
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
@@ -67,7 +68,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const exerciseList = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
   const { payload } = intl.pages.exercises
-  const { input_labels, submit_button, error_message, modal, placeholders, notifications } = intl.pages.workouts
+  const { input_labels, submit_button, error_message, modal, placeholders, notifications, loader_text } = intl.pages.workouts
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<InitialValues>()
@@ -77,6 +78,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         title: '',
         is_in_activity: false,
         exercises: [],
+        id: params.id,
       }
     }
 
@@ -194,7 +196,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   
   useLayoutEffect(() => {
     if (exerciseList.status === API_STATUS.LOADING) {
-      runLoader('exercise_list_loader', { tip: 'Loading exercise list...' })
+      runLoader('exercise_list_loader', { spinProps: { tip: loader_text.loading_exercise_list } })
     } else if (exerciseList.status === API_STATUS.LOADED || exerciseList.status === API_STATUS.ERROR) {
       stopLoaderById('exercise_list_loader')
     }
@@ -218,7 +220,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
             editButtonProps={{ disabled: isFetching }}
           />
         )}
-        <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: 'Required' } ] : []}>
+        <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: error_message.common.required } ] : []}>
           <Input disabled={isFormItemDisabled} size="large" />
         </Form.Item>
         <Form.List name="exercises">

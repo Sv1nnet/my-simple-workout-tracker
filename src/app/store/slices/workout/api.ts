@@ -7,6 +7,7 @@ import {
   WorkoutDeleteSuccess,
   GetWorkoutListSuccess,
   WorkoutServerPayload,
+  WorkoutListParams,
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
@@ -77,9 +78,9 @@ export const workoutApi = createApi({
       }),
       invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
-    list: build.query<GetWorkoutListSuccess, void>({
-      query: () => ({
-        url: routes.workout.v1.list.full,
+    list: build.query<GetWorkoutListSuccess, WorkoutListParams | void>({
+      query: ({ archived = false, inActivity = '', include = '' }: WorkoutListParams = {}) => ({
+        url: `${routes.workout.v1.list.full}?archived=${archived}&in_activity=${inActivity}&include=${include}`,
         method: 'GET',
       }),
       providesTags: () => [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],

@@ -14,6 +14,7 @@ import { Lang } from 'app/store/slices/config/types'
 import RootRouter from './router'
 
 import './styles/theme.less'
+import { useLocalStorage } from './app/hooks'
 
 dayjs.extend(duration)
 dayjs.extend(isoWeek)
@@ -23,7 +24,8 @@ type AppProps = {
 }
 
 export default function App({ lang }: AppProps) {
-  const store = useMemo(() => getStore({ lang }), [])
+  const [ isNoAuthLogin ] = useLocalStorage('isNoAuthLogin', false)
+  const store = useMemo(() => getStore({ lang, isNoAuthLogin }), [])
 
   return (
     <Provider store={store}>
