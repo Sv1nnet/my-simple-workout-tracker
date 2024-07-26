@@ -1,5 +1,5 @@
 import { timeToHms } from 'app/utils/time'
-import { theme } from 'src/styles/vars'
+import { theme } from 'styles/vars'
 import React, { FC } from 'react'
 import { EachSideRound, Round } from 'app/store/slices/activity/types'
 import { Body, Text } from './components/styled'

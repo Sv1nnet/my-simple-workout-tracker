@@ -2,12 +2,13 @@
 import browserDB from 'app/store/utils/BrowserDB'
 import formatFormData from 'app/store/utils/formatFormData'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
-import { ExerciseModel, ExerciseModelConstructorParameter } from './models/ExerciseModel'
+import { ExerciseModel, ExerciseModelConstructorParameter, PlainExerciseObject } from './models/ExerciseModel'
 import { ImageFields, ImageModel, imageSizeErrorText } from './models/ImageModel'
 import { fieldsToFormat, imageSizeError, mapFormDataToImageAndRestForm } from './utils'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 // eslint-disable-next-line import/extensions
 import intl from 'app/constants/intl.json'
+import EntityModel from '../../utils/EntityModel'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
@@ -28,7 +29,7 @@ const handlers = {
     
     let archived = false
     let workoutId = params?.get('workoutId') || ''
-    let lang = params?.get('lang') || 'eng'
+    let lang = params?.get('lang') || JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
 
     if (params) {
       ({ archived } = formatFormData<
@@ -76,6 +77,34 @@ const handlers = {
       await exercise.save()
       
       return { data: exercise }
+    } catch (e) {
+      if (e.message === imageSizeErrorText) return imageSizeError
+      throw e
+    }
+  },
+  copy: async ({ body }: { body: { ids: string[] } }) => {
+    const { exercisesTable } = browserDB.getTables()
+    const { ids = [] } = body
+    const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
+
+    try {
+      const allExercises: PlainExerciseObject[] = (await browserDB.db?.getAllValues(exercisesTable)).map(value => JSON.parse(value))
+      const exercisesToCopy = allExercises.filter(exercise => ids.find(id => id === exercise.id)).map(exercise => new ExerciseModel(exercise))
+
+      await Promise.all(exercisesToCopy.map(async (exercise) => {
+        let newExercise = await new ExerciseModel({
+          ...exercise,
+          title: `${exercise.title} ${lang === 'ru' ? '(копия)' : '(copy)'}`,
+          is_in_workout: false,
+          in_workouts: [],
+        })
+        newExercise.update({ id: EntityModel.createId() })
+        newExercise = await newExercise.save()
+        
+        return newExercise
+      }))
+      
+      return { data: { data: null, success: true, error: null } }
     } catch (e) {
       if (e.message === imageSizeErrorText) return imageSizeError
       throw e

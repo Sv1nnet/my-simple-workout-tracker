@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import styled from 'styled-components'
 import { timeToHms } from 'app/utils/time'
-import { ExerciseResultsDetails } from 'src/pages/activities/List'
+import { ExerciseResultsDetails } from 'pages/activities/List'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { Typography } from 'antd'
 
@@ -34,7 +34,7 @@ const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass
   const _weight = weight ? `${weight} ${payloadDictionary.mass_unit[mass_unit][0]}` : null
   return (
     <LoadType>
-      <Text type="secondary">{[ _repeats, _time, _weight ].filter(Boolean).join(' / ') || <span></span>}</Text>
+      <Text type="secondary">{[ _repeats, _time, _weight ].filter(Boolean).join(' / ') || <span />}</Text>
     </LoadType>
   )
 }

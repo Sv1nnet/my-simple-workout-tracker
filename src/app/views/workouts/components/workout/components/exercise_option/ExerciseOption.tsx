@@ -4,7 +4,7 @@ import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
 import { Dayjs } from 'dayjs'
 import { FC } from 'react'
-import { theme } from 'src/styles/vars'
+import { theme } from 'styles/vars'
 
 const OptionContainer = styled.div<{ $disabled: boolean }>`
   display: flex;

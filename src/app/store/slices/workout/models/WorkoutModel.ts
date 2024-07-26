@@ -6,6 +6,18 @@ import { ActivityModel } from 'app/store/slices/activity/models/ActivityModel'
 
 export type WorkoutModelConstructorParameter = WorkoutModel
 
+export type PlainWorkoutObject = Pick<WorkoutModel,
+'title' |
+'exercises' |
+'description' |
+'archived' |
+'is_in_activity' |
+'in_activities' |
+'id' |
+'created_at' |
+'updated_at'>
+
+// @ts-expect-error
 export class WorkoutModel extends EntityModel {
   public title: string
   
@@ -19,7 +31,22 @@ export class WorkoutModel extends EntityModel {
 
   public in_activities: string[] = []
 
-  constructor({ id, created_at, updated_at, exercises, ...data }: WorkoutModelConstructorParameter) {
+  public static async getOneFromDB(id: Pick<EntityModel, | 'id'>): Promise<WorkoutModel | undefined> {
+    const { workoutsTable } = browserDB.getTables()
+    return EntityModel.getOneFromDB(WorkoutModel, workoutsTable.name, id)
+  }
+
+  public static async getManyFromDB(ids: Pick<EntityModel, | 'id'>[]): Promise<WorkoutModel[]> {
+    const { workoutsTable } = browserDB.getTables()
+    return EntityModel.getManyFromDB(WorkoutModel, workoutsTable.name, ids)
+  }
+
+  public static async getAllFromDB(): Promise<WorkoutModel[]> {
+    const { workoutsTable } = browserDB.getTables()
+    return EntityModel.getAllFromDB(WorkoutModel, workoutsTable.name)
+  }
+
+  constructor({ id, created_at, updated_at, exercises, ...data }: WorkoutModelConstructorParameter | PlainWorkoutObject) {
     super({ id, created_at, updated_at })
 
     const exerciseInWorkout = exercises.map(exercise => new WorkoutExerciseModel(exercise))
@@ -87,5 +114,12 @@ export class WorkoutModel extends EntityModel {
     const { workoutsTable } = browserDB.getTables()
     browserDB.db.set(workoutsTable, this.id, this.toString())
     return this
+  }
+
+  async getCopy() {
+    return new WorkoutModel({
+      ...this,
+      exercises: this.exercises.map(exercise => new WorkoutExerciseModel(exercise)),
+    })
   }
 }

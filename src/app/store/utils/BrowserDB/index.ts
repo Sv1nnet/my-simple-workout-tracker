@@ -1,4 +1,4 @@
-import { IndexedDB } from 'app/utils/IndexedDBUtils'
+import { IndexedDB, IndexedDBTable } from 'app/utils/IndexedDBUtils'
 
 const browserDb = (() => ({
   onInit: null,
@@ -48,11 +48,15 @@ const browserDb = (() => ({
       this.db = new IndexedDB('noAuth', [ 'exercises', 'workouts', 'activities' ], this.onInit)
     }
 
-    return   ({
+    return {
       exercisesTable: this.db.tables.exercises,
       workoutsTable: this.db.tables.workouts,
       activitiesTable: this.db.tables.activities,
-    })
+    } as {
+      exercisesTable: IndexedDBTable<'exercises'>,
+      workoutsTable: IndexedDBTable<'workouts'>,
+      activitiesTable: IndexedDBTable<'activities'>,
+    }
   },
 }))()
 

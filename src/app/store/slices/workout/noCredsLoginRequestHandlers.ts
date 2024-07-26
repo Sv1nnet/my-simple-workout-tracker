@@ -1,10 +1,11 @@
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
 import browserDB from 'app/store/utils/BrowserDB'
-import { WorkoutModel, WorkoutModelConstructorParameter } from './models/WorkoutModel'
-import { ExerciseModel } from 'app/store/slices/exercise/models/ExerciseModel'
-import EntityModel from 'app/store/utils/EntityModel'
+import { PlainWorkoutObject, WorkoutModel, WorkoutModelConstructorParameter } from './models/WorkoutModel'
+import { ExerciseModel, PlainExerciseObject } from 'app/store/slices/exercise/models/ExerciseModel'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 import formatFormData from 'app/store/utils/formatFormData'
+import EntityModel from 'app/store/utils/EntityModel'
+import { WorkoutExerciseModel } from './models/WorkoutExerciseModel'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
@@ -130,7 +131,7 @@ const handlers = {
         .map(exerciseStr => new ExerciseModel(JSON.parse(exerciseStr)))
 
       for (const exercise of exercisesToUpdate) {
-        exercise.removeFromWorkout(workout.id)
+        exercise.removeWorkout(workout.id)
         await exercise.save()
       }
     }
@@ -138,6 +139,53 @@ const handlers = {
     await workout.save()
 
     return { data: { data: workout, success: true, error: null } }
+  },
+  copy: async ({ body }: { body: { ids: string[] } }) => {
+    const { exercisesTable, workoutsTable } = browserDB.getTables()
+    const { ids = [] } = body
+    const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
+
+    const allWorkouts: PlainWorkoutObject[] = (await browserDB.db?.getAllValues(workoutsTable)).map(value => JSON.parse(value))
+    const workoutsToCopy = allWorkouts.filter(workout => ids.find(id => id === workout.id)).map(workout => new WorkoutModel(workout))
+
+    const newWorkouts = await Promise.all(workoutsToCopy.map(async (workout) => {
+      let newWorkout = await new WorkoutModel({
+        ...workout,
+        title: `${workout.title} ${lang === 'ru' ? '(копия)' : '(copy)'}`,
+      })
+      newWorkout.update({ id: EntityModel.createId() })
+      newWorkout = await newWorkout.save()
+        
+      return newWorkout
+    }))
+    
+    const allExercises: PlainExerciseObject[] = (await browserDB.db?.getAllValues(exercisesTable)).map(value => JSON.parse(value))
+    const exercisesToUpdate = workoutsToCopy
+      .reduce<WorkoutExerciseModel[]>((acc, { exercises }) => {
+      const exercisesToAdd = exercises.filter(exercise => !acc.find(_exercise => _exercise.id === exercise.id))
+      return acc.concat(exercisesToAdd)
+    }, [])
+      .reduce<ExerciseModel[]>((acc, workoutExercise) => {
+      const exercise = allExercises.find(_exercise => _exercise.id === workoutExercise.id)
+        
+      if (exercise) {
+        acc.push(new ExerciseModel(exercise))
+      }
+      
+      return acc
+    }, [])    
+    
+    await Promise.all(exercisesToUpdate.map(async (exercise) => {
+      const workoutsToAddToExercise = newWorkouts.filter(workout => workout.exercises.find(_exercise => _exercise.id === exercise.id))
+
+      return Promise.all(
+        workoutsToAddToExercise.map(async workout => exercise
+          .addWorkout(workout.id)
+          .save()),
+      )
+    }))
+      
+    return { data: { data: null, success: true, error: null } }
   },
   delete: (_args: FetchArgs, url: URL) => {
     const [ id ] = url.pathname.match(UUID_REGEX)
@@ -162,30 +210,13 @@ const handlers = {
               await browserDB.db?.get(exercisesTable, exerciseId),
             ),
           )
-            .removeFromWorkout(workout.id)
+            .removeWorkout(workout.id)
             .save()            
         }
         return workout
       })
     
     await Promise.all(awaitingForDeletingPromises)
-
-    return handlers.list()
-  },
-  copy: async ({ body }) => {
-    const { exercisesTable } = browserDB.getTables()
-    
-    const { ids } = body
-
-    const awaitingForSavingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(exercisesTable, id))))
-      .filter(Boolean)
-      .map(async (exerciseStr: string) => {
-        const exercise = new ExerciseModel(JSON.parse(exerciseStr))
-        exercise.update({ id: EntityModel.createId(), title: `${exercise.title} (Copy)` })
-        return exercise.save()
-      })
-
-    await Promise.all(awaitingForSavingPromises)
 
     return handlers.list()
   },

@@ -1,4 +1,4 @@
-import { theme } from 'src/styles/vars'
+import { theme } from 'styles/vars'
 import { timeToHms } from 'app/utils/time'
 import { FC } from 'react'
 import { Container, Diff, Value } from './components/styled'

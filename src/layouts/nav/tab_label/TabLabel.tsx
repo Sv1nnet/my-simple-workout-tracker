@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { Spin } from 'antd'
 import { FC, HTMLProps } from 'react'
-import { theme } from 'src/styles/vars'
+import { theme } from 'styles/vars'
 
 const LoaderContainer = styled.div`
   position: absolute;
