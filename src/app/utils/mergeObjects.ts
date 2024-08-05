@@ -12,7 +12,6 @@ export function mergeDeep(target, ...sources) {
   const source = sources.shift()
 
   if (isObject(target) && isObject(source)) {
-    // eslint-disable-next-line no-restricted-syntax
     for (const key in source) {
       if (isObject(source[key])) {
         if (!target[key]) Object.assign(target, { [key]: {} })

@@ -5,7 +5,6 @@ const host = env.VITE_EXTERNAL_API_HOST
 
 export const BASE_URL = `${host}/api`
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 const _global = !isServerEnv ? window : global
 _global.__API__ = _global.__API__ ?? {}
 _global.__API__.BASE_URL = _global.__API__.BASE_URL ?? BASE_URL

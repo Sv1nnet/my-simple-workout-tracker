@@ -1,7 +1,6 @@
 import { UseNumberInputArgs, useNumberInput } from 'app/hooks'
 import { Input, InputProps, InputRef } from 'antd'
 import { FC } from 'react'
-import { isMobileOrTablet } from 'app/utils/isMobile'
 
 export interface INumberInput extends Omit<InputProps, 'onChange' | 'onBlur' | 'onPaste' | 'min' | 'max' | 'value'>, UseNumberInputArgs {}
 
@@ -24,7 +23,7 @@ const NumberInput: FC<INumberInput> = ({
   cutZeroes,
   cutEndingZeroes = true,
   cutLeadingZeroes = true,
-  type,
+  type = 'text',
   ...props
 }) => {
   const inputProps = useNumberInput<InputRef>({
@@ -49,7 +48,7 @@ const NumberInput: FC<INumberInput> = ({
     cutLeadingZeroes,
   })
 
-  return <Input {...inputProps} type={type || (isMobileOrTablet ? 'number' : 'text')} {...props} />
+  return <Input {...inputProps} type={type || 'text'} {...props} />
 }
 
 export default NumberInput

@@ -13,6 +13,7 @@ export const useFixNumber = ({
   cutLeadingZeroes,
   int,
   maxDigitsAfterPoint,
+  isCommaDecimalPoint,
   onlyPositive,
   onlyNegative,
 }: {
@@ -21,11 +22,20 @@ export const useFixNumber = ({
   cutLeadingZeroes?: boolean,
   int?: boolean,
   maxDigitsAfterPoint?: number,
+  isCommaDecimalPoint?: boolean,
   onlyPositive?: boolean,
   onlyNegative?: boolean,
 } = {}) => {
   const fixNumber = useCallback((v: string) => {
+    if (!v) return ''
+
     if (v.length > 1) {
+      if (isCommaDecimalPoint && v.includes('.')) {
+        return fixNumber(v.replaceAll('.', ','))
+      }
+      if (!isCommaDecimalPoint && v.includes(',')) {
+        return fixNumber(v.replaceAll(',', '.'))
+      }
       if (
         (cutZeroes || cutEndingZeroes) &&
         (v.includes(',') || v.includes('.')) &&
@@ -46,7 +56,7 @@ export const useFixNumber = ({
         v.startsWith('-0')
       ) {
         const cutValue = v.slice(2)
-        return fixNumber(!cutValue.length ? '0' : `-${v.slice(2)}`)
+        return !cutValue.length ? '0' : `-${v.slice(2)}`
       }
     }
     if (v === '-' || v === '-.' || v === '-,' || v === '.' || v === ',') {
@@ -54,35 +64,57 @@ export const useFixNumber = ({
     }
     // 123. or 123,
     if (v.endsWith(',') || v.endsWith('.')) {
-      return v.slice(0, -1)
+      return fixNumber(v.slice(0, -1))
     }
     // ,123 or .123
     if (v.startsWith(',') || v.startsWith('.')) {
-      return `0${v}`
+      return fixNumber(`0${v}`)
     }
     // -,123 or -.123
     if (v.startsWith('-,') || v.startsWith('-.')) {
-      return `-0${v.slice(1)}`
+      return fixNumber(`-0${v.slice(1)}`)
     }
 
+    // any non-digits, comma or dot symbols in the `v`
     if (/[^0-9\-.,]/g.test(v)) {
       return fixNumber(v.replace(/[^0-9\-.,]/g, ''))
     }
 
+    // (-)123, or (-)123. or (-)123,31 or (-)123.123
     if (int && /[,.]/.test(v)) {
-      return v.slice(0, v.indexOf(',') || v.indexOf('.'))
+      return fixNumber(v.slice(0, v.indexOf(',') || v.indexOf('.')))
     }
 
-    if (!int && maxDigitsAfterPoint > 0) {
-      return v.slice(0, v.indexOf('.') + maxDigitsAfterPoint + 1)
+    if (!int && /.*[,.].*[,.].*/.test(v)) {
+      const decimalPoint = isCommaDecimalPoint ? ',' : '.'
+      const indexOfFirstDecimalPoint = v.indexOf(decimalPoint)
+      const indexOfSecondPoint = v.indexOf('.', indexOfFirstDecimalPoint + 1)
+      const indexOfSecondComma = v.indexOf(',', indexOfFirstDecimalPoint + 1)
+
+      return fixNumber(`${
+        v.slice(0, indexOfFirstDecimalPoint)}
+        ${decimalPoint}
+        ${v.slice(indexOfFirstDecimalPoint + 1, indexOfSecondPoint < indexOfSecondComma ? indexOfSecondPoint : indexOfSecondComma)}
+      `)
     }
 
+    // cut after maxDigitsAfterPoint
+    if (v && !int && maxDigitsAfterPoint > 0 && v.split(isCommaDecimalPoint ? ',' : '.')[1]?.length > maxDigitsAfterPoint) {
+      return fixNumber(v.slice(0, v.indexOf('.') + maxDigitsAfterPoint + 1))
+    }
+
+    // remove first `-` from string
     if (onlyPositive && v.startsWith('-')) {
-      return v.slice(1)
+      return fixNumber(v.slice(1))
     }
 
+    // add first `-` to string
     if (onlyNegative && v && !v.startsWith('-')) {
-      return `-${v}`
+      return fixNumber(`-${v}`)
+    }
+
+    if (v.split('').some((char, index) => index !== 0 && char === '-')) {
+      return fixNumber(`${v[0]}${v.slice(1).replaceAll('-', '')}`)
     }
 
     return v
@@ -136,8 +168,8 @@ export const useValidateNumber = ({
   const isPosFloat = (value?: string | number) => _isFloat(value) && isPos(value)
   const isNegFloat = (value?: string | number) => value !== '-' ? _isFloat(value) && (isZero(value) || !isPos(value)) : true
   
-  const withinMax = (v?: string | number) => maxExcluding ? +v < max : +v <= max
-  const withinMin = (v?: string | number) => (minExcluding && int) ? +v > min : +v >= min
+  const withinMax = (v?: string | number) => maxExcluding ? parseFloat(`${v}`) < max : parseFloat(`${v}`) <= max
+  const withinMin = (v?: string | number) => minExcluding ? parseFloat(`${v}`) > min : parseFloat(`${v}`) >= min
   
   if (int) {
     if (onlyPositive) return (v?: string | number) => isPosInt(v) && withinMax(v) && withinMin(v)
@@ -162,7 +194,7 @@ export const useValidateNumber = ({
       )
     }
   }
-  
+
   return (v: string | number) => {
     const valueStr = stringifyValue(v).replace(',', '.')
     return (
@@ -229,6 +261,7 @@ export const useNumberInput = <R = HTMLInputElement>({
     cutLeadingZeroes,
     int,
     maxDigitsAfterPoint,
+    isCommaDecimalPoint,
     onlyPositive,
     onlyNegative,
   })
@@ -306,8 +339,6 @@ export const useNumberInput = <R = HTMLInputElement>({
 
       v = `${fix(`${parsed}`)}`
     }
-
-    // v = isCommaDecimalPoint ? v.replace('.', ',') : v.replace(',', '.')
 
     requestAnimationFrame(() => {
       element.selectionStart = caret
