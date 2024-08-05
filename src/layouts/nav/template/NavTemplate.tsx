@@ -8,6 +8,7 @@ import { useAppSelector } from 'app/hooks'
 import { selectAllLists } from 'app/store/utils/commonSelectors'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
+import { selectIsNoAuthLogin } from 'app/store/slices/auth'
 
 const StyledTabs = styled(Tabs)`
   .ant-tabs-nav {
@@ -54,6 +55,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const location = useLocation()
   const { intl } = useIntlContext()
   const { exerciseList, workoutList, activityList } = useAppSelector(selectAllLists)
+  const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const [ width, setWidth ] = useState(() => window.innerWidth < 375 ? 'sm' : 'md')
   const { listEl } = useListContext()
 
@@ -108,7 +110,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
             tab="exercises"
             onClick={handleNavClick}
             label={labels.exercises}
-            loading={loadingTab === 'exercises'}
+            loading={!isNoAuthLogin && loadingTab === 'exercises'}
           />
         ),
       },
@@ -120,7 +122,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
             tab="workouts"
             onClick={handleNavClick}
             label={labels.workouts}
-            loading={loadingTab === 'workouts'}
+            loading={!isNoAuthLogin && loadingTab === 'workouts'}
           />
         ),
       },
@@ -132,7 +134,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
             tab="activities"
             onClick={handleNavClick}
             label={labels.activities}
-            loading={loadingTab === 'activities'}
+            loading={!isNoAuthLogin && loadingTab === 'activities'}
           />
         ),
       },
