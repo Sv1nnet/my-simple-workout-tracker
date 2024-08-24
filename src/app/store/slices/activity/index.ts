@@ -45,6 +45,9 @@ export const activitySlice = createSlice({
   name: 'activity',
   initialState,
   reducers: {
+    resetListState: (state) => {
+      state.list = initialState.list
+    },
     updateList: (state, action: PayloadAction<ActivityListResponseSuccess>) => {
       state.list.total = action.payload.total
       state.list.data = action.payload.list
@@ -112,7 +115,7 @@ export const activitySlice = createSlice({
   },
 })
 
-export const { updateList, setSelectedRound, updateQuery } = activitySlice.actions
+export const { updateList, setSelectedRound, updateQuery, resetListState } = activitySlice.actions
 
 export const selectActivity = (state: AppState) => state.activity.single
 export const selectList = (state: AppState) => state.activity.list

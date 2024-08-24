@@ -30,6 +30,9 @@ export const exerciseSlice = createSlice({
   name: 'exercise',
   initialState,
   reducers: {
+    resetListState: (state) => {
+      state.list = initialState.list
+    },
     updateList: (state, action: PayloadAction<ExerciseListItem[]>) => {
       state.list.data = action.payload
       state.list.status = API_STATUS.LOADED
@@ -79,7 +82,7 @@ export const exerciseSlice = createSlice({
   },
 })
 
-export const { updateList } = exerciseSlice.actions
+export const { updateList, resetListState } = exerciseSlice.actions
 
 export const selectExercise = (state: AppState) => state.exercise.single
 export const selectList = (state: AppState) => state.exercise.list

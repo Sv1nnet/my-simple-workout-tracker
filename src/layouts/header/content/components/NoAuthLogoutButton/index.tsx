@@ -6,6 +6,9 @@ import { useAppDispatch } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
+import { resetListState as resetExerciseListState } from 'app/store/slices/exercise'
+import { resetListState as resetWorkoutListState } from 'app/store/slices/workout'
+import { resetListState as resetActivityListState } from 'app/store/slices/activity'
 
 const StyledButton = styled(Button)`
   position: absolute;
@@ -23,6 +26,9 @@ const NoAuthLogoutButton = () => {
     function completeLogout(modal: ReturnType<typeof Modal.confirm>) {
       modal.destroy()
       dispatch(logoutWithNoAuth())
+      dispatch(resetExerciseListState())
+      dispatch(resetWorkoutListState())
+      dispatch(resetActivityListState())
     }
 
     const modal = Modal.confirm({
@@ -32,6 +38,9 @@ const NoAuthLogoutButton = () => {
       cancelText: common.no,
       maskClosable: true,
       closable: true,
+      okButtonProps: {
+        danger: true,
+      },
       onOk: async () => {
         modal.update({
           transitionName: '',
