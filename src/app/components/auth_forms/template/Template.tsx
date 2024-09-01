@@ -32,16 +32,15 @@ const AuthTemplate = () => {
   const handleSuccessRestorePassword = () => setTab(AUTH_FORM_TABS.LOGIN)
 
   const handleLoginWithoutCreds = async () => {
-    runLoader('initNoAuthaDB', { containerProps: { style: { top: 0 } } })
+    runLoader('initNoAuthDB', { containerProps: { style: { top: 0 } } })
 
     const db = await browserDBLoader.get()
-
     await db.droppingPromise
     await noAuthHandlersLoader.get()
 
-    db.initNoAuthDB(() => {
+    db.init(() => {
       dispatch(loginWithNoAuth())
-      stopLoaderById('initNoAuthaDB')
+      stopLoaderById('initNoAuthDB')
     })
   }
 

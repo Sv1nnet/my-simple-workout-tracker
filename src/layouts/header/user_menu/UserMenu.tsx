@@ -36,7 +36,7 @@ const UserMenu = () => {
           {
             key: 'profile',
             label: (
-              <Button /* loading={profileLoading} */ type="link" block onClick={closeMenu}>
+              <Button type="link" block onClick={closeMenu}>
                 <Link to={ROUTES.PROFILE}>{intl.header.profile}</Link>
               </Button>
             ),

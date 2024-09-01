@@ -188,4 +188,20 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, Set
   return [ storedValue, setValue, removeItem,  getStoredValue ]
 }
 
+export const useToggle = (initialValue: boolean): { state: boolean, toggle: VoidFunction, setTrue: VoidFunction, setFalse: VoidFunction, setState: Dispatch<SetStateAction<boolean>> } => {
+  const [ state, setState ] = useState(initialValue)
 
+  const toggle = useCallback(() => {
+    setState(_state => !_state)
+  }, [])
+
+  const setTrue = useCallback(() => {
+    setState(true)
+  }, [])
+
+  const setFalse = useCallback(() => {
+    setState(false)
+  }, [])
+
+  return { state, toggle, setTrue, setFalse, setState }
+}

@@ -1,6 +1,4 @@
-import styled from 'styled-components'
 import { Button, Modal } from 'antd'
-import { LoginOutlined } from '@ant-design/icons'
 import { logoutWithNoAuth } from 'app/store/slices/auth'
 import { useAppDispatch } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -9,20 +7,21 @@ import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
 import { resetListState as resetExerciseListState } from 'app/store/slices/exercise'
 import { resetListState as resetWorkoutListState } from 'app/store/slices/workout'
 import { resetListState as resetActivityListState } from 'app/store/slices/activity'
+import { Link } from 'react-router-dom'
+import { MouseEventHandler } from 'react'
 
-const StyledButton = styled(Button)`
-  position: absolute;
-  margin-right: 13px;
-  right: 3px;
-  cursor: pointer;
-`
+export type LogoutButtonProps = {
+  onClick: MouseEventHandler<HTMLElement>
+}
 
-const NoAuthLogoutButton = () => {
-  const { intl: { common, header } } = useIntlContext()
+const LogoutButton = ({ onClick }) => {
+  const { intl: { common, header, pages } } = useIntlContext()
   const dispatch = useAppDispatch()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
 
   const logout = () => {
+    onClick?.()
+
     function completeLogout(modal: ReturnType<typeof Modal.confirm>) {
       modal.destroy()
       dispatch(logoutWithNoAuth())
@@ -51,21 +50,25 @@ const NoAuthLogoutButton = () => {
 
         const db = await browserDBLoader.get()
         db.dropDB()
-        db.disconnectNoAuthDB()
+        db.disconnect()
 
         stopLoaderById('erasingDb')
       },
       cancelButtonProps: {
         onClick: async () => {
           const db = await browserDBLoader.get()
-          db.disconnectNoAuthDB()
+          db.disconnect()
           completeLogout(modal)
         },
       },
     })
   }
 
-  return <StyledButton shape="circle" onClick={logout} icon={<LoginOutlined />} size="large" />
+  return (
+    <Button type="link" block onClick={logout}>
+      <Link to={'/'}>{pages.profile.logout}</Link>
+    </Button>
+  )
 }
 
-export default NoAuthLogoutButton
+export default LogoutButton
