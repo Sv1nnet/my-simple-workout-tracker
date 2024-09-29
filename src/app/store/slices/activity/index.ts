@@ -5,7 +5,6 @@ import { activityApi } from './api'
 import { ActivityForm, ActivityListItem, ActivityListResponseSuccess, HistoryRequestQuery, HistoryResponseData, SelectedRoundPayload } from './types'
 import { ListQuery } from 'store/utils/StateResultTypes'
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from 'app/utils/localStorage'
-import { Dayjs } from 'dayjs'
 
 export const ACTIVITY_PAGE_TYPE = {
   LIST: 'list',
