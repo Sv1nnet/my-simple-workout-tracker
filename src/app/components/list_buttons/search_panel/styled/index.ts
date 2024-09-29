@@ -49,5 +49,5 @@ export const StyledSearchButton = styled(Button)`
   margin-top: 5px;
   width: 50px;
   height: 40px;
-  z-index: 1000;
+  z-index: 100;
 `

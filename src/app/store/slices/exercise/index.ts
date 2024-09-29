@@ -4,7 +4,17 @@ import type { AppState } from 'app/store'
 import { exerciseApi } from './api'
 import { ExerciseForm, ExerciseListItem } from './types'
 
+export const EXERCISE_PAGE_TYPE = {
+  NONE: 'none',
+  LIST: 'list',
+  EDIT: 'edit',
+  CREATE: 'create',
+} as const
+
+export type ExercisePageType = typeof EXERCISE_PAGE_TYPE[keyof typeof EXERCISE_PAGE_TYPE]
 export interface IExerciseState {
+  isOpen: boolean,
+  pageType: ExercisePageType,
   list: {
     data: ExerciseListItem[];
     status: ApiStatus;
@@ -16,6 +26,8 @@ export interface IExerciseState {
 }
 
 const initialState: IExerciseState = {
+  isOpen: false,
+  pageType: EXERCISE_PAGE_TYPE.NONE,
   list: {
     data: [],
     status: API_STATUS.INITIAL,
@@ -30,6 +42,17 @@ export const exerciseSlice = createSlice({
   name: 'exercise',
   initialState,
   reducers: {
+    open: (state, { payload }: PayloadAction<{ pageType: ExercisePageType }>) => {
+      state.isOpen = true
+      state.pageType = payload.pageType
+    },
+    close: (state) => {
+      state.isOpen = false
+      state.pageType = EXERCISE_PAGE_TYPE.NONE
+    },
+    setPageType: (state, { payload }: PayloadAction<ExercisePageType>) => {
+      state.pageType = payload
+    },
     resetListState: (state) => {
       state.list = initialState.list
     },
@@ -82,8 +105,14 @@ export const exerciseSlice = createSlice({
   },
 })
 
-export const { updateList, resetListState } = exerciseSlice.actions
+export const { updateList, resetListState, open, close, setPageType } = exerciseSlice.actions
 
+export const selectIsOpen = (state: AppState) => state.exercise.isOpen
+export const selectPageType = (state: AppState) => state.exercise.pageType
+export const selectPageInfo = (state: AppState) => ({
+  isOpen: state.exercise.isOpen,
+  pageType: state.exercise.pageType,
+})
 export const selectExercise = (state: AppState) => state.exercise.single
 export const selectList = (state: AppState) => state.exercise.list
 

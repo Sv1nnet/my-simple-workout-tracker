@@ -164,9 +164,61 @@
         "eng": "Activ's"
       }
     },
+    "import_options_modal": {
+      "title": {
+        "ru": "Выберите данные для экспорта в файл",
+        "eng": "Select data to export to file"
+      },
+      "check_all": {
+        "ru": "Выбрать всё",
+        "eng": "Check all"
+      },
+      "exercises_required_reason": {
+        "ru": "Экспорт упражнений обязателен для экспорта тренировок",
+        "eng": "Exporting exercises is required to export workouts"
+      },
+      "workouts_required_reason": {
+        "ru": "Экспорт тренировок обязателен для экспорта активностей",
+        "eng": "Exporting workouts is required to export activities"
+      },
+      "export": {
+        "ru": "Экспортировать",
+        "eng": "Export"
+      },
+      "cancel": {
+        "ru": "Отмена",
+        "eng": "Cancel"
+      },
+      "error": {
+        "massage":{
+          "ru": "Произошла ошибка",
+          "eng": "An error occurred"
+        },
+        "description":{
+          "ru": "Не удалось экспортировать данные",
+          "eng": "Failed to export data"
+        },
+        "no_file_selected": {
+          "ru": "Файл не выбран",
+          "eng": "No file selected"
+        }
+      }
+    },
     "profile": {
       "ru": "Профиль",
       "eng": "Profile"
+    },
+    "login": {
+      "ru": "Войти",
+      "eng": "Login"
+    },
+    "import": {
+      "ru": "Импортировать данные из файла",
+      "eng": "Import data from file"
+    },
+    "export": {
+      "ru": "Экспортировать данные в файл",
+      "eng": "Export data to file"
     },
     "modal": {
       "delete_data": {

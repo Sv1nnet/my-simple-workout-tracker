@@ -23,7 +23,7 @@ export const StyledButton = styled(AntButton)<{
   $expanded?: boolean,
   $activeItems?: number,
 }>`
-  z-index: 999;
+  z-index: 998;
   transform: ${({ $activeItems }) => `translateX(-${50 + $activeItems * 50}px)`};
   ${({ $isSelectionActive, $isCancel, $isDelete, $isCopy, $isCreate, $isMoreOptions, $expanded, $activeItems }) => (
     $isCancel && `

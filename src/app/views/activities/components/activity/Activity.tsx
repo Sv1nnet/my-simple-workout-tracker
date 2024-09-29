@@ -5,8 +5,8 @@ import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react
 import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
 import dayjs, { Dayjs } from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ActivityForm, HistoryServerPayload } from 'app/store/slices/activity/types'
-import { useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
+import { ActivityForm, HistoryResponseData } from 'app/store/slices/activity/types'
+import { useAppDispatch, useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
 import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem } from './components'
 import { selectList } from 'app/store/slices/workout'
 import { activityApi } from 'app/store/slices/activity/api'
@@ -18,6 +18,7 @@ import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
+import { setCachedActivity } from 'app/store/slices/activity'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
@@ -28,6 +29,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
 
+  const dispatch = useAppDispatch()
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
 
@@ -39,17 +41,20 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const { input_labels, submit_button, modal, notifications } = intl.pages.activities
 
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
-  const history = useMemo<HistoryServerPayload>(
-    () =>
-      _history
-        ? Object.entries(_history.data).reduce((acc, [ exercise_id, results ]) => {
+  const history = useMemo<HistoryResponseData>(
+    () =>{
+      const historyData = _history?.data
+
+      return historyData
+        ? Object.entries({ ...historyData }).reduce((acc, [ exercise_id, results ]) => {
           acc[exercise_id] = (results as { items }).items.map(item => ({
             date: dayjs(item.date),
             results: item.results,
           }))
           return acc
         }, {})
-        : _history,
+        : historyData
+    },
     [ _history ],
   )
 
@@ -129,6 +134,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
       duration: 0,
     }
     setCachedFormValues(newCachedValues)
+    dispatch(setCachedActivity({ data: newCachedValues }))
     return value
   }
 
@@ -136,6 +142,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
     if (isEdit) return
     if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
     setCachedFormValues(allValues)
+    dispatch(setCachedActivity({ data: { ...allValues, workout_id: allValues.workout_id } }))
   }
 
   const handleDurationChange = (ms: number) => {
@@ -144,6 +151,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
 
   const updateDurationInForm = (ms: number) => {
     form.setFieldsValue({ duration: ms })
+    handleDurationChange(ms)
   }
 
   const resetDuration = () => {

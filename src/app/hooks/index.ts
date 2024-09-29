@@ -1,5 +1,5 @@
 import { notification } from 'antd'
-import { ChangeEvent, Dispatch, SetStateAction, useCallback, useState } from 'react'
+import { ChangeEvent, Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react'
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -185,7 +185,73 @@ export const useLocalStorage = <T>(key: string, initialValue: T): [T | null, Set
     }
   }, [ key ])
 
-  return [ storedValue, setValue, removeItem,  getStoredValue ]
+  return [ storedValue, setValue, removeItem, getStoredValue ]
 }
 
+export const useToggle = (initialValue: boolean): { state: boolean, toggle: VoidFunction, setTrue: VoidFunction, setFalse: VoidFunction, setState: Dispatch<SetStateAction<boolean>> } => {
+  const [ state, setState ] = useState(initialValue)
 
+  const toggle = useCallback(() => {
+    setState(_state => !_state)
+  }, [])
+
+  const setTrue = useCallback(() => {
+    setState(true)
+  }, [])
+
+  const setFalse = useCallback(() => {
+    setState(false)
+  }, [])
+
+  return { state, toggle, setTrue, setFalse, setState }
+}
+
+export const usePrevious = <T = any>(value: T): T => {
+  const prevRef = useRef<T>(value)
+
+  useEffect(() => {
+    prevRef.current = value
+  }, [ value ])
+
+  return prevRef.current
+}
+
+export type Callback<T = any> = (prev: T, value: T) => any
+export type Comparator<T extends Array<any> = Array<any>> = (prev: T, curr: T) => boolean
+
+const defaultComparator: Comparator<Array<any>> = <T extends Array<any> = Array<any>>(prev: T, curr: T) =>
+  (prev.length !== curr.length || (prev.length !== 0 &&
+    curr.length !== 0) &&
+    prev.some((prevValue, index) => prevValue !== curr[index]))
+
+export const useOnPreviousChange = <T extends Array<any> = Array<any>>(
+  value: T,
+  cb: Callback<T>,
+  {
+    callInUseEffect = false,
+    isValuesDifferent = defaultComparator,
+  }: {
+    callInUseEffect?: boolean;
+    isValuesDifferent?: Comparator<T>;
+  } = {},
+) => {
+  const [ prev, setPrev ] = useState(value)
+  const isPrevChanged = useMemo(() => isValuesDifferent(prev, value), [ isValuesDifferent, ...prev, ...value ])
+
+  const onChange = useCallback((_prev: T, _value: T, _cb: Callback<T>) => {
+    _cb(_prev, _value)
+    setPrev(_value)
+  }, [])
+
+  if (!callInUseEffect && isPrevChanged) {
+    onChange(prev, value, cb)
+  }
+
+  useEffect(() => {
+    if (callInUseEffect && isPrevChanged) {
+      onChange(prev, value, cb)
+    }
+  }, [ callInUseEffect, isPrevChanged, onChange, cb, ...prev, ...value ])
+
+  return usePrevious(value)
+}

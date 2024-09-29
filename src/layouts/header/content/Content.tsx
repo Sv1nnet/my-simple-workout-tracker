@@ -6,7 +6,7 @@ import UserMenu from 'layouts/header/user_menu/UserMenu'
 import { configApi } from 'app/store/slices/config/api'
 import { Lang } from 'app/store/slices/config/types'
 import { selectIsNoAuthLogin } from 'app/store/slices/auth'
-import { NoAuthLogoutButton } from './components'
+import NoAuthUserMenu from '../no_auth_user_menu/NoAuthUserMenu'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -54,7 +54,7 @@ const Content = () => {
     <Wrapper>
       {
         isNoAuthLogin
-          ? <NoAuthLogoutButton />
+          ? <NoAuthUserMenu />
           : <UserMenu />
       }
       <Select
