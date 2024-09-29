@@ -1,5 +1,5 @@
 import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { profileApi } from './api'
 import { ProfileForm } from './types'
@@ -7,11 +7,13 @@ import { ProfileForm } from './types'
 export type Credentials = Pick<Partial<ProfileForm>, 'email'>
 
 export interface IProfileState {
+  isOpen: boolean,
   credentials: Credentials;
   status: ApiStatus;
 }
 
 const initialState: IProfileState = {
+  isOpen: false,
   credentials: {},
   status: API_STATUS.INITIAL,
 }
@@ -19,7 +21,14 @@ const initialState: IProfileState = {
 export const profileSlice = createSlice({
   name: 'profile',
   initialState,
-  reducers: {},
+  reducers: {
+    open: (state, { payload }: PayloadAction<boolean>) => {
+      state.isOpen = payload
+    },
+    close: (state) => {
+      state.isOpen = false
+    },
+  },
   extraReducers: (builder) => {
     builder
       // refresh token
@@ -65,6 +74,9 @@ export const profileSlice = createSlice({
   },
 })
 
+export const { open, close } = profileSlice.actions
+
+export const selectIsOpen = (state: AppState) => state.profile.isOpen
 export const selectCredentials = (state: AppState) => state.profile.credentials
 
 export default profileSlice.reducer

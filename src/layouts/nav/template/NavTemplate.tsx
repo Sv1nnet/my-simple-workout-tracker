@@ -9,6 +9,7 @@ import { selectAllLists } from 'app/store/utils/commonSelectors'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 import { selectIsNoAuthLogin } from 'app/store/slices/auth'
+import useReduxSetPageInfo from './utils/useReduxSetPageInfo'
 
 const StyledTabs = styled(Tabs)`
   .ant-tabs-nav {
@@ -50,7 +51,19 @@ interface INavTemplate {
   activeTab: TabRoutes
 }
 
-const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
+const getFormInfo = (activeTab: TabRoutes, pathname: string) => {
+  const isFormOpen = (activeTab === 'activities' || activeTab === 'workouts' || activeTab === 'exercises') && !new RegExp(`^/${activeTab}/{0,1}$`).test(pathname)
+  const isEditType = new RegExp(`^/${activeTab}/edit/{0,1}$`).test(pathname)
+  const isAddType = new RegExp(`^/${activeTab}/create/{0,1}$`).test(pathname)
+
+  return {
+    isFormOpen,
+    isEditType,
+    isAddType,
+  }
+}
+
+const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const { intl } = useIntlContext()
@@ -58,9 +71,12 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
   const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const [ width, setWidth ] = useState(() => window.innerWidth < 375 ? 'sm' : 'md')
   const { listEl } = useListContext()
+  const pageInfo = useMemo(() => ({
+    activeTab,
+    formInfo: getFormInfo(activeTab, location.pathname),
+  }), [ activeTab, location.pathname ])
 
   const getLoadingTab = ({ activeTab: _activeTab,  exerciseList: _exerciseList, workoutList: _workoutList, activityList: _activityList }) => {
-
     if (_exerciseList.status === API_STATUS.LOADING || _workoutList.status === API_STATUS.LOADING || _activityList.status === API_STATUS.LOADING) {
       return _activeTab
     }
@@ -81,6 +97,8 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'workouts' }) => {
       return
     }
   }
+
+  useReduxSetPageInfo(pageInfo)
 
   useEffect(() => {
     const handleResize = () => window.innerWidth < 375 ? setWidth('sm') : setWidth('md')

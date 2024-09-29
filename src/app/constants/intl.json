@@ -197,6 +197,10 @@
         "description":{
           "ru": "Не удалось экспортировать данные",
           "eng": "Failed to export data"
+        },
+        "no_file_selected": {
+          "ru": "Файл не выбран",
+          "eng": "No file selected"
         }
       }
     },

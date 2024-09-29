@@ -8,10 +8,11 @@ import {
   GetActivityListSuccess,
   IActivityFormData,
   GetHistoryListSuccess,
+  ActivityListRequest,
+  HistoryRequestQuery,
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { WorkoutForm } from 'store/slices/workout/types'
 
 export const ACTIVITY_TAG_TYPES = {
   ACTIVITY: 'Activity',
@@ -63,14 +64,14 @@ export const activityApi = createApi({
       }),
       invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
-    list: build.query<GetActivityListSuccess, { page?: number, byPage?: number, searchValue?: string } | undefined>({
+    list: build.query<GetActivityListSuccess, Partial<ActivityListRequest>>({
       query: ({ page = 1, byPage = 30, searchValue = '' } = { page: 1, byPage: 30 }) => ({
         url: `${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}`,
         method: 'GET',
       }),
       providesTags: () => [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST ],
     }),
-    getHistory: build.query<GetHistoryListSuccess, { workoutId: Pick<WorkoutForm, 'id'>, activityId?: string, page?: number, byPage?: number, offset?: number }>({
+    getHistory: build.query<GetHistoryListSuccess, HistoryRequestQuery>({
       query: ({ workoutId, activityId, page = 1, byPage = 30, offset }) => ({
         url: `${routes.activity.v1.history.full}/${workoutId}?${activityId ? `activity_id=${activityId}&` : ''}page=${page}&byPage=${byPage}${typeof offset === 'number' ? `&offset=${offset}` : ''}`,
         method: 'GET',

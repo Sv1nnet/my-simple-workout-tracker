@@ -70,22 +70,26 @@ export type ActivityListResponseSuccess = {
   list: ActivityListItem[],
 }
 
+export type ActivityListRequest = { page?: number, byPage?: number, searchValue?: string }
+
 export type GetActivityListSuccess = IResponse<ActivityListResponseSuccess>
 export type GetActivityListError = IResponse<null>
 
 export type HistoryResult = number | { left: number, right: number }
 
-export type HistoryServerPayload<T = string> = {
+export type HistoryResponseData<T = string> = {
   [type: string]: {
     items: {
       date: T,
       results: HistoryResult[]
     }[],
-    total: 3,
+    total: number,
   }
 }
 
-export type GetHistoryListSuccess = IResponse<HistoryServerPayload>
+export type HistoryRequestQuery = { workoutId: Pick<WorkoutForm, 'id'>, activityId: string, page?: number, byPage?: number, offset?: number }
+
+export type GetHistoryListSuccess = IResponse<HistoryResponseData>
 export type GetHistoryListError = IResponse<null>
 
 export type ActivityError = IResponse

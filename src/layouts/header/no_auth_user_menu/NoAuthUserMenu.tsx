@@ -1,17 +1,21 @@
-import { useEffect, useMemo } from 'react'
-import { Avatar, Button, Dropdown } from 'antd'
+import { useEffect, useMemo, useRef } from 'react'
+import { Avatar, Dropdown } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import style from './NoAuthUserMenu.module.scss'
-import { useAppDispatch, useToggle } from 'app/hooks'
+import { useAppDispatch, useAppSelector, useToggle } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useLocation } from 'react-router-dom'
-import { resetListState as resetExerciseListState } from 'app/store/slices/exercise'
-import { resetListState as resetWorkoutListState } from 'app/store/slices/workout'
-import { resetListState as resetActivityListState } from 'app/store/slices/activity'
-import { logoutWithNoAuth } from 'app/store/slices/auth'
-import { ImportOptionsModal, LogoutButton } from './components'
-import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
+import { ImportOptionsModal } from './components'
+import getMenuItems from './utils/getMenuItems'
+import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
+import { selectPageInfo as selectExercisePageInfo } from 'app/store/slices/exercise'
+import { selectPageInfo as selectWorkoutPageInfo, WORKOUT_PAGE_TYPE } from 'app/store/slices/workout'
+import { ACTIVITY_PAGE_TYPE, selectPageInfo as selectActivityPageInfo } from 'app/store/slices/activity'
+import { exerciseApi } from 'store/slices/exercise/api'
+import { workoutApi } from 'store/slices/workout/api'
+import { ACTIVITY_TAG_TYPES, activityApi } from 'store/slices/activity/api'
+
 
 const StyledAvatar = styled(Avatar)`
   position: absolute;
@@ -22,64 +26,62 @@ const StyledAvatar = styled(Avatar)`
 const NoAuthUserMenu = () => {
   const { state: isOpen, toggle: toggleIsOpen, setFalse: closeMenu } = useToggle(false)
   const { state: isImportMenuOpen, setTrue: openImportMenu, setFalse: closeImportMenu } = useToggle(false)
+  const { state: isMenuImmediatelyClosed, setFalse: removeMenuImmediateClosed, setTrue: closeMenuImmediately } = useToggle(false)
+
+  const exercisePageInfo = useAppSelector(selectExercisePageInfo)
+  const workoutPageInfo = useAppSelector(selectWorkoutPageInfo)
+  const activityPageInfo = useAppSelector(selectActivityPageInfo)
+
+  const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
+  const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
+  const [ fetchActivityList ] = activityApi.useLazyListQuery()
+
+  const { runLoader, stopLoaderById } = useAppLoaderContext()
   const location = useLocation()
   const { intl, lang } = useIntlContext()
   const dispatch = useAppDispatch()
-  const { state: isMenuImmediatelyClosed, setFalse: removeMenuImmediateClosed, setTrue: closeMenuImmediately } = useToggle(false)
+  const loaderPromiseRef = useRef<Promise<void>>()
 
-  const items = useMemo(function MenuItself() {
-    const navigateToLoginPage = async () => {
-      const db = await browserDBLoader.get()
-      db.disconnect()
+  const items = useMemo(() => getMenuItems(dispatch, {
+    closeMenu,
+    closeMenuImmediately,
+    openImportMenu,
+    intl,
+    onFileChange: () => {
+      runLoader('importData')
 
-      dispatch(logoutWithNoAuth())
-      dispatch(resetExerciseListState())
-      dispatch(resetWorkoutListState())
-      dispatch(resetActivityListState())
-    }
+      loaderPromiseRef.current = new Promise((resolve) => {
+        setTimeout(resolve, 1500)
+      })
+    },
+    onImportFinished: () => {
+      loaderPromiseRef.current.then(() => {
+        stopLoaderById('importData')
+        loaderPromiseRef.current = null
 
-    const importData = () => {
-      closeMenu()
-      closeMenuImmediately()
-    }
-
-    const exportData = () => {
-      closeMenu()
-      openImportMenu()
-      closeMenuImmediately()
-    }
-
-    return [
-      {
-        key: 'login',
-        label: (
-          <Button type="link" block onClick={navigateToLoginPage}>
-            {intl.header.login}
-          </Button>
-        ),
-      },
-      {
-        key: 'import',
-        label: (
-          <Button type="link" block onClick={importData}>
-            {intl.header.import}
-          </Button>
-        ),
-      },
-      {
-        key: 'export',
-        label: (
-          <Button type="link" block onClick={exportData}>
-            {intl.header.export}
-          </Button>
-        ),
-      },
-      {
-        key: 'logout',
-        label: <LogoutButton onClick={closeMenu} />,
-      },
-    ]
-  }, [ lang, location ])
+        switch (true) {
+          case exercisePageInfo.isOpen:
+            fetchExerciseList()
+            break
+          case workoutPageInfo.isOpen:
+            fetchWorkoutList()
+            if (workoutPageInfo.pageType !== WORKOUT_PAGE_TYPE.LIST) {
+              fetchExerciseList()
+            }
+            break
+          case activityPageInfo.isOpen:
+            fetchActivityList({})
+            if (activityPageInfo.pageType !== ACTIVITY_PAGE_TYPE.LIST) {
+              fetchWorkoutList()
+              dispatch(activityApi.util.invalidateTags([ ACTIVITY_TAG_TYPES.HISTORY ]))
+            }
+            break
+          default:
+            break
+        }
+      })
+    },
+  }), [ lang, location, activityPageInfo, workoutPageInfo, exercisePageInfo ])
 
   const handleAvatarClick = (e) => {
     e.stopPropagation()
@@ -101,6 +103,8 @@ const NoAuthUserMenu = () => {
       return () => document.removeEventListener('click', handleDocumentClick)
     }
   }, [ isOpen ])
+
+  useEffect(() => () => stopLoaderById('importData'), [])
 
   return (
     <>
