@@ -50,7 +50,7 @@ export default defineConfig({
       },
       manifest: {
         name: 'My Simple Workout Tracker',
-        short_name: 'Simple w-t tracker',
+        short_name: 'Workout Tracker',
         start_url: '/',
         display: 'standalone',
         description: 'Simple workout tracker. Add your exercises, workout plan and track progress of your activities.',
@@ -60,13 +60,13 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: '/manifest-icon-512.maskable',
+            src: '/manifest-icon-512.maskable.png',
             type: 'image/png',
             sizes: '512x512',
             purpose: 'maskable',
           },
           {
-            src: '/manifest-icon-192.maskable',
+            src: '/manifest-icon-192.maskable.png',
             type: 'image/png',
             sizes: '192x192',
             purpose: 'maskable',

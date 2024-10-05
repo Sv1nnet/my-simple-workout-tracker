@@ -27,7 +27,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
 
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
-  const [ selectedWorkout, setSelectedWorkout ] = useState<Pick<WorkoutForm, 'id'>>()
+  const [ selectedWorkout, setSelectedWorkout ] = useState<WorkoutForm['id']>()
 
   const dispatch = useAppDispatch()
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
@@ -63,6 +63,20 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const initFromCacheRef = useRef(false)
   const durationTimerRef = useRef<StopwatchRef>(null)
 
+  const handleSelectedWorkoutChange = (value: WorkoutForm['id']) => {
+    setSelectedWorkout(value)
+    const newCachedValues = {
+      date: dayjs(),
+      description: '',
+      workout_id: value || '',
+      results: getResultsFromWorkoutList(workoutList, value),
+      duration: 0,
+    }
+    setCachedFormValues(newCachedValues)
+    dispatch(setCachedActivity({ data: newCachedValues }))
+    return value
+  }
+
   const handleRestoreFromCacheError = () => {
     if (errorModalsRef.current.restoreActivity) {
       errorModalsRef.current.restoreActivity.destroy()
@@ -72,9 +86,13 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
       title: modal.error.title,
       content: modal.error.body,
       okText: modal.error.ok_button,
+      onOk: () => {
+        form.setFieldsValue({ workout_id: '' })
+      },
     })
     removeCachedFormValues()
     setSelectedWorkout(null)
+    form.setFieldsValue({ workout_id: '' })
   }
 
   const initialValues = useMemo<InitialValues<Dayjs>>(
@@ -124,20 +142,6 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
       return res
     })
 
-  const handleSelectedWorkoutChange = (value) => {
-    setSelectedWorkout(value)
-    const newCachedValues = {
-      date: dayjs(),
-      description: '',
-      workout_id: value,
-      results: getResultsFromWorkoutList(workoutList, value),
-      duration: 0,
-    }
-    setCachedFormValues(newCachedValues)
-    dispatch(setCachedActivity({ data: newCachedValues }))
-    return value
-  }
-
   const cacheFormData: CacheFormData = (changedValues, allValues) => {
     if (isEdit) return
     if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
@@ -163,7 +167,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
     if (!isFetching) form.setFieldsValue(initialValues)
     if (deleteStatus !== QueryStatus.pending && deleteStatus !== QueryStatus.fulfilled && initialValues.workout_id) {
       if (selectedWorkout !== initialValues.workout_id) setSelectedWorkout(initialValues.workout_id)
-      getHistory({ workoutId: initialValues.workout_id as Pick<WorkoutForm, 'id'>, activityId: initialValues.id })
+      getHistory({ workoutId: initialValues.workout_id as WorkoutForm['id'], activityId: initialValues.id })
     }
   }, [ deleteStatus, selectedWorkout, initialValues, isFetching ])
 
@@ -192,11 +196,14 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   }, [ selectedWorkout ])
 
   useRestoreActivityFromCacheOnWorkoutListLoaded({
+    form,
     isEdit,
+    workoutList,
     getCachedFormValues,
     workoutListStatus,
     setSelectedWorkout,
     setCachedFormValues,
+    handleSelectedWorkoutChange,
     initFromCacheRef,
     handleRestoreFromCacheError,
   })
@@ -204,7 +211,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   useNotificationPermissionRequest()
 
   const isFormItemDisabled = !isEditMode || isFetching
-
+  
   return (
     <>
       <StyledForm onValuesChange={cacheFormData} preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
@@ -228,11 +235,11 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
                   {workout.title}
                 </Select.Option>
               ))
-              : (
-                <Select.Option value={initialValues.workout_id}>
+              : workoutListStatus === API_STATUS.LOADING ? (
+                <Select.Option value={_initialValues.workout_id}>
                   {intl.common.loading}
                 </Select.Option>
-              )}
+              ) : null}
           </Select>
         </WorkoutFormItem>
         <Form.Item noStyle shouldUpdate>

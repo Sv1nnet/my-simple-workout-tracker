@@ -60,7 +60,7 @@ export const getInitialActivityValues = ({
   initialValues: InitialValues<string>,
   workoutList: WorkoutListItem[],
   cachedFormValues: InitialValues | null,
-  selectedWorkout: Pick<WorkoutForm, 'id'>,
+  selectedWorkout: WorkoutForm['id'],
   initFromCacheRef: MutableRefObject<boolean>,
   form: FormInstance<ActivityForm>,
   handleRestoreFromCacheError: VoidFunction,
@@ -329,15 +329,18 @@ export const useLoadWorkoutList = ({
 }
 
 export const useRestoreActivityFromCacheOnWorkoutListLoaded = ({
-  isEdit, getCachedFormValues, workoutListStatus, setSelectedWorkout, setCachedFormValues, initFromCacheRef, handleRestoreFromCacheError,
+  form, isEdit, getCachedFormValues, workoutListStatus, setSelectedWorkout, setCachedFormValues, initFromCacheRef, handleRestoreFromCacheError, workoutList,
 }: {
+  form: FormInstance<ActivityForm>,
   isEdit: boolean,
+  handleSelectedWorkoutChange: (value: WorkoutForm['id']) => void,
   getCachedFormValues: () => InitialValues,
   workoutListStatus: ApiStatus,
-  setSelectedWorkout: React.Dispatch<React.SetStateAction<Pick<WorkoutForm, 'id'>>>,
+  setSelectedWorkout: React.Dispatch<React.SetStateAction<WorkoutForm['id']>>,
   setCachedFormValues: SetValue<InitialValues>,
   initFromCacheRef: MutableRefObject<boolean>,
   handleRestoreFromCacheError: VoidFunction,
+  workoutList: WorkoutListItem[],
 }) => {
   useLayoutEffect(() => {
     const _cachedFormValues = getCachedFormValues()
@@ -346,6 +349,12 @@ export const useRestoreActivityFromCacheOnWorkoutListLoaded = ({
       try {
         if (!_cachedFormValues) {
           throw new Error('No cached form values')
+        }
+
+        if (workoutListStatus === API_STATUS.LOADED && !workoutList?.find(workout => workout.id === _cachedFormValues.workout_id)) {
+          setSelectedWorkout(null)
+          form.setFieldsValue({ workout_id: null })
+          throw new Error('Workout not found')
         }
 
         setSelectedWorkout(_cachedFormValues.workout_id)

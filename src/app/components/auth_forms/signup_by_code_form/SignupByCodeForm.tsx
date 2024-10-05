@@ -43,7 +43,7 @@ const SignupByCodeForm: FC<IFormProps> = ({ onVerifySuccess }) => {
   }, [ isError ])
 
   useEffect(() => {
-    if (isLoading) runLoader('code_verify', { tip: signup_by_code.loading, style: { top: '-72px' } })
+    if (isLoading) runLoader('code_verify', { spinProps: { tip: signup_by_code.loading, style: { top: '-72px' } }  })
     else stopLoaderById('code_verify')
 
     return forceStopLoader

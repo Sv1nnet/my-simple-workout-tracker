@@ -30,7 +30,7 @@ const pageHandlers = {
 }
 
 const useReduxSetPageInfo = (pageInfo: {
-  activeTab: TabRoutes;
+  activeTab: TabRoutes | string;
   formInfo: {
     isFormOpen: boolean;
     isEditType: boolean;
@@ -44,14 +44,16 @@ const useReduxSetPageInfo = (pageInfo: {
   useOnPreviousChange(
     [ pageInfo ],
     useCallback(([ prev ], [ curr ]) => {
-      const currHandler = pageHandlers[curr.activeTab]
+      let currHandler = pageHandlers[curr.activeTab]
+      if (!currHandler) currHandler = pageHandlers.activities
+
       dispatch(currHandler
         .open({
           pageType: currHandler.getType(curr.formInfo.isFormOpen, curr.formInfo.isAddType),
         }))
 
       if (prev.activeTab !== curr.activeTab) {
-        dispatch(pageHandlers[prev.activeTab].close())
+        dispatch(pageHandlers[prev.activeTab || 'activities'].close())
       }
     }, []),
     {
@@ -60,7 +62,9 @@ const useReduxSetPageInfo = (pageInfo: {
   )
 
   const setOpenPageInfo = useCallback((_, [ currentActiveTab, currentFormInfo ]: [ typeof activeTab, typeof formInfo ]) => {
-    const currHandler = pageHandlers[currentActiveTab]
+    let currHandler = pageHandlers[currentActiveTab]
+    if (!currHandler) currHandler = pageHandlers.activities
+
     dispatch(currHandler
       .open({
         pageType: currHandler.getType(currentFormInfo.isFormOpen, currentFormInfo.isAddType),

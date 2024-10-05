@@ -12,7 +12,7 @@ export type Image = {
 export type Activity<T = string | Dayjs> = {
   id?: string;
   date: T,
-  workout_id: Pick<WorkoutForm, 'id'>;
+  workout_id: WorkoutForm['id'];
   results: {
     _id: Pick<Exercise<number | Dayjs>, 'id'>,
     hours?: boolean,
@@ -61,7 +61,7 @@ export type ActivityListItem = {
     type: string,
     _id: string,
   }[],
-  workout_id: Pick<WorkoutForm, 'id'>,
+  workout_id: WorkoutForm["id"],
   workout_title: string,
 }
 
@@ -87,7 +87,7 @@ export type HistoryResponseData<T = string> = {
   }
 }
 
-export type HistoryRequestQuery = { workoutId: Pick<WorkoutForm, 'id'>, activityId: string, page?: number, byPage?: number, offset?: number }
+export type HistoryRequestQuery = { workoutId: WorkoutForm["id"], activityId: string, page?: number, byPage?: number, offset?: number }
 
 export type GetHistoryListSuccess = IResponse<HistoryResponseData>
 export type GetHistoryListError = IResponse<null>
