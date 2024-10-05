@@ -19,6 +19,7 @@ import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 import { setCachedActivity } from 'app/store/slices/activity'
+import { PageHeaderTitle } from 'app/contexts/header_title/HeaderTItleContextProvider'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
@@ -214,6 +215,26 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   
   return (
     <>
+      <PageHeaderTitle>
+        <Form.Item noStyle name="duration">
+          <StopwatchContainer className="activity-timer-container">
+            <Stopwatch
+              key={`${selectedWorkout}`}
+              ref={durationTimerRef}
+              hoursOn
+              showResetButton
+              disabled={isEdit || !selectedWorkout}
+              className="activity-timer"
+              initialValue={initialValues.duration}
+              msOn={false}
+              onPause={updateDurationInForm}
+              onReset={resetDuration}
+              onChange={handleDurationChange}
+            />
+          </StopwatchContainer>
+        </Form.Item>
+      </PageHeaderTitle>
+
       <StyledForm onValuesChange={cacheFormData} preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
         {isEdit && (
           <DeleteEditPanel
@@ -280,24 +301,6 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
             )}
           </CreateEditFormItem>
         )}
-
-        <Form.Item noStyle name="duration">
-          <StopwatchContainer>
-            <Stopwatch
-              key={`${selectedWorkout}`}
-              ref={durationTimerRef}
-              hoursOn
-              showResetButton
-              disabled={isEdit || !selectedWorkout}
-              className="activity-timer"
-              initialValue={initialValues.duration}
-              msOn={false}
-              onPause={updateDurationInForm}
-              onReset={resetDuration}
-              onChange={handleDurationChange}
-            />
-          </StopwatchContainer>
-        </Form.Item>
 
         <Modal
           open={isModalVisible}

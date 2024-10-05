@@ -1,3 +1,4 @@
+import { theme } from 'src/styles/vars'
 import { Form, Modal } from 'antd'
 import styled from 'styled-components'
 
@@ -77,10 +78,10 @@ export const WorkoutLabelContainer = styled.div`
 `
 
 export const StopwatchContainer = styled.div`
-  position: fixed;
-  top: 19px;
-  left: 50%;
-  transform: translate(-50%);
+  display: flex;
+  margin-block: -1px;
+  color: ${theme.textColor};
+  font-weight: 400;
 
   & .activity-timer {
     background-color: white;

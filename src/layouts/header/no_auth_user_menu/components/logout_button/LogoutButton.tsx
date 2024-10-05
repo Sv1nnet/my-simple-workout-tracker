@@ -1,6 +1,6 @@
 import { Button, Modal } from 'antd'
-import { logoutWithNoAuth } from 'app/store/slices/auth'
-import { useAppDispatch } from 'app/hooks'
+import { logoutWithNoAuth, selectIsNoAuthLogin } from 'app/store/slices/auth'
+import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
@@ -15,6 +15,7 @@ export type LogoutButtonProps = {
 }
 
 const LogoutButton = ({ onClick }) => {
+  const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const { intl: { common, header, pages } } = useIntlContext()
   const dispatch = useAppDispatch()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
@@ -66,7 +67,7 @@ const LogoutButton = ({ onClick }) => {
 
   return (
     <Button type="link" block onClick={logout}>
-      <Link to={'/'}>{pages.profile.logout}</Link>
+      {isNoAuthLogin ? pages.profile.logout : <Link to={'/'}>{pages.profile.logout}</Link>}
     </Button>
   )
 }

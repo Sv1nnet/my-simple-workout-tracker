@@ -8,6 +8,7 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
 import Content from '../content/Content'
 import { useSearchParams } from 'react-router-dom'
+import { PageHeaderTitle, useHeaderTitleContext } from 'app/contexts/header_title/HeaderTItleContextProvider'
 
 const ContentContainer = styled.div<{ $height?: string }>`
   height: calc(${({ $height }) => `${$height || '100vh'}`} - 57px - 74px);
@@ -32,6 +33,8 @@ const StyledPageHeader = styled(PageHeader)`
   .ant-page-header-heading-title {
     color: white;
     margin-right: 0;
+    position: relative;
+    z-index: 2;
   }
   .anticon.anticon-arrow-left > svg {
     transform: scale(1.5);
@@ -40,13 +43,13 @@ const StyledPageHeader = styled(PageHeader)`
 `
 
 
-const Header = ({ title, children }) => {
-  const { intl } = useIntlContext()
+const Header = ({ children }) => {
+  const { title } = useHeaderTitleContext()
 
   return (
     <>
       <StyledPageHeader
-        title={intl.header[title] || <span>&nbsp;</span>}
+        title={title || <span>&nbsp;</span>}
         ghost={false}
         extra={<Content />}
       />
@@ -56,6 +59,7 @@ const Header = ({ title, children }) => {
 }
 
 export const PageLayout: FC<{ children: ReactNode }> = ({ children }) => {
+  const { intl } = useIntlContext()
   const [ searchParams ] = useSearchParams()
   const location = useLocation()
 
@@ -65,13 +69,15 @@ export const PageLayout: FC<{ children: ReactNode }> = ({ children }) => {
   if (_title.startsWith('/')) _title = _title.substring(1)
 
   return (
-    <Header title={_title}>
+    <Header>
+      <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       {children}
     </Header>
   )
 }
 
 export const PageLayoutWithNav: FC<{ route: TabRoutes, children?: ReactNode }> = ({ route, children }) => {
+  const { intl } = useIntlContext()
   const [ height, setHeight ] = useState('100vh')
   const location = useLocation()
   const _title = route ?? ((location.pathname) || 'activities').replace('/', '') as TabRoutes
@@ -90,7 +96,8 @@ export const PageLayoutWithNav: FC<{ route: TabRoutes, children?: ReactNode }> =
   }, [])
 
   return (
-    <Header title={_title}>
+    <Header>
+      <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       <ContentContainer $height={height}>
         {children}
       </ContentContainer>

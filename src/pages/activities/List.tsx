@@ -12,6 +12,7 @@ import { EndlessScrollableContainer } from 'app/components'
 import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
 import { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
+import { PageHeaderTitle } from 'app/contexts/header_title/HeaderTItleContextProvider'
 
 export type ExerciseResultsDetails = {
   weight?: number,
@@ -30,7 +31,8 @@ const Activities = () => {
   const [ page, setPage ] = useState(1)
   const $container = useRef<Ref>(null)
   const { listEl, setListEl } = useListContext($container.current)
-  const { add } = useIntlContext().intl.pages.workouts.list_buttons
+  const { intl } = useIntlContext()
+  const { add } = intl.pages.workouts.list_buttons
   const [ loadActivities, { error, isError, isFetching } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore = [], total, status } = useAppSelector(selectList)
   const prevRequestRef = useRef<ReturnType<typeof loadActivities>>(null)
@@ -102,22 +104,25 @@ const Activities = () => {
   }, [ $container.current, listEl ])
 
   return (
-    <EndlessScrollableContainer ref={$container} callOnMount onScroll={handleScroll}>
-      <SearchPanel
-        loading={isFetching}
-        onChange={onSearchInputChange}
-        refetch={onRefetchClick}
-        href={CREATE_ROUTE}
-        addButtonText={add}
-      />
-      <ActivityList
-        deleteActivities={handleDeleteActivities}
-        error={deleteError}
-        isLoading={status === API_STATUS.LOADING}
-        isDeleting={isDeleting}
-        activities={activitiesToShow}
-      />
-    </EndlessScrollableContainer>
+    <>
+      <PageHeaderTitle>{intl.header.activities}</PageHeaderTitle>
+      <EndlessScrollableContainer ref={$container} callOnMount onScroll={handleScroll}>
+        <SearchPanel
+          loading={isFetching}
+          onChange={onSearchInputChange}
+          refetch={onRefetchClick}
+          href={CREATE_ROUTE}
+          addButtonText={add}
+        />
+        <ActivityList
+          deleteActivities={handleDeleteActivities}
+          error={deleteError}
+          isLoading={status === API_STATUS.LOADING}
+          isDeleting={isDeleting}
+          activities={activitiesToShow}
+        />
+      </EndlessScrollableContainer>
+    </>
   )
 }
 
