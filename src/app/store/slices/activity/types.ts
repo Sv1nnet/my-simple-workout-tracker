@@ -61,7 +61,7 @@ export type ActivityListItem = {
     type: string,
     _id: string,
   }[],
-  workout_id: WorkoutForm["id"],
+  workout_id: WorkoutForm['id'],
   workout_title: string,
 }
 
@@ -87,7 +87,7 @@ export type HistoryResponseData<T = string> = {
   }
 }
 
-export type HistoryRequestQuery = { workoutId: WorkoutForm["id"], activityId: string, page?: number, byPage?: number, offset?: number }
+export type HistoryRequestQuery = { workoutId: WorkoutForm['id'], activityId: string, page?: number, byPage?: number, offset?: number }
 
 export type GetHistoryListSuccess = IResponse<HistoryResponseData>
 export type GetHistoryListError = IResponse<null>

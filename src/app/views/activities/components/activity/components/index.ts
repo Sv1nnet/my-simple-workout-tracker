@@ -10,6 +10,7 @@ import {
   StyledDateFormItem,
 } from './styled'
 import Exercise from './exercise/Exercise'
+import Header from './header/Header'
 
 export {
   Exercise,
@@ -22,4 +23,5 @@ export {
   WorkoutFormItem,
   WorkoutLabelContainer,
   StyledDateFormItem,
+  Header,
 }

@@ -57,15 +57,20 @@ const getBaseQueryWithReauth = (() => {
         const [ , _api, _v, routeName, rest ] = url.pathname.split('/')
 
         const handlers = await handlersLoader.get()
+        const handler = handlers[routeName]?.[handlerName]
 
-        const result = await handlers[routeName][handlerName](
-          args,
-          url,
-          new URLSearchParams(url.searchParams),
-          rest,
-        )
+        if (handler) {
+          const result = await handlers[routeName]?.[handlerName](
+            args,
+            url,
+            new URLSearchParams(url.searchParams),
+            rest,
+          )
+  
+          return result
+        }
 
-        return result
+        return { error: { status: 404, data: { message: 'Not found' } } }
       }
     }
     const query = creds ? baseQuery : baseQueryWithoutCreds

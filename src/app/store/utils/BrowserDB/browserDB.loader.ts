@@ -1,4 +1,11 @@
-const browserDBLoader = {
+import { BrowserDB } from 'app/store/utils/BrowserDB'
+
+export type BrowserDBLoader = {
+  db: BrowserDB | null
+  get: () => Promise<BrowserDB>
+}
+
+const browserDBLoader: BrowserDBLoader = {
   db: null,
   async get() {
     if (!this.db) {

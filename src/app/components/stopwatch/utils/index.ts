@@ -1,7 +1,23 @@
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { MS_TO_SET_STATE_WHEN_MS_ON } from 'app/components/timer_view/utils'
+import { MutableRefObject } from 'react'
 
 const SECOND = 1000
+
+export const calcDiff = (diffRef: MutableRefObject<number>, prevTimeoutMsRef: MutableRefObject<number | null>) => {
+  const now = Date.now()
+
+  let prevTimeoutMs = prevTimeoutMsRef.current
+  if (!prevTimeoutMs) {
+    prevTimeoutMs = now
+  }
+
+  let newDiff = diffRef.current
+  newDiff += now - prevTimeoutMs
+
+
+  return [ newDiff, prevTimeoutMs, now ]
+}
 
 export const runCountingUp = ({
   msOn,
@@ -25,12 +41,9 @@ export const runCountingUp = ({
     if (!_isRunning || _isPaused) return
 
     if (_isRunning) {
-      const now = Date.now()
-      if (!prevTimeoutMsRef.current) {
-        prevTimeoutMsRef.current = now
-      }
-
-      diffRef.current += now - prevTimeoutMsRef.current
+      const [ newDiff, prevTimeoutMs, now ] = calcDiff(diffRef, prevTimeoutMsRef)
+      prevTimeoutMsRef.current = prevTimeoutMs
+      diffRef.current = newDiff
       
       if (isDocumentVisible) {
         timePassedRef.current += Math.ceil((now - prevTimeoutMsRef.current) * SECOND) / SECOND

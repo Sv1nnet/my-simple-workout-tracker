@@ -34,6 +34,7 @@ export type StopwatchRef = {
   runTimer: (e?: React.MouseEvent<HTMLElement>) => void,
   pauseTimer: (e?: React.MouseEvent<HTMLElement>) => void,
   resetTimer: (e?: React.MouseEvent<HTMLElement>) => void,
+  setTime: (newTimeArray?: number[]) => number[],
   isRunning: boolean,
   isPaused: boolean,
   value: number[]
@@ -68,10 +69,15 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
 
     const valueRef = useRef(value)
 
-    const resetTimerValues = () => {
-      prevTimeoutMsRef.current = 0
-      diffRef.current = 0
-      valueRef.current = millisecondsToTimeArray(0)
+    const resetTimerValues = (newTimeArray?: number[]) => {
+      const newTimeMs = newTimeArray ? timeArrayToMilliseconds(newTimeArray) : 0
+
+      if (!newTimeMs) {
+        prevTimeoutMsRef.current = newTimeMs
+        diffRef.current = newTimeMs
+      }
+
+      valueRef.current = millisecondsToTimeArray(newTimeMs)
       return valueRef.current
     }
 
@@ -109,15 +115,26 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
       buttonProps?.onClick?.(false, e)
     }
 
+    const setTime = (newTimeArray?: number[]) => {
+      const newValue = resetTimerValues(newTimeArray)
+      
+      setValue(newValue)
+      timePassedRef.current = timeArrayToMilliseconds(newValue)
+      valueRef.current = newValue
+      onChange?.(timeArrayToMilliseconds(newValue))
+      return newValue
+    }
+
     useImperativeHandle(ref, () => ({
       runTimer: handleRunTimer,
       pauseTimer: handlePauseTimer,
       resetTimer: handleResetTimer,
+      setTime,
       isRunning,
       isPaused,
       value,
       valueRef,
-    }), [ value, isRunning, isPaused, handleRunTimer, handlePauseTimer, handleResetTimer ])
+    }), [ value, isRunning, isPaused, handleRunTimer, handlePauseTimer, handleResetTimer, setTime ])
 
     useEffect(() => {
       if (initialValue !== timeArrayToMilliseconds(value)) {

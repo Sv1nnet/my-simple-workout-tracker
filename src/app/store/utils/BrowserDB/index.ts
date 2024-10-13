@@ -7,7 +7,7 @@ const browserDb = (() => ({
   droppingPromise: null,
   init(onInit?: (db: IDBDatabase) => void, onDisconnect?: (db?: IDBDatabase) => void) {
     if (!this.db) {
-      this.db = new IndexedDB('noAuth', [ 'exercises', 'workouts', 'activities' ], onInit)
+      this.db = new IndexedDB('noAuth', [ 'exercises', 'workouts', 'activities', 'config' ], onInit)
       this.onInit = onInit
       this.onDisconnect = onDisconnect
     } else {
@@ -42,10 +42,10 @@ const browserDb = (() => ({
 
     return Promise.reject(new Error('DB is not initialized'))
   },
-  db: null as null | IndexedDB<string | 'exercises' | 'workouts' | 'activities'>,
+  db: null as null | IndexedDB<string | 'exercises' | 'workouts' | 'activities' | 'config'>,
   getTables() {
     if (!this.db) {
-      this.db = new IndexedDB('noAuth', [ 'exercises', 'workouts', 'activities' ], this.onInit)
+      this.db = new IndexedDB('noAuth', [ 'exercises', 'workouts', 'activities', 'config' ], this.onInit)
     }
 
     return {
@@ -59,5 +59,7 @@ const browserDb = (() => ({
     }
   },
 }))()
+
+export type BrowserDB = typeof browserDb
 
 export default browserDb

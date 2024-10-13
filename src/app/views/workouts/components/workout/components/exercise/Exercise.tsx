@@ -33,15 +33,17 @@ const Exercise = ({
   const $container = useRef(null)
   const requiredRules = isEditMode ? [ { required: true, message: errorsDictionary.common.required } ] : []
   const handleExerciseChange = onExerciseChange(index, 'rounds')
-  const hasTopButton = index !== 0
-  const hasBottomButton = index !== exerciseAmount - 1
+
+  const hasButtons = exerciseAmount > 1
+  const hasTopButton = hasButtons && index !== 0
+  const hasBottomButton = hasButtons && index !== exerciseAmount - 1
 
   const handleChangeOrder = (order: number) => onExerciseChange(index, 'order', order, $container)
 
   return (
     <ExerciseContainer ref={$container}>
       <Divider style={{ marginBottom: '16px', marginTop: '6px' }} />
-      {isEditMode && !isInActivity && (
+      {hasButtons && isEditMode && !isInActivity && (
         <MoveExerciseButtonContainer $hasBottomButton={hasBottomButton} $hasTopButton={hasTopButton}>
           {hasTopButton && (
             <Button onClick={handleChangeOrder(-1)} size="small" type="text">

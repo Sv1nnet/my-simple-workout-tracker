@@ -78,6 +78,7 @@ export const WorkoutLabelContainer = styled.div`
 `
 
 export const StopwatchContainer = styled.div`
+  margin-left: 32px;
   display: flex;
   margin-block: -1px;
   color: ${theme.textColor};

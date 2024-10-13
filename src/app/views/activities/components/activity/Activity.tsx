@@ -2,12 +2,12 @@
 
 import { Form, Input, Button, Modal, Select, notification } from 'antd'
 import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ToggleEdit, DeleteEditPanel, DatePicker, Stopwatch } from 'app/components'
+import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
 import dayjs, { Dayjs } from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm, HistoryResponseData } from 'app/store/slices/activity/types'
 import { useAppDispatch, useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
-import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem } from './components'
+import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem, Header } from './components'
 import { selectList } from 'app/store/slices/workout'
 import { activityApi } from 'app/store/slices/activity/api'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
@@ -15,11 +15,9 @@ import { WorkoutForm, WorkoutListExercise } from 'app/store/slices/workout/types
 import { API_STATUS } from 'app/constants/api_statuses'
 import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWorkoutList, useLoadWorkoutList, useRestoreActivityFromCacheOnWorkoutListLoaded, useShowActivityError } from './utils'
 import { CacheFormData, IActivityProps, InitialValues } from './types'
-import { StopwatchContainer } from './components/styled'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 import { setCachedActivity } from 'app/store/slices/activity'
-import { PageHeaderTitle } from 'app/contexts/header_title/HeaderTItleContextProvider'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
@@ -215,27 +213,25 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   
   return (
     <>
-      <PageHeaderTitle>
-        <Form.Item noStyle name="duration">
-          <StopwatchContainer className="activity-timer-container">
-            <Stopwatch
-              key={`${selectedWorkout}`}
-              ref={durationTimerRef}
-              hoursOn
-              showResetButton
-              disabled={isEdit || !selectedWorkout}
-              className="activity-timer"
-              initialValue={initialValues.duration}
-              msOn={false}
-              onPause={updateDurationInForm}
-              onReset={resetDuration}
-              onChange={handleDurationChange}
-            />
-          </StopwatchContainer>
-        </Form.Item>
-      </PageHeaderTitle>
-
-      <StyledForm onValuesChange={cacheFormData} preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical" $isEdit={isEdit}>
+      <Header
+        initialValues={initialValues}
+        isEdit={isEdit}
+        disabled={isFormItemDisabled || !selectedWorkout}
+        selectedWorkout={selectedWorkout}
+        durationTimerRef={durationTimerRef}
+        updateDurationInForm={updateDurationInForm}
+        resetDuration={resetDuration}
+        handleDurationChange={updateDurationInForm}
+      />
+      <StyledForm
+        onValuesChange={cacheFormData}
+        preserve={false}
+        form={form}
+        initialValues={initialValues}
+        onFinish={handleSubmit}
+        layout="vertical"
+        $isEdit={isEdit}
+      >
         {isEdit && (
           <DeleteEditPanel
             isEditMode={isEditMode}
@@ -248,7 +244,12 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
         <StyledDateFormItem required name="date" $isEdit={isEdit}>
           <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
         </StyledDateFormItem>
-        <WorkoutFormItem required label={<WorkoutLabelContainer>{input_labels.workout}</WorkoutLabelContainer>} name="workout_id" rules={[ { required: true, message: 'Required' } ]}>
+        <WorkoutFormItem
+          required
+          label={<WorkoutLabelContainer>{input_labels.workout}</WorkoutLabelContainer>}
+          name="workout_id"
+          rules={[ { required: true, message: 'Required' } ]}
+        >
           <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={handleSelectedWorkoutChange}>
             {workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR
               ? workoutList.map(workout => (

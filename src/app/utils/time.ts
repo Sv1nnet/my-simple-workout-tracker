@@ -14,10 +14,10 @@ export const secondsToDayjs = (seconds: number) => {
   return timeArrayToDayjs([ h, m, s ])
 }
 
-export const dayjsToTimeArray = (date: Dayjs) => [ date.hour(), date.minute(), date.second() ]
+export const dayjsToTimeArray = (date: Dayjs) => [ date.hour(), date.minute(), date.second(), date.millisecond() ]
 
 export const dayjsToSeconds = (date: Dayjs) => {
-  const [ h, m, s ] = [ date.hour(), date.minute(), date.second() ]
+  const [ h, m, s ] = dayjsToTimeArray(date)
   return s + (m * 60) + (h * 60 * 60)
 }
 
