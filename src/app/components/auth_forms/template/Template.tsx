@@ -12,6 +12,7 @@ import { loginWithNoAuth } from 'app/store/slices/auth'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
 import noAuthHandlersLoader from 'app/store/utils/noAuthHandlers/noAuthHandlers.loader'
+import { initBaseExercises } from 'app/utils/initBaseExercises'
 
 export enum AUTH_FORM_TABS {
   LOGIN = 'login',
@@ -20,7 +21,7 @@ export enum AUTH_FORM_TABS {
 }
 
 const AuthTemplate = () => {
-  const { intl } = useIntlContext()
+  const { intl, lang } = useIntlContext()
   const [ tab, setTab ] = useState(AUTH_FORM_TABS.LOGIN)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -38,7 +39,19 @@ const AuthTemplate = () => {
     await db.droppingPromise
     await noAuthHandlersLoader.get()
 
-    db.init(() => {
+    db.init(async () => {
+      const isExercisesInitialized = await db.db?.get(db.db.tables.config, 'isExercisesInitialized')
+      const configLang = await db.db?.get(db.db.tables.config, 'lang')
+
+      if (!configLang || configLang !== lang) {
+        await db.db.set(db.db.tables.config, 'lang', lang)
+      }
+
+      if (!isExercisesInitialized) {
+        await initBaseExercises(db.db, lang)
+        await db.db.set(db.db.tables.config, 'isExercisesInitialized', 'true')
+      }
+
       dispatch(loginWithNoAuth())
       stopLoaderById('initNoAuthDB')
     })
