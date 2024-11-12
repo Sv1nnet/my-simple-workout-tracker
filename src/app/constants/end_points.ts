@@ -111,6 +111,9 @@ const routes = {
   activity: {
     v1: {},
   },
+  muscleGroup: {
+    v1: {},
+  },
 }
 
 const createBaseRoutes = (base: string) => ({
@@ -165,6 +168,7 @@ routes.activity = {
     },
   },
 }
+routes.muscleGroup = { v1: createBaseRoutes('muscle-group') }
 
 type BaseRoutes = ReturnType<typeof createBaseRoutes>
 
@@ -178,4 +182,7 @@ export default routes as typeof routes & {
   activity: {
     v1: BaseRoutes & { history: BaseRouteUnit }
   },
+  muscleGroup: {
+    v1: BaseRoutes
+  }
 }

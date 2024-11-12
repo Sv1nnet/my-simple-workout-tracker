@@ -4,6 +4,18 @@
     "eng"
   ],
   "common": {
+    "empty_list": {
+      "ru": "Список пуст",
+      "eng": "List is empty"
+    },
+    "add": {
+      "ru": "Добавить",
+      "eng": "Add"
+    },
+    "error": {
+      "ru": "Ошибка",
+      "eng": "Error"
+    },
     "loading": {
       "ru": "Загрузка...",
       "eng": "Loading..."
@@ -19,6 +31,10 @@
     "no": {
       "ru": "Нет",
       "eng": "No"
+    },
+    "ok": {
+      "ru": "Ок",
+      "eng": "Ok"
     }
   },
   "signup_by_code": {
@@ -140,6 +156,14 @@
     }
   },
   "header": {
+    "muscle_groups": {
+      "ru": "Группы мышц",
+      "eng": "Muscle groups",
+      "short": {
+        "ru": "Гр. мышц",
+        "eng": "Muscle gr's"
+      }
+    },
     "exercises": {
       "ru": "Упражнения",
       "eng": "Exercises",
@@ -172,6 +196,10 @@
       "check_all": {
         "ru": "Выбрать всё",
         "eng": "Check all"
+      },
+      "muscle_groups_required_reason": {
+        "ru": "Экспорт групп мышц обязателен для экспорта упражнений",
+        "eng": "Exporting muscle groups is required to export exercises"
       },
       "exercises_required_reason": {
         "ru": "Экспорт упражнений обязателен для экспорта тренировок",
@@ -971,6 +999,28 @@
       "button": {
         "ru": "Перейти на главную",
         "eng": "Go to main"
+      }
+    }
+  },
+  "rest": {
+    "muscle_group": {
+      "title": {
+        "ru": "Группа мышц",
+        "eng": "Muscle group"
+      },
+      "muscle_groups": {
+        "ru": "Группы мышц",
+        "eng": "Muscle groups"
+      },
+      "state": {
+        "archived": {
+          "ru": "удалено",
+          "eng": "deleted"
+        }
+      },
+      "select_muscle_groups": {
+        "ru": "Выберите группы мышц",
+        "eng": "Select muscle groups"
       }
     }
   }

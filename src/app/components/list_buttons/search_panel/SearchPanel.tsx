@@ -1,100 +1,108 @@
 import { ChangeEvent, ChangeEventHandler, useMemo, useRef, useState } from 'react'
-import { CloseOutlined, LoadingOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { CloseOutlined, DeleteOutlined, LoadingOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
 import AddButton from '../add_button/AddButton'
-import { AddButtonText, Container, ReloadButton, StyledInput, StyledInputGroup, StyledSearchButton } from './styled'
-import { useDebouncedCallback } from 'app/hooks'
-import { Spin } from 'antd'
+import {
+  AddButtonText,
+  AddItemContainer,
+  ButtonsContainer,
+  Container,
+  NoDataText,
+  OptionContent,
+  ReloadButton,
+  SelectContainer,
+  StyledCollapse,
+  StyledInput,
+  StyledInputGroup,
+  StyledSearchButton,
+} from './components'
+import { useToggle } from 'app/hooks'
+import { Button, Collapse, Divider, Input, InputRef, Select, Spin } from 'antd'
+import { muscleGroupApi } from 'app/store/slices/muscleGroup/api'
+import { nanoid } from '@reduxjs/toolkit'
+import { DefaultOptionType } from 'antd/lib/select'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { ApiGetMuscleGroupError, OnChangeHandler, Tag, useShowError } from './utils'
 
-export type OnChangeHandler = (value: string, e: ChangeEvent<HTMLInputElement>) => void
+const { Option } = Select
 
-export type UseSearchPanelUtils = <T = any>(
-  initialList: T[],
-  {
-    filterFn,
-    onChange,
-  }: {
-    filterFn?: (searchValue: string) => (item: T, index: number, array: T[]) => boolean
-    onChange?: (...args: Parameters<OnChangeHandler>) => unknown
-    refetch?: (...args: any[]) => any
-  },
-  { shouldLowerCase,
-    shouldUpperCase,
-    shouldTrim,
-    transformValueFn,
-  }?: {
-    initialSearchValue?: string,
-    shouldLowerCase?: boolean;
-    shouldUpperCase?: boolean;
-    shouldTrim?: boolean;
-    transformValueFn?: (...args: Parameters<OnChangeHandler>) => string;
-    onChangeDelay?: number;
-  }
-) => {
-  searchValue: string,
-  filteredList: T[],
-  onSearchInputChange: OnChangeHandler,
-  onRefetchClick: () => void
+export type SearchPanelProps = {
+  href: string,
+  addButtonText: string,
+  onChange: (...args: Parameters<OnChangeHandler>) => unknown,
+  refetch: () => unknown,
+  loading: boolean,
 }
 
-export const useSearchPanelUtils: UseSearchPanelUtils = (
-  initialList,
-  {
-    filterFn,
-    onChange,
-    refetch,
-  },
-  {
-    initialSearchValue = '',
-    shouldLowerCase,
-    shouldUpperCase,
-    shouldTrim,
-    transformValueFn,
-    onChangeDelay = 200,
-  },
-) => {
-  const [ searchValue, setSearchValue ] = useState(initialSearchValue)
-  const filteredList = useMemo(
-    () => filterFn ? initialList.filter(filterFn(searchValue)) : initialList,
-    [ searchValue, initialList, filterFn ],
-  )
+const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: SearchPanelProps) => {
+  const { intl } = useIntlContext()
 
-  const onSearchInputChange = useDebouncedCallback<OnChangeHandler>(async (value, e) => {
-    let _value = value
-    
-    if (shouldTrim) {
-      _value = value.trim()
-    }
-
-    if (shouldLowerCase) {
-      _value = _value.toLowerCase()
-    }
-
-    if (shouldUpperCase) {
-      _value = _value.toUpperCase()
-    }
-
-    if (transformValueFn) {
-      _value = transformValueFn(_value, e)
-    }
-    
-    setSearchValue(_value)
-
-    onChange?.(_value, e)
-  }, onChangeDelay)
-
-  const onRefetchClick = refetch ? () => refetch() : undefined
-
-  return { searchValue, filteredList, onSearchInputChange, onRefetchClick }
-}
-
-const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }) => {
-  const [ isOpen, setIsOpen ] = useState(false)
+  const { state: isOpen, setState: setIsOpen } = useToggle(false)
+  const { state: isMuscleGroupsSelectOpen, setFalse: closeMuscleGroupsSelect, setTrue: openMuscleGroupsSelect, setState: setIsMuscleGroupsSelectOpen } = useToggle(false)
   const [ searchValue, setSearchValue ] = useState('')
+  const [ addTagInputValue, setAddTagInputValue ] = useState('')
+  const [ tags, setTags ] = useState<Tag[]>([])
+
   const $input = useRef(null)
+  const $select = useRef(null)
+  const $addTagInput = useRef<InputRef>(null)
+
+  const { data: muscleGroups, isLoading: isLoadingMuscleGroups, isFetching: isFetchingMuscleGroups, error: fetchMuscleGroupsError } = muscleGroupApi.useListQuery({ lang: 'ru' })
+  const [ createMuscleGroup, { error: createMuscleGroupError } ] = muscleGroupApi.useCreateMutation()
+  const [ deleteMuscleGroup, { error: deleteMuscleGroupError } ] = muscleGroupApi.useDeleteMutation()
+
+  const handleAddTagInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAddTagInputValue(e.target.value)
+  }
+
+  const handleDropdownVisibleChange = (isVisible: boolean) => {
+    setIsMuscleGroupsSelectOpen(isVisible)
+
+    if (!isVisible) setAddTagInputValue('')
+  }
+
+  const addItem = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    const id = nanoid()
+    const newMuscleGroup = { title: addTagInputValue, id }
+
+    try {
+      await createMuscleGroup(newMuscleGroup).unwrap()
+    } catch (createError) {
+      console.error(createError)
+    }
+
+    setAddTagInputValue('')
+  }
+
+  const handleDeleteItem = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    const id = e.currentTarget.dataset.id
+
+    try {
+      if (id) {
+        await deleteMuscleGroup({ id }).unwrap()
+      }
+    } catch (deleteError) {
+      console.error(deleteError)
+    }
+  }
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setSearchValue(e.target.value)
-    onChange(e.target.value, e)
+    onChange({
+      searchValue: e.target.value,
+      tags,
+    }, e)
+  }
+
+  const handleSelectTagsChange = (value: Tag[], e: DefaultOptionType | DefaultOptionType[]) => {
+    setTags(value)
+    onChange({
+      searchValue,
+      tags: value,
+    }, Array.isArray(e) ? e : [ e ])
   }
 
   const Prefix = useMemo(() => {
@@ -104,41 +112,105 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }) => {
         $input.current?.input.focus()
       } else if ($input.current?.input?.value) {
         const newValue = ''
-
-        onChange(newValue)
+        const newTags = []
+        
         setSearchValue(newValue)
+        setTags(newTags)
+        onChange({
+          searchValue: newValue,
+          tags: newTags,
+        }, null)
         $input.current.input.value = newValue
       }
 
       setIsOpen(!isOpen)
+
+      if (isOpen) closeMuscleGroupsSelect()
     }
   
     return <StyledSearchButton onClick={handleClick} icon={Icon} />
   }, [ isOpen ])
 
+  useShowError([ fetchMuscleGroupsError, createMuscleGroupError, deleteMuscleGroupError ] as ApiGetMuscleGroupError[])
+
   return (
     <Container>
-      <StyledInputGroup $collapsed={!isOpen}>
-        {Prefix}
-        <StyledInput ref={$input} size='large' $collapsed={!isOpen} value={searchValue} onChange={handleChange} />
-      </StyledInputGroup>
-      <AddButton
-        buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
-        href={href}
-        text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
-      />
-      {loading
-        ? (
-          <ReloadButton>
-            <Spin size="small" indicator={<LoadingOutlined />} />
-          </ReloadButton>
-        )
-        : (
-          <ReloadButton onClick={refetch}>
-            <ReloadOutlined />
-          </ReloadButton>
-        )}
-      
+      <ButtonsContainer>
+        <StyledInputGroup $collapsed={!isOpen}>
+          {Prefix}
+          <StyledInput ref={$input} size='large' $collapsed={!isOpen} value={searchValue} onChange={handleChange} />
+        </StyledInputGroup>
+        <AddButton
+          buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
+          href={href}
+          text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
+        />
+        {loading
+          ? (
+            <ReloadButton>
+              <Spin size="small" indicator={<LoadingOutlined />} />
+            </ReloadButton>
+          )
+          : (
+            <ReloadButton onClick={refetch}>
+              <ReloadOutlined />
+            </ReloadButton>
+          )}
+      </ButtonsContainer>
+      <StyledCollapse bordered={false} ghost activeKey={isOpen ? '1' : null} destroyInactivePanel>
+        <Collapse.Panel header='' key='1' showArrow={false}>
+          <SelectContainer $collapsed={!isOpen}>
+            <Select<Tag[]>
+              ref={$select}
+              open={isMuscleGroupsSelectOpen}
+              loading={isLoadingMuscleGroups || isFetchingMuscleGroups}
+              onDropdownVisibleChange={handleDropdownVisibleChange}
+              placeholder={intl.rest.muscle_group.select_muscle_groups}
+              mode='multiple'
+              labelInValue
+              dropdownMatchSelectWidth
+              size='middle'
+              optionLabelProp="label"
+              notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
+              menuItemSelectedIcon={null}
+              onFocus={openMuscleGroupsSelect}
+              onChange={handleSelectTagsChange}
+              dropdownRender={menu => (
+                <>
+                  {menu}
+                  <Divider style={{ margin: '8px 0' }} />
+                  <AddItemContainer>
+                    <Input
+                      ref={$addTagInput}
+                      value={addTagInputValue}
+                      onChange={handleAddTagInputChange}
+                    />
+                    <Button disabled={!addTagInputValue} type="text" icon={<PlusOutlined />} onClick={addItem}>
+                      {intl.common.add}
+                    </Button>
+                    <Button type='primary' onClick={() => handleDropdownVisibleChange(false)}>
+                      {intl.common.ok}
+                    </Button>
+                  </AddItemContainer>
+                </>
+              )}
+            >
+              {muscleGroups?.data?.map(muscleGroup => (
+                <Option
+                  label={muscleGroup.title}
+                  value={muscleGroup.id}
+                  key={muscleGroup.id}
+                >
+                  <OptionContent>
+                    {muscleGroup.title}
+                    <Button data-id={muscleGroup.id} danger size='small' icon={<DeleteOutlined />} onClick={handleDeleteItem} />
+                  </OptionContent>
+                </Option>
+              ))}
+            </Select>
+          </SelectContainer>
+        </Collapse.Panel>
+      </StyledCollapse>
     </Container>
   )
 }

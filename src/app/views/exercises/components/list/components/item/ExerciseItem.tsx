@@ -3,12 +3,12 @@ import { InspectButton } from 'app/components/list_buttons'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
-import { Checkbox, List, Typography, Image as AntImage } from 'antd'
+import { Checkbox, List, Typography, Image as AntImage, Tag } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-const { Title, Text } = Typography
+const { Title: TitleAnt, Text } = Typography
 
 const LoadType = styled.div`
   text-align: right;
@@ -35,7 +35,21 @@ const StyledCheckbox = styled(Checkbox)`
   left: 0;
 `
 
-const StyledTitle = ({ id, loadExercise, loadingExerciseId, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary }) => {
+const StyledTitle = styled(TitleAnt)`
+  &.ant-typography {
+    margin-bottom: 0;
+  }
+`
+
+const TagsContainer = styled.div`
+  width: 100%;
+`
+
+const StyledTag = styled(Tag)`
+  margin-bottom: 6px;
+`
+
+const Title = ({ id, loadExercise, loadingExerciseId, isLoading, title, repeats, time, weight, massUnit = 'kg', payloadDictionary }) => {
   repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
   time = time
     ? timeToHms(
@@ -57,19 +71,20 @@ const StyledTitle = ({ id, loadExercise, loadingExerciseId, isLoading, title, re
         <Text type="secondary">{[ repeats, time, weight ].filter(Boolean).join(' / ') || <span>&nbsp;</span>}</Text>
       </LoadType>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Title level={4}>{title}</Title>
+        <StyledTitle level={4}>{title}</StyledTitle>
         <InspectButton onClick={loadExercise} id={id} loading={loadingExerciseId === id || isLoading} href={`/exercises/${id}`} />
       </div>
     </div>
   )
 }
 
-interface IExerciseForm extends ExerciseForm {
+interface IExerciseForm extends Omit<ExerciseForm, 'muscle_groups'> {
   loadingExerciseId: string | null;
   payloadDictionary: object;
   selectionEnabled: boolean;
   selected: boolean;
   image: Image;
+  muscle_groups: { id: string, title: string }[];
   loadExercise: (id: string) => void;
   isLoading?: boolean;
 }
@@ -83,44 +98,54 @@ const ExerciseItem: FC<IExerciseForm> = ({
   time,
   weight,
   mass_unit,
+  muscle_groups,
   image,
   selectionEnabled,
   selected,
   loadExercise,
   payloadDictionary,
 }) => (
-  <List.Item.Meta
-    avatar={(
-      <ImageContainer>
-        {selectionEnabled && <StyledCheckbox checked={selected} />}
-        <AntImage
-          style={{
-            maxWidth: 75,
-            maxHeight: 75,
-          }}
-          src={image?.url
-            ? image.url.startsWith('data:image/')
-              ? image.url
-              : `${routes.base}${image.url}`
-            : itemImagePlaceholder}
+  <div style={{ display: 'flex', flex: 1, alignItems: 'start', maxWidth: '100%', flexWrap: 'wrap' }}>
+    {!!muscle_groups.length && (
+      <TagsContainer>
+        {muscle_groups.map(muscleGroup => (
+          <StyledTag key={muscleGroup.id}>{muscleGroup.title}</StyledTag>
+        ))}
+      </TagsContainer>
+    )}
+    <List.Item.Meta
+      avatar={(
+        <ImageContainer>
+          {selectionEnabled && <StyledCheckbox checked={selected} />}
+          <AntImage
+            style={{
+              maxWidth: 75,
+              maxHeight: 75,
+            }}
+            src={image?.url
+              ? image.url.startsWith('data:image/')
+                ? image.url
+                : `${routes.base}${image.url}`
+              : itemImagePlaceholder}
+          />
+        </ImageContainer>
+      )}
+      title={(
+        <Title
+          id={id}
+          loadExercise={loadExercise}
+          isLoading={isLoading}
+          title={title}
+          repeats={repeats}
+          time={time}
+          weight={weight}
+          massUnit={mass_unit}
+          loadingExerciseId={loadingExerciseId}
+          payloadDictionary={payloadDictionary}
         />
-      </ImageContainer>
-    )}
-    title={(
-      <StyledTitle
-        id={id}
-        loadExercise={loadExercise}
-        isLoading={isLoading}
-        title={title}
-        repeats={repeats}
-        time={time}
-        weight={weight}
-        massUnit={mass_unit}
-        loadingExerciseId={loadingExerciseId}
-        payloadDictionary={payloadDictionary}
-      />
-    )}
-  />
+      )}
+    />
+  </div>
 )
 
 export default ExerciseItem

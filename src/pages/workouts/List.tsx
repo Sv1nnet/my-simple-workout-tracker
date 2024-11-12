@@ -7,7 +7,7 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { selectList, updateList } from 'app/store/slices/workout'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
+import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/utils'
 import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 import { DeleteWorkoutPayload } from 'app/views/workouts/components/list/WorkoutList'
@@ -32,7 +32,7 @@ const Workouts = () => {
   const { filteredList: workoutsToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     workoutsInStore,
     {
-      filterFn: searchValue => exercise => exercise.title.toLowerCase().includes(searchValue),
+      filterFn: ({ searchValue }) => exercise => exercise.title.toLowerCase().includes(searchValue),
       refetch: loadWorkouts,
     },
     {

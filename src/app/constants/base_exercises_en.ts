@@ -17,6 +17,7 @@ const exercises = [
     description: 'Lie on a flat bench and press a barbell upwards from your chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -35,6 +36,7 @@ const exercises = [
     description: "Lower your body as if you're sitting back into a chair, then push back up to standing.",
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572de', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572da' ],
     mass_unit: 'kg',
   },
   {
@@ -53,6 +55,7 @@ const exercises = [
     description: 'Lift a barbell from the ground to hip level, then lower it back down.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572da' ],
     mass_unit: 'kg',
   },
   {
@@ -71,6 +74,7 @@ const exercises = [
     description: 'Hang from a bar and pull your body up until your chin is over the bar.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -89,6 +93,7 @@ const exercises = [
     description: 'Press dumbbells overhead from shoulder level while seated or standing.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -107,6 +112,7 @@ const exercises = [
     description: 'Push a weighted platform away from you using your legs.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df' ],
     mass_unit: 'kg',
   },
   {
@@ -125,6 +131,7 @@ const exercises = [
     description: 'Bend over and pull a barbell up to your lower chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: 'kg',
   },
   {
@@ -143,6 +150,7 @@ const exercises = [
     description: 'Push a cable attachment down using your triceps.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -161,6 +169,7 @@ const exercises = [
     description: 'Curl dumbbells up towards your shoulders.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dd' ],
     mass_unit: 'kg',
   },
   {
@@ -179,6 +188,7 @@ const exercises = [
     description: 'Pull a bar down to your upper chest while seated.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db' ],
     mass_unit: 'kg',
   },
   {
@@ -197,6 +207,7 @@ const exercises = [
     description: 'Extend your legs to lift a weighted pad using a machine.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572de' ],
     mass_unit: 'kg',
   },
   {
@@ -215,6 +226,7 @@ const exercises = [
     description: 'Curl your legs to lift a weighted pad using a machine.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572df' ],
     mass_unit: 'kg',
   },
   {
@@ -233,6 +245,7 @@ const exercises = [
     description: 'Step forward into a lunge position while holding dumbbells.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572de', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df' ],
     mass_unit: 'kg',
   },
   {
@@ -251,6 +264,7 @@ const exercises = [
     description: 'Raise your heels off the ground while standing.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e0' ],
     mass_unit: 'kg',
   },
   {
@@ -269,6 +283,7 @@ const exercises = [
     description: 'Perform a bench press on an inclined bench.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -287,6 +302,7 @@ const exercises = [
     description: 'Lower and raise your body between parallel bars.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -305,6 +321,7 @@ const exercises = [
     description: 'Pull a cable attachment towards your face, focusing on rear deltoids.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -323,6 +340,7 @@ const exercises = [
     description: 'Sit with your feet off the ground and twist your torso from side to side.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -341,6 +359,7 @@ const exercises = [
     description: 'Curl dumbbells with a neutral grip (palms facing each other).',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572db' ],
     mass_unit: 'kg',
   },
   {
@@ -359,6 +378,7 @@ const exercises = [
     description: 'Sit at a cable machine and pull the attachment towards your abdomen.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: 'kg',
   },
   {
@@ -377,6 +397,7 @@ const exercises = [
     description: 'Hold a dumbbell or barbell overhead and lower it behind your head, then extend your arms.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -395,6 +416,7 @@ const exercises = [
     description: 'Lie on a bench and open your arms wide with dumbbells, then bring them together above your chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -413,6 +435,7 @@ const exercises = [
     description: 'Stand with dumbbells at your sides, then raise them out to shoulder level.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -431,6 +454,7 @@ const exercises = [
     description: 'Using a leg press machine, push with your toes to extend your ankles.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e0' ],
     mass_unit: 'kg',
   },
   {
@@ -449,6 +473,7 @@ const exercises = [
     description: 'Rest your upper back on a bench and lift a barbell off the ground using your hips.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -467,6 +492,7 @@ const exercises = [
     description: 'Lower your body between parallel bars, leaning forward to target the chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -485,6 +511,7 @@ const exercises = [
     description: 'Curl your legs to lift a weighted pad while seated on a machine.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572df' ],
     mass_unit: 'kg',
   },
   {
@@ -503,6 +530,7 @@ const exercises = [
     description: 'Bend over with one hand on a bench, pull a dumbbell up to your side with the other hand.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: 'kg',
   },
   {
@@ -521,6 +549,7 @@ const exercises = [
     description: 'Stand between two cable machines and bring the handles together in front of your chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -539,6 +568,7 @@ const exercises = [
     description: 'Hold a barbell in front of your thighs and lift your shoulders towards your ears.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -557,6 +587,7 @@ const exercises = [
     description: 'Lie on a bench and lower a barbell or EZ bar to your forehead, then extend your arms.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -575,6 +606,7 @@ const exercises = [
     description: 'Sit with your knees bent and raise your heels off the ground using a machine or weights on your thighs.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e0' ],
     mass_unit: 'kg',
   },
   {
@@ -593,6 +625,7 @@ const exercises = [
     description: 'Bend forward at the hips and raise dumbbells out to the sides, focusing on rear deltoids.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -611,6 +644,7 @@ const exercises = [
     description: "Hang from a pull-up bar and raise your legs until they're parallel to the ground.",
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -629,6 +663,7 @@ const exercises = [
     description: 'Stand with a barbell in your hands and curl it up towards your shoulders.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572db' ],
     mass_unit: 'kg',
   },
   {
@@ -647,6 +682,7 @@ const exercises = [
     description: 'Sit at a chest press machine and push the handles away from your chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -665,6 +701,7 @@ const exercises = [
     description: 'Hold a barbell in front of your thighs, hinge at the hips to lower it, keeping legs mostly straight.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -683,6 +720,7 @@ const exercises = [
     description: 'Sit on a bench with back support and press dumbbells or a barbell overhead.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -701,6 +739,7 @@ const exercises = [
     description: 'Rest your arms on a preacher bench and curl a barbell or dumbbells towards your shoulders.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572db' ],
     mass_unit: 'kg',
   },
   {
@@ -719,6 +758,7 @@ const exercises = [
     description: 'Use a hack squat machine to perform a squat motion with your back supported.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -737,6 +777,7 @@ const exercises = [
     description: 'Perform a bench press on a decline bench to target lower chest muscles.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -755,6 +796,7 @@ const exercises = [
     description: 'Use a T-bar row machine or a barbell in a landmine attachment to perform rows.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: 'kg',
   },
   {
@@ -773,6 +815,7 @@ const exercises = [
     description: 'Perform a dumbbell shoulder press while rotating your palms from facing you to facing forward.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -791,6 +834,7 @@ const exercises = [
     description: 'Using a cable machine, extend your arm backwards to work the triceps.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -809,6 +853,7 @@ const exercises = [
     description: 'Lie on a bench and lower a dumbbell behind your head, then bring it back over your chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -827,6 +872,7 @@ const exercises = [
     description: 'Use a seated leg press machine to push the weight away with your legs.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df' ],
     mass_unit: 'kg',
   },
   {
@@ -845,6 +891,7 @@ const exercises = [
     description: 'Perform a squat with the barbell racked across the front of your shoulders.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -863,6 +910,7 @@ const exercises = [
     description: 'Lift a barbell or dumbbells vertically in front of your body up to chest level.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -881,6 +929,7 @@ const exercises = [
     description: 'Hold a dumbbell with both hands behind your head and extend your arms upward.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -899,6 +948,7 @@ const exercises = [
     description: 'Lie on an incline bench and press dumbbells upward from chest level.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -917,6 +967,7 @@ const exercises = [
     description: 'Sit and pull a cable attachment towards your face, focusing on rear deltoids and upper back.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -935,6 +986,7 @@ const exercises = [
     description: 'Hold dumbbells at your sides and perform a squat.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -953,6 +1005,7 @@ const exercises = [
     description: 'Perform a bench press with hands closer together to target triceps.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -971,6 +1024,7 @@ const exercises = [
     description: 'Lie on your back and lift your hips off the ground, bringing knees towards chest.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -989,6 +1043,7 @@ const exercises = [
     description: 'Use a seated row machine to pull the handles towards your abdomen.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: 'kg',
   },
   {
@@ -1007,6 +1062,7 @@ const exercises = [
     description: 'Lie on a flat bench and press dumbbells upwards from chest level.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -1025,6 +1081,7 @@ const exercises = [
     description: 'Lie on your back with knees bent, lift hips upward squeezing glutes.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1043,6 +1100,7 @@ const exercises = [
     description: 'Hold dumbbells at your sides and lift your shoulders towards your ears.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -1061,6 +1119,7 @@ const exercises = [
     description: 'Use a rope attachment on a cable machine to push down and work the triceps.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -1079,6 +1138,7 @@ const exercises = [
     description: 'Use a leg adduction machine to bring your legs together against resistance.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -1097,6 +1157,7 @@ const exercises = [
     description: 'Use a leg abduction machine to spread your legs apart against resistance.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -1115,6 +1176,7 @@ const exercises = [
     description: 'Hold dumbbells and step to the side, lowering your body into a lunge position.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df' ],
     mass_unit: 'kg',
   },
   {
@@ -1133,6 +1195,7 @@ const exercises = [
     description: 'Pull a cable from high to low in a diagonal chopping motion across your body.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -1151,6 +1214,7 @@ const exercises = [
     description: 'With a barbell on your shoulders, hinge at the hips to lower your torso parallel to the ground.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -1169,6 +1233,7 @@ const exercises = [
     description: 'Use a shoulder press machine to push the handles upward.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: 'kg',
   },
   {
@@ -1187,6 +1252,7 @@ const exercises = [
     description: 'Sit and curl a dumbbell with your elbow braced against your inner thigh.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572db' ],
     mass_unit: 'kg',
   },
   {
@@ -1202,10 +1268,11 @@ const exercises = [
     archived: false,
     image: null,
     time: null,
-    description: 'Kneel in front of a cable machine and crunch downward, pulling the cable with your hands behind your head.',
+    description: 'Kneel in front of a cable machine, pull the cable down towards your chest, and hold for a moment. Repeat for 10-15 reps1.',
     repeats: null,
     weight: null,
-    mass_unit: 'kg',
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
+    mass_unit: null,
   },
   {
     id: '6709596b5c61afda0db52ed7',
@@ -1223,6 +1290,7 @@ const exercises = [
     description: 'Perform a squat using a Smith machine for guided bar movement.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d9', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572e2' ],
     mass_unit: 'kg',
   },
   {
@@ -1241,10 +1309,11 @@ const exercises = [
     description: 'Perform sit-ups on a decline bench for increased difficulty.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
-    id: '670c01f55e1aff8943a61fb1',
+    id: '670c01f55e1aff8943a61fc9',
     updated_at: 1648771200000,
     created_at: 1648771200000,
     title: 'Archer Pull-Ups',
@@ -1259,6 +1328,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1277,6 +1347,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1295,6 +1366,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1313,6 +1385,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1331,6 +1404,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1349,6 +1423,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1367,6 +1442,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1385,6 +1461,7 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d7', '6733ca10b2568c018b8572db', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1403,6 +1480,7 @@ const exercises = [
     description: 'Perform push-ups with hands close together, forming a diamond shape with your index fingers and thumbs. This variation targets the triceps and inner chest muscles.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572d8' ],
     mass_unit: null,
   },
   {
@@ -1421,6 +1499,7 @@ const exercises = [
     description: 'Perform push-ups with your feet elevated on a bench or platform. This variation targets the upper chest and front shoulders more intensely than standard push-ups.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -1439,6 +1518,7 @@ const exercises = [
     description: 'Perform push-ups with your hands placed on an elevated surface, such as a bench or step. This variation is easier than standard push-ups and targets the lower chest muscles more.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -1457,6 +1537,7 @@ const exercises = [
     description: 'Perform explosive push-ups where you push your body up with enough force for your hands to leave the ground. This exercise develops power in the chest, shoulders, and triceps. Land softly with slightly bent elbows to absorb the impact.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -1475,6 +1556,7 @@ const exercises = [
     description: 'Perform push-ups with one hand slightly forward and the other slightly back. This variation challenges your balance and engages your core more. Alternate the hand positions with each set to ensure even development.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1493,6 +1575,7 @@ const exercises = [
     description: 'Perform push-ups using only one arm, with the other arm behind your back. This advanced variation significantly increases the difficulty, requiring more strength and stability. It targets the chest, triceps, and shoulders while also engaging the core for balance. Start with your feet wider apart for more stability, and progress to a narrower stance as you get stronger.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1511,6 +1594,7 @@ const exercises = [
     description: 'Perform push-ups with your hands placed wider than shoulder-width apart. This variation emphasizes the outer chest muscles and front deltoids. Keep your core tight and maintain a straight body line throughout the movement. Lower your chest towards the ground, then push back up to the starting position.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -1529,6 +1613,7 @@ const exercises = [
     description: 'Perform standard push-ups with hands placed shoulder-width apart. Start in a plank position with arms extended, then lower your body until your chest nearly touches the ground. Push back up to the starting position, keeping your body in a straight line throughout the movement. This exercise primarily targets the chest, triceps, and shoulders while also engaging the core for stability.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
     mass_unit: null,
   },
   {
@@ -1547,6 +1632,7 @@ const exercises = [
     description: 'Hold for 30-60 seconds.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1565,6 +1651,7 @@ const exercises = [
     description: 'Lie on your back, raise your legs straight up, then lower them back down without touching the floor. Repeat for 10-15 reps13.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1583,6 +1670,7 @@ const exercises = [
     description: 'Sit up straight with knees bent and feet off the ground, twist your torso from side to side, using a weight or medicine ball for added resistance. Do 10 reps on each side13.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1601,6 +1689,7 @@ const exercises = [
     description: 'Start on all fours, lift your right arm and left leg off the ground, hold, then switch sides. Repeat for 10 reps on each side13.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2', '6733ca10b2568c018b8572d7' ],
     mass_unit: null,
   },
   {
@@ -1619,6 +1708,7 @@ const exercises = [
     description: 'Hang from a pull-up bar, raise your legs straight up, then lower them back down. Repeat for 8-12 reps45.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1637,6 +1727,7 @@ const exercises = [
     description: 'Lie on your side with feet stacked, lift your hips off the ground, and hold for 30-60 seconds. Switch sides and repeat25.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1655,6 +1746,7 @@ const exercises = [
     description: 'Lie on a bench, lift your legs and lower back straight up, and hold for 30 seconds. Repeat for 3 rounds45.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1670,9 +1762,10 @@ const exercises = [
     archived: false,
     image: null,
     time: null,
-    description: 'Kneel facing a cable machine, pull the cable down towards your chest, and hold for a moment. Repeat for 10-15 reps1.',
+    description: 'Kneel in front of a cable machine, pull the cable down towards your chest, and hold for a moment. Repeat for 10-15 reps1.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
   {
@@ -1691,6 +1784,7 @@ const exercises = [
     description: 'Lie on your back, bend your knees, and bring them towards your chest. Lift your hips off the ground, squeeze at the top, and slowly lower back down. Repeat for 10-12 reps4.',
     repeats: null,
     weight: null,
+    muscle_groups: [ '6733ca10b2568c018b8572e2' ],
     mass_unit: null,
   },
 ]

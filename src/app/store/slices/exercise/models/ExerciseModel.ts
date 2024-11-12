@@ -39,6 +39,8 @@ export class ExerciseModel extends EntityModel {
   public in_workouts: string[] = []
 
   public archived: boolean = false
+
+  public muscle_groups: string[] = []
   
   public image?: ImageModel
 
@@ -105,6 +107,16 @@ export class ExerciseModel extends EntityModel {
     return this
   }
 
+  addMuscleGroups(muscleGroups: string) {
+    this.muscle_groups.push(muscleGroups)
+    return this
+  }
+
+  removeMuscleGroups(muscleGroups: string) {
+    this.muscle_groups = this.muscle_groups.filter(_muscleGroups => _muscleGroups !== muscleGroups)
+    return this
+  }
+
   toPlainObject() {
     return {
       ...this,
@@ -151,11 +163,11 @@ export class ExerciseModel extends EntityModel {
 
   async save() {
     const { exercisesTable } = browserDB.getTables()
-    browserDB.db?.set(exercisesTable, this.id, this.toString())
+    await browserDB.db?.set(exercisesTable, this.id, this.toString())
     return this
   }
 
-  async getCopy() {
+  getCopy() {
     return new ExerciseModel({
       ...this,
     })

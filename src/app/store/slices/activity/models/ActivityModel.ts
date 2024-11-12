@@ -73,7 +73,7 @@ export class ActivityModel extends EntityModel {
 
   async save() {
     const { activitiesTable } = browserDB.getTables()
-    browserDB.db?.set(activitiesTable, this.id, this.toString())
+    await browserDB.db?.set(activitiesTable, this.id, this.toString())
     return this
   }
 }

@@ -6,6 +6,7 @@ import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 import downloadFile from 'js-file-download'
 import browserDB from 'app/store/utils/BrowserDB'
 import { InputContainer, NoteTextContainer, StyledModal } from './components/styled'
+import styled from 'styled-components'
 
 
 export type ImportOptionsProps = {
@@ -17,6 +18,11 @@ export type ImportOptionsProps = {
 
 const { Text } = Typography
 
+const CheckboxLabel = styled.span`
+  display: inline-block;
+  width: 95px;
+`
+
 const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
   const { intl: { header } } = useIntlContext()
   const { state: indeterminate, setFalse: setNotIndeterminate, setState: setIndeterminate } = useToggle(false)
@@ -24,6 +30,7 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
   const { state: isDownloading, setTrue: setIsDownloading, setFalse: setIsNotDownloading } = useToggle(false)
 
   const [ listToExport, setListToExport ] = useState(() => ({
+    muscleGroups: true,
     exercises: true,
     workouts: true,
     activities: true,
@@ -39,6 +46,7 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
         setIsDownloading()
 
         downloadFile(JSON.stringify({
+          muscleGroups: listToExport.muscleGroups ? await db.getAllValues(tables.muscleGroupsTable) : [],
           exercises: listToExport.exercises ? await db.getAllValues(tables.exercisesTable) : [],
           workouts: listToExport.workouts ? await db.getAllValues(tables.workoutsTable) : [],
           activities: listToExport.activities ? await db.getAllValues(tables.activitiesTable) : [],
@@ -84,10 +92,12 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
 
   const handleCheckAllChange = (e: CheckboxChangeEvent) => {
     setListToExport(e.target.checked ? {
+      muscleGroups: true,
       exercises: true,
       workouts: true,
       activities: true,
     } : {
+      muscleGroups: false,
       exercises: false,
       workouts: false,
       activities: false,
@@ -120,8 +130,18 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
       <Divider style={{ marginBlock: 12 }} />
       <div>
         <InputContainer>
+          <Checkbox disabled={isExercisesChecked} checked={listToExport.muscleGroups} name="muscleGroups" onChange={handleChange}>
+            <CheckboxLabel>{header.muscle_groups}</CheckboxLabel>
+          </Checkbox>
+          <NoteTextContainer type="secondary">
+            <Text disabled={!isExercisesChecked}>
+              {header.import_options_modal.muscle_groups_required_reason}
+            </Text>
+          </NoteTextContainer>
+        </InputContainer>
+        <InputContainer>
           <Checkbox disabled={isWorkoutsChecked} checked={listToExport.exercises} name="exercises" onChange={handleChange}>
-            {header.exercises}
+            <CheckboxLabel>{header.exercises}</CheckboxLabel>
           </Checkbox>
           <NoteTextContainer type="secondary">
             <Text disabled={!isWorkoutsChecked && !isActivitiesChecked}>
@@ -131,7 +151,7 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
         </InputContainer>
         <InputContainer>
           <Checkbox disabled={isActivitiesChecked} checked={listToExport.workouts} name='workouts' onChange={handleChange}>
-            {header.workouts}
+            <CheckboxLabel>{header.workouts}</CheckboxLabel>
           </Checkbox>
           <NoteTextContainer>
             <Text disabled={!isActivitiesChecked}>
@@ -141,7 +161,7 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
         </InputContainer>
         <div>
           <Checkbox checked={listToExport.activities} name='activities' onChange={handleChange}>
-            {header.activities}
+            <CheckboxLabel>{header.activities}</CheckboxLabel>
           </Checkbox>
         </div>
       </div>

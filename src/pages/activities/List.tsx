@@ -9,7 +9,7 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { EndlessScrollableContainer } from 'app/components'
-import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
+import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/utils'
 import { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 import { PageHeaderTitle } from 'app/contexts/header_title/HeaderTItleContextProvider'
@@ -40,7 +40,7 @@ const Activities = () => {
   const { searchValue, filteredList: activitiesToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     activitiesInStore,
     {
-      onChange(_searchValue) {
+      onChange({ searchValue: _searchValue }) {
         prevRequestRef.current?.abort()
         prevRequestRef.current = loadActivities({ page: 1, byPage: 50, searchValue: _searchValue })
 

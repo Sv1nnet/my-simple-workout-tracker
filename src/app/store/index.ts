@@ -3,11 +3,13 @@ import { authApi } from './slices/auth/api'
 import { profileApi } from './slices/profile/api'
 import { exerciseApi } from './slices/exercise/api'
 import { activityApi } from './slices/activity/api'
+import { muscleGroupApi } from './slices/muscleGroup/api'
 import auth, { loginWithNoAuth } from './slices/auth'
 import profile from './slices/profile'
 import exercise from './slices/exercise'
 import workout from './slices/workout'
 import activity from './slices/activity'
+import muscleGroup from './slices/muscleGroup'
 import config, { changeLang } from './slices/config'
 import { workoutApi } from './slices/workout/api'
 import { configApi } from './slices/config/api'
@@ -18,10 +20,12 @@ const rootReducer = combineReducers({
   exercise,
   workout,
   activity,
+  muscleGroup,
   config,
   [activityApi.reducerPath]: activityApi.reducer,
   [exerciseApi.reducerPath]: exerciseApi.reducer,
   [workoutApi.reducerPath]: workoutApi.reducer,
+  [muscleGroupApi.reducerPath]: muscleGroupApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [configApi.reducerPath]: configApi.reducer,
@@ -36,6 +40,7 @@ export function makeStore() {
       profileApi.middleware,
       exerciseApi.middleware,
       workoutApi.middleware,
+      muscleGroupApi.middleware,
       configApi.middleware,
     ),
   })

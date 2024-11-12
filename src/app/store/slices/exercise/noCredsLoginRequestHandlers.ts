@@ -8,7 +8,21 @@ import { fieldsToFormat, imageSizeError, mapFormDataToImageAndRestForm } from '.
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 // eslint-disable-next-line import/extensions
 import intl from 'app/constants/intl.json'
-import EntityModel from '../../utils/EntityModel'
+import EntityModel from 'store//utils/EntityModel'
+import { MuscleGroupModel } from 'store/slices/muscleGroup/models/MuscleGroupsModel'
+import { GetExerciseServerPayload } from './types'
+
+const parseEntityStr = <T extends { archived: boolean, title: string }>(archivedPostfix: string) => (entity: string): T => {
+  const parsed: T = JSON.parse(entity)
+  if (parsed.archived) parsed.title = `${parsed.title} (${archivedPostfix})`
+  return parsed
+}
+
+const sortByTitle = (a: { title: string }, b: { title: string }) => {
+  if (a.title > b.title) return 1
+  else if (a.title < b.title) return -1
+  return 0
+}
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
@@ -25,7 +39,7 @@ const handlers = {
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { exercisesTable } = browserDB.getTables()
+    const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
     
     let archived = false
     let workoutId = params?.get('workoutId') || ''
@@ -41,19 +55,24 @@ const handlers = {
       ))
     }
 
+    const muscleGroupList = (await browserDB.db?.getAllValues(muscleGroupsTable))
+      .filter(Boolean)
+      .map(parseEntityStr<MuscleGroupModel>(intl.rest.muscle_group.state.archived[lang]))
+      .sort(sortByTitle)
+
     const list = (await browserDB.db?.getAllValues(exercisesTable))
       .filter(Boolean)
-      .map((exerciseStr) => {
-        const parsed: ExerciseModel = JSON.parse(exerciseStr)
-        if (parsed.archived) parsed.title = `${parsed.title} (${intl.pages.exercises.state.archived[lang]})`
-        return parsed
-      })
+      .map(parseEntityStr<ExerciseModel>(intl.pages.exercises.state.archived[lang]))
       .filter(exercise => exercise.archived ? archived && exercise.in_workouts.includes(workoutId) : !exercise.archived)
-      .sort((a, b) => {
-        if (a.title > b.title) return 1
-        else if (a.title < b.title) return -1
-        return 0
-      })
+      .map(exercise => ({
+        ...exercise,
+        muscle_groups: exercise.muscle_groups.reduce((acc, id) => {
+          const muscleGroupInExercise = muscleGroupList.find(muscleGroup => muscleGroup.id === id)
+          if (muscleGroupInExercise) acc.push({ id: muscleGroupInExercise.id, title: muscleGroupInExercise.title })
+          return acc
+        }, []),
+      } as GetExerciseServerPayload))
+      .sort(sortByTitle)
 
     return { data: { data: list, success: true, error: null } }
   },

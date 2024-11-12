@@ -23,7 +23,12 @@ const getMenuItems = (dispatch, {
   intl: IIntlContextValue['intl']
   onFileChange: (file: File) => void,
   onImportFinished?: (data: {
-    data: { exercises: BaseParsedDataEntity[], workouts: BaseParsedDataEntity[], activities: BaseParsedDataEntity[] },
+    data: {
+      exercises: BaseParsedDataEntity[],
+      workouts: BaseParsedDataEntity[],
+      activities: BaseParsedDataEntity[],
+      muscleGroups: BaseParsedDataEntity[]
+    },
     isSuccess: boolean,
     error: Error | Event | null,
   }) => void
@@ -48,7 +53,7 @@ const getMenuItems = (dispatch, {
 
       if (!file) throw new Error('No file selected')
 
-      const { exercises, workouts, activities } = await parseImportedDataFile(file)
+      const { exercises, workouts, activities, muscleGroups } = await parseImportedDataFile(file)
       const browserDb = await browserDBLoader.get() 
       const tables = browserDb.getTables()
       const db = browserDb.db
@@ -61,19 +66,20 @@ const getMenuItems = (dispatch, {
         }
       }
 
+      await setDataToDB(tables.muscleGroupsTable, muscleGroups)
       await setDataToDB(tables.exercisesTable, exercises)
       await setDataToDB(tables.workoutsTable, workouts)
       await setDataToDB(tables.activitiesTable, activities)
 
       onImportFinished?.({
-        data: { exercises, workouts, activities },
+        data: { exercises, workouts, activities, muscleGroups },
         isSuccess: true,
         error: null,
       })
     } catch (error) {
       showErrorNotification(error.message === 'No file selected' ? intl.header.import_options_modal.error.no_file_selected : null)
       onImportFinished?.({
-        data: { exercises: [], workouts: [], activities: [] },
+        data: { exercises: [], workouts: [], activities: [], muscleGroups: [] },
         isSuccess: false,
         error,
       })
@@ -90,7 +96,7 @@ const getMenuItems = (dispatch, {
   fileInput.onerror = (error) => {
     showErrorNotification()
     onImportFinished?.({
-      data: { exercises: [], workouts: [], activities: [] },
+      data: { exercises: [], workouts: [], activities: [], muscleGroups: [] },
       isSuccess: false,
       error: error as Event,
     })

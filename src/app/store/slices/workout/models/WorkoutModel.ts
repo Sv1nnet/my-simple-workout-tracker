@@ -112,11 +112,11 @@ export class WorkoutModel extends EntityModel {
 
   async save() {
     const { workoutsTable } = browserDB.getTables()
-    browserDB.db.set(workoutsTable, this.id, this.toString())
+    await browserDB.db.set(workoutsTable, this.id, this.toString())
     return this
   }
 
-  async getCopy() {
+  getCopy() {
     return new WorkoutModel({
       ...this,
       exercises: this.exercises.map(exercise => new WorkoutExerciseModel(exercise)),

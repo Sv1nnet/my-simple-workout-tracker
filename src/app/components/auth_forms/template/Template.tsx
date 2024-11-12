@@ -13,6 +13,7 @@ import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvide
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
 import noAuthHandlersLoader from 'app/store/utils/noAuthHandlers/noAuthHandlers.loader'
 import { initBaseExercises } from 'app/utils/initBaseExercises'
+import { initBaseMuscleGroups } from 'app/utils/initBaseMuscleGroups'
 
 export enum AUTH_FORM_TABS {
   LOGIN = 'login',
@@ -49,6 +50,7 @@ const AuthTemplate = () => {
 
       if (!isExercisesInitialized) {
         await initBaseExercises(db.db, lang)
+        await initBaseMuscleGroups(db.db, lang)
         await db.db.set(db.db.tables.config, 'isExercisesInitialized', 'true')
       }
 

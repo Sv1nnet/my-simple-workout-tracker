@@ -7,7 +7,7 @@ import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotificat
 import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/SearchPanel'
+import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/utils'
 import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 
@@ -26,7 +26,15 @@ const Exercises = () => {
   const { filteredList: exercisesToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     exercisesInStore,
     {
-      filterFn: searchValue => exercise => exercise.title.toLowerCase().includes(searchValue),
+      filterFn: ({ searchValue, tags }) => exercise => exercise
+        .title
+        .toLowerCase()
+        .includes(searchValue) &&
+        (
+          !!tags.length
+            ? !!exercise.muscle_groups.length && tags.some(tag => exercise.muscle_groups.find(muscleGroup => muscleGroup.id === tag.value))
+            : true
+        ),
       refetch: loadExercises,
     },
     {

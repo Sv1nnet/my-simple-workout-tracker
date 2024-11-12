@@ -232,7 +232,9 @@ export const showActivityErrors = (
       errorModalsRef.current.restoreActivity?.destroy()
       errorModalsRef.current.restoreActivity = null
     }
-  } else if (historyErrorText || isHistoryError) {
+  }
+
+  if (historyErrorText || isHistoryError) {
     if (errorModalsRef.current.history) {
       errorModalsRef.current.history.destroy()
       errorModalsRef.current.history = null
