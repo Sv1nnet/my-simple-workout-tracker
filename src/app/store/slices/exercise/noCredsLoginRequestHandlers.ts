@@ -77,6 +77,7 @@ const handlers = {
     return { data: { data: list, success: true, error: null } }
   },
   create: async ({ body }: { body: FormData }) => {
+    const { muscleGroupsTable } = browserDB.getTables()
     const bodyKeys = body.keys()
     let data: Partial<ExerciseModelConstructorParameter> = {}
 
@@ -88,6 +89,15 @@ const handlers = {
 
     try {
       const exercise = new ExerciseModel(data as ExerciseModelConstructorParameter)
+      const muscleGroupsInExercise = (await browserDB.db?.getAllValues(muscleGroupsTable))
+        .filter(Boolean)
+        .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
+        .filter(muscleGroup => data.muscle_groups.includes(muscleGroup.id))
+
+      await Promise.all(muscleGroupsInExercise.map(muscleGroup => muscleGroup.update({
+        is_in_exercise: true,
+        in_exercises: [ ...muscleGroup.in_exercises, exercise.id ],
+      }).save()))
       
       if (exercise.image) {
         await exercise.image.imageSetter
@@ -102,13 +112,18 @@ const handlers = {
     }
   },
   copy: async ({ body }: { body: { ids: string[] } }) => {
-    const { exercisesTable } = browserDB.getTables()
+    const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
     const { ids = [] } = body
     const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
 
     try {
       const allExercises: PlainExerciseObject[] = (await browserDB.db?.getAllValues(exercisesTable)).map(value => JSON.parse(value))
       const exercisesToCopy = allExercises.filter(exercise => ids.find(id => id === exercise.id)).map(exercise => new ExerciseModel(exercise))
+      const muscleGroupsInExercises = (await browserDB.db?.getAllValues(muscleGroupsTable))
+        .filter(Boolean)
+        .map(muscleGroup => JSON.parse(muscleGroup))
+        .filter(muscleGroup => exercisesToCopy.some(exercise => exercise.muscle_groups.includes(muscleGroup.id)))
+        .map(muscleGroup => new MuscleGroupModel(muscleGroup))
 
       await Promise.all(exercisesToCopy.map(async (exercise) => {
         let newExercise = await new ExerciseModel({
@@ -119,6 +134,13 @@ const handlers = {
         })
         newExercise.update({ id: EntityModel.createId() })
         newExercise = await newExercise.save()
+
+        const muscleGroupsInNewExercise = muscleGroupsInExercises.filter(muscleGroup => exercisesToCopy.some(_exercise => _exercise.muscle_groups.includes(muscleGroup.id)))
+        
+        await Promise.all(muscleGroupsInNewExercise.map(muscleGroup => muscleGroup.update({
+          is_in_exercise: true,
+          in_exercises: [ ...muscleGroup.in_exercises, newExercise.id ],
+        }).save()))
         
         return newExercise
       }))
@@ -130,7 +152,7 @@ const handlers = {
     }
   },
   update: async ({ body }: { body: FormData }) => {
-    const { exercisesTable, workoutsTable } = browserDB.getTables()
+    const { exercisesTable, workoutsTable, muscleGroupsTable } = browserDB.getTables()
     
     const bodyKeys = body.keys()
     let data: Partial<ExerciseModel & Partial<ImageFields>> = {}
@@ -165,6 +187,16 @@ const handlers = {
       } else {
         await exercise.update(image ? { ...restForm, image: new ImageModel(image) } : restForm)
       }
+
+      const allMuscleGroups = (await browserDB.db?.getAllValues(muscleGroupsTable))
+        .filter(Boolean)
+        .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
+
+      const muscleGroupsToRemove = allMuscleGroups.filter(muscleGroup => exerciseFromDb.muscle_groups.includes(muscleGroup.id) && !exercise.muscle_groups.includes(muscleGroup.id))
+      const muscleGroupsToAdd = allMuscleGroups.filter(muscleGroup => !exerciseFromDb.muscle_groups.includes(muscleGroup.id) && exercise.muscle_groups.includes(muscleGroup.id))
+
+      await Promise.all(muscleGroupsToRemove.map(muscleGroup => muscleGroup.removeExercise(exercise.id).save()))
+      await Promise.all(muscleGroupsToAdd.map(muscleGroup => muscleGroup.addExercise(exercise.id).save()))
   
       await exercise.save()
 
@@ -179,7 +211,7 @@ const handlers = {
     return handlers.deleteMany({ body: { ids: [ id ] } })
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
-    const { exercisesTable, workoutsTable } = browserDB.getTables()
+    const { exercisesTable, workoutsTable, muscleGroupsTable } = browserDB.getTables()
     
     const { ids } = body
     const workouts = (await browserDB.db?.getAllValues(workoutsTable))
@@ -187,7 +219,20 @@ const handlers = {
 
     const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(exercisesTable, id))))
       .map(exercise => new ExerciseModel(JSON.parse(exercise)))
-      .map(exercise => exercise.delete(workouts))
+      .map(async (exercise) => {
+        await exercise.delete(workouts)
+
+        for (const muscleGroupId of exercise.muscle_groups) {
+          await new MuscleGroupModel(
+            JSON.parse(
+              await browserDB.db?.get(muscleGroupsTable, muscleGroupId),
+            ),
+          )
+            .removeExercise(exercise.id)
+            .save()
+        }
+        return exercise
+      })
     
     await Promise.all(awaitingForDeletingPromises)
 
