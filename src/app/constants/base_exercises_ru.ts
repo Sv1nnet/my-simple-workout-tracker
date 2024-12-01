@@ -17,7 +17,11 @@ const exercises = [
     description: 'Лежа на скамье, поднимайте штангу от груди вверх.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -36,7 +40,12 @@ const exercises = [
     description: 'Опуститесь, как будто садитесь на стул, затем поднимитесь обратно.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572de', '6733ca10b2568c018b8572e1', '6733ca10b2568c018b8572df', '6733ca10b2568c018b8572da' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572de',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572da',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -55,7 +64,12 @@ const exercises = [
     description: 'Поднимите штангу с пола до уровня бедер, затем опустите обратно.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572da',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -74,7 +88,11 @@ const exercises = [
     description: 'Висите на перекладине и подтягивайте тело вверх, пока подбородок не окажется над перекладиной.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -93,7 +111,10 @@ const exercises = [
     description: 'Сидя или стоя, поднимайте гантели над головой от уровня плеч.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -112,7 +133,11 @@ const exercises = [
     description: 'Разгибайте ноги, поднимая утяжеленную подушку на тренажере.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -131,7 +156,11 @@ const exercises = [
     description: 'Наклонитесь и подтяните штангу к нижней части груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -150,7 +179,9 @@ const exercises = [
     description: 'Опустите трос вниз, используя трицепсы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -169,7 +200,9 @@ const exercises = [
     description: 'Поднимайте гантели к плечам, сгибая руки.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dd',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -188,7 +221,10 @@ const exercises = [
     description: 'Сидя, тяните рукоятку вниз к верхней части груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -207,7 +243,9 @@ const exercises = [
     description: 'Разгибайте ноги, поднимая утяжеленную подушку на тренажере.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572de',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -226,7 +264,9 @@ const exercises = [
     description: 'Сгибайте ноги, поднимая утяжеленную подушку на тренажере.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572df',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -245,7 +285,11 @@ const exercises = [
     description: 'Сделайте шаг вперед в положение выпада, держа гантели в руках.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572de',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -264,7 +308,9 @@ const exercises = [
     description: 'Поднимайтесь на носки, стоя на полу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e0',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -283,7 +329,11 @@ const exercises = [
     description: 'Выполняйте жим штанги лежа на наклонной скамье.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -302,7 +352,11 @@ const exercises = [
     description: 'Опускайте и поднимайте тело между параллельными брусьями.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -321,7 +375,10 @@ const exercises = [
     description: 'Тяните трос к лицу, фокусируясь на задних дельтах.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -340,7 +397,9 @@ const exercises = [
     description: 'Сидя с поднятыми ногами, поворачивайте корпус из стороны в сторону.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -359,7 +418,9 @@ const exercises = [
     description: 'Выполняйте сгибания рук с гантелями, держа их ладонями друг к другу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572db',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -378,7 +439,11 @@ const exercises = [
     description: 'Сидя за тренажером, тяните рукоятку к животу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -397,7 +462,9 @@ const exercises = [
     description: 'Держите гантель или штангу над головой, опустите ее за голову, затем выпрямите руки.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -416,7 +483,11 @@ const exercises = [
     description: 'Лежа на скамье, разведите руки с гантелями в стороны, затем сведите их над грудью.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -435,7 +506,10 @@ const exercises = [
     description: 'Стоя с гантелями в руках, поднимите их в стороны до уровня плеч.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -454,7 +528,9 @@ const exercises = [
     description: 'Используя тренажер для жима ногами, поднимайтесь на носки, разгибая голеностопы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e0',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -473,7 +549,10 @@ const exercises = [
     description: 'Упритесь верхней частью спины в скамью и поднимите штангу с пола, используя мышцы бедер.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -492,7 +571,11 @@ const exercises = [
     description: 'Опускайте тело между параллельными брусьями, наклоняясь вперед для акцента на грудные мышцы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -511,7 +594,9 @@ const exercises = [
     description: 'Сидя в тренажере, сгибайте ноги, поднимая утяжеленную подушку.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572df',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -530,7 +615,11 @@ const exercises = [
     description: 'Наклонитесь, опираясь одной рукой на скамью, и тяните гантель другой рукой к боку.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -549,7 +638,11 @@ const exercises = [
     description: 'Встаньте между двумя блоками кроссовера и сведите руки перед грудью.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -568,7 +661,10 @@ const exercises = [
     description: 'Держите штангу перед бедрами и поднимайте плечи к ушам.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -587,7 +683,9 @@ const exercises = [
     description: 'Лежа на скамье, опустите штангу или EZ-гриф ко лбу, затем выпрямите руки.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -606,7 +704,9 @@ const exercises = [
     description: 'Сидя с согнутыми коленями, поднимайте пятки от пола, используя тренажер или веса на бедрах.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e0',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -625,7 +725,10 @@ const exercises = [
     description: 'Наклонитесь вперед и поднимайте гантели в стороны, фокусируясь на задних дельтах.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -644,7 +747,9 @@ const exercises = [
     description: 'Висите на перекладине и поднимайте ноги, пока они не станут параллельны полу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -663,7 +768,9 @@ const exercises = [
     description: 'Стоя со штангой в руках, поднимайте ее к плечам.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572db',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -682,7 +789,11 @@ const exercises = [
     description: 'Сядьте в тренажер для жима на грудные мышцы и отталкивайте рукоятки от груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -701,7 +812,12 @@ const exercises = [
     description: 'Держите штангу перед бедрами, наклоняйтесь вперед, опуская ее вниз, сохраняя ноги почти прямыми.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -720,7 +836,10 @@ const exercises = [
     description: 'Сидя на скамье с опорой для спины, выжимайте гантели или штангу над головой.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -739,7 +858,9 @@ const exercises = [
     description: 'Опирайтесь руками на скамью Скотта и поднимайте штангу или гантели к плечам.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572db',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -758,7 +879,12 @@ const exercises = [
     description: 'Выполняйте приседания в тренажере для гакк-приседаний с поддержкой спины.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -777,7 +903,11 @@ const exercises = [
     description: 'Выполняйте жим штанги на скамье с отрицательным наклоном для проработки нижней части грудных мышц.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -796,7 +926,11 @@ const exercises = [
     description: 'Используйте Т-образную тягу или штангу в тренажере для тяги к поясу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -815,7 +949,10 @@ const exercises = [
     description: 'Выполняйте жим гантелей с поворотом кистей от себя к себе во время движения.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -834,7 +971,9 @@ const exercises = [
     description: 'Используя блочный тренажер, разгибайте руку назад для проработки трицепса.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -853,7 +992,11 @@ const exercises = [
     description: 'Лежа на скамье, опустите гантель за голову, затем верните ее обратно над грудью.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -872,7 +1015,11 @@ const exercises = [
     description: 'Используйте тренажер для жима ногами сидя, чтобы отталкивать вес ногами.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -891,7 +1038,12 @@ const exercises = [
     description: 'Выполняйте приседания со штангой, расположенной на передней части плеч.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -910,7 +1062,10 @@ const exercises = [
     description: 'Поднимайте штангу или гантели вертикально перед собой до уровня груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -929,7 +1084,9 @@ const exercises = [
     description: 'Держите гантель обеими руками за головой и разгибайте руки вверх.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -948,7 +1105,11 @@ const exercises = [
     description: 'Лежа на наклонной скамье, выжимайте гантели вверх от уровня груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -967,7 +1128,10 @@ const exercises = [
     description: 'Сидя, тяните трос к лицу, фокусируясь на задних дельтах и верхней части спины.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -986,7 +1150,12 @@ const exercises = [
     description: 'Держа гантели по бокам, выполняйте приседания.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1005,7 +1174,11 @@ const exercises = [
     description: 'Выполняйте жим штанги лежа, держа руки ближе друг к другу для акцента на трицепсы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1024,7 +1197,9 @@ const exercises = [
     description: 'Лежа на спине, поднимайте таз от пола, приближая колени к груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1043,7 +1218,11 @@ const exercises = [
     description: 'Используйте тренажер для тяги, чтобы подтягивать рукоятки к животу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1062,7 +1241,11 @@ const exercises = [
     description: 'Лежа на плоской скамье, выжимайте гантели вверх от уровня груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1081,7 +1264,10 @@ const exercises = [
     description: 'Лежа на спине с согнутыми коленями, поднимайте таз вверх, напрягая ягодицы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1100,7 +1286,10 @@ const exercises = [
     description: 'Держа гантели по бокам, поднимайте плечи к ушам.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1119,7 +1308,9 @@ const exercises = [
     description: 'Используйте канатную рукоятку на тренажере, чтобы выполнять разгибания рук вниз для проработки трицепсов.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1138,7 +1329,9 @@ const exercises = [
     description: 'Используйте тренажер для приведения ног, чтобы свести ноги вместе против сопротивления.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1157,7 +1350,9 @@ const exercises = [
     description: 'Используйте тренажер для отведения ног, чтобы развести ноги в стороны против сопротивления.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1176,7 +1371,11 @@ const exercises = [
     description: 'Держа гантели, сделайте шаг в сторону, опуская тело в положение выпада.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1195,7 +1394,10 @@ const exercises = [
     description: 'Тяните трос сверху вниз по диагонали через тело, имитируя движение рубки дров.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1214,7 +1416,12 @@ const exercises = [
     description: 'Со штангой на плечах, наклоняйтесь вперед в пояснице, опуская корпус параллельно полу.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1233,7 +1440,10 @@ const exercises = [
     description: 'Используйте тренажер для жима плеч, чтобы поднимать рукоятки вверх.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1252,7 +1462,9 @@ const exercises = [
     description: 'Сидя, поднимайте гантель на бицепс, упирая локоть во внутреннюю поверхность бедра.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572db',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1271,7 +1483,9 @@ const exercises = [
     description: 'Стоя на коленях перед тренажером, выполняйте скручивания, тяня трос руками из-за головы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1290,7 +1504,12 @@ const exercises = [
     description: 'Выполняйте приседания, используя тренажер Смита для направленного движения штанги.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d9',
+      '6733ca10b2568c018b8572e1',
+      '6733ca10b2568c018b8572df',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: 'kg',
   },
   {
@@ -1309,7 +1528,9 @@ const exercises = [
     description: 'Выполняйте обратные скручивания на наклонной скамье для повышенной сложности.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1328,7 +1549,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1347,7 +1572,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1366,7 +1595,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1385,7 +1618,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1404,7 +1641,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1423,7 +1664,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1442,7 +1687,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1461,7 +1710,11 @@ const exercises = [
     description: '',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d7',
+      '6733ca10b2568c018b8572db',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1480,7 +1733,11 @@ const exercises = [
     description: 'Выполняйте отжимания с сомкнутыми руками, образуя форму бриллианта с указательными пальцами и большими пальцами. Этот вариант направлен на трицепс и внутренние грудные мышцы.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572dc',
+      '6733ca10b2568c018b8572d8',
+    ],
     mass_unit: null,
   },
   {
@@ -1499,7 +1756,11 @@ const exercises = [
     description: 'Выполняйте отжимания с поднятыми ногами на скамейку или платформу. Этот вариант направлен на верхнюю часть груди и передние плечи более интенсивно, чем стандартные отжимания.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -1518,7 +1779,11 @@ const exercises = [
     description: 'Выполняйте отжимания с рук на высокой поверхности, такой как скамейка или ступенька. Этот вариант проще, чем стандартные отжимания, и направлен на нижнюю часть груди.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -1537,7 +1802,11 @@ const exercises = [
     description: 'Выполняйте пульсометрические отжимания, где вы подталкиваете свое тело вверх с достаточной силой, чтобы ваши руки оторвались от пола. Это упражнение развивает силу в груди, плечах и трицепсах. Приземляйтесь мягко с немного согнутыми локтями, чтобы поглотить удар.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -1556,7 +1825,12 @@ const exercises = [
     description: 'Выполняйте отжимания с одной рукой немного вперед и другой немного назад. Этот вариант вызывает дисбаланс и активизирует пресс больше. Меняйте положение рук в каждом подходе, чтобы обеспечить равномерное развитие.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1575,7 +1849,12 @@ const exercises = [
     description: 'Выполняйте отжимания с одной рукой, с другой рукой за спиной. Этот вариант значительно увеличивает сложность, требуя больше силы и стабильности. Он направлен на грудь, трицепс и плечи, а также активизирует пресс для баланса. Начните с более широкого положения ног для большей стабильности, и продвигайтесь к более узкому положению по мере того, как вы станете сильнее.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1594,7 +1873,11 @@ const exercises = [
     description: 'Выполняйте отжимания с рук, расположенных шире, чем ширина плеч. Этот вариант усиливает работу наружных грудных мышц и передних дельтовидов. Поддерживайте прямую линию корпуса в течение всего движения. Опускайте грудь к полу, затем возвращайтесь в исходное положение.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -1613,7 +1896,11 @@ const exercises = [
     description: 'Выполняйте стандартные отжимания с рук, расположенных на ширине плеч. Начните в планке с вытянутыми руками, затем опустите свое тело, пока грудь почти не коснется пола. Возвращайтесь в исходное положение, держа корпус прямой в течение всего движения. Это упражнение в основном направлено на грудь, трицепс и плечи, а также активизирует пресс для стабильности.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572d6',
+      '6733ca10b2568c018b8572d8',
+      '6733ca10b2568c018b8572dc',
+    ],
     mass_unit: null,
   },
   {
@@ -1632,7 +1919,9 @@ const exercises = [
     description: 'Удерживайте планку в течение 30-60 секунд.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1651,7 +1940,9 @@ const exercises = [
     description: 'Лежите на спине, поднимите ноги прямо вверх, затем опустите их обратно без касания пола.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1670,7 +1961,9 @@ const exercises = [
     description: 'Сядьте прямо, с согнутыми коленями и поднятыми ногами, поверните корпус из стороны в сторону.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1689,7 +1982,10 @@ const exercises = [
     description: 'Начните на четвереньках, поднимите правую руку и левую ногу, держите, затем меняйте стороны.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+      '6733ca10b2568c018b8572d7',
+    ],
     mass_unit: null,
   },
   {
@@ -1708,7 +2004,9 @@ const exercises = [
     description: 'Висите на турнике, поднимите ноги прямо вверх, затем опустите их обратно.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1727,7 +2025,9 @@ const exercises = [
     description: 'Лежите на боку с согнутыми ногами, поднимите корпус',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1746,7 +2046,9 @@ const exercises = [
     description: 'Руки, расположенные за головой, при этом выполняют лишь поддерживающую функцию. Подъем туловища выше уровня плеч, удержание его в этой позиции и опускание, происходят за счет усилий мышц самого пресса.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1765,7 +2067,9 @@ const exercises = [
     description: 'Присядьте лицом к кабельной машине, тяните кабель к груди, и удерживайте некоторое время.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
   {
@@ -1784,7 +2088,9 @@ const exercises = [
     description: 'Лежите на спине, согните колени, и поднимите их к груди. Поднимите ягодицы от пола, сожмите в верхней точке, и постепенно опуститесь вниз.',
     repeats: null,
     weight: null,
-    muscle_groups: [ '6733ca10b2568c018b8572d6', '6733ca10b2568c018b8572d8', '6733ca10b2568c018b8572dc', '6733ca10b2568c018b8572e0' ],
+    muscle_groups: [
+      '6733ca10b2568c018b8572e2',
+    ],
     mass_unit: null,
   },
 ]
