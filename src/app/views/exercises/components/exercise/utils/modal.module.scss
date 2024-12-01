@@ -1,0 +1,5 @@
+:global(.ant-modal-root) {
+  & .modalWrapper {
+    z-index: 10002;
+  }
+}

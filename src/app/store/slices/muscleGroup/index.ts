@@ -34,9 +34,9 @@ export const muscleGroupSlice = createSlice({
       state.single.data = action.payload
     },
     updateInList: (state, action: PayloadAction<{ byIdFromClient: boolean, muscleGroup: MuscleGroupListItem }>) => {
-      const index = state.list.data.findIndex(item => action.payload.byIdFromClient
-        ? item.idFromClient === action.payload.muscleGroup.idFromClient
-        : item.id === action.payload.muscleGroup.id)
+      const index = action.payload.byIdFromClient
+        ? state.list.data.findIndex(item => item.idFromClient === action.payload.muscleGroup.idFromClient)
+        : state.list.data.findIndex(item => item.id === action.payload.muscleGroup.id)
 
       if (index !== -1) {
         state.list.data[index] = action.payload.muscleGroup

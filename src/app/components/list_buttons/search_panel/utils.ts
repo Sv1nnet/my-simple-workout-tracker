@@ -4,13 +4,13 @@ import { notification } from 'antd'
 import { DefaultOptionType } from 'antd/lib/select'
 import { MuscleGroupError } from 'app/store/slices/muscleGroup/types'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { Tag } from 'src/@types'
 
 export type ApiGetMuscleGroupError = {
   data: MuscleGroupError;
   status: number;
 }
 
-export type Tag = { label: string, value: string, key: string, disabled?: boolean, title?: string }
 export type Values = { searchValue: string, tags: Tag[] }
 
 export type OnChangeHandler = (values: Values, e: ChangeEvent<HTMLInputElement> | DefaultOptionType[] | null) => void

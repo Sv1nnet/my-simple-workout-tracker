@@ -3,6 +3,7 @@ const defaultParsers = {
   number: (v: string) => v !== undefined && v !== null && v !== '' ? parseFloat(v) : undefined,
   undefined: (v: any) => v === null && v === '' ? undefined : v,
   string: (v: any) => v === undefined || v === null ? '' : v,
+  array: (v: any) => v === undefined || v === null ? [] : JSON.parse(v),
 }
 
 const parse = (value, parsers) => {

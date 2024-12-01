@@ -441,6 +441,10 @@
           "ru": "Название",
           "eng": "Title"
         },
+        "muscle_groups": {
+          "ru": "Группы мышц",
+          "eng": "Muscle groups"
+        },
         "type": {
           "ru": "Тип нагрузки",
           "eng": "Type",
@@ -1021,6 +1025,16 @@
       "select_muscle_groups": {
         "ru": "Выберите группы мышц",
         "eng": "Select muscle groups"
+      },
+      "error": {
+        "loading": {
+          "ru": "Не удалось загрузить список групп мышц",
+          "eng": "Could not load muscle groups list"
+        },
+        "not_found": {
+          "ru": "Группа мышц не найдена",
+          "eng": "Muscle group not found"
+        }
       }
     }
   }

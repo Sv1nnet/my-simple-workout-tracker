@@ -10,7 +10,7 @@ import {
 } from 'antd'
 import { FC, useEffect, useMemo, useReducer, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
-import { DeleteEditPanel, TimePicker } from 'app/components'
+import { DeleteEditPanel, SelectWithItemCreating, TimePicker } from 'app/components'
 import { Dayjs } from 'dayjs'
 import { isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
 import { ToggleEdit } from 'app/components'
@@ -28,8 +28,13 @@ import {
   HoursFormItem,
 } from './components'
 import { useNavigate } from 'react-router'
-import { useMounted } from 'app/hooks'
+import { useAppSelector, useMounted } from 'app/hooks'
 import getBase64 from 'app/utils/getBase64'
+import { selectList } from 'store/slices/muscleGroup'
+import { muscleGroupApi } from 'store/slices/muscleGroup/api'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { ApiGetMuscleGroupError, useShowDeleteMuscleGroupError } from './utils'
+import style from './utils/modal.module.scss'
 
 export type InitialValues = {
   title: string;
@@ -85,8 +90,25 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const navigate = useNavigate()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
+  const [ isMuscleGroupSelectOpen, setIsMuscleGroupSelectOpen ] = useState<boolean | undefined>(undefined)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
-  const { intl } = useIntlContext()
+
+  const [ fetchMuscleGroupList, { error: fetchMuscleGroupsError } ] = muscleGroupApi.useLazyListQuery()
+  const { data: muscleGroupList, status: muscleGroupListStatus } = useAppSelector(selectList)
+  const muscleGroupsItems = useMemo(() => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id })), [ muscleGroupList ])
+
+  const [ createMuscleGroup, { error: createMuscleGroupError } ] = muscleGroupApi.useCreateMutation()
+  const [ deleteMuscleGroup, { error: deleteMuscleGroupError } ] = muscleGroupApi.useDeleteMutation()
+
+  const handleAddItem = async (newMuscleGroup: { label: string, id: string }) => {
+    try {
+      return await createMuscleGroup({ title: newMuscleGroup.label, id: newMuscleGroup.id }).unwrap()
+    } catch (createError) {
+      console.error(createError)
+    }
+  }
+
+  const { lang, intl } = useIntlContext()
   const { input_labels, submit_button, payload, modal, notifications } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
@@ -118,6 +140,53 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     }
     return exercise
   }, [ _initialValues ])
+
+  const requestForDeleteMuscleGroupPromise = (muscleGroupName: string) => {
+    setIsMuscleGroupSelectOpen(true)
+
+    return new Promise((resolve) => {
+      const _modal = Modal.confirm({
+        title: 'delete muscle group',
+        content: `Are you sure you want to delete ${muscleGroupName} muscle group?`,
+        okText: 'yes',
+        cancelText: 'no',
+        maskStyle: {
+          zIndex: 10001,
+        },
+        wrapClassName: style.modalWrapper,
+        onOk: () => {
+          resolve(true)
+          _modal.destroy()
+        },
+        onCancel: () => {
+          resolve(false)
+          _modal.destroy()
+        },
+        afterClose() {
+          setIsMuscleGroupSelectOpen(undefined)
+        },
+      })
+    })
+  }
+
+  const handleDeleteMuscleGroup = async (id: string) => {
+    try {
+      const deletedItemIndexInValues = form.getFieldValue('muscle_groups').findIndex(item => item.value === id)
+      // const isDeletingConfirmed = true
+      const isDeletingConfirmed = await requestForDeleteMuscleGroupPromise(muscleGroupList.find(item => item.id === id)?.title)
+
+      if (isDeletingConfirmed) {
+        if (deletedItemIndexInValues !== -1) {
+          form.setFieldsValue({
+            muscle_groups: form.getFieldValue('muscle_groups').filter(item => item.value !== id),
+          })
+        }
+        await deleteMuscleGroup({ id }).unwrap()
+      }
+    } catch (deleteError) {
+      console.error(deleteError)
+    }
+  }
 
   const selectAfter = useMemo(() => (
     <Form.Item name="mass_unit" noStyle>
@@ -159,12 +228,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   }
 
   const handleSubmit = async (_values) => {
-    let { time, image, ...values } = _values
+    let { time, image, muscle_groups, ...values } = _values
     values = (() => {
       const formData = new FormData()
       Object
         .entries(values)
         .forEach(([ key, value ]) => value !== undefined && formData.append(key, `${value}`))
+      
+      formData.append('muscle_groups', JSON.stringify(muscle_groups.map(item => item.value)))
 
       return formData
     })()
@@ -231,6 +302,16 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     }
   }, [ !!error, isError ])
 
+  useEffect(() => {
+    fetchMuscleGroupList({ lang: isEdit ? lang : undefined })
+  }, [])
+
+  useEffect(() => {
+    document.querySelector('#muscle_groups').setAttribute('inputmode', 'none')
+  }, [])
+
+  useShowDeleteMuscleGroupError([ fetchMuscleGroupsError, createMuscleGroupError, deleteMuscleGroupError ] as ApiGetMuscleGroupError[])
+
   useHandleMounted()
 
   const isFormItemDisabled = !isEditMode || isFetching
@@ -257,6 +338,15 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           <Select.Option value="time">{input_labels.type.options.time}</Select.Option>
           <Select.Option value="duration">{input_labels.type.options.duration}</Select.Option>
         </Select>
+      </Form.Item>
+      <Form.Item label={input_labels.muscle_groups} name="muscle_groups">
+        <SelectWithItemCreating
+          isOpen={isMuscleGroupSelectOpen}
+          loading={muscleGroupListStatus === API_STATUS.LOADING}
+          onAddItem={handleAddItem}
+          onDeleteItem={handleDeleteMuscleGroup}
+          items={muscleGroupsItems}
+        />
       </Form.Item>
       <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
         <Checkbox disabled={isFormItemDisabled || _initialValues.is_in_workout}>
@@ -358,6 +448,7 @@ Exercise.defaultProps = {
   initialValues: {
     title: '',
     is_in_workout: false,
+    muscle_groups: [],
     type: 'repeats',
     each_side: false,
     mass_unit: 'kg',

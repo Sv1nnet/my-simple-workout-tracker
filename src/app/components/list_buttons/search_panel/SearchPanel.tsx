@@ -1,13 +1,10 @@
-import { ChangeEvent, ChangeEventHandler, useMemo, useRef, useState } from 'react'
-import { CloseOutlined, DeleteOutlined, LoadingOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { ChangeEventHandler, useEffect, useMemo, useRef, useState } from 'react'
+import { CloseOutlined, LoadingOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
 import AddButton from '../add_button/AddButton'
 import {
   AddButtonText,
-  AddItemContainer,
   ButtonsContainer,
   Container,
-  NoDataText,
-  OptionContent,
   ReloadButton,
   SelectContainer,
   StyledCollapse,
@@ -16,14 +13,12 @@ import {
   StyledSearchButton,
 } from './components'
 import { useToggle } from 'app/hooks'
-import { Button, Collapse, Divider, Input, InputRef, Select, Spin } from 'antd'
+import { Collapse, notification, Select, SelectProps, Spin } from 'antd'
+import { Tag } from 'src/@types'
 import { muscleGroupApi } from 'app/store/slices/muscleGroup/api'
-import { nanoid } from '@reduxjs/toolkit'
-import { DefaultOptionType } from 'antd/lib/select'
+import { OnChangeHandler } from './utils'
+import { NoDataText } from 'app/components'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ApiGetMuscleGroupError, OnChangeHandler, Tag, useShowError } from './utils'
-
-const { Option } = Select
 
 export type SearchPanelProps = {
   href: string,
@@ -35,59 +30,15 @@ export type SearchPanelProps = {
 
 const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: SearchPanelProps) => {
   const { intl } = useIntlContext()
-
   const { state: isOpen, setState: setIsOpen } = useToggle(false)
-  const { state: isMuscleGroupsSelectOpen, setFalse: closeMuscleGroupsSelect, setTrue: openMuscleGroupsSelect, setState: setIsMuscleGroupsSelectOpen } = useToggle(false)
   const [ searchValue, setSearchValue ] = useState('')
-  const [ addTagInputValue, setAddTagInputValue ] = useState('')
   const [ tags, setTags ] = useState<Tag[]>([])
 
   const $input = useRef(null)
   const $select = useRef(null)
-  const $addTagInput = useRef<InputRef>(null)
 
   const { data: muscleGroups, isLoading: isLoadingMuscleGroups, isFetching: isFetchingMuscleGroups, error: fetchMuscleGroupsError } = muscleGroupApi.useListQuery({ lang: 'ru' })
-  const [ createMuscleGroup, { error: createMuscleGroupError } ] = muscleGroupApi.useCreateMutation()
-  const [ deleteMuscleGroup, { error: deleteMuscleGroupError } ] = muscleGroupApi.useDeleteMutation()
-
-  const handleAddTagInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setAddTagInputValue(e.target.value)
-  }
-
-  const handleDropdownVisibleChange = (isVisible: boolean) => {
-    setIsMuscleGroupsSelectOpen(isVisible)
-
-    if (!isVisible) setAddTagInputValue('')
-  }
-
-  const addItem = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    const id = nanoid()
-    const newMuscleGroup = { title: addTagInputValue, id }
-
-    try {
-      await createMuscleGroup(newMuscleGroup).unwrap()
-    } catch (createError) {
-      console.error(createError)
-    }
-
-    setAddTagInputValue('')
-  }
-
-  const handleDeleteItem = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
-    e.preventDefault()
-
-    const id = e.currentTarget.dataset.id
-
-    try {
-      if (id) {
-        await deleteMuscleGroup({ id }).unwrap()
-      }
-    } catch (deleteError) {
-      console.error(deleteError)
-    }
-  }
+  const muscleGroupsItems = useMemo(() => muscleGroups?.data?.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id })), [ muscleGroups?.data ])
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setSearchValue(e.target.value)
@@ -97,7 +48,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
     }, e)
   }
 
-  const handleSelectTagsChange = (value: Tag[], e: DefaultOptionType | DefaultOptionType[]) => {
+  const handleSelectTagsChange: SelectProps<Tag[]>['onChange'] = (value, e) => {
     setTags(value)
     onChange({
       searchValue,
@@ -125,13 +76,20 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
 
       setIsOpen(!isOpen)
 
-      if (isOpen) closeMuscleGroupsSelect()
+      if (isOpen) $select.current?.close()
     }
   
     return <StyledSearchButton onClick={handleClick} icon={Icon} />
   }, [ isOpen ])
 
-  useShowError([ fetchMuscleGroupsError, createMuscleGroupError, deleteMuscleGroupError ] as ApiGetMuscleGroupError[])
+  useEffect(() => {
+    if (fetchMuscleGroupsError) {
+      notification.error({
+        message: intl.common?.error,
+        description: intl.rest?.muscle_group?.error?.loading,
+      })
+    }
+  }, [ fetchMuscleGroupsError ])
 
   return (
     <Container>
@@ -160,52 +118,22 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
       <StyledCollapse bordered={false} ghost activeKey={isOpen ? '1' : null} destroyInactivePanel>
         <Collapse.Panel header='' key='1' showArrow={false}>
           <SelectContainer $collapsed={!isOpen}>
-            <Select<Tag[]>
-              ref={$select}
-              open={isMuscleGroupsSelectOpen}
+            <Select
+              value={tags}
               loading={isLoadingMuscleGroups || isFetchingMuscleGroups}
-              onDropdownVisibleChange={handleDropdownVisibleChange}
               placeholder={intl.rest.muscle_group.select_muscle_groups}
-              mode='multiple'
+              mode="tags"
               labelInValue
               dropdownMatchSelectWidth
-              size='middle'
+              size="middle"
               optionLabelProp="label"
+              optionFilterProp="label"
               notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
               menuItemSelectedIcon={null}
-              onFocus={openMuscleGroupsSelect}
               onChange={handleSelectTagsChange}
-              dropdownRender={menu => (
-                <>
-                  {menu}
-                  <Divider style={{ margin: '8px 0' }} />
-                  <AddItemContainer>
-                    <Input
-                      ref={$addTagInput}
-                      value={addTagInputValue}
-                      onChange={handleAddTagInputChange}
-                    />
-                    <Button disabled={!addTagInputValue} type="text" icon={<PlusOutlined />} onClick={addItem}>
-                      {intl.common.add}
-                    </Button>
-                    <Button type='primary' onClick={() => handleDropdownVisibleChange(false)}>
-                      {intl.common.ok}
-                    </Button>
-                  </AddItemContainer>
-                </>
-              )}
             >
-              {muscleGroups?.data?.map(muscleGroup => (
-                <Option
-                  label={muscleGroup.title}
-                  value={muscleGroup.id}
-                  key={muscleGroup.id}
-                >
-                  <OptionContent>
-                    {muscleGroup.title}
-                    <Button data-id={muscleGroup.id} danger size='small' icon={<DeleteOutlined />} onClick={handleDeleteItem} />
-                  </OptionContent>
-                </Option>
+              {muscleGroupsItems?.map(item => (
+                <Select.Option key={item.id} label={item.label} value={item.id}>{item.label}</Select.Option>
               ))}
             </Select>
           </SelectContainer>

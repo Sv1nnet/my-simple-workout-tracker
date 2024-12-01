@@ -1,6 +1,6 @@
 import { ImageFields } from './models/ImageModel'
 
-export const fieldsToFormat = { each_side: 'bool', hours: 'bool', archived: 'bool', weight: 'number', time: 'number' }
+export const fieldsToFormat = { each_side: 'bool', hours: 'bool', archived: 'bool', weight: 'number', time: 'number', muscle_groups: 'array' }
 
 export const errors = {
   imageIsTooLarge: {
