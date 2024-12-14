@@ -108,6 +108,7 @@ export const { create, delete: deleteMuscleGroup, updateInList, updateList, rese
 
 export const selectMuscleGroup = (state: AppState) => state.muscleGroup.single
 export const selectList = (state: AppState) => state.muscleGroup.list
+export const selectListItems = (state: AppState) => state.muscleGroup.list.data
 
 export * as muscleGroupHandlers from './noCredsLoginRequestHandlers'
 

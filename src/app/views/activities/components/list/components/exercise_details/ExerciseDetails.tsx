@@ -31,7 +31,7 @@ const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass
       },
     )
     : null
-  const _weight = weight ? `${weight} ${payloadDictionary.mass_unit[mass_unit][0]}` : null
+  const _weight = weight ? `${weight} ${payloadDictionary.mass_unit?.[mass_unit]?.[0]}` : null
   return (
     <LoadType>
       <Text type="secondary">{[ _repeats, _time, _weight ].filter(Boolean).join(' / ') || <span />}</Text>

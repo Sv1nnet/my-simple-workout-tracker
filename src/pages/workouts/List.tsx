@@ -32,7 +32,12 @@ const Workouts = () => {
   const { filteredList: workoutsToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     workoutsInStore,
     {
-      filterFn: ({ searchValue }) => exercise => exercise.title.toLowerCase().includes(searchValue),
+      filterFn: ({ searchValue, tags }) => workout => workout
+        .title
+        .toLowerCase()
+        .includes(searchValue) && (
+        !tags.length || !!workout.muscle_groups.length && tags.some(tag => workout.muscle_groups.find(muscleGroup => muscleGroup.id === tag.value))
+      ),
       refetch: loadWorkouts,
     },
     {

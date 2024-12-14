@@ -29,12 +29,9 @@ const Exercises = () => {
       filterFn: ({ searchValue, tags }) => exercise => exercise
         .title
         .toLowerCase()
-        .includes(searchValue) &&
-        (
-          !!tags.length
-            ? !!exercise.muscle_groups.length && tags.some(tag => exercise.muscle_groups.find(muscleGroup => muscleGroup.id === tag.value))
-            : true
-        ),
+        .includes(searchValue) && (
+        !tags.length || !!exercise.muscle_groups.length && tags.some(tag => exercise.muscle_groups.find(muscleGroup => muscleGroup.id === tag.value))
+      ),
       refetch: loadExercises,
     },
     {

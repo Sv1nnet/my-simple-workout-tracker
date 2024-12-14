@@ -180,7 +180,7 @@ const handlers = {
       if (exercise.image) {
         await exercise.image.imageSetter
       }
-  
+
       const isInWorkout = await exercise.isInWorkout(workouts)
       if (isInWorkout) {
         await exercise.update({ title: restForm.title, description: restForm.description, image: image ? new ImageModel(image) : restForm.image })

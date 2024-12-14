@@ -11,7 +11,7 @@ import styled from 'styled-components'
 const { Title: TitleAnt, Text } = Typography
 
 const LoadType = styled.div`
-  text-align: right;
+  text-align: left;
   width: 100%;
 `
 
@@ -63,16 +63,24 @@ const Title = ({ id, loadExercise, loadingExerciseId, isLoading, title, repeats,
       },
     )
     : null
-  weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit][0]}` : null
+  weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit]?.[0]}` : null
+
+  const loadTypeText = [ repeats, time, weight ].filter(Boolean).join(' / ')
 
   return (
     <div>
       <LoadType>
-        <Text type="secondary">{[ repeats, time, weight ].filter(Boolean).join(' / ') || <span>&nbsp;</span>}</Text>
+        {loadTypeText && <Text type="secondary">{loadTypeText}</Text>}
       </LoadType>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <StyledTitle level={4}>{title}</StyledTitle>
-        <InspectButton onClick={loadExercise} id={id} loading={loadingExerciseId === id || isLoading} href={`/exercises/${id}`} />
+        <InspectButton
+          buttonProps={!loadTypeText ? { style: { marginTop: 22 } } : undefined}
+          onClick={loadExercise}
+          id={id}
+          loading={loadingExerciseId === id || isLoading}
+          href={`/exercises/${id}`}
+        />
       </div>
     </div>
   )

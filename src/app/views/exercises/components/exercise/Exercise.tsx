@@ -33,57 +33,9 @@ import getBase64 from 'app/utils/getBase64'
 import { selectList } from 'store/slices/muscleGroup'
 import { muscleGroupApi } from 'store/slices/muscleGroup/api'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { ApiGetMuscleGroupError, useShowDeleteMuscleGroupError } from './utils'
+import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, clearValues } from './utils'
 import style from './utils/modal.module.scss'
 
-export type InitialValues = {
-  title: string;
-  each_side: boolean;
-  type?: 'repeats' | 'time' | 'duration' | 'distance';
-  time?: number | Dayjs;
-  repeats?: number;
-  weight?: number;
-  description?: string;
-  image?: {
-    uid: string,
-    url: string,
-    name: string,
-  };
-}
-
-export interface IExercise {
-  id?: string;
-  isEdit?: boolean;
-  isFetching?: boolean;
-  initialValues?: ExerciseForm;
-  isError: boolean;
-  error?: string;
-  errorCode?: number;
-  errorAppCode?: number;
-  deleteExercise?: Function;
-  onSubmit: Function;
-}
-
-const previewReducer = (state, { type, payload }) => {
-  switch (type) {
-    case 'open':
-      return {
-        ...state,
-        visible: true,
-        title: payload.title,
-        url: payload.url,
-      }
-    case 'close': 
-      return {
-        ...state,
-        visible: false,
-        title: '',
-        url: '',
-      }
-    default:
-      return state
-  }
-}
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
   const { isMounted, useHandleMounted } = useMounted()
@@ -125,6 +77,10 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       exercise.time = time
     }
 
+    if (!exercise.mass_unit) {
+      exercise.mass_unit = 'kg'
+    }
+
     if (exercise.image) {
       const image = exercise.image as Image
       exercise.image = {
@@ -146,10 +102,10 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
     return new Promise((resolve) => {
       const _modal = Modal.confirm({
-        title: 'delete muscle group',
-        content: `Are you sure you want to delete ${muscleGroupName} muscle group?`,
-        okText: 'yes',
-        cancelText: 'no',
+        title: intl.rest.muscle_group.delete_muscle_group.title,
+        content: intl.rest.muscle_group.delete_muscle_group.content.replace('%name%', muscleGroupName),
+        okText: intl.common.yes,
+        cancelText: intl.common.no,
         maskStyle: {
           zIndex: 10001,
         },
@@ -172,7 +128,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const handleDeleteMuscleGroup = async (id: string) => {
     try {
       const deletedItemIndexInValues = form.getFieldValue('muscle_groups').findIndex(item => item.value === id)
-      // const isDeletingConfirmed = true
       const isDeletingConfirmed = await requestForDeleteMuscleGroupPromise(muscleGroupList.find(item => item.id === id)?.title)
 
       if (isDeletingConfirmed) {
@@ -229,13 +184,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const handleSubmit = async (_values) => {
     let { time, image, muscle_groups, ...values } = _values
+    values = clearValues(values)
     values = (() => {
       const formData = new FormData()
       Object
         .entries(values)
         .forEach(([ key, value ]) => value !== undefined && formData.append(key, `${value}`))
-      
-      formData.append('muscle_groups', JSON.stringify(muscle_groups.map(item => item.value)))
+
+      formData.append('muscle_groups', JSON.stringify(muscle_groups))
 
       return formData
     })()

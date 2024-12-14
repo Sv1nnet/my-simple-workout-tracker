@@ -1,6 +1,6 @@
 import { IResponse } from 'app/constants/response_types'
 import { Dayjs } from 'dayjs'
-import { Exercise } from 'store/slices/exercise/types'
+import { Exercise, MuscleGroup } from 'store/slices/exercise/types'
 
 export type WorkoutListExercise<T = number | Dayjs> = {
   _id: Pick<Exercise<number | Dayjs>, 'id'>;
@@ -33,6 +33,7 @@ export type Workout<T = number | Dayjs> = {
 export type WorkoutListItem<T = number | Dayjs> = {
   id: string;
   title: string;
+  muscle_groups: MuscleGroup[];
   exercises: WorkoutListExercise<T>[];
   archived?: boolean;
   description?: string;

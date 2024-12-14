@@ -1026,6 +1026,16 @@
         "ru": "Выберите группы мышц",
         "eng": "Select muscle groups"
       },
+      "delete_muscle_group": {
+        "title": {
+          "ru": "Удаление группы мышц",
+          "eng": "Deleting muscle group"
+        },
+        "content": {
+          "ru": "Вы действительно хотите удалить группу мышц \"%name%\"?",
+          "eng": "Are you sure you want to delete \"%name%\" muscle group?"
+        }
+      },
       "error": {
         "loading": {
           "ru": "Не удалось загрузить список групп мышц",

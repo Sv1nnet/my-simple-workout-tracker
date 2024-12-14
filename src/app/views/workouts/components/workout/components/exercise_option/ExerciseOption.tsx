@@ -55,7 +55,7 @@ const ExerciseOption: FC<IExerciseOption> = ({ archived, title, repeats, payload
       },
     )
     : null
-  weight = weight ? `${weight} ${payloadDictionary.mass_unit[mass_unit][0]}` : null
+  weight = weight ? `${weight} ${payloadDictionary.mass_unit?.[mass_unit]?.[0]}` : null
 
   const text = [ repeats, time, weight ].filter(Boolean).join(' / ')
   return (

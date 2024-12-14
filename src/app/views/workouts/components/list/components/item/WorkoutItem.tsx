@@ -3,17 +3,19 @@ import { Image } from 'app/store/slices/exercise/types'
 import { WorkoutListItem } from 'app/store/slices/workout/types'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
-import { Collapse, Checkbox, List, Typography } from 'antd'
+import { Collapse, Checkbox, List, Typography, Tag } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { InspectButton } from 'app/components/list_buttons'
+import { useToggle } from 'app/hooks'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography
 
 const LoadType = styled.div`
-  text-align: right;
+  text-align: left;
   width: 100%;
 `
 
@@ -48,6 +50,30 @@ const StyledPanel = styled(Panel)`
     & .ant-collapse-arrow {
       vertical-align: -7px;
     }
+  }
+`
+
+const StyledTagsPanel = styled(StyledPanel)`
+  & .ant-collapse-header {
+    display: none !important;
+  }
+
+  & .ant-collapse-content-box {
+    padding: 0 !important;
+
+    & .ant-tag {
+      margin: 0;
+    }
+  }
+`
+
+const TagContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  & .ant-tag {
+    margin: 0;
   }
 `
 
@@ -129,6 +155,7 @@ const WorkoutItem: FC<IWorkout> = ({
   id,
   title,
   exercises,
+  muscle_groups: _muscle_groups,
   loadingWorkoutId,
   selectionEnabled,
   description,
@@ -137,67 +164,102 @@ const WorkoutItem: FC<IWorkout> = ({
   workoutDictionary,
   loadWorkout,
   isLoading,
-}) => (
-  <>
-    <Collapse style={{ width: '100%' }} ghost expandIconPosition="start" collapsible={selectionEnabled ? 'disabled' : undefined}>
-      <StyledPanel key="exercises" header={(
-        <HeaderContainer>
-          <Typography.Title level={3}>{title}</Typography.Title>
-          <InspectButton onClick={loadWorkout} id={id} loading={loadingWorkoutId === id || isLoading} href={`/workouts/${id}`} />
-        </HeaderContainer>
-      )}>
-        {/* render every exercise */}
-        {exercises.map(({
-          _id: exerciseId,
-          exercise: { title: exerciseTitle, repeats, time, weight, mass_unit, image },
-          rounds,
-          round_break,
-          break: interExercisesBreak,
-          break_enabled,
-        }) => (
-          <React.Fragment key={exerciseId as string}>
-            <List.Item.Meta
-              avatar={(
-                <ImageContainer>
-                  <img src={image?.url
-                    ? image.url.startsWith('data:image/')
-                      ? image.url
-                      : `${routes.base}${image.url}`
-                    : itemImagePlaceholder}/>
-                </ImageContainer>
-              )}
-              title={(
-                <StyledTitle
-                  title={exerciseTitle}
-                  repeats={repeats}
-                  time={time}
-                  weight={weight}
-                  massUnit={mass_unit}
-                  payloadDictionary={payloadDictionary}
-                />
-              )}
-              description={<StyledDescription rounds={rounds} round_break={round_break} payloadDictionary={payloadDictionary} workoutDictionary={workoutDictionary} />}
-              style={{ flexBasis: '100%', marginBottom: '6px' }}
-            />
-            {break_enabled && <Typography.Title level={5} style={{ width: '100%' }}>{workoutDictionary.input_labels.break}: {timeToHms(
-              interExercisesBreak,
-              {
-                hms: [
-                  payloadDictionary.time.hour.short,
-                  payloadDictionary.time.minute.short,
-                  payloadDictionary.time.second.short,
-                ],
-              },
-            ) || `0${payloadDictionary.time.second.short}`}</Typography.Title>}
-          </React.Fragment>
-        ))}
-      </StyledPanel>
-    </Collapse>
-    
-    {selectionEnabled && <StyledCheckbox checked={selected} />}
+}) => {
+  const { intl } = useIntlContext()
+  const { state: isOpen, setState: setIsOpen } = useToggle(false)
 
-    {description && <Typography.Text style={{ marginTop: '6px', display: 'inline-block' }}>{description}</Typography.Text>}
-  </>
-)
+  const muscleGroups = useMemo(
+    () => _muscle_groups.map(
+      muscleGroup => muscleGroup.archived ? {
+        ...muscleGroup,
+        title: `${muscleGroup.title} (${intl.rest?.muscle_group?.state?.archived})`,
+      } : muscleGroup,
+    ),
+    [ _muscle_groups ],
+  )
+
+  const handleCollapse = (activeKeys: string[]) => {
+    setIsOpen(!!activeKeys.length)
+
+  }
+
+  return (
+    <>
+      <Collapse onChange={handleCollapse} style={{ width: '100%' }} ghost expandIconPosition="start" collapsible={selectionEnabled ? 'disabled' : undefined}>
+        <StyledPanel key="exercises" header={(
+          <HeaderContainer>
+            <div>
+              <Collapse ghost activeKey={!isOpen ? 'muscleGroups' : undefined}>
+                <StyledTagsPanel key='muscleGroups' header={null}>
+                  <TagContainer>
+                    {muscleGroups.map(muscleGroup => (
+                      <Tag key={muscleGroup?.id}>{muscleGroup?.title}</Tag>
+                    ))}
+                  </TagContainer>
+                </StyledTagsPanel>
+              </Collapse>
+              <Typography.Title style={{ marginBottom: '0' }} level={3}>{title}</Typography.Title>
+            </div>
+            <InspectButton onClick={loadWorkout} id={id} loading={loadingWorkoutId === id || isLoading} href={`/workouts/${id}`} />
+          </HeaderContainer>
+        )}>
+          {/* render every exercise */}
+          {exercises.map(({
+            _id: exerciseId,
+            exercise: { title: exerciseTitle, repeats, time, weight, mass_unit, image, muscle_groups },
+            rounds,
+            round_break,
+            break: interExercisesBreak,
+            break_enabled,
+          }) => (
+            <React.Fragment key={exerciseId as string}>
+              <TagContainer style={{ marginBottom: '6px' }}>
+                {muscle_groups.map(muscleGroup => (
+                  <Tag key={muscleGroup?.id}>{muscleGroup?.archived ? `${muscleGroup?.title} (${intl.rest?.muscle_group?.state?.archived})` : muscleGroup?.title}</Tag>
+                ))}
+              </TagContainer>
+              <List.Item.Meta
+                avatar={(
+                  <ImageContainer>
+                    <img src={image?.url
+                      ? image.url.startsWith('data:image/')
+                        ? image.url
+                        : `${routes.base}${image.url}`
+                      : itemImagePlaceholder}/>
+                  </ImageContainer>
+                )}
+                title={(
+                  <StyledTitle
+                    title={exerciseTitle}
+                    repeats={repeats}
+                    time={time}
+                    weight={weight}
+                    massUnit={mass_unit}
+                    payloadDictionary={payloadDictionary}
+                  />
+                )}
+                description={<StyledDescription rounds={rounds} round_break={round_break} payloadDictionary={payloadDictionary} workoutDictionary={workoutDictionary} />}
+              />
+              {break_enabled && <Typography.Title level={5} style={{ width: '100%' }}>{workoutDictionary.input_labels.break}: {timeToHms(
+                interExercisesBreak,
+                {
+                  hms: [
+                    payloadDictionary.time.hour.short,
+                    payloadDictionary.time.minute.short,
+                    payloadDictionary.time.second.short,
+                  ],
+                },
+              ) || `0${payloadDictionary.time.second.short}`}</Typography.Title>}
+            </React.Fragment>
+          ))}
+        </StyledPanel>
+      </Collapse>
+    
+      {selectionEnabled && <StyledCheckbox checked={selected} />}
+
+      {description && <Typography.Text style={{ marginTop: '6px', display: 'inline-block' }}>{description}</Typography.Text>}
+    </>
+  )
+}
 
 export default WorkoutItem

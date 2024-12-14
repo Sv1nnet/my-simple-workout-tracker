@@ -23,7 +23,7 @@ const handlers = {
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { workoutsTable, exercisesTable } = browserDB.getTables()
+    const { workoutsTable, exercisesTable, muscleGroupsTable } = browserDB.getTables()
 
     let archived = false
     let all = false
@@ -52,10 +52,34 @@ const handlers = {
     const allExercises = (await browserDB.db?.getAllValues(exercisesTable))
       .filter(Boolean)
       .map(exercise => JSON.parse(exercise))
+    
+    const allMuscleGroups = (await browserDB.db?.getAllValues(muscleGroupsTable))
+      .filter(Boolean)
+      .map(muscleGroup => JSON.parse(muscleGroup))
 
     const preparedList = await Promise.all(rawList.map(async (rawWorkout: WorkoutModelConstructorParameter) => {
       const exerciseIds = rawWorkout.exercises.map(({ id }) => id)
-      const exercisesInWorkout = allExercises.filter((({ id }) => exerciseIds.includes(id)))
+      const exercisesInWorkout = allExercises
+        .filter((({ id }) => exerciseIds.includes(id)))
+        .map((exercise) => {
+          const muscleGroups = exercise
+            .muscle_groups
+            .map((muscleGroupId) => {
+              const muscleGroup = allMuscleGroups.find(_muscleGroup => _muscleGroup.id === muscleGroupId)
+
+              return muscleGroup ? {
+                id: muscleGroup.id,
+                title: muscleGroup.title,
+                archived: muscleGroup.archived,
+              } : null
+            })
+            .filter(Boolean)
+
+          return {
+            ...exercise,
+            muscle_groups: muscleGroups,
+          }
+        })
 
       const sortedExercises = []
       exerciseIds.forEach((exerciseId, index) => {
@@ -63,14 +87,23 @@ const handlers = {
         sortedExercises[index] = exercisesInWorkout[indexInExercises]
       })
 
+      const muscleGroupsInWorkout = [
+        ...sortedExercises
+          .reduce((acc, { muscle_groups }) => {
+            muscle_groups.forEach(({ id }) => acc.add(id))
+            return acc
+          }, new Set()),
+      ]
+        .map(id => allMuscleGroups.find(muscleGroup => muscleGroup.id === id))
+
       return {
         ...rawWorkout,
+        muscle_groups: muscleGroupsInWorkout,
         exercises: rawWorkout.exercises.map(({ ...exercise }, index) => ({
           ...exercise,
           exercise: sortedExercises[index],
         })),
       }
-
     }))
 
     return { data: { data: preparedList, success: true, error: null } }

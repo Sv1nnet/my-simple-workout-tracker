@@ -110,7 +110,7 @@ const Exercise: FC<IExerciseProps> = ({
       },
     )
     : null
-  weight = weight ? `${weight} ${payload.mass_unit[mass_unit][0]}` : null
+  const weightStr = weight ? `${weight} ${payload.mass_unit[mass_unit][0]}` : null
 
   const isTimeType = isExerciseTimeType(exercise.type)
 
@@ -121,7 +121,7 @@ const Exercise: FC<IExerciseProps> = ({
   const handleTimeOver = () => setIsLastRestOver(isAllResultWithoutPenultimateFilled)
 
   const isRestTimersVisible = !!round_break && !isEdit && !isAllResultsFilled
-  const payloadText = [ repeats, time, weight ].filter(Boolean).map((item, i, arr) => (
+  const payloadText = [ repeats, time, weightStr ].filter(Boolean).map((item, i, arr) => (
     <span key={item} style={{ whiteSpace: 'nowrap' }}>
       {item}{`${arr[i + 1] !== undefined ? ' / ' : ''}`}
     </span>

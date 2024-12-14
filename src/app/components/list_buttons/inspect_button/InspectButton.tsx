@@ -18,7 +18,7 @@ const InspectButton = ({ onClick, loading, href, id, buttonProps, spinProps }: I
 
   return loading
     ? (
-      <Button>
+      <Button {...buttonProps}>
         <Spin size="small" indicator={<LoadingOutlined />} {...spinProps} />
       </Button>
     )

@@ -19,7 +19,7 @@ export type Exercise<T = number | Dayjs> = {
   each_side: boolean;
   mass_unit: MassUnit;
   archived: boolean;
-  muscle_groups: string[];
+  muscle_groups: MuscleGroup[];
   hours?: boolean;
   type?: ExerciseType;
   time?: T;
@@ -32,10 +32,11 @@ export type Exercise<T = number | Dayjs> = {
 export type MuscleGroup = {
   id: string,
   title: string,
+  archived?: boolean,
 }
 
-export type ExerciseForm<T = number | Dayjs> = Omit<Exercise<T>, 'image'> & {
-  muscle_groups: MuscleGroup[];
+export type ExerciseForm<T = number | Dayjs> = Omit<Exercise<T>, 'image' | 'muscle_groups'> & {
+  muscle_groups: string[];
   image?: Image | Image[];
 }
 
@@ -44,8 +45,9 @@ export type ExerciseListItem<T = number | Dayjs> = Omit<ExerciseForm<T>, 'id' | 
   muscle_groups: MuscleGroup[],
 }
 
-export type ExerciseServerPayload = Omit<Exercise<number>, 'image'> & {
+export type ExerciseServerPayload = Omit<Exercise<number>, 'image' | 'muscle_groups'> & {
   image?: Image;
+  muscle_groups: string[];
 }
 
 export interface IExerciseFormData extends ExerciseForm, FormData {}
