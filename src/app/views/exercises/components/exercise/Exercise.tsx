@@ -189,9 +189,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       const formData = new FormData()
       Object
         .entries(values)
-        .forEach(([ key, value ]) => value !== undefined && formData.append(key, `${value}`))
+        .forEach(([ key, value ]) => value !== undefined && value !== null && formData.append(key, `${value}`))
 
-      formData.append('muscle_groups', JSON.stringify(muscle_groups))
+      formData.append('muscle_groups', JSON.stringify(muscle_groups.map(item => item.value)))
 
       return formData
     })()

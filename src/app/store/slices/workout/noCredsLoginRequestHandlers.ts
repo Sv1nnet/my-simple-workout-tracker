@@ -151,7 +151,7 @@ const handlers = {
     }
 
     const removedExerciseIds = exercisesInWorkout
-      .filter(exercise => workout
+      .filter(exercise => !workout
         .exercises
         .find(exerciseInUpdatedWorkout => exerciseInUpdatedWorkout.id === exercise.id))
       .map(({ id }) => id)
@@ -165,6 +165,19 @@ const handlers = {
 
       for (const exercise of exercisesToUpdate) {
         exercise.removeWorkout(workout.id)
+        await exercise.save()
+      }
+    }
+
+    if (workout.exercises.length) {
+      const exercisesToUpdate = (await Promise.all(
+        workout.exercises.map(exercise => browserDB.db?.get(exercisesTable, exercise.id)),
+      ))
+        .filter(Boolean)
+        .map(exerciseStr => new ExerciseModel(JSON.parse(exerciseStr)))
+
+      for (const exercise of exercisesToUpdate) {
+        exercise.addWorkout(workout.id)
         await exercise.save()
       }
     }

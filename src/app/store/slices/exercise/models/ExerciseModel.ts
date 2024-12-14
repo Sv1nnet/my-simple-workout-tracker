@@ -93,6 +93,7 @@ export class ExerciseModel extends EntityModel {
 
   removeWorkout(workoutId: string) {
     this.in_workouts = this.in_workouts.filter(_workoutId => _workoutId !== workoutId)
+
     if (this.in_workouts.length === 0) {
       this.is_in_workout = false
     }
@@ -100,7 +101,12 @@ export class ExerciseModel extends EntityModel {
   }
 
   addWorkout(workoutId: string) {
+    if (this.in_workouts.includes(workoutId)) {
+      return this
+    }
+
     this.in_workouts.push(workoutId)
+
     if (!this.is_in_workout) {
       this.is_in_workout = true
     }
@@ -108,6 +114,10 @@ export class ExerciseModel extends EntityModel {
   }
 
   addMuscleGroups(muscleGroups: string) {
+    if (this.muscle_groups.includes(muscleGroups)) {
+      return this
+    }
+
     this.muscle_groups.push(muscleGroups)
     return this
   }

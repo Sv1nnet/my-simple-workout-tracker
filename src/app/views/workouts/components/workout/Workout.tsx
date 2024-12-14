@@ -149,6 +149,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
             message: notifications[isEdit ? 'update' : 'create'].success,
             placement: 'top',
           })
+          fetchExerciseList({ archived: isEdit, workoutId: initialValues.id, lang: isEdit ? lang : undefined })
         } 
         if (isEdit && !res.error && !res.data.error) setEditMode(false)
         return res
