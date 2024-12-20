@@ -8,7 +8,7 @@ import React, { FC, useMemo } from 'react'
 import { InspectButton } from 'app/components/list_buttons'
 import { useToggle } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { Description, HeaderContainer, ImageContainer, StyledCheckbox, StyledTagsPanel, TagContainer, Title } from './components'
+import { Description, HeaderContainer, ImageContainer, StyledCheckbox, StyledTagsPanel, TagsContainer, Title } from './components'
 import { StyledPanel } from './components'
 
 interface IWorkout extends WorkoutListItem {
@@ -52,7 +52,7 @@ const WorkoutItem: FC<IWorkout> = ({
   const { state: isOpen, setState: setIsOpen } = useToggle(false)
 
   const muscleGroups = useMemo(
-    () => _muscle_groups.map(
+    () => (_muscle_groups || []).map(
       muscleGroup => muscleGroup.archived ? {
         ...muscleGroup,
         title: `${muscleGroup.title} (${intl.rest?.muscle_group?.state?.archived})`,
@@ -63,24 +63,31 @@ const WorkoutItem: FC<IWorkout> = ({
 
   const handleCollapse = (activeKeys: string[]) => {
     setIsOpen(!!activeKeys.length)
-
   }
 
   return (
     <>
-      <Collapse onChange={handleCollapse} style={{ width: '100%' }} ghost expandIconPosition="start" collapsible={selectionEnabled ? 'disabled' : undefined}>
+      <Collapse
+        ghost
+        onChange={handleCollapse}
+        style={{ width: '100%' }}
+        expandIconPosition="start"
+        collapsible={selectionEnabled ? 'disabled' : undefined}
+      >
         <StyledPanel key="exercises" header={(
           <HeaderContainer>
             <div>
-              <Collapse ghost activeKey={!isOpen ? 'muscleGroups' : undefined}>
-                <StyledTagsPanel key='muscleGroups' header={null}>
-                  <TagContainer>
-                    {muscleGroups.map(muscleGroup => (
-                      <Tag key={muscleGroup?.id}>{muscleGroup?.title}</Tag>
-                    ))}
-                  </TagContainer>
-                </StyledTagsPanel>
-              </Collapse>
+              {!!muscleGroups?.length && (
+                <Collapse ghost activeKey={!isOpen ? 'muscleGroups' : undefined}>
+                  <StyledTagsPanel key='muscleGroups' header={null}>
+                    <TagsContainer>
+                      {muscleGroups.map(muscleGroup => (
+                        <Tag key={muscleGroup?.id}>{muscleGroup?.title}</Tag>
+                      ))}
+                    </TagsContainer>
+                  </StyledTagsPanel>
+                </Collapse>
+              )}
               <Typography.Title style={{ marginBottom: '0' }} level={3}>{title}</Typography.Title>
             </div>
             <InspectButton onClick={loadWorkout} id={id} loading={loadingWorkoutId === id || isLoading} href={`/workouts/${id}`} />
@@ -96,11 +103,13 @@ const WorkoutItem: FC<IWorkout> = ({
             break_enabled,
           }) => (
             <React.Fragment key={exerciseId as string}>
-              <TagContainer style={{ marginBottom: '6px' }}>
-                {muscle_groups.map(muscleGroup => (
-                  <Tag key={muscleGroup?.id}>{muscleGroup?.archived ? `${muscleGroup?.title} (${intl.rest?.muscle_group?.state?.archived})` : muscleGroup?.title}</Tag>
-                ))}
-              </TagContainer>
+              {!!muscle_groups?.length && (
+                <TagsContainer style={{ marginBottom: '6px' }}>
+                  {muscle_groups?.map(muscleGroup => (
+                    <Tag key={muscleGroup?.id}>{muscleGroup?.archived ? `${muscleGroup?.title} (${intl.rest?.muscle_group?.state?.archived})` : muscleGroup?.title}</Tag>
+                  ))}
+                </TagsContainer>
+              )}
               <List.Item.Meta
                 avatar={(
                   <ImageContainer>

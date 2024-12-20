@@ -37,12 +37,12 @@ const Activities = () => {
   const { data: activitiesInStore = [], total, status } = useAppSelector(selectList)
   const prevRequestRef = useRef<ReturnType<typeof loadActivities>>(null)
 
-  const { searchValue, filteredList: activitiesToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
+  const { searchValue, tags, filteredList: activitiesToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     activitiesInStore,
     {
-      onChange({ searchValue: _searchValue }) {
+      onChange({ searchValue: _searchValue, tags: _tags }) {
         prevRequestRef.current?.abort()
-        prevRequestRef.current = loadActivities({ page: 1, byPage: 50, searchValue: _searchValue })
+        prevRequestRef.current = loadActivities({ page: 1, byPage: 50, searchValue: _searchValue, tags: _tags.map(tag => tag.value) })
 
         prevRequestRef.current.unwrap()
           .then((res) => {
@@ -50,7 +50,7 @@ const Activities = () => {
             return res
           })
       },
-      refetch: () => loadActivities({ page: 1, byPage: 50, searchValue: searchValue }),
+      refetch: () => loadActivities({ page: 1, byPage: 50, searchValue, tags: tags.map(tag => tag.value) }),
     },
     {
       onChangeDelay: 350,
@@ -60,7 +60,7 @@ const Activities = () => {
   )
 
   const { dispatch } = useLoadList({
-    loadList: () => loadActivities({ page: 1, byPage: 50, searchValue }),
+    loadList: () => loadActivities({ page: 1, byPage: 50, searchValue, tags: tags.map(tag => tag.value) }),
   })
 
   const [
@@ -85,7 +85,7 @@ const Activities = () => {
     if (activitiesInStore.length < total && e) {
       const { target } = e
       if (target.scrollHeight - (target.offsetHeight + target.scrollTop) <= 100 && !isFetching) {
-        loadActivities({ page: page + 1, byPage: 50, searchValue })
+        loadActivities({ page: page + 1, byPage: 50, searchValue, tags: tags.map(tag => tag.value) })
           .unwrap()
           .then((res) => {
             setPage(page + 1)

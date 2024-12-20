@@ -3,6 +3,7 @@ import { FetchArgs } from '@reduxjs/toolkit/dist/query'
 import browserDB from 'app/store/utils/BrowserDB'
 import { ActivityModelConstructorParameter, ActivityModel } from './models/ActivityModel'
 import { ExerciseModel } from 'app/store/slices/exercise/models/ExerciseModel'
+import { MuscleGroupModel } from 'app/store/slices/muscleGroup/models/MuscleGroupsModel'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 import formatFormData from 'app/store/utils/formatFormData'
 
@@ -22,19 +23,20 @@ const handlers = {
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { activitiesTable, workoutsTable, exercisesTable } = browserDB.getTables()
+    const { activitiesTable, workoutsTable, exercisesTable, muscleGroupsTable } = browserDB.getTables()
     
     let page = 1
     let byPage = 30
     let searchValue = ''
+    let tags: string[] = []
 
     if (params) {
-      ({ page, byPage, searchValue } = formatFormData<
-      { page: string, byPage: string, searchValue: string },
-      { page: number, byPage: number, searchValue: string }
+      ({ page, byPage, searchValue, tags } = formatFormData<
+      { page: string, byPage: string, searchValue: string, tags: string },
+      { page: number, byPage: number, searchValue: string, tags: string[] }
       >(
-        { page: params.get('page') || '1', byPage: params.get('byPage') || '30', searchValue: params.get('searchValue').toLowerCase() },
-        { page: 'number', byPage: 'number' },
+        { page: params.get('page') || '1', byPage: params.get('byPage') || '30', searchValue: params.get('searchValue').toLowerCase(), tags: decodeURIComponent(params.get('tags') || '[]') },
+        { page: 'number', byPage: 'number', tags: 'array' },
       ))
     }
 
@@ -55,21 +57,55 @@ const handlers = {
       .map(workout => new WorkoutModel(JSON.parse(workout)))
       .filter(workout => workout.is_in_activity && workout.title.toLocaleLowerCase().includes(searchValue))
 
+    const allMuscleGroups = (await browserDB.db?.getAllValues(muscleGroupsTable))
+      .filter(Boolean)
+      .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
+
     const totalActivities = allActivities.length
     
     const activitiesByPage = allActivities
       .filter((activity) => {
-        const hasActivityWorkout = allWorkouts.some(workout => workout.id === activity.workout_id)
-        return hasActivityWorkout
+        const workoutsInActivity = allWorkouts.filter(workout => workout.id === activity.workout_id)
+        if (!workoutsInActivity.length) return false
+
+        if (tags.length) {
+          const hasTagInWorkoutMuscleGroups = workoutsInActivity
+            .map((workout) => {
+              const exerciseIds = new Set(workout.exercises.map(exercise => exercise.id))
+
+              return allExercises
+                .filter(exercise => exerciseIds.has(exercise.id))
+            })
+            .some(exercises => exercises.some(exercise => exercise.muscle_groups.some(muscleGroup => tags.includes(muscleGroup))))
+
+          return hasTagInWorkoutMuscleGroups
+        }
+
+        return !!workoutsInActivity.length
       })
       .slice(startIndex, endIndex)
       .map(({ results, ...activity }) => {
         const workoutInActivity = allWorkouts.find(workout => workout.id === activity.workout_id)
         const exercisesInActivity = (workoutInActivity?.exercises || []).map(({ id }) => allExercises.find(exercise => exercise.id === id))
+
         const fullResults = results.map((result) => {
           const exercise = exercisesInActivity.find(_exercise => _exercise.id === result.original_id)
+          const muscleGroups = exercise
+            .muscle_groups
+            .map((muscleGroupId) => {
+              const muscleGroup = allMuscleGroups.find(_muscleGroup => _muscleGroup.id === muscleGroupId)
+
+              return muscleGroup ? {
+                id: muscleGroup.id,
+                title: muscleGroup.title,
+                archived: muscleGroup.archived,
+              } : null
+            })
+            .filter(Boolean)
+
           return {
             ...result,
+            muscle_groups: muscleGroups,
             exercise_title: exercise.title,
             type: exercise.type,
             details: {
@@ -81,8 +117,19 @@ const handlers = {
           }
         })
 
+
+        const muscleGroupsInActivity = [
+          ...fullResults
+            .reduce((acc, { muscle_groups }) => {
+              muscle_groups.forEach(({ id }) => acc.add(id))
+              return acc
+            }, new Set()),
+        ]
+          .map(id => allMuscleGroups.find(muscleGroup => muscleGroup.id === id))
+
         return {
           ...activity,
+          muscle_groups: muscleGroupsInActivity,
           results: fullResults,
           workout_title: workoutInActivity?.title || '',
         }

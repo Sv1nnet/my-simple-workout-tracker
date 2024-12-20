@@ -42,10 +42,17 @@ export type Round<T = number | string | null | Dayjs> = number | string | Dayjs 
 export type GetActivitySuccess = IResponse<ActivityForm<string>>
 export type GetActivityError = IResponse<null>
 
+export type MuscleGroup = {
+  id: string,
+  title: string,
+  archived?: boolean,
+}
+
 export type ActivityListItem = {
   date: string,
   description: string,
   id: string,
+  muscle_groups: MuscleGroup[],
   results: {
     details: {
       repeats: number,
@@ -55,6 +62,7 @@ export type ActivityListItem = {
     exercise_title: string,
     hours: boolean,
     note?: string,
+    muscle_groups: MuscleGroup[],
     id_in_workout: string,
     original_id: string,
     rounds: Round[],
@@ -70,7 +78,7 @@ export type ActivityListResponseSuccess = {
   list: ActivityListItem[],
 }
 
-export type ActivityListRequest = { page?: number, byPage?: number, searchValue?: string }
+export type ActivityListRequest = { page?: number, byPage?: number, searchValue?: string, tags?: string[] }
 
 export type GetActivityListSuccess = IResponse<ActivityListResponseSuccess>
 export type GetActivityListError = IResponse<null>

@@ -35,6 +35,7 @@ export const StyledRadio = styled(Radio.Group)`
 
 export const ResultTypeButtonsContainer = styled.div`
   text-align: right;
+  min-width: 88px;
 `
 
 export const ExerciseTitle = styled(Typography.Title)`

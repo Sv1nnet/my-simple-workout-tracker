@@ -65,8 +65,8 @@ export const activityApi = createApi({
       invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
     list: build.query<GetActivityListSuccess, Partial<ActivityListRequest>>({
-      query: ({ page = 1, byPage = 30, searchValue = '' } = { page: 1, byPage: 30 }) => ({
-        url: `${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}`,
+      query: ({ page = 1, byPage = 30, searchValue = '', tags = [] } = { page: 1, byPage: 30 }) => ({
+        url: (console.log(`${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}&tags=${encodeURIComponent(JSON.stringify(tags))}`), `${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}&tags=${encodeURIComponent(JSON.stringify(tags))}`),
         method: 'GET',
       }),
       providesTags: () => [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST ],

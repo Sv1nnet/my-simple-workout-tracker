@@ -51,7 +51,7 @@ export const StyledTagsPanel = styled(StyledPanel)`
   }
 `
 
-export const TagContainer = styled.div`
+export const TagsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 6px;

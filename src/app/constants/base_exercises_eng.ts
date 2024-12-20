@@ -887,7 +887,7 @@ const exercises = [
     created_at: 1648771200000,
     title: 'Overhead arm extension',
     type: 'repeats',
-    each_side: true,
+    each_side: false,
     hours: false,
     is_in_workout: true,
     in_workouts: [ '67635cabccc2d8f80ec3b0a9' ],

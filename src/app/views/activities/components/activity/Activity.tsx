@@ -32,6 +32,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
 
+  const $select = useRef(null)
   const errorModalsRef = useRef<{ [key in ErrorModalTypes]: ReturnType<typeof Modal.error> | null }>({
     restoreActivity: null,
     history: null,
@@ -250,10 +251,18 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
           name="workout_id"
           rules={[ { required: true, message: 'Required' } ]}
         >
-          <Select disabled={isFormItemDisabled || isEdit} size="large" onChange={handleSelectedWorkoutChange}>
+          <Select
+            ref={$select}
+            disabled={isFormItemDisabled || isEdit}
+            size="large"
+            showSearch
+            optionFilterProp="label"
+            onSelect={() => $select.current?.blur()}
+            onChange={handleSelectedWorkoutChange}
+          >
             {workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR
               ? workoutList.map(workout => (
-                <Select.Option key={workout.id} value={workout.id}>
+                <Select.Option key={workout.id} value={workout.id} label={workout.title}>
                   {workout.title}
                 </Select.Option>
               ))

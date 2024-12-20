@@ -39,6 +39,7 @@ export type UseSearchPanelUtils = <T = any>(
   }
 ) => {
   searchValue: string,
+  tags: Tag[],
   filteredList: T[],
   onSearchInputChange: OnChangeHandler,
   onRefetchClick: () => void
@@ -95,7 +96,7 @@ export const useSearchPanelUtils: UseSearchPanelUtils = (
 
   const onRefetchClick = refetch ? () => refetch() : undefined
 
-  return { searchValue, filteredList, onSearchInputChange, onRefetchClick }
+  return { searchValue, tags, filteredList, onSearchInputChange, onRefetchClick }
 }
 
 
