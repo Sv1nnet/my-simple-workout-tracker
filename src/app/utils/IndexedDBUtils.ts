@@ -56,21 +56,51 @@ export class IndexedDB<N extends string> {
     })
   }
 
+  public static open(dbName: string, tableNames?: string[]): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      try {
+        const connection = window.indexedDB.open(dbName)
+  
+        connection.addEventListener('success', (event) => {
+          const request = event.target as IDBOpenDBRequest
+          resolve(request.result)
+        })
+  
+        connection.addEventListener('error', (event) => {
+          reject(event)
+        })
+  
+        connection.addEventListener('blocked', () => {
+          reject(new Error('IndexedDB initialization blocked'))
+        })
+  
+        connection.addEventListener('upgradeneeded', (event) => {
+          const request = event.target as IDBOpenDBRequest
+          tableNames?.forEach((name) => {
+            request.result.createObjectStore(name)
+          })
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
+  }
+
   public static getAllKeys(dbName: string, tableName: string): Promise<IDBValidKey[]> {
     return new Promise(async (resolve, reject) => {
       try {
-        const db = await IndexedDB.init(dbName, [ tableName ])
-        const transaction = db.transaction(tableName, 'readonly')
+        const connection = await IndexedDB.open(dbName, [ tableName ])
+        const transaction = connection.transaction(tableName, 'readonly')
         const objectStore = transaction.objectStore(tableName)
         const request = objectStore.getAllKeys()
   
         request.addEventListener('success', () => {
           const keys = request.result
-          db.close()
+          connection.close()
           resolve(keys)
         })
         request.addEventListener('error', (e) => {
-          db.close()
+          connection.close()
           reject(e)
         })
       } catch (err) {
@@ -82,18 +112,18 @@ export class IndexedDB<N extends string> {
   public static get<V = unknown>(dbName: string, tableName: string, key: string | IDBValidKey): Promise<V> {
     return new Promise(async (resolve, reject) => {
       try {
-        const db = await IndexedDB.init(dbName, [ tableName ])
-        const transaction = db.transaction([ tableName ], 'readonly')
+        const connection = await IndexedDB.open(dbName, [ tableName ])
+        const transaction = connection.transaction([ tableName ], 'readonly')
         const objectStore = transaction.objectStore(tableName)
         const request = objectStore.getAll(key)
   
         request.addEventListener('success', () => {
           const result = request.result[0]
-          db.close()
+          connection.close()
           resolve(result)
         })
         request.addEventListener('error', (e) => {
-          db.close()
+          connection.close()
           reject(e)
         })
       } catch (err) {
@@ -105,17 +135,17 @@ export class IndexedDB<N extends string> {
   public static remove(dbName: string, tableName: string, key: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        const db = await IndexedDB.init(dbName, [ tableName ])
-        const transaction = db.transaction(tableName, 'readwrite')
+        const connection = await IndexedDB.open(dbName, [ tableName ])
+        const transaction = connection.transaction(tableName, 'readwrite')
         const objectStore = transaction.objectStore(tableName)
         const request = objectStore.delete(key)
   
         request.addEventListener('success', () => {
-          db.close()
+          connection.close()
           resolve()
         })
         request.addEventListener('error', (e) => {
-          db.close()
+          connection.close()
           reject(e)
         })
       } catch (err) {
@@ -143,17 +173,17 @@ export class IndexedDB<N extends string> {
   public static set(dbName: string, tableName: string, key: string, value?: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        const db = await IndexedDB.init(dbName, [ tableName ])
-        const transaction = db.transaction(tableName, 'readwrite')
+        const connection = await IndexedDB.open(dbName, [ tableName ])
+        const transaction = connection.transaction(tableName, 'readwrite')
         const objectStore = transaction.objectStore(tableName)
         const request = objectStore.put(value, key)
   
         request.addEventListener('success', () => {
-          db.close()
+          connection.close()
           resolve()
         })
         request.addEventListener('error', (e) => {
-          db.close()
+          connection.close()
           reject(e)
         })
       } catch (err) {

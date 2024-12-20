@@ -10,9 +10,6 @@ import { Container, FormContainer, StyledTabs } from './components/styled'
 import { useAppDispatch } from 'app/hooks'
 import { loginWithNoAuth } from 'app/store/slices/auth'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
-import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
-import noAuthHandlersLoader from 'app/store/utils/noAuthHandlers/noAuthHandlers.loader'
-import { initBaseData } from 'app/utils/initBaseData'
 import { initLocalDB } from 'app/utils/initLocalDB'
 
 export enum AUTH_FORM_TABS {
@@ -43,6 +40,10 @@ const AuthTemplate = () => {
       },
       onError: (error) => {
         console.error(error)
+        notification.error({
+          message: intl.common.error,
+          description: intl.rest.base_data_initialization.error,
+        })
       },
       lang,
     })

@@ -11,7 +11,7 @@ const browserDb = (() => ({
       this.onInit = onInit
       this.onDisconnect = onDisconnect
     } else {
-      this.onInit?.(this.db.db)
+      (this.onInit || (this.onInit = onInit || null))?.(this.db.db)
     }
     return this.db
   },

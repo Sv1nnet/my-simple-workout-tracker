@@ -152,6 +152,7 @@ const handlers = {
     }
   },
   update: async ({ body }: { body: FormData }) => {
+    debugger
     const { exercisesTable, workoutsTable, muscleGroupsTable } = browserDB.getTables()
     
     const bodyKeys = body.keys()
@@ -182,7 +183,15 @@ const handlers = {
       }
 
       const isInWorkout = await exercise.isInWorkout(workouts)
-      if (isInWorkout) {
+      const isWorkoutInActivity = isInWorkout && workouts
+        .some(
+          workout => workout
+            .exercises
+            .find(exerciseInWorkout => exerciseInWorkout.id === exercise.id)
+            ?.is_in_activity,
+        )
+
+      if (isWorkoutInActivity) {
         await exercise.update({ title: restForm.title, description: restForm.description, image: image ? new ImageModel(image) : restForm.image })
       } else {
         await exercise.update(image ? { ...restForm, image: new ImageModel(image) } : restForm)

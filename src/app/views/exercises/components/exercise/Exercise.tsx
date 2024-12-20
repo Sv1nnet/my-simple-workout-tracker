@@ -313,7 +313,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       </Form.Item>
       <Form.Item label={input_labels.muscle_groups} name="muscle_groups">
         <SelectWithItemCreating
-          disabled={isFormItemDisabled || _initialValues.is_in_workout}
+          disabled={isFormItemDisabled}
           isOpen={isMuscleGroupSelectOpen}
           loading={muscleGroupListStatus === API_STATUS.LOADING}
           onAddItem={handleAddItem}

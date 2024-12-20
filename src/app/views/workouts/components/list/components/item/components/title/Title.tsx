@@ -34,11 +34,11 @@ const Title = ({ title, repeats, time, weight, massUnit = 'kg', payloadDictionar
     : null
   weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit][0]}` : null
 
+  const loadType = [ repeats, time, weight ].filter(Boolean).join(' / ')
+
   return (
     <div>
-      <LoadType>
-        <Typography.Text type="secondary">{[ repeats, time, weight ].filter(Boolean).join(' / ') || <span>&nbsp;</span>}</Typography.Text>
-      </LoadType>
+      {loadType && <LoadType>{loadType}</LoadType>}
       <Typography.Title style={{ marginBottom: '0' }} level={4}>{title}</Typography.Title>
     </div>
   )
