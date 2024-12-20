@@ -4,7 +4,7 @@ import TimePicker from 'app/components/time_picker/TimePicker'
 import { DeleteFilled, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Divider, Form, Select } from 'antd'
 import { Rule } from 'antd/lib/form'
-import { Input as CustomInput } from 'app/components'
+import { Input as CustomInput, NoDataText } from 'app/components'
 import {
   ExerciseOption,
   StyledFormItem,
@@ -12,6 +12,7 @@ import {
   DeleteButton,
 } from 'app/views/workouts/components/workout/components'
 import { ExerciseContainer, MoveExerciseButtonContainer, StyledSelect } from './components/styled'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const Exercise = ({
   exerciseAmount,
@@ -30,7 +31,9 @@ const Exercise = ({
   remove,
   isInActivity,
 }) => {
+  const { intl } = useIntlContext()
   const $container = useRef(null)
+  const $select = useRef(null)
   const requiredRules = isEditMode ? [ { required: true, message: errorsDictionary.common.required } ] : []
   const handleExerciseChange = onExerciseChange(index, 'rounds')
 
@@ -60,9 +63,17 @@ const Exercise = ({
       {isEditMode && !isInActivity && fields.length !== 1 && <DeleteButton disabled={isFetching} danger type="text" size="large" onClick={() => remove(index)}><DeleteFilled /></DeleteButton>}
 
       <Form.Item label={dictionary.input_labels.exercise} name={[ index, 'id' ]} rules={requiredRules}>
-        <StyledSelect disabled={isFormItemDisabled || isInActivity} size="large">
+        <StyledSelect
+          ref={$select}
+          disabled={isFormItemDisabled || isInActivity}
+          size="large"
+          showSearch
+          optionFilterProp="label"
+          onSelect={() => $select.current?.blur()}
+          notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
+        >
           {exerciseList.data.map(exercise => (
-            <Select.Option value={exercise.id} key={exercise.id} disabled={exercise.archived}>
+            <Select.Option value={exercise.id} key={exercise.id} label={exercise.title} disabled={exercise.archived}>
               <ExerciseOption {...exercise} payloadDictionary={payload} />
             </Select.Option>
           ))}

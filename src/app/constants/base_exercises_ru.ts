@@ -18,9 +18,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -41,10 +42,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572de',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572da',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -65,10 +65,11 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572da',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e620', // Спина: Выпрямляющая позвоночник мышца
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
+      '675e00fc5d1f1d8d19f8e628', // Ноги: Бицепс бедра
     ],
     mass_unit: 'kg',
   },
@@ -89,56 +90,11 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
-  },
-  {
-    id: '6709596b5c61afda0db52e97',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Жим гантелей сидя',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Сидя или стоя, поднимайте гантели над головой от уровня плеч.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
-    ],
-    mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52e98',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Разгибание ног',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Разгибайте ноги, поднимая утяжеленную подушку на тренажере.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-    ],
-    mass_unit: 'kg',
   },
   {
     id: '6709596b5c61afda0db52e99',
@@ -157,9 +113,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e61e', // Спина: Ромбовидная мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -180,7 +137,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
   },
@@ -188,7 +145,7 @@ const exercises = [
     id: '6709596b5c61afda0db52e9b',
     updated_at: 1648771200000,
     created_at: 1648771200000,
-    title: 'Сгибание рук на бицепс',
+    title: 'Подъем гантелей на бицепс',
     type: 'repeats',
     each_side: false,
     hours: false,
@@ -201,7 +158,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572dd',
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
+      '675e00fc5d1f1d8d19f8e633', // Руки: Плечелучевая мышца
     ],
     mass_unit: 'kg',
   },
@@ -222,8 +180,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -244,7 +203,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572de',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
     ],
     mass_unit: 'kg',
   },
@@ -265,7 +225,31 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572df',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e628', // Ноги: Бицепс бедра
+    ],
+    mass_unit: 'kg',
+  },
+  {
+    id: '675decca0e6eababfa8226e7',
+    updated_at: 1648771200000,
+    created_at: 1648771200000,
+    title: 'Выпады с гантелями на одну ногу',
+    type: 'repeats',
+    each_side: true,
+    hours: false,
+    is_in_workout: false,
+    in_workouts: [],
+    archived: false,
+    image: null,
+    time: null,
+    description: 'Сделайте шаг вперед в положение выпада, держа гантели в руках. Приседайте на одну ногу.',
+    repeats: null,
+    weight: null,
+    muscle_groups: [
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -286,9 +270,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572de',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -309,7 +293,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e0',
+      '675e00fc5d1f1d8d19f8e62e', // Ноги: Икроножная мышца
     ],
     mass_unit: 'kg',
   },
@@ -330,9 +314,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e616', // Грудь: Верхний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -353,9 +338,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e618', // Грудь: Нижний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -376,29 +361,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
-    ],
-    mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52ea5',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Русский твист',
-    type: 'repeats',
-    each_side: true,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Сидя с поднятыми ногами, поворачивайте корпус из стороны в сторону.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e625', // Плечи: Задняя дельта
+      '675e00fc5d1f1d8d19f8e61c', // Спина: Верхняя Трапецевидная мышца
     ],
     mass_unit: 'kg',
   },
@@ -419,7 +384,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572db',
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
+      '675e00fc5d1f1d8d19f8e633', // Руки: Плечелучевая мышца
     ],
     mass_unit: 'kg',
   },
@@ -440,30 +406,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
-    ],
-    mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52ea8',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Разгибание рук с гантелями из-за головы',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Держите гантель или штангу над головой, опустите ее за голову, затем выпрямите руки.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -484,9 +429,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
     ],
     mass_unit: 'kg',
   },
@@ -507,8 +451,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e624', // Плечи: Средняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -529,7 +473,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e0',
+      '675e00fc5d1f1d8d19f8e62e', // Ноги: Икроножная мышца
     ],
     mass_unit: 'kg',
   },
@@ -550,8 +494,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
+      '675e00fc5d1f1d8d19f8e628', // Ноги: Бицепс бедра
     ],
     mass_unit: 'kg',
   },
@@ -572,9 +516,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e618', // Грудь: Нижний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -595,7 +539,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572df',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e628', // Ноги: Бицепс бедра
     ],
     mass_unit: 'kg',
   },
@@ -616,9 +561,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -639,9 +584,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
     ],
     mass_unit: 'kg',
   },
@@ -662,8 +606,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e61c', // Спина: Верхняя Трапецевидная мышца
     ],
     mass_unit: 'kg',
   },
@@ -684,7 +627,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
   },
@@ -705,7 +648,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e0',
+      '675e00fc5d1f1d8d19f8e62e', // Ноги: Икроножная мышца
     ],
     mass_unit: 'kg',
   },
@@ -726,31 +669,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e625', // Плечи: Задняя дельта
     ],
     mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52eb5',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Подъем ног в висе',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Висите на перекладине и поднимайте ноги, пока они не станут параллельны полу.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572e2',
-    ],
-    mass_unit: null,
   },
   {
     id: '6709596b5c61afda0db52eb6',
@@ -769,7 +691,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572db',
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
+      '675e00fc5d1f1d8d19f8e633', // Руки: Плечелучевая мышца
     ],
     mass_unit: 'kg',
   },
@@ -790,9 +713,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
   },
@@ -813,10 +736,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e620', // Спина: Выпрямляющая позвоночник мышца
+      '675e00fc5d1f1d8d19f8e628', // Ноги: Бицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -837,8 +760,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
+      '675e00fc5d1f1d8d19f8e624', // Плечи: Средняя дельта
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
   },
@@ -859,7 +784,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572db',
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -880,10 +805,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -904,9 +828,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e618', // Грудь: Нижний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -927,9 +852,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -950,8 +875,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
+      '675e00fc5d1f1d8d19f8e624', // Плечи: Средняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -959,7 +885,7 @@ const exercises = [
     id: '6709596b5c61afda0db52ebf',
     updated_at: 1648771200000,
     created_at: 1648771200000,
-    title: 'Разгибание рук на трицепс с канатом',
+    title: 'Разгибание рук за головой',
     type: 'repeats',
     each_side: true,
     hours: false,
@@ -968,11 +894,11 @@ const exercises = [
     archived: false,
     image: null,
     time: null,
-    description: 'Используя блочный тренажер, разгибайте руку назад для проработки трицепса.',
+    description: '',
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
   },
@@ -993,9 +919,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
     ],
     mass_unit: 'kg',
   },
@@ -1016,9 +942,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -1039,10 +965,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
+      '675e00fc5d1f1d8d19f8e635', // Пресс
     ],
     mass_unit: 'kg',
   },
@@ -1063,8 +989,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e61c', // Спина: Верхняя Трапецевидная мышца
     ],
     mass_unit: 'kg',
   },
@@ -1072,7 +998,7 @@ const exercises = [
     id: '6709596b5c61afda0db52ec4',
     updated_at: 1648771200000,
     created_at: 1648771200000,
-    title: 'Разгибание рук с гантелей из-за головы',
+    title: 'Разгибание рук с гантелями из-за головы',
     type: 'repeats',
     each_side: false,
     hours: false,
@@ -1085,7 +1011,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
   },
@@ -1106,9 +1032,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e616', // Грудь: Верхний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -1129,8 +1056,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e622', // Плечи
+      '675e00fc5d1f1d8d19f8e625', // Плечи: Задняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -1151,10 +1078,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -1175,32 +1101,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52ec9',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Обратные скручивания',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Лежа на спине, поднимайте таз от пола, приближая колени к груди.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572e2',
-    ],
-    mass_unit: null,
   },
   {
     id: '6709596b5c61afda0db52eca',
@@ -1219,9 +1123,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
     ],
     mass_unit: 'kg',
   },
@@ -1242,9 +1145,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e623', // Плечи: Передняя дельта
     ],
     mass_unit: 'kg',
   },
@@ -1265,8 +1169,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
+      '675e00fc5d1f1d8d19f8e620', // Спина: Выпрямляющая позвоночник мышца
     ],
     mass_unit: null,
   },
@@ -1287,34 +1191,12 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e61c', // Спина: Верхняя Трапецевидная мышца
     ],
     mass_unit: 'kg',
   },
   {
-    id: '6709596b5c61afda0db52ece',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Разгибание рук на трицепс с канатом',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Используйте канатную рукоятку на тренажере, чтобы выполнять разгибания рук вниз для проработки трицепсов.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572dc',
-    ],
-    mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52ecf',
+    id: '6709596b5c61afda0db52ed0',
     updated_at: 1648771200000,
     created_at: 1648771200000,
     title: 'Приведение ног',
@@ -1330,12 +1212,13 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e62d', // Ноги: Медиальная широкая мышца
     ],
     mass_unit: 'kg',
   },
   {
-    id: '6709596b5c61afda0db52ed0',
+    id: '6709596b5c61afda0db52ed1',
     updated_at: 1648771200000,
     created_at: 1648771200000,
     title: 'Отведение ног',
@@ -1351,12 +1234,13 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e62c', // Ноги: Латеральная широкая мышца
     ],
     mass_unit: 'kg',
   },
   {
-    id: '6709596b5c61afda0db52ed1',
+    id: '6709596b5c61afda0db52ed2',
     updated_at: 1648771200000,
     created_at: 1648771200000,
     title: 'Боковые выпады с гантелями',
@@ -1372,14 +1256,15 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
+      '675e00fc5d1f1d8d19f8e62c', // Ноги: Латеральная широкая мышца
     ],
     mass_unit: 'kg',
   },
   {
-    id: '6709596b5c61afda0db52ed2',
+    id: '6709596b5c61afda0db52ed3',
     updated_at: 1648771200000,
     created_at: 1648771200000,
     title: 'Косые скручивания на блоке',
@@ -1395,13 +1280,14 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e637', // Пресс: Внешние косые мышцы
+      '675e00fc5d1f1d8d19f8e638', // Пресс: Внутренние косые мышцы
     ],
     mass_unit: 'kg',
   },
   {
-    id: '6709596b5c61afda0db52ed3',
+    id: '6709596b5c61afda0db52ed4',
     updated_at: 1648771200000,
     created_at: 1648771200000,
     title: 'Наклоны со штангой на плечах',
@@ -1417,32 +1303,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572e2',
-    ],
-    mass_unit: 'kg',
-  },
-  {
-    id: '6709596b5c61afda0db52ed4',
-    updated_at: 1648771200000,
-    created_at: 1648771200000,
-    title: 'Жим плеч в тренажере',
-    type: 'repeats',
-    each_side: false,
-    hours: false,
-    is_in_workout: false,
-    in_workouts: [],
-    archived: false,
-    image: null,
-    time: null,
-    description: 'Используйте тренажер для жима плеч, чтобы поднимать рукоятки вверх.',
-    repeats: null,
-    weight: null,
-    muscle_groups: [
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e620', // Спина: Выпрямляющая позвоночник мышца
     ],
     mass_unit: 'kg',
   },
@@ -1463,7 +1324,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572db',
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: 'kg',
   },
@@ -1484,7 +1345,7 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
     ],
     mass_unit: 'kg',
   },
@@ -1505,10 +1366,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d9',
-      '6733ca10b2568c018b8572e1',
-      '6733ca10b2568c018b8572df',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e626', // Ноги
+      '675e00fc5d1f1d8d19f8e627', // Ноги: Квадрицепс бедра
+      '675e00fc5d1f1d8d19f8e62b', // Ноги: Ягодичная мышца бедра
     ],
     mass_unit: 'kg',
   },
@@ -1529,7 +1389,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
     ],
     mass_unit: null,
   },
@@ -1550,9 +1411,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1573,9 +1434,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1596,9 +1457,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1619,9 +1480,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1642,9 +1503,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1665,9 +1526,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1688,9 +1549,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1711,9 +1572,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d7',
-      '6733ca10b2568c018b8572db',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e61b', // Спина
+      '675e00fc5d1f1d8d19f8e61f', // Спина: Широчайшая мышца
+      '675e00fc5d1f1d8d19f8e632', // Руки: Бицепс
     ],
     mass_unit: null,
   },
@@ -1734,9 +1595,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572dc',
-      '6733ca10b2568c018b8572d8',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -1757,9 +1618,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e616', // Грудь: Верхний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -1780,9 +1641,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e618', // Грудь: Нижний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -1803,9 +1664,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -1826,10 +1687,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e635', // Пресс
     ],
     mass_unit: null,
   },
@@ -1850,10 +1711,10 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
+      '675e00fc5d1f1d8d19f8e635', // Пресс
     ],
     mass_unit: null,
   },
@@ -1874,9 +1735,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -1897,9 +1758,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572d6',
-      '6733ca10b2568c018b8572d8',
-      '6733ca10b2568c018b8572dc',
+      '675e00fc5d1f1d8d19f8e615', // Грудь
+      '675e00fc5d1f1d8d19f8e617', // Грудь: Средний пучок
+      '675e00fc5d1f1d8d19f8e631', // Руки: Трицепс
     ],
     mass_unit: null,
   },
@@ -1920,7 +1781,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
+      '675e00fc5d1f1d8d19f8e639', // Пресс: Поперечные мышцы
     ],
     mass_unit: null,
   },
@@ -1941,7 +1804,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
     ],
     mass_unit: null,
   },
@@ -1962,7 +1826,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
+      '675e00fc5d1f1d8d19f8e639', // Пресс: Поперечные мышцы
     ],
     mass_unit: null,
   },
@@ -1983,8 +1849,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
-      '6733ca10b2568c018b8572d7',
+      '675e00fc5d1f1d8d19f8e620', // Спина: Выпрямляющая позвоночник мышца
+      '675e00fc5d1f1d8d19f8e635', // Пресс
     ],
     mass_unit: null,
   },
@@ -2005,7 +1871,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
     ],
     mass_unit: null,
   },
@@ -2026,7 +1893,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
+      '675e00fc5d1f1d8d19f8e639', // Пресс: Поперечные мышцы
     ],
     mass_unit: null,
   },
@@ -2047,7 +1916,9 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
+      '675e00fc5d1f1d8d19f8e637', // Пресс: Внешние косые мышцы
     ],
     mass_unit: null,
   },
@@ -2068,7 +1939,8 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
     ],
     mass_unit: null,
   },
@@ -2089,9 +1961,32 @@ const exercises = [
     repeats: null,
     weight: null,
     muscle_groups: [
-      '6733ca10b2568c018b8572e2',
+      '675e00fc5d1f1d8d19f8e635', // Пресс
+      '675e00fc5d1f1d8d19f8e636', // Пресс: Прямая мышца
     ],
     mass_unit: null,
+  },
+  {
+    updated_at: 1734620944786,
+    created_at: 1648771200000,
+    id: '676436e3bcb109d88b6b02c8',
+    title: 'Выпады с гантелями на одну ногу со скамьей',
+    type: 'repeats',
+    each_side: true,
+    hours: false,
+    is_in_workout: false,
+    in_workouts: [],
+    archived: false,
+    muscle_groups: [
+      '675e00fc5d1f1d8d19f8e626',
+      '675e00fc5d1f1d8d19f8e627',
+      '675e00fc5d1f1d8d19f8e62b',
+    ],
+    time: null,
+    description: 'Сделайте шаг вперед в положение выпада, держа гантели в руках. Заднюю ногу поместите на скамью. Приседайте на одну ногу.',
+    repeats: null,
+    weight: null,
+    mass_unit: 'kg',
   },
 ]
 

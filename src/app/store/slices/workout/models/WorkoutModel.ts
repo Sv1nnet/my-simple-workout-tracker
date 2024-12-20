@@ -61,6 +61,10 @@ export class WorkoutModel extends EntityModel {
     Object.assign(this, data)
     this.updated_at = Date.now()
 
+    if (data.exercises) {
+      this.exercises = data.exercises.map(exercise => new WorkoutExerciseModel(exercise))
+    }
+
     return this
   }
 

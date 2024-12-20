@@ -1,6 +1,6 @@
 const muscleGroups = [
   {
-    title: 'Грудь',
+    title: 'Chest',
     id: '675e00fc5d1f1d8d19f8e615',
     in_exercises: [],
     is_in_exercise: false,
@@ -8,7 +8,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Верхний пучок груди',
+    title: 'Upper Chest',
     id: '675e00fc5d1f1d8d19f8e616',
     in_exercises: [],
     is_in_exercise: false,
@@ -16,7 +16,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Средний пучок груди',
+    title: 'Middle Chest',
     id: '675e00fc5d1f1d8d19f8e617',
     in_exercises: [],
     is_in_exercise: false,
@@ -24,7 +24,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Нижний пучок груди',
+    title: 'Lower Chest',
     id: '675e00fc5d1f1d8d19f8e618',
     in_exercises: [],
     is_in_exercise: false,
@@ -32,7 +32,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Шея',
+    title: 'Neck',
     id: '675e01da5d1f1d8d19f8e63c',
     in_exercises: [],
     is_in_exercise: false,
@@ -40,7 +40,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Ременная мышца',
+    title: 'Strap Muscle',
     id: '675e00fc5d1f1d8d19f8e619',
     in_exercises: [],
     is_in_exercise: false,
@@ -48,7 +48,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Боковая мышцы шеи',
+    title: 'Lateral Muscles of the Neck',
     id: '675e00fc5d1f1d8d19f8e61a',
     in_exercises: [],
     is_in_exercise: false,
@@ -56,7 +56,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Спина',
+    title: 'Back',
     id: '675e00fc5d1f1d8d19f8e61b',
     in_exercises: [],
     is_in_exercise: false,
@@ -64,7 +64,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Верхняя Трапецевидная мышца',
+    title: 'Upper Trapezius',
     id: '675e00fc5d1f1d8d19f8e61c',
     in_exercises: [],
     is_in_exercise: false,
@@ -72,7 +72,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Нижняя Трапецевидная мышца',
+    title: 'Lower Trapezius',
     id: '675e00fc5d1f1d8d19f8e61d',
     in_exercises: [],
     is_in_exercise: false,
@@ -80,7 +80,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Ромбовидная мышца',
+    title: 'Rhomboid Muscle',
     id: '675e00fc5d1f1d8d19f8e61e',
     in_exercises: [],
     is_in_exercise: false,
@@ -88,7 +88,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Широчайшая мышца',
+    title: 'Latissimus Dorsi',
     id: '675e00fc5d1f1d8d19f8e61f',
     in_exercises: [],
     is_in_exercise: false,
@@ -96,7 +96,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Выпрямляющая позвоночник мышца',
+    title: 'Erector Spinae',
     id: '675e00fc5d1f1d8d19f8e620',
     in_exercises: [],
     is_in_exercise: false,
@@ -104,7 +104,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Квадратная поясничная мышца',
+    title: 'Quadratus Lumbar',
     id: '675e00fc5d1f1d8d19f8e621',
     in_exercises: [],
     is_in_exercise: false,
@@ -112,7 +112,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Плечи',
+    title: 'Shoulders',
     id: '675e00fc5d1f1d8d19f8e622',
     in_exercises: [],
     is_in_exercise: false,
@@ -120,7 +120,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Передняя дельта плеча',
+    title: 'Anterior Deltoid',
     id: '675e00fc5d1f1d8d19f8e623',
     in_exercises: [],
     is_in_exercise: false,
@@ -128,7 +128,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Средняя дельта плеча',
+    title: 'Middle Deltoid',
     id: '675e00fc5d1f1d8d19f8e624',
     in_exercises: [],
     is_in_exercise: false,
@@ -136,7 +136,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Задняя дельта плеча',
+    title: 'Rear Deltoid',
     id: '675e00fc5d1f1d8d19f8e625',
     in_exercises: [],
     is_in_exercise: false,
@@ -144,7 +144,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Ноги',
+    title: 'Legs',
     id: '675e00fc5d1f1d8d19f8e626',
     in_exercises: [],
     is_in_exercise: false,
@@ -152,7 +152,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Квадрицепс берда',
+    title: 'Quadriceps Femur',
     id: '675e00fc5d1f1d8d19f8e627',
     in_exercises: [],
     is_in_exercise: false,
@@ -160,7 +160,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Бицепс берда',
+    title: 'Biceps Femur',
     id: '675e00fc5d1f1d8d19f8e628',
     in_exercises: [],
     is_in_exercise: false,
@@ -168,7 +168,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Подвздошная мышца',
+    title: 'Iliacus Muscle',
     id: '675e00fc5d1f1d8d19f8e629',
     in_exercises: [],
     is_in_exercise: false,
@@ -176,7 +176,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Прямая мышца бедра',
+    title: 'Rectus Femur',
     id: '675e00fc5d1f1d8d19f8e62a',
     in_exercises: [],
     is_in_exercise: false,
@@ -184,7 +184,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Ягодичная мышца',
+    title: 'Gluteus Muscle',
     id: '675e00fc5d1f1d8d19f8e62b',
     in_exercises: [],
     is_in_exercise: false,
@@ -192,7 +192,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Латеральная широкая мышца',
+    title: 'Lateral Vastus Muscle',
     id: '675e00fc5d1f1d8d19f8e62c',
     in_exercises: [],
     is_in_exercise: false,
@@ -200,7 +200,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Медиальная широкая мышца',
+    title: 'Medial broad muscle',
     id: '675e00fc5d1f1d8d19f8e62d',
     in_exercises: [],
     is_in_exercise: false,
@@ -208,7 +208,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Икроножная мышца',
+    title: 'Gastrocnemius muscle',
     id: '675e00fc5d1f1d8d19f8e62e',
     in_exercises: [],
     is_in_exercise: false,
@@ -216,7 +216,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Переднаяя большеберцовая мышца',
+    title: 'Anterior tibial muscle',
     id: '675e00fc5d1f1d8d19f8e62f',
     in_exercises: [],
     is_in_exercise: false,
@@ -224,7 +224,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Руки',
+    title: 'Arms',
     id: '675e00fc5d1f1d8d19f8e630',
     in_exercises: [],
     is_in_exercise: false,
@@ -232,7 +232,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Трицепс',
+    title: 'Triceps',
     id: '675e00fc5d1f1d8d19f8e631',
     in_exercises: [],
     is_in_exercise: false,
@@ -240,7 +240,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Бицепс',
+    title: 'Biceps',
     id: '675e00fc5d1f1d8d19f8e632',
     in_exercises: [],
     is_in_exercise: false,
@@ -248,7 +248,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Плечелучевая мышца',
+    title: 'Brachiradialis muscle',
     id: '675e00fc5d1f1d8d19f8e633',
     in_exercises: [],
     is_in_exercise: false,
@@ -256,7 +256,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Разгибатель запястья',
+    title: 'Extensor carpi',
     id: '675e00fc5d1f1d8d19f8e634',
     in_exercises: [],
     is_in_exercise: false,
@@ -264,7 +264,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Пресс',
+    title: 'Abs',
     id: '675e00fc5d1f1d8d19f8e635',
     in_exercises: [],
     is_in_exercise: false,
@@ -272,7 +272,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Прямая мышца пресса',
+    title: 'Rectus abdominis muscle',
     id: '675e00fc5d1f1d8d19f8e636',
     in_exercises: [],
     is_in_exercise: false,
@@ -280,7 +280,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Внешние косые мышцы пресса',
+    title: 'External obliques',
     id: '675e00fc5d1f1d8d19f8e637',
     in_exercises: [],
     is_in_exercise: false,
@@ -288,7 +288,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Внутренние косые мышцы пресса',
+    title: 'Internal obliques',
     id: '675e00fc5d1f1d8d19f8e638',
     in_exercises: [],
     is_in_exercise: false,
@@ -296,7 +296,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Поперечные мышцы пресса',
+    title: 'Transverse abdominal muscles',
     id: '675e00fc5d1f1d8d19f8e639',
     in_exercises: [],
     is_in_exercise: false,
@@ -304,7 +304,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Кардио',
+    title: 'Cardio',
     id: '675e00fc5d1f1d8d19f8e63a',
     in_exercises: [],
     is_in_exercise: false,
@@ -312,7 +312,7 @@ const muscleGroups = [
     updated_at: 0,
   },
   {
-    title: 'Другое',
+    title: 'Other',
     id: '675e00fc5d1f1d8d19f8e63b',
     in_exercises: [],
     is_in_exercise: false,

@@ -43,7 +43,7 @@ const StyledPageHeader = styled(PageHeader)`
 `
 
 
-const Header = ({ children }) => {
+const WithHeader = ({ children }) => {
   const { title } = useHeaderTitleContext()
 
   return (
@@ -69,10 +69,10 @@ export const PageLayout: FC<{ children: ReactNode }> = ({ children }) => {
   if (_title.startsWith('/')) _title = _title.substring(1)
 
   return (
-    <Header>
+    <WithHeader>
       <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       {children}
-    </Header>
+    </WithHeader>
   )
 }
 
@@ -96,12 +96,12 @@ export const PageLayoutWithNav: FC<{ route: TabRoutes, children?: ReactNode }> =
   }, [])
 
   return (
-    <Header>
+    <WithHeader>
       <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       <ContentContainer $height={height}>
         {children}
       </ContentContainer>
       <NavTemplate activeTab={_title} />
-    </Header>
+    </WithHeader>
   )
 }

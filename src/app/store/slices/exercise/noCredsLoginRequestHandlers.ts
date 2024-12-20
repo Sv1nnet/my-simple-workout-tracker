@@ -126,7 +126,7 @@ const handlers = {
         .map(muscleGroup => new MuscleGroupModel(muscleGroup))
 
       await Promise.all(exercisesToCopy.map(async (exercise) => {
-        let newExercise = await new ExerciseModel({
+        let newExercise = new ExerciseModel({
           ...exercise,
           title: `${exercise.title} ${lang === 'ru' ? '(копия)' : '(copy)'}`,
           is_in_workout: false,

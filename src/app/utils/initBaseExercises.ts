@@ -1,13 +1,19 @@
-import ruExercises from 'app/constants/base_exercises_ru'
-import enExercises from 'app/constants/base_exercises_en'
 import { IndexedDB } from './IndexedDBUtils'
 
 export const initBaseExercises = async (db: IndexedDB<string>, lang: 'ru' | 'eng') => {
-  const exercises = lang === 'ru' ? ruExercises : enExercises
+  let baseExercises = null
+  try {
+    baseExercises = lang === 'ru'
+      ? await import('app/constants/base_exercises_ru')
+      : await import('app/constants/base_exercises_eng')
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
 
   const { exercises: exercisesTable } = db.tables
 
-  for await (const exercise of exercises) {
+  for await (const exercise of baseExercises.default) {
     await db.set(exercisesTable, exercise.id, JSON.stringify(exercise))
   }
 }

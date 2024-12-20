@@ -1,4 +1,4 @@
-import { Card, Button } from 'antd'
+import { Card, Button, notification } from 'antd'
 import Login from '../login/Login'
 import Signup from '../signup/Signup'
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react'
@@ -12,8 +12,8 @@ import { loginWithNoAuth } from 'app/store/slices/auth'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
 import noAuthHandlersLoader from 'app/store/utils/noAuthHandlers/noAuthHandlers.loader'
-import { initBaseExercises } from 'app/utils/initBaseExercises'
-import { initBaseMuscleGroups } from 'app/utils/initBaseMuscleGroups'
+import { initBaseData } from 'app/utils/initBaseData'
+import { initLocalDB } from 'app/utils/initLocalDB'
 
 export enum AUTH_FORM_TABS {
   LOGIN = 'login',
@@ -36,26 +36,15 @@ const AuthTemplate = () => {
   const handleLoginWithoutCreds = async () => {
     runLoader('initNoAuthDB', { containerProps: { style: { top: 0 } } })
 
-    const db = await browserDBLoader.get()
-    await db.droppingPromise
-    await noAuthHandlersLoader.get()
-
-    db.init(async () => {
-      const isExercisesInitialized = await db.db?.get(db.db.tables.config, 'isExercisesInitialized')
-      const configLang = await db.db?.get(db.db.tables.config, 'lang')
-
-      if (!configLang || configLang !== lang) {
-        await db.db.set(db.db.tables.config, 'lang', lang)
-      }
-
-      if (!isExercisesInitialized) {
-        await initBaseExercises(db.db, lang)
-        await initBaseMuscleGroups(db.db, lang)
-        await db.db.set(db.db.tables.config, 'isExercisesInitialized', 'true')
-      }
-
-      dispatch(loginWithNoAuth())
-      stopLoaderById('initNoAuthDB')
+    initLocalDB({
+      onAfterInit: () => {
+        dispatch(loginWithNoAuth())
+        stopLoaderById('initNoAuthDB')
+      },
+      onError: (error) => {
+        console.error(error)
+      },
+      lang,
     })
   }
 

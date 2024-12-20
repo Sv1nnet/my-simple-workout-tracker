@@ -36,7 +36,7 @@ export type MuscleGroup = {
 }
 
 export type ExerciseForm<T = number | Dayjs> = Omit<Exercise<T>, 'image' | 'muscle_groups'> & {
-  muscle_groups: string[];
+  muscle_groups: ({ value: string, label: string } | string)[];
   image?: Image | Image[];
 }
 

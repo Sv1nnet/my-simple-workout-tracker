@@ -13,6 +13,8 @@ const OptionContainer = styled.div<{ $disabled: boolean }>`
   align-items: center;
   .ant-typography {
     color: ${({ $disabled }) => $disabled ? theme.disabledColor : ''};
+    text-wrap: auto;
+    text-wrap-mode: wrap;
   }
   .ant-typography-secondary {
     font-size: 14px;

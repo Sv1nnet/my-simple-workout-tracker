@@ -47,7 +47,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const [ fetchMuscleGroupList, { error: fetchMuscleGroupsError } ] = muscleGroupApi.useLazyListQuery()
   const { data: muscleGroupList, status: muscleGroupListStatus } = useAppSelector(selectList)
-  const muscleGroupsItems = useMemo(() => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id })), [ muscleGroupList ])
+  const muscleGroupsItems = useMemo(() => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id, value: muscleGroup.id })), [ muscleGroupList ])
 
   const [ createMuscleGroup, { error: createMuscleGroupError } ] = muscleGroupApi.useCreateMutation()
   const [ deleteMuscleGroup, { error: deleteMuscleGroupError } ] = muscleGroupApi.useDeleteMutation()
@@ -92,10 +92,24 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           : '',
       }
       exercise.image = [ image ]
-      return exercise
     }
+
+    if (muscleGroupListStatus === API_STATUS.LOADED) {
+      exercise.muscle_groups = exercise.muscle_groups.map((muscleGroupId) => {
+        const muscleGroupFromList = muscleGroupsItems
+          .find(muscleGroup => typeof muscleGroupId === 'string'
+            ? muscleGroup.id === muscleGroupId
+            : muscleGroup.id === muscleGroupId.value)
+
+        return muscleGroupFromList ? {
+          label: muscleGroupFromList.label,
+          value: muscleGroupFromList.id,
+        } : null
+      })
+    }
+
     return exercise
-  }, [ _initialValues ])
+  }, [ _initialValues, muscleGroupsItems, muscleGroupListStatus ])
 
   const requestForDeleteMuscleGroupPromise = (muscleGroupName: string) => {
     setIsMuscleGroupSelectOpen(true)
@@ -242,8 +256,10 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   })
 
   useEffect(() => {
-    if (isMounted() && !isFetching && !isError) form.setFieldsValue(initialValues)
-  }, [ initialValues, isFetching ])
+    if (isMounted() && !isFetching && !isError && muscleGroupListStatus !== API_STATUS.LOADING) {
+      form.setFieldsValue(initialValues)
+    }
+  }, [ initialValues, isFetching, muscleGroupListStatus ])
 
   useEffect(() => {
     if (error || isError) {
