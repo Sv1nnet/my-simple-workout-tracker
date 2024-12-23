@@ -16,7 +16,8 @@ import { Container, HistoryLoader, ItemContainer, ListContainer } from './compoe
 import { useAppSelector } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { useDispatch } from 'react-redux'
-import { useHistoryContext } from 'app/views/activities/components/activity/context/history_provider/HistoryProvider'
+import { useHistoryContext, useActivityContext } from 'app/views/activities/components/activity/contexts'
+import { IVirtualListRef } from 'app/components/virtual_list/VirtualList'
 
 const RESULT_HEIGHT = 22
 const EACH_SIDE_RESULT_HEIGHT = 36
@@ -28,19 +29,20 @@ export const HEADER_HEIGHT = 23
 const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds, mode, type, hours, eachSide, isTimeType }) => {
   const [ width, setWidth ] = useState(() => exerciseRef.current ? exerciseRef.current - LIST_OFFSET : window.innerWidth - LIST_OFFSET)
   const { side_labels } = useIntlContext().intl.pages.activities
-  const { getByExerciseId } = useHistoryContext()
+  const { getByExerciseId, loadHistory, isLoading: isHistoryLoading } = useHistoryContext()
+  const { selectedWorkout, form } = useActivityContext()
 
-  const { results: _history, total } = getByExerciseId(exerciseId) || {}
+  const { results: _history, total, pagesLoaded } = getByExerciseId(exerciseId) || {}
 
   const [ history, lastHistoryItem ] = useMemo(() => {
-    if (isLoading) return [ null, null ]
+    if (isLoading && !_history) return [ null, null ]
 
     const hist = [ ..._history ]
     const _lastHistoryItem = hist.length < 31 ? hist[hist.length - 1] : hist.pop()
     return [ hist, _lastHistoryItem ]
   }, [ isLoading, _history ])
 
-  const $vList = useRef(null)
+  const $vList = useRef<IVirtualListRef | null>(null)
 
   const resultHeight = eachSide ? EACH_SIDE_RESULT_HEIGHT : RESULT_HEIGHT
   const listHeight = (history ?? []).length ? (rounds * resultHeight) + HEADER_HEIGHT : 0
@@ -95,6 +97,13 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds,
         : (
           <VirtualList
             ref={$vList}
+            onRenderedItemsChange={({ endIndex }) => {
+              if (isHistoryLoading) return
+
+              if (history.length && endIndex === history.length) {
+                loadHistory({ page: pagesLoaded + 1, byPage: 30, workoutId: selectedWorkout, activityId: form.getFieldValue('id') })
+              }
+            }}
             orientation="horizontal"
             height={listHeight > MIN_LIST_HEIGHT ? listHeight : MIN_LIST_HEIGHT}
             itemWidth={isTimeType

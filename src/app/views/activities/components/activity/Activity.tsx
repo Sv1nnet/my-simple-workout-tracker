@@ -18,7 +18,8 @@ import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 import { setCachedActivity } from 'app/store/slices/activity'
-import HistoryProvider from './context/history_provider/HistoryProvider'
+import HistoryProvider from './contexts/history_provider/HistoryProvider'
+import ActivityProvider from './contexts/activity_provider/ActivityProvider'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
@@ -198,114 +199,116 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const isFormItemDisabled = !isEditMode || isFetching
 
   return (
-    <HistoryProvider historyData={_history?.data} isLoading={isHistoryLoading}>
-      <Header
-        initialValues={initialValues}
-        isEdit={isEdit}
-        disabled={isFormItemDisabled || !selectedWorkout}
-        selectedWorkout={selectedWorkout}
-        durationTimerRef={durationTimerRef}
-        updateDurationInForm={updateDurationInForm}
-        resetDuration={resetDuration}
-        handleDurationChange={updateDurationInForm}
-      />
-      <StyledForm
-        onValuesChange={cacheFormData}
-        preserve={false}
-        form={form}
-        initialValues={initialValues}
-        onFinish={handleSubmit}
-        layout="vertical"
-        $isEdit={isEdit}
-      >
-        {isEdit && (
-          <DeleteEditPanel
-            isEditMode={isEditMode}
-            onEditClick={() => setEditMode(true)}
-            onDeleteClick={() => setIsModalVisible(true)}
-            deleteButtonProps={{ disabled: isFetching }}
-            editButtonProps={{ disabled: isFetching }}
-          />
-        )}
-        <StyledDateFormItem required name="date" $isEdit={isEdit}>
-          <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
-        </StyledDateFormItem>
-        <WorkoutFormItem
-          required
-          label={<WorkoutLabelContainer>{input_labels.workout}</WorkoutLabelContainer>}
-          name="workout_id"
-          rules={[ { required: true, message: 'Required' } ]}
+    <ActivityProvider form={form} selectedWorkout={selectedWorkout} activityId={initialValues.id}>
+      <HistoryProvider activityId={initialValues.id} historyData={_history?.data} isLoading={isHistoryLoading} loadHistory={getHistory}>
+        <Header
+          initialValues={initialValues}
+          isEdit={isEdit}
+          disabled={isFormItemDisabled || !selectedWorkout}
+          selectedWorkout={selectedWorkout}
+          durationTimerRef={durationTimerRef}
+          updateDurationInForm={updateDurationInForm}
+          resetDuration={resetDuration}
+          handleDurationChange={updateDurationInForm}
+        />
+        <StyledForm
+          onValuesChange={cacheFormData}
+          preserve={false}
+          form={form}
+          initialValues={initialValues}
+          onFinish={handleSubmit}
+          layout="vertical"
+          $isEdit={isEdit}
         >
-          <Select
-            ref={$select}
-            disabled={isFormItemDisabled || isEdit}
-            size="large"
-            showSearch
-            optionFilterProp="label"
-            onSelect={() => $select.current?.blur()}
-            onChange={handleSelectedWorkoutChange}
+          {isEdit && (
+            <DeleteEditPanel
+              isEditMode={isEditMode}
+              onEditClick={() => setEditMode(true)}
+              onDeleteClick={() => setIsModalVisible(true)}
+              deleteButtonProps={{ disabled: isFetching }}
+              editButtonProps={{ disabled: isFetching }}
+            />
+          )}
+          <StyledDateFormItem required name="date" $isEdit={isEdit}>
+            <DatePicker disabled={isFormItemDisabled} inputReadOnly bordered={false} size="small" allowClear={false} />
+          </StyledDateFormItem>
+          <WorkoutFormItem
+            required
+            label={<WorkoutLabelContainer>{input_labels.workout}</WorkoutLabelContainer>}
+            name="workout_id"
+            rules={[ { required: true, message: 'Required' } ]}
           >
-            {workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR
-              ? workoutList.map(workout => (
-                <Select.Option key={workout.id} value={workout.id} label={workout.title}>
-                  {workout.title}
-                </Select.Option>
-              ))
-              : workoutListStatus === API_STATUS.LOADING ? (
-                <Select.Option value={_initialValues.workout_id}>
-                  {intl.common.loading}
-                </Select.Option>
-              ) : null}
-          </Select>
-        </WorkoutFormItem>
-        <Form.Item noStyle shouldUpdate>
-          {({ getFieldValue }) =>
-            workoutList
-              .find(workout => workout.id === getFieldValue('workout_id'))
-              ?.exercises.map((exercise: WorkoutListExercise<number>, i, list) => (
-                <Exercise
-                  key={exercise._id as string}
-                  exerciseList={list as WorkoutListExercise<number>[]}
-                  roundResults={initialValues.results[i]}
-                  form={form}
-                  exerciseIndex={i}
-                  isFormItemDisabled={isFormItemDisabled}
-                  isEdit={isEdit}
-                  cacheFormData={cacheFormData}
-                  {...exercise}
-                  id={exercise._id}
-                />
-              ))
-          }
-        </Form.Item>
-        <Form.Item label={input_labels.description} name="description">
-          <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
-        </Form.Item>
-        {(isEditMode || !isEdit) && (
-          <CreateEditFormItem>
-            <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
-              {isEdit ? submit_button.save : submit_button.create}
-            </Button>
-            {isEdit && (
-              <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>
-                {submit_button.cancel}
-              </ToggleEdit>
-            )}
-          </CreateEditFormItem>
-        )}
+            <Select
+              ref={$select}
+              disabled={isFormItemDisabled || isEdit}
+              size="large"
+              showSearch
+              optionFilterProp="label"
+              onSelect={() => $select.current?.blur()}
+              onChange={handleSelectedWorkoutChange}
+            >
+              {workoutListStatus === API_STATUS.LOADED || workoutListStatus === API_STATUS.ERROR
+                ? workoutList.map(workout => (
+                  <Select.Option key={workout.id} value={workout.id} label={workout.title}>
+                    {workout.title}
+                  </Select.Option>
+                ))
+                : workoutListStatus === API_STATUS.LOADING ? (
+                  <Select.Option value={_initialValues.workout_id}>
+                    {intl.common.loading}
+                  </Select.Option>
+                ) : null}
+            </Select>
+          </WorkoutFormItem>
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) =>
+              workoutList
+                .find(workout => workout.id === getFieldValue('workout_id'))
+                ?.exercises.map((exercise: WorkoutListExercise<number>, i, list) => (
+                  <Exercise
+                    key={exercise._id as string}
+                    exerciseList={list as WorkoutListExercise<number>[]}
+                    roundResults={initialValues.results[i]}
+                    form={form}
+                    exerciseIndex={i}
+                    isFormItemDisabled={isFormItemDisabled}
+                    isEdit={isEdit}
+                    cacheFormData={cacheFormData}
+                    {...exercise}
+                    id={exercise._id}
+                  />
+                ))
+            }
+          </Form.Item>
+          <Form.Item label={input_labels.description} name="description">
+            <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
+          </Form.Item>
+          {(isEditMode || !isEdit) && (
+            <CreateEditFormItem>
+              <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
+                {isEdit ? submit_button.save : submit_button.create}
+              </Button>
+              {isEdit && (
+                <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>
+                  {submit_button.cancel}
+                </ToggleEdit>
+              )}
+            </CreateEditFormItem>
+          )}
 
-        <Modal
-          open={isModalVisible}
-          okText={modal.delete.ok_button}
-          onOk={handleDelete}
-          okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
-          cancelText={modal.delete.cancel_button}
-          onCancel={() => setIsModalVisible(false)}
-        >
-          {modal.delete.body_single}
-        </Modal>
-      </StyledForm>
-    </HistoryProvider>
+          <Modal
+            open={isModalVisible}
+            okText={modal.delete.ok_button}
+            onOk={handleDelete}
+            okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
+            cancelText={modal.delete.cancel_button}
+            onCancel={() => setIsModalVisible(false)}
+          >
+            {modal.delete.body_single}
+          </Modal>
+        </StyledForm>
+      </HistoryProvider>
+    </ActivityProvider>
   )
 }
 

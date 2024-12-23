@@ -241,12 +241,12 @@
       "eng": "Login"
     },
     "import": {
-      "ru": "Импортировать данные из файла",
-      "eng": "Import data from file"
+      "ru": "Загрузить данные из файла",
+      "eng": "Upload data from file"
     },
     "export": {
-      "ru": "Экспортировать данные в файл",
-      "eng": "Export data to file"
+      "ru": "Сохранить данные в файл",
+      "eng": "Save data to file"
     },
     "modal": {
       "delete_data": {

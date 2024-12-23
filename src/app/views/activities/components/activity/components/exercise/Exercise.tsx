@@ -25,7 +25,7 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
-import { useHistoryContext } from 'app/views/activities/components/activity/context/history_provider/HistoryProvider'
+import { useHistoryContext } from 'app/views/activities/components/activity/contexts'
 
 const modeOptions = [
   { label: <ChartIcon />, value: 'chart' },

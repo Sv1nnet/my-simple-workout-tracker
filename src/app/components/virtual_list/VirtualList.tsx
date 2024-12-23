@@ -8,6 +8,7 @@ import React, {
   ReactNode,
 } from 'react'
 import numInRange from 'app/utils/numInRange'
+import { isFunction } from 'app/utils/typeCheckers'
 
 const ListItem = ({ children, style }) => (
   <div style={style}>
@@ -51,7 +52,16 @@ interface IVirtualList {
   itemHeight?: number,
   onScroll?: Function,
   onRenderedItemsChange?: ({ startIndex, endIndex, scrollOffset }: { startIndex:number, endIndex:number, scrollOffset:number }) => any,
-  itemContainerRenderer?: Function,
+  itemContainerRenderer?: (props: {
+    el: any,
+    key: number,
+    index: number,
+    width: number,
+    height: number,
+    orientation: 'horizontal' | 'vertical',
+    style: React.CSSProperties,
+    children: ReactNode,
+  }) => ReactNode,
   overscanCount?: number,
   msToSetNotScrolling?: number,
   componentStyle?: StyleHTMLAttributes<any>,
@@ -131,6 +141,8 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
         itemWidth,
       })
 
+      prevScrollOffset.current = scrollOffset
+
       if (direction !== 'none') {
         if (_startIndex < 0) _startIndex = 0
         
@@ -138,18 +150,34 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
         if (_endIndex > data.length - 1) _endIndex = data.length
         if (_endIndex - _startIndex < visibleItemsCount + overscanCount) _startIndex = _endIndex - (visibleItemsCount + overscanCount)
 
-        if (_startIndex !== startIndex) setStartIndex(numInRange(_startIndex, [ 0 ]))
-        if (_endIndex !== endIndex) setEndIndex(_endIndex)
+        let newStartIndex: number | null = null
+        let newEndIndex: number | null = null
+
+        if (_startIndex !== startIndex) {
+          newStartIndex = numInRange(_startIndex, [ 0 ])
+          setStartIndex(newStartIndex)
+        }
+        if (_endIndex !== endIndex) {
+          newEndIndex = _endIndex
+          setEndIndex(newEndIndex)
+        }
+
+        if (newStartIndex !== null || newEndIndex !== null) {
+          onRenderedItemsChange?.({
+            startIndex: newStartIndex !== null ? newStartIndex : startIndex,
+            endIndex: newEndIndex !== null ? newEndIndex : endIndex,
+            scrollOffset: prevScrollOffset.current,
+          })
+        }
       }
 
-      prevScrollOffset.current = scrollOffset
       if (onScroll) onScroll(e, { direction, startIndex: _startIndex, endIndex: _endIndex, scrollOffset })
       if (isScrollEnd) setIsScrollEnd(false)
     }
 
     const scrollTo = value => $component.current.scrollTo(...(orientation === 'vertical' ? [ 0, value ] : [ value, 0 ]))
 
-    const itemStyle = {
+    const itemStyle: React.CSSProperties = {
       position: 'absolute',
       margin: 0,
       flexShrink: 0,
@@ -157,8 +185,8 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
       height: orientation === 'vertical' ? itemHeight : '100%',
     }
 
-    const renderListItem = typeof itemContainerRenderer === 'function'
-      ? (el, i) =>
+    const renderListItem = isFunction(itemContainerRenderer)
+      ? (el, i: number) =>
         itemContainerRenderer({
           el,
           key: i + startIndex,
@@ -173,7 +201,7 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
           },
           children: children ? children(el, i + startIndex) : undefined,
         })
-      : (el, i) => (
+      : (el, i: number) => (
         <ListItem
           key={i + startIndex}
           style={{
@@ -208,10 +236,6 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
     useEffect(() => {
       if (isScrollEnd && onScrollEnd) onScrollEnd()
     }, [ isScrollEnd ])
-
-    useEffect(() => {
-      if (onRenderedItemsChange) onRenderedItemsChange({ startIndex, endIndex, scrollOffset: prevScrollOffset.current })
-    }, [ startIndex, endIndex ])
 
     return (
       <div ref={$component} style={style} onScroll={handleScroll}>
