@@ -31,12 +31,12 @@ export class WorkoutModel extends EntityModel {
 
   public in_activities: string[] = []
 
-  public static async getOneFromDB(id: Pick<EntityModel, | 'id'>): Promise<WorkoutModel | undefined> {
+  public static async getOneFromDB(id: EntityModel['id']): Promise<WorkoutModel | undefined> {
     const { workoutsTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(WorkoutModel, workoutsTable.name, id)
   }
 
-  public static async getManyFromDB(ids: Pick<EntityModel, | 'id'>[]): Promise<WorkoutModel[]> {
+  public static async getManyFromDB(ids: EntityModel['id'][]): Promise<WorkoutModel[]> {
     const { workoutsTable } = browserDB.getTables()
     return EntityModel.getManyFromDB(WorkoutModel, workoutsTable.name, ids)
   }

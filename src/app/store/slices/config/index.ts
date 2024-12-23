@@ -4,6 +4,7 @@ import type { AppState } from 'app/store'
 import cookie from 'js-cookie'
 import { configApi } from './api'
 import { ILangs, Lang } from './types'
+import { isUndefined } from 'app/utils/typeCheckers'
 
 export interface IConfigState {
   data: {
@@ -19,7 +20,7 @@ export const langs: ILangs = {
 
 let localLang: Lang = langs.eng
 
-if (typeof localStorage !== 'undefined') {
+if (!isUndefined(localStorage)) {
   try {
     localLang = (JSON.parse(localStorage.getItem('config')) as { lang: Lang })?.lang ?? langs.eng
     cookie.set('lang', localLang)
@@ -38,7 +39,7 @@ const initialState: IConfigState = {
 
 const updateConfigLocally = (state: IConfigState) => {
   try {
-    if (typeof localStorage !== 'undefined') localStorage.setItem('config', JSON.stringify(state.data))
+    if (!isUndefined(localStorage)) localStorage.setItem('config', JSON.stringify(state.data))
     cookie.set('lang', state.data.lang)
   } catch (error) {
     console.warn('Update local config error', error.message)

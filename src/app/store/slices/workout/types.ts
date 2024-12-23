@@ -3,8 +3,8 @@ import { Dayjs } from 'dayjs'
 import { Exercise, MuscleGroup } from 'store/slices/exercise/types'
 
 export type WorkoutListExercise<T = number | Dayjs> = {
-  _id: Pick<Exercise<number | Dayjs>, 'id'>;
-  id: Pick<Exercise<number | Dayjs>, 'id'>;
+  _id: Exercise<number | Dayjs>['id'];
+  id: Exercise<number | Dayjs>['id'];
   exercise: Exercise;
   rounds: number;
   round_break: T;
@@ -13,7 +13,7 @@ export type WorkoutListExercise<T = number | Dayjs> = {
 }
 
 export type WorkoutExercise<T = number | Dayjs> = {
-  id: Pick<Exercise, 'id'>;
+  id: Exercise['id'];
   rounds: number;
   round_break: T;
   exercise: Exercise;

@@ -21,8 +21,8 @@ export type ApiGetExerciseError = {
   status: number;
 }
 
-type DeleteExercisePayload = { ids: Pick<ExerciseForm, 'id'>[] } 
-type CopyExercisePayload = { ids: Pick<ExerciseForm, 'id'>[] } 
+type DeleteExercisePayload = { ids: ExerciseForm['id'][] } 
+type CopyExercisePayload = { ids: ExerciseForm['id'][] } 
 type Exercise = (ExerciseListItem & { id: string })
 
 export interface IExerciseList {
@@ -58,7 +58,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
     setExercisesToDelete(toDelete)
 
     return deleteExercises({
-      ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ExerciseForm, 'id'>[],
+      ids: Object.keys(toDelete).filter(id => toDelete[id]),
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setExercisesToDelete({})
@@ -72,7 +72,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
     const toCopy = selectionRef.current.selected
 
     return copyExercises({
-      ids: Object.keys(toCopy).filter(id => toCopy[id]) as Pick<ExerciseForm, 'id'>[],
+      ids: Object.keys(toCopy).filter(id => toCopy[id]),
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setExercisesToDelete({})

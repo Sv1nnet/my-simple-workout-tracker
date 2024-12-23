@@ -27,7 +27,7 @@ import { ROUTES } from 'src/router'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
-    id: Pick<TExercise<number | dayjs.Dayjs>, 'id'>;
+    id: TExercise<number | dayjs.Dayjs>['id'];
     rounds: number;
     round_break: Dayjs | number;
     break?: Dayjs | number;

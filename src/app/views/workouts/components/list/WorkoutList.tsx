@@ -1,7 +1,7 @@
 
 import { List, notification } from 'antd'
 import { WorkoutItem } from './components'
-import { GetWorkoutError, Workout, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from 'app/store/slices/workout/types'
+import { GetWorkoutError, WorkoutDeleteError, WorkoutForm, WorkoutListItem } from 'app/store/slices/workout/types'
 import { Image } from 'store/slices/exercise/types'
 import { FC, useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -23,7 +23,7 @@ export type ApiGetWorkoutError = {
   status: number;
 }
 
-export type DeleteWorkoutPayload = { ids: Pick<WorkoutForm, 'id'>[] } 
+export type DeleteWorkoutPayload = { ids: WorkoutForm['id'][] } 
 
 export interface IWorkoutList {
   workouts: WorkoutListItem[];
@@ -60,7 +60,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
     setWorkoutsToDelete(toDelete)
 
     return deleteWorkouts({
-      ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<Workout, 'id'>[],
+      ids: Object.keys(toDelete).filter(id => toDelete[id]),
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setWorkoutsToDelete({})
@@ -73,7 +73,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
     const toCopy = selectionRef.current.selected
 
     return copyWorkouts({
-      ids: Object.keys(toCopy).filter(id => toCopy[id]) as Pick<WorkoutForm, 'id'>[],
+      ids: Object.keys(toCopy).filter(id => toCopy[id]),
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setWorkoutsToDelete({})

@@ -5,7 +5,7 @@ import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react
 import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
 import dayjs, { Dayjs } from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ActivityForm, HistoryResponseData } from 'app/store/slices/activity/types'
+import { ActivityForm } from 'app/store/slices/activity/types'
 import { useAppDispatch, useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
 import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem, Header } from './components'
 import { selectList } from 'app/store/slices/workout'
@@ -18,6 +18,7 @@ import { CacheFormData, IActivityProps, InitialValues } from './types'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 import { setCachedActivity } from 'app/store/slices/activity'
+import HistoryProvider from './context/history_provider/HistoryProvider'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
@@ -41,22 +42,6 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const { input_labels, submit_button, modal, notifications } = intl.pages.activities
 
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
-  const history = useMemo<HistoryResponseData>(
-    () =>{
-      const historyData = _history?.data
-
-      return historyData
-        ? Object.entries({ ...historyData }).reduce((acc, [ exercise_id, results ]) => {
-          acc[exercise_id] = (results as { items }).items.map(item => ({
-            date: dayjs(item.date),
-            results: item.results,
-          }))
-          return acc
-        }, {})
-        : historyData
-    },
-    [ _history ],
-  )
 
   const [ form ] = Form.useForm<ActivityForm>()
 
@@ -211,9 +196,9 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   useNotificationPermissionRequest()
 
   const isFormItemDisabled = !isEditMode || isFetching
-  
+
   return (
-    <>
+    <HistoryProvider historyData={_history?.data} isLoading={isHistoryLoading}>
       <Header
         initialValues={initialValues}
         isEdit={isEdit}
@@ -279,19 +264,16 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
               .find(workout => workout.id === getFieldValue('workout_id'))
               ?.exercises.map((exercise: WorkoutListExercise<number>, i, list) => (
                 <Exercise
+                  key={exercise._id as string}
                   exerciseList={list as WorkoutListExercise<number>[]}
                   roundResults={initialValues.results[i]}
                   form={form}
                   exerciseIndex={i}
-                  id={exercise._id}
-                  key={exercise._id as string}
-                  isHistoryLoading={isHistoryLoading}
                   isFormItemDisabled={isFormItemDisabled}
                   isEdit={isEdit}
-                  total={history?.[exercise._id as string]?.total}
-                  history={history?.[exercise._id as string]}
                   cacheFormData={cacheFormData}
                   {...exercise}
+                  id={exercise._id}
                 />
               ))
           }
@@ -323,7 +305,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
           {modal.delete.body_single}
         </Modal>
       </StyledForm>
-    </>
+    </HistoryProvider>
   )
 }
 

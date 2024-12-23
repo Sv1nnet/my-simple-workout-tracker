@@ -15,7 +15,7 @@ export default class EntityModel {
 
   public id: string
 
-  public static async getOneFromDB<M extends ClassType, N extends string>(Model: M, tableName: N, id: Pick<EntityModel, 'id'>): Promise<InstanceType<M> | undefined> {
+  public static async getOneFromDB<M extends ClassType, N extends string>(Model: M, tableName: N, id: EntityModel['id']): Promise<InstanceType<M> | undefined> {
     const plainObject = (await browserDB.db?.getAllValues(tableName) || [])
       .map(value => JSON.parse(value))
       .find(object => object.id === id)
@@ -27,7 +27,7 @@ export default class EntityModel {
     return undefined
   }
 
-  public static  async getManyFromDB<M extends ClassType, N extends string>(Model: M, tableName: N, ids: Pick<EntityModel, | 'id'>[]): Promise<InstanceType<M>[]> {
+  public static  async getManyFromDB<M extends ClassType, N extends string>(Model: M, tableName: N, ids: EntityModel['id'][]): Promise<InstanceType<M>[]> {
     return (await browserDB.db?.getAllValues(tableName) || [])
       .map(value => JSON.parse(value))
       .filter(object => ids.includes(object.id))

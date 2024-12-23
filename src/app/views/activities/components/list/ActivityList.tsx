@@ -24,7 +24,7 @@ export type ApiGetActivityError = {
   status: number;
 }
 
-type DeleteActivityPayload = { ids: Pick<ActivityForm, 'id'>[] }
+type DeleteActivityPayload = { ids: ActivityForm['id'][] }
 
 export interface IActivityList {
   activities: ActivityListItem[];
@@ -61,7 +61,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
     setActivitiesToDelete(toDelete)
 
     return deleteActivities({
-      ids: Object.keys(toDelete).filter(id => toDelete[id]) as Pick<ActivityForm, 'id'>[],
+      ids: Object.keys(toDelete).filter(id => toDelete[id]) as ActivityForm['id'][],
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setActivitiesToDelete({})

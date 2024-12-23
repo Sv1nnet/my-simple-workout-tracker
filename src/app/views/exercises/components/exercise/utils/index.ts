@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { notification } from 'antd'
 import { MuscleGroupError } from 'app/store/slices/muscleGroup/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ExerciseForm } from '@/src/app/store/slices/exercise/types'
+import { ExerciseForm } from 'app/store/slices/exercise/types'
 import { Dayjs } from 'dayjs'
 
 export type ApiGetMuscleGroupError = {

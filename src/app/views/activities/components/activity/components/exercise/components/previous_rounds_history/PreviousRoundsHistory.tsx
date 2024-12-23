@@ -2,13 +2,33 @@ import { useMemo } from 'react'
 import { PreviousItem } from '..'
 import { PreviousItemContainer, PreviousLoader, StyledTd, StyledTr } from './components/styled'
 import { dayjsToSeconds } from 'app/utils/time'
+import { EachSideRound, HistoryResult, Round } from 'app/store/slices/activity/types'
+import { isObject } from 'app/utils/typeCheckers'
+import dayjs from 'dayjs'
 
 const convertToHistoryItem = item => item !== undefined && item !== null && item !== '' ? dayjsToSeconds(item) : item
+const isEachSideRound = (round: Round<string | number | dayjs.Dayjs>): round is EachSideRound<string | number | dayjs.Dayjs> => isObject(round)
 
-const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, comparator, loaderDictionary, eachSide, isTimeType, hours }) => {
+export type PreviousRoundsHistoryProps = {
+  current: Round<string | number | dayjs.Dayjs>[];
+  isLoading: boolean;
+  history: HistoryResult[][];
+  comparator: {
+    pos: (curr: number, next: number) => boolean;
+    neg: (curr: number, next: number) => boolean;
+  };
+  loaderDictionary: {
+    previous_loading: string;
+  };
+  eachSide: boolean;
+  isTimeType: boolean;
+  hours: boolean;
+}
+
+const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, comparator, loaderDictionary, eachSide, isTimeType, hours }: PreviousRoundsHistoryProps) => {
   const history = useMemo(() => _history?.map((result, i) => [
     isTimeType
-      ? eachSide
+      ? eachSide && isEachSideRound(current[i])
         ? {
           right: convertToHistoryItem(current[i]?.right),
           left: convertToHistoryItem(current[i]?.left),

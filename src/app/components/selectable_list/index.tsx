@@ -4,6 +4,7 @@ import { ListControls } from 'app/components'
 import { StyledSelectableListItem, SelectableModal } from './components'
 import { ISelectableModalProps } from './components/modal/SelectableModal'
 import AppleContextMenuHandler from 'app/utils/AppleContextMenuHandler'
+import { isFunction } from 'app/utils/typeCheckers'
 
 const ListContainer = styled.div`
   padding: 15px;
@@ -117,7 +118,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
         setIsAllSelected(_isAllSelected)
       }
     }
-    if (typeof onSelect === 'function') onSelect(e, newSelected, _isAllSelected)
+    if (isFunction(onSelect)) onSelect(e, newSelected, _isAllSelected)
   }
 
   const contextMenuHandler = useMemo(() => new AppleContextMenuHandler(handleContextMenu), [ handleContextMenu, selectionEnabled, selected ])
@@ -125,13 +126,13 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
   const handleSelectDeselectAll = (shouldSelect: boolean) => {
     setSelected(list.reduce((acc, { id }) => { acc[id] = shouldSelect; return acc }, {}))
     setIsAllSelected(shouldSelect)
-    if (typeof onSelectDeselectAll === 'function') onSelectDeselectAll(shouldSelect)
+    if (isFunction(onSelectDeselectAll)) onSelectDeselectAll(shouldSelect)
   }
 
   const handleCancelSelection = () => {
     handleSelectDeselectAll(false)
     setSelectionEnabled(false)
-    if (typeof onCancelSelection === 'function') onCancelSelection()
+    if (isFunction(onCancelSelection)) onCancelSelection()
   }
 
   useImperativeHandle(ref, () => ({
@@ -144,7 +145,7 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
 
   return (
     <ListContainer style={style} className={className}>
-      {typeof children === 'function'
+      {isFunction(children)
         ? children({
           selected,
           selectionEnabled,

@@ -13,6 +13,7 @@ import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { secondsToDayjs } from 'app/utils/time'
 import { Dayjs } from 'dayjs'
+import { isNumber } from 'app/utils/typeCheckers'
 
 export const WORKOUT_TAG_TYPES = {
   WORKOUT: 'Workout',
@@ -36,9 +37,9 @@ export const workoutApi = createApi({
           workout.exercises = workout.exercises.map(({ id, rounds, exercise,  round_break, break: exercise_break, break_enabled }) => ({
             id,
             rounds,
-            round_break: typeof round_break === 'object' ? round_break : secondsToDayjs(round_break as number),
+            round_break: isNumber(round_break) ? secondsToDayjs(round_break) : round_break,
             break_enabled,
-            break: typeof exercise_break === 'object' ? exercise_break : secondsToDayjs(exercise_break as number),
+            break: isNumber(exercise_break) ? secondsToDayjs(exercise_break) : exercise_break,
             exercise,
           }))
           response.data = workout
@@ -63,14 +64,14 @@ export const workoutApi = createApi({
       }),
       invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT, WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
-    delete: build.mutation<WorkoutDeleteSuccess, { id: Pick<WorkoutServerPayload, 'id'> }>({
+    delete: build.mutation<WorkoutDeleteSuccess, { id: WorkoutServerPayload['id'] }>({
       query: ({ id }) => ({
         url: `${routes.workout.v1.delete.full}/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT_LIST ],
     }),
-    deleteMany: build.mutation<WorkoutDeleteSuccess, { ids: Pick<WorkoutServerPayload, 'id'>[] }>({
+    deleteMany: build.mutation<WorkoutDeleteSuccess, { ids: WorkoutServerPayload['id'][] }>({
       query: ({ ids }) => ({
         url: `${routes.workout.v1.delete.full}`,
         method: 'DELETE',

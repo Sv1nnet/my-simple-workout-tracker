@@ -216,7 +216,6 @@ const handlers = {
     }
 
     const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
-    const totalActivities = allActivities.length
     const activitiesWithWorkout = allActivities
       .map(activity => new ActivityModel(JSON.parse(activity)))
       .filter(activity => activity.workout_id === workout_id)
@@ -234,7 +233,7 @@ const handlers = {
       activity.results.forEach((exerciseResults) => {
         if (!acc[exerciseResults.id_in_workout].total) {
           acc[exerciseResults.id_in_workout].items = []
-          acc[exerciseResults.id_in_workout].total = totalActivities
+          acc[exerciseResults.id_in_workout].total = activitiesWithWorkout.length
         }
         acc[exerciseResults.id_in_workout].items.push({
           date: activity.date,

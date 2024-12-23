@@ -49,14 +49,14 @@ export const activityApi = createApi({
       }),
       invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY, ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
-    delete: build.mutation<ActivityDeleteSuccess, { id: Pick<ActivityForm, 'id'> }>({
+    delete: build.mutation<ActivityDeleteSuccess, { id: ActivityForm['id'] }>({
       query: ({ id }) => ({
         url: `${routes.activity.v1.delete.full}/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
     }),
-    deleteMany: build.mutation<ActivityDeleteSuccess, { ids: Pick<ActivityForm, 'id'>[] }>({
+    deleteMany: build.mutation<ActivityDeleteSuccess, { ids: ActivityForm['id'][] }>({
       query: ({ ids }) => ({
         url: `${routes.activity.v1.delete.full}`,
         method: 'DELETE',

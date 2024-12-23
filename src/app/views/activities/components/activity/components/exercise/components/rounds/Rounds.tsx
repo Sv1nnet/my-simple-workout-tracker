@@ -1,11 +1,13 @@
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { HistoryResult, Round as TRound } from 'app/store/slices/activity/types'
+import { ActivityForm, HistoryResult, Round as TRound } from 'app/store/slices/activity/types'
 import { ExerciseType } from 'app/store/slices/exercise/types'
-import { FC } from 'react'
+import { FC, MouseEventHandler } from 'react'
 import { getComparator } from 'app/views/activities/components/activity/utils'
 import { RoundsTable, THeadCell } from './components/styled'
 import Round from './components/round/Round'
-import { CacheFormData } from '../../../../types'
+import { CacheFormData } from 'app/views/activities/components/activity/types'
+import { FormInstance } from 'antd'
+import { Dayjs } from 'dayjs'
 
 export interface IRounds {
   loaderDictionary: {
@@ -13,8 +15,8 @@ export interface IRounds {
   };
   isFormItemDisabled: boolean;
   isLoading: boolean;
-  form;
-  history: HistoryResult;
+  form: FormInstance<ActivityForm<Dayjs>>;
+  history: HistoryResult[][];
   rounds: TRound[];
   hours: boolean;
   exerciseIndex: number;
@@ -22,7 +24,7 @@ export interface IRounds {
   historyDisplayMode: 'table' | 'chart';
   type: ExerciseType;
   isTimeType: boolean;
-  onResultClick: Function;
+  onResultClick: MouseEventHandler<HTMLTableCellElement>;
   cacheFormData: CacheFormData;
 }
 

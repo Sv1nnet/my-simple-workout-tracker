@@ -1,5 +1,6 @@
 import { ChangeEvent, ClipboardEvent, ChangeEventHandler, ClipboardEventHandler, FocusEvent, FocusEventHandler, MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { FLOAT_REGEX, isFloat, isInt, isNegInt, isPos, isPosInt, isSeparator, isSignedSeparator, isZero, stringifyValue } from '../utils/validateNumberUtils'
+import { isNumber } from 'app/utils/typeCheckers'
 
 /**
  * Formats to number depending on props.
@@ -154,7 +155,7 @@ export const useValidateNumber = ({
 }) => useMemo(() => {
   if (shouldUpdate) return (curValue?: any, prevValue?: any): boolean => shouldUpdate(curValue, prevValue)
   
-  const _isFloat = typeof maxDigitsAfterPoint === 'number' &&
+  const _isFloat = isNumber(maxDigitsAfterPoint) &&
       !Number.isNaN(maxDigitsAfterPoint)
     ? isFloat(
       new RegExp(

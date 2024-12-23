@@ -5,10 +5,9 @@ export type HeaderTitleContextType = {
   setTitle: (title: React.ReactNode) => void
 }
 
-const HeaderTitleContext = createContext<HeaderTitleContextType>({
-  title: '',
-  setTitle: () => {},
-})
+const initialContextValue = { title: '', setTitle: () => {} }
+
+const HeaderTitleContext = createContext<HeaderTitleContextType>(initialContextValue)
 
 const HeaderTitleProvider = ({ children }: { children: React.ReactNode }) => {
   const [ title, setTitle ] = useState<HeaderTitleContextType['title']>('')
@@ -28,7 +27,8 @@ const HeaderTitleProvider = ({ children }: { children: React.ReactNode }) => {
 export const useHeaderTitleContext = () => {
   const context = useContext(HeaderTitleContext)
   if (!context) {
-    throw new Error('useHeaderTitleContext must be used within a HeaderTitleProvider')
+    console.warn('useHeaderTitleContext must be used within a HeaderTitleProvider')
+    return initialContextValue
   }
   return context
 }

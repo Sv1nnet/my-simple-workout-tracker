@@ -61,14 +61,14 @@ export const exerciseApi = createApi({
       }),
       invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE, EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
-    delete: build.mutation<ExerciseDeleteSuccess, { id: Pick<ExerciseForm, 'id'> }>({
+    delete: build.mutation<ExerciseDeleteSuccess, { id: ExerciseForm['id'] }>({
       query: ({ id }) => ({
         url: `${routes.exercise.v1.delete.full}/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
-    deleteMany: build.mutation<ExerciseDeleteSuccess, { ids: Pick<ExerciseForm, 'id'>[] }>({
+    deleteMany: build.mutation<ExerciseDeleteSuccess, { ids: ExerciseForm['id'][] }>({
       query: ({ ids }) => ({
         url: `${routes.exercise.v1.delete.full}`,
         method: 'DELETE',
@@ -91,7 +91,7 @@ export const exerciseApi = createApi({
       },
       providesTags: () => [ EXERCISE_TAG_TYPES.EXERCISE_LIST ],
     }),
-    copy: build.mutation<ExerciseCopySuccess, { ids: Pick<ExerciseForm, 'id'>[] }>({
+    copy: build.mutation<ExerciseCopySuccess, { ids: ExerciseForm['id'][] }>({
       query: ({ ids }) => ({
         url: `${routes.exercise.v1.copy.full}`,
         method: 'POST',

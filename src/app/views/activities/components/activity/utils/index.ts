@@ -13,6 +13,7 @@ import { WORKOUT_TAG_TYPES, workoutApi } from 'app/store/slices/workout/api'
 import { updateList } from 'app/store/slices/workout'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { SetValue, useAppDispatch } from 'app/hooks'
+import { isNumber, isObject, isString } from 'app/utils/typeCheckers'
 
 export const getComparator = (type: string) => type === 'time' 
   ? {
@@ -24,7 +25,7 @@ export const getComparator = (type: string) => type === 'time'
     neg: (curr, next) => curr < next,
   }
 
-export const getResultsFromWorkoutList = (workoutList: WorkoutListItem[], workoutId: Pick<WorkoutForm, 'id'> | string) => workoutList
+export const getResultsFromWorkoutList = (workoutList: WorkoutListItem[], workoutId: WorkoutForm['id']) => workoutList
   .find(wk => wk.id === workoutId)
 // TODO: on the server - exercise -> details
   ?.exercises
@@ -95,7 +96,7 @@ export const getInitialActivityValues = ({
                 rounds: results.rounds.map((round: string | { right: string, left: string }) => {
                   if (round === null) return ''
 
-                  return (typeof round === 'object')
+                  return (isObject(round))
                     ? { right: round.right !== null ? dayjs(round.right) : '', left: round.left !== null ? dayjs(round.left) : '' }
                     : dayjs(round as string)
                 }),
@@ -110,7 +111,7 @@ export const getInitialActivityValues = ({
                 rounds: results.rounds.map((round: string | { right: string, left: string }) => {
                   if (round === null) return ''
 
-                  return (typeof round === 'object')
+                  return (isObject(round))
                     ? { right: round.right !== null ? +round.right : '', left: round.left !== null ? +round.left : '' }
                     : +round
                 }),
@@ -135,7 +136,7 @@ export const getInitialActivityValues = ({
         results: initialValues.results?.map(results => isExerciseTimeType(results.type)
           ? {
             ...results,
-            rounds: results.rounds.map((round: number | { right: number, left: number }) => (round !== null && typeof round === 'object')
+            rounds: results.rounds.map((round: number | { right: number, left: number }) => isObject(round)
               ? { right: secondsToDayjs(round.right), left: secondsToDayjs(round.left) }
               : secondsToDayjs(round as number)),
           }
@@ -174,7 +175,7 @@ export const getActivityValuesToSubmit = ({ ...values }, initialValues, workoutL
         })
         : rounds.map((round) => {
           if (round === null || round === '') return 0
-          return typeof round === 'number' || typeof round === 'string'
+          return isNumber(round) || isString(round)
             ? +round
             : {
               right: round.right === null || round.right === '' ? 0 : +round.right,

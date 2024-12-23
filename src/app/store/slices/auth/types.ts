@@ -9,10 +9,10 @@ export type UserForm = {
 
 export type Password = string
 
-export type User = Pick<UserForm, 'email'>
-export type Reset = Pick<UserForm, 'email'>
-export type Restore = { signup_code: string, password: Pick<UserForm, 'password'> }
-export type Refresh = Pick<UserForm, 'email'>
+export type User = UserForm['email']
+export type Reset = UserForm['email']
+export type Restore = { signup_code: string, password: UserForm['password'] }
+export type Refresh = UserForm['email']
 export type Login = Pick<UserForm, 'email' | 'password'>
 export type Signup = Pick<UserForm, 'email' | 'password'>
 

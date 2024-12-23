@@ -13,6 +13,7 @@ import { SerializedError } from '@reduxjs/toolkit'
 import { AppState } from '..'
 import { getIsNoAuthLoginFromLocalStorage } from 'app/utils/getIsNoAuthLoginFromLocalStorage'
 import handlersLoader from './noAuthHandlers/noAuthHandlers.loader'
+import { isString } from 'app/utils/typeCheckers'
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: routes.base,
@@ -51,7 +52,7 @@ const getBaseQueryWithReauth = (() => {
   FetchBaseQueryError | SerializedError | CustomBaseQueryError
   > => async (args, api, extraOptions) => {
     if (getIsNoAuthLoginFromLocalStorage()) {
-      if (typeof args !== 'string') {
+      if (!isString(args)) {
         const url = new URL(args.url)
         const { endpoint: handlerName } = api
         const [ , _api, _v, routeName, rest ] = url.pathname.split('/')

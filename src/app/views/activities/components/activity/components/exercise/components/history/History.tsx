@@ -16,6 +16,7 @@ import { Container, HistoryLoader, ItemContainer, ListContainer } from './compoe
 import { useAppSelector } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { useDispatch } from 'react-redux'
+import { useHistoryContext } from 'app/views/activities/components/activity/context/history_provider/HistoryProvider'
 
 const RESULT_HEIGHT = 22
 const EACH_SIDE_RESULT_HEIGHT = 36
@@ -24,9 +25,12 @@ const LIST_OFFSET = 130
 
 export const HEADER_HEIGHT = 23
 
-const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, history: _history, rounds, total, mode, type, hours, eachSide, isTimeType }) => {
+const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds, mode, type, hours, eachSide, isTimeType }) => {
   const [ width, setWidth ] = useState(() => exerciseRef.current ? exerciseRef.current - LIST_OFFSET : window.innerWidth - LIST_OFFSET)
   const { side_labels } = useIntlContext().intl.pages.activities
+  const { getByExerciseId } = useHistoryContext()
+
+  const { results: _history, total } = getByExerciseId(exerciseId) || {}
 
   const [ history, lastHistoryItem ] = useMemo(() => {
     if (isLoading) return [ null, null ]
@@ -108,7 +112,7 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, history
             data={history}
             overscanCount={8}
             listComponent={ListComponent}
-            itemContainerRenderer={({ style, index, children, key }) => <ItemContainer key={key} $last={index === history.length - 1} style={style}>{children}</ItemContainer>}
+            itemContainerRenderer={({ style, index, children, key }) => <ItemContainer key={key} $last={total === index + 1} style={style}>{children}</ItemContainer>}
           >
             {(historyItem, index) => (
               <>

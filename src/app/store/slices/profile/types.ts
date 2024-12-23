@@ -9,8 +9,8 @@ export type ProfileForm = {
 
 export type Password = string
 
-export type Profile = Pick<ProfileForm, 'email'>
-export type Email = Pick<ProfileForm, 'email'>
+export type Profile = ProfileForm['email']
+export type Email = ProfileForm['email']
 
 export type ProfileUpdateSuccess = IResponse<Email>
 export type GetProfileSuccess = IResponse<Email>

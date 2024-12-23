@@ -5,6 +5,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 import type { AppDispatch, AppState } from '../store'
+import { isUndefined } from '../utils/typeCheckers'
 
 export * from './numberInputHooks'
 
@@ -127,7 +128,7 @@ export const useNotificationPermissionRequest = () => {
   const [ permission, setPermission ] = useState(typeof Notification !== 'undefined' ? Notification.permission : null)
 
   useEffect(() => {
-    if (typeof Notification === 'undefined') return setPermission(null)
+    if (isUndefined(Notification)) return setPermission(null)
     if (Notification.permission === 'denied' || Notification.permission === 'granted') return setPermission(Notification.permission)
 
     Notification

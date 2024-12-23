@@ -30,12 +30,12 @@ export class ActivityModel extends EntityModel {
 
   public duration: number
 
-  public static async getOneFromDB(id: Pick<EntityModel, | 'id'>): Promise<ActivityModel | undefined> {
+  public static async getOneFromDB(id: EntityModel['id']): Promise<ActivityModel | undefined> {
     const { activitiesTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(ActivityModel, activitiesTable.name, id)
   }
 
-  public static async getManyFromDB(ids: Pick<EntityModel, | 'id'>[]): Promise<ActivityModel[]> {
+  public static async getManyFromDB(ids: EntityModel['id'][]): Promise<ActivityModel[]> {
     const { activitiesTable } = browserDB.getTables()
     return EntityModel.getManyFromDB(ActivityModel, activitiesTable.name, ids)
   }

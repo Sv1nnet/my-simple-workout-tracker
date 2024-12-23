@@ -5,6 +5,7 @@ import Input from 'app/components/input'
 import PreviousRoundsHistory from '../../../previous_rounds_history/PreviousRoundsHistory'
 import { ActivityForm, HistoryResult } from 'app/store/slices/activity/types'
 import dayjs from 'dayjs'
+import { MouseEventHandler } from 'react'
 
 export interface IRound {
   comparator: {
@@ -35,6 +36,37 @@ export interface IRound {
   onResultClick: Function;
 }
 
+export type RoundProps = {
+  comparator: {
+    pos: (curr: number, next: number) => boolean,
+    neg: (curr: number, next: number) => boolean,
+  };
+  onResultClick: MouseEventHandler<HTMLTableCellElement>;
+  totalRounds: number;
+  isFormItemDisabled: boolean;
+  loaderDictionary: {
+    previous_loading: string,
+  };
+  isLoading: boolean;
+  history: HistoryResult[][];
+  form: FormInstance<ActivityForm<dayjs.Dayjs>>;
+  exerciseIndex: number;
+  hours: boolean;
+  round: number;
+  eachSide: boolean;
+  isTimeType: boolean;
+  historyDisplayMode: 'chart' | 'table';
+  sideLabels: {
+    right: {
+      short: string,
+    },
+    left: {
+      short: string,
+    },
+  };
+  cacheFormData: Function;
+}
+
 const Round = ({
   comparator,
   onResultClick,
@@ -52,7 +84,7 @@ const Round = ({
   historyDisplayMode,
   sideLabels,
   cacheFormData,
-}) => {
+}: RoundProps) => {
   const results = Form.useWatch([ 'results', exerciseIndex, 'rounds' ], form)
 
   const handleRepeatsChange = (value, { target }) => {

@@ -7,7 +7,7 @@ import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ActivityForm, Round } from 'app/store/slices/activity/types'
+import { ActivityForm, HistoryResult, Round } from 'app/store/slices/activity/types'
 import { Dayjs } from 'dayjs'
 import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import {
@@ -23,8 +23,9 @@ import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from '.
 import { WorkoutListExercise } from 'app/store/slices/workout/types'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
-import { CacheFormData } from '../../types'
+import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
+import { useHistoryContext } from 'app/views/activities/components/activity/context/history_provider/HistoryProvider'
 
 const modeOptions = [
   { label: <ChartIcon />, value: 'chart' },
@@ -36,32 +37,26 @@ export interface IExerciseProps {
     rounds: Round[],
     note?: string | null,
   };
-  total: number;
   break?: number;
   isEdit?: boolean;
   isFormItemDisabled: boolean;
-  isHistoryLoading: boolean;
   exercise: TExercise<number | Dayjs>,
   exerciseList: WorkoutListExercise<number>[],
-  history: any; // TODO: define history type
   form: FormInstance<ActivityForm<Dayjs>>;
   round_break: number;
   rounds: number;
-  id: Pick<TExercise<number | Dayjs>, 'id'>;
+  id: TExercise<number | Dayjs>['id'];
   exerciseIndex: number;
   cacheFormData: CacheFormData;
 }
 
 const Exercise: FC<IExerciseProps> = ({
   roundResults,
-  total,
   isFormItemDisabled,
-  isHistoryLoading,
   isEdit,
   exerciseList,
   break: exerciseBreak,
   exercise,
-  history: historyByDates,
   form,
   round_break,
   rounds,
@@ -71,6 +66,7 @@ const Exercise: FC<IExerciseProps> = ({
 }) => {
   const dispatch = useAppDispatch()
   const selectedRoundIndex = useAppSelector(selectSelectedRoundIndex(id as string))
+  const { getByExerciseId, isLoading: isHistoryLoading } = useHistoryContext()
 
   const [ isLastRestOver, setIsLastRestOver ] = useState(false)
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
@@ -78,12 +74,15 @@ const Exercise: FC<IExerciseProps> = ({
   const { payload } = exercises
   const { input_placeholders, input_labels, loader, side_labels, timer } = activities
   const $exercise = useRef(null)
-  
+
+  const historyByDates = getByExerciseId(id)?.results
+
   const historyByRounds = useMemo(() => {
     if (isHistoryLoading || !historyByDates) return null
+
     const lastResults = Array.from({ length: historyByDates.length < 6 ? historyByDates.length : 6 }, (_, i) => historyByDates[i].results)
-    return lastResults.reduce(
-      (prev, next) => next.map((_, i) => (prev[i] || []).concat(next[i])),
+    return lastResults.reduce<HistoryResult[][]>(
+      (prev, next) => next.map((_, i) => [ ...(prev[i] || []), next[i] ]),
       [],
     )
   }, [ isHistoryLoading, historyByDates ])
@@ -171,9 +170,7 @@ const Exercise: FC<IExerciseProps> = ({
         <History
           exerciseId={id}
           isLoading={isHistoryLoading || !historyByDates}
-          total={total}
           exerciseRef={$exercise}
-          history={historyByDates}
           rounds={rounds}
           eachSide={exercise.each_side}
           type={exercise.type}
