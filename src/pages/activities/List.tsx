@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ActivityList } from 'app/views'
 import { ActivityListItem } from 'app/store/slices/activity/types'
 import { activityApi } from 'store/slices/activity/api'
-import { selectList, updateList } from 'store/slices/activity'
+import { resetListState, selectList, updateList } from 'store/slices/activity'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
 import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -102,6 +102,10 @@ const Activities = () => {
       setListEl($container.current)
     }
   }, [ $container.current, listEl ])
+
+  useEffect(() => () => {
+    dispatch(resetListState())
+  }, [])
 
   return (
     <>
