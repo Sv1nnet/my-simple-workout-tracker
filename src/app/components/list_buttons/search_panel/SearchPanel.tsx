@@ -61,7 +61,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
     const handleClick = () => {
       if (!isOpen) {
         $input.current?.input.focus()
-      } else if ($input.current?.input?.value) {
+      } else if ($input.current?.input?.value || tags.length) {
         const newValue = ''
         const newTags = []
         
@@ -80,7 +80,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
     }
   
     return <StyledSearchButton onClick={handleClick} icon={Icon} />
-  }, [ isOpen ])
+  }, [ isOpen, tags ])
 
   useEffect(() => {
     if (fetchMuscleGroupsError) {
