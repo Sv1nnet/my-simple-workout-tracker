@@ -52,8 +52,8 @@ const useReduxSetPageInfo = (pageInfo: {
           pageType: currHandler.getType(curr.formInfo.isFormOpen, curr.formInfo.isAddType),
         }))
 
-      if (prev.activeTab !== curr.activeTab) {
-        dispatch(pageHandlers[prev.activeTab || 'activities'].close())
+      if (prev.activeTab && prev.activeTab !== curr.activeTab ) {
+        dispatch(pageHandlers[prev.activeTab].close())
       }
     }, []),
     {

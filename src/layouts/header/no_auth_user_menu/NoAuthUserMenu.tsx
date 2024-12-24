@@ -70,7 +70,7 @@ const NoAuthUserMenu = () => {
             }
             break
           case activityPageInfo.isOpen:
-            fetchActivityList({})
+            fetchActivityList()
             if (activityPageInfo.pageType !== ACTIVITY_PAGE_TYPE.LIST) {
               fetchWorkoutList()
               dispatch(activityApi.util.invalidateTags([ ACTIVITY_TAG_TYPES.HISTORY ]))
