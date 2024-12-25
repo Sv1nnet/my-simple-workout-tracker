@@ -5,6 +5,7 @@ import {
   AddButtonText,
   ButtonsContainer,
   Container,
+  PanelPlaceholder,
   ReloadButton,
   SelectContainer,
   StyledCollapse,
@@ -36,6 +37,18 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
 
   const $input = useRef(null)
   const $select = useRef(null)
+  const $container = useRef(null)
+  const $placeholder = useRef(null)
+
+  const initialPlaceholderHeight = useRef<null | number>(null)
+
+  const resizeObserver = useMemo(() => new ResizeObserver((entries) => {
+    if (initialPlaceholderHeight.current !== null) {
+      const tagsContainer = entries[0].target
+      const tagsContainerHeight = tagsContainer.clientHeight
+      $placeholder.current.style.height = `${initialPlaceholderHeight.current + tagsContainerHeight}px`
+    }
+  }), [ initialPlaceholderHeight ])
 
   const { data: muscleGroups, isLoading: isLoadingMuscleGroups, isFetching: isFetchingMuscleGroups, error: fetchMuscleGroupsError } = muscleGroupApi.useListQuery({ lang: 'ru' })
   const muscleGroupsItems = useMemo(() => muscleGroups?.data?.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id })), [ muscleGroups?.data ])
@@ -91,55 +104,68 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
     }
   }, [ fetchMuscleGroupsError ])
 
+  useEffect(() => {
+    const tagsContainer = $container.current?.querySelector('.tags-container')
+    resizeObserver.observe(tagsContainer)
+    initialPlaceholderHeight.current = $placeholder.current?.clientHeight || 0
+
+    return () => {
+      resizeObserver.unobserve(tagsContainer)
+      resizeObserver.disconnect()
+    }
+  }, [])
+
   return (
-    <Container>
-      <ButtonsContainer>
-        <StyledInputGroup $collapsed={!isOpen}>
-          {Prefix}
-          <StyledInput ref={$input} size='large' $collapsed={!isOpen} value={searchValue} onChange={handleChange} />
-        </StyledInputGroup>
-        <AddButton
-          buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
-          href={href}
-          text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
-        />
-        {loading
-          ? (
-            <ReloadButton>
-              <Spin size="small" indicator={<LoadingOutlined />} />
-            </ReloadButton>
-          )
-          : (
-            <ReloadButton onClick={refetch}>
-              <ReloadOutlined />
-            </ReloadButton>
-          )}
-      </ButtonsContainer>
-      <StyledCollapse bordered={false} ghost activeKey={isOpen ? '1' : null} destroyInactivePanel>
-        <Collapse.Panel header='' key='1' showArrow={false}>
-          <SelectContainer $collapsed={!isOpen}>
-            <Select
-              value={tags}
-              loading={isLoadingMuscleGroups || isFetchingMuscleGroups}
-              placeholder={intl.rest.muscle_group.select_muscle_groups}
-              mode="tags"
-              labelInValue
-              dropdownMatchSelectWidth
-              size="middle"
-              optionLabelProp="label"
-              optionFilterProp="label"
-              notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
-              menuItemSelectedIcon={null}
-              onChange={handleSelectTagsChange}
-            >
-              {muscleGroupsItems?.map(item => (
-                <Select.Option key={item.id} label={item.label} value={item.id}>{item.label}</Select.Option>
-              ))}
-            </Select>
-          </SelectContainer>
-        </Collapse.Panel>
-      </StyledCollapse>
-    </Container>
+    <PanelPlaceholder ref={$placeholder}>
+      <Container ref={$container}>
+        <ButtonsContainer>
+          <StyledInputGroup $collapsed={!isOpen}>
+            {Prefix}
+            <StyledInput ref={$input} size='large' $collapsed={!isOpen} value={searchValue} onChange={handleChange} />
+          </StyledInputGroup>
+          <AddButton
+            buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
+            href={href}
+            text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
+          />
+          {loading
+            ? (
+              <ReloadButton>
+                <Spin size="small" indicator={<LoadingOutlined />} />
+              </ReloadButton>
+            )
+            : (
+              <ReloadButton onClick={refetch}>
+                <ReloadOutlined />
+              </ReloadButton>
+            )}
+        </ButtonsContainer>
+        <StyledCollapse bordered={false} ghost activeKey={isOpen ? '1' : null} destroyInactivePanel className='tags-container'>
+          <Collapse.Panel header='' key='1' showArrow={false}>
+            <SelectContainer $collapsed={!isOpen}>
+              <Select
+                value={tags}
+                loading={isLoadingMuscleGroups || isFetchingMuscleGroups}
+                placeholder={intl.rest.muscle_group.select_muscle_groups}
+                mode="tags"
+                labelInValue
+                dropdownMatchSelectWidth
+                size="middle"
+                optionLabelProp="label"
+                optionFilterProp="label"
+                notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
+                menuItemSelectedIcon={null}
+                onChange={handleSelectTagsChange}
+              >
+                {muscleGroupsItems?.map(item => (
+                  <Select.Option key={item.id} label={item.label} value={item.id}>{item.label}</Select.Option>
+                ))}
+              </Select>
+            </SelectContainer>
+          </Collapse.Panel>
+        </StyledCollapse>
+      </Container>
+    </PanelPlaceholder>
   )
 }
 

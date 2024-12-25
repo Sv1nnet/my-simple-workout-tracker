@@ -11,9 +11,17 @@ export const AddItemContainer = styled.div`
 `
 
 export const Container = styled.div`
-  margin-top: 6px;
-  padding-left: 15px;
-  padding-right: 15px;
+  position: absolute;
+  width: 100%;
+  padding-inline: 15px;
+  padding-block: 6px;
+  background-color: white;
+  z-index: 1;
+`
+
+export const PanelPlaceholder = styled.div`
+  width: 100%;
+  height: 51px;
 `
 
 export const ButtonsContainer = styled.div`
