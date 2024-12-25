@@ -516,8 +516,8 @@
       },
       "list_buttons": {
         "create": {
-          "ru": "Создать упражнение",
-          "eng": "Create exercise"
+          "ru": "Создать",
+          "eng": "Create"
         },
         "select_all": {
           "ru": "Выделить все",

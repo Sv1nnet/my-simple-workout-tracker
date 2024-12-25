@@ -20,7 +20,7 @@ const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, se
   
   return (
     <MainButtonContainer>
-      {createHref && <CreateButton tooltipTitle={list_buttons.create} href={createHref} />}
+      {createHref && <CreateButton tooltipTitle={list_buttons.add} href={createHref} />}
       <MoreOptionsButtonContainer $expanded={isSelectionActive} $items={activeExtraButtons}>
         <MoreOptionsButtonContainer.Inner>
           {
