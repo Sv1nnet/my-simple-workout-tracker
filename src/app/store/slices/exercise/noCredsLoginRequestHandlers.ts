@@ -152,7 +152,6 @@ const handlers = {
     }
   },
   update: async ({ body }: { body: FormData }) => {
-    debugger
     const { exercisesTable, workoutsTable, muscleGroupsTable } = browserDB.getTables()
     
     const bodyKeys = body.keys()

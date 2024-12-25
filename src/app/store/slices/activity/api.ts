@@ -69,7 +69,7 @@ export const activityApi = createApi({
         const { page = 1, byPage = 30, searchValue = '', tags = [] } = args || { page: 1, byPage: 30 }
         
         return ({
-          url: (console.log(`${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}&tags=${encodeURIComponent(JSON.stringify(tags))}`), `${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}&tags=${encodeURIComponent(JSON.stringify(tags))}`),
+          url: `${routes.activity.v1.list.full}?page=${page}&byPage=${byPage}&searchValue=${searchValue}&tags=${encodeURIComponent(JSON.stringify(tags))}`,
           method: 'GET',
         })
       },

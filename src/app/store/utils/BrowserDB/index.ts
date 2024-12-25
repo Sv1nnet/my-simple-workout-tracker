@@ -27,13 +27,18 @@ const browserDb = (() => ({
     if (this.db) {
       const db = this.db
 
+      this.isDropping = true
+
+      try {
+        this.droppingPromise = db.dropDB()
+        await this.droppingPromise
+      } catch (error) {
+        console.warn('Drop DB failed', error)
+        location.reload()
+      }
+
       this.db = null
       this.onInit = null
-      this.isDropping = true
-      this.droppingPromise = db.dropDB()
-
-      await this.droppingPromise
-      
       this.droppingPromise = null
       this.isDropping = false
 
