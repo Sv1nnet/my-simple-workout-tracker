@@ -11,18 +11,19 @@ export interface IEndlessScrollableContainer {
   children: ReactNode;
   onScroll?: (e: UIEvent<HTMLElement>) => void
   callOnMount?: boolean;
+  onScrollInterval?: number;
 }
 
 export type Ref = { $el: HTMLDivElement, scrollTo: (options: ScrollToOptions) => void, scrollTop: number | undefined }
 
 const EndlessScrollableContainer = forwardRef<Ref, IEndlessScrollableContainer>(
-  function EndlessScrollableContainer({ children, callOnMount = false, onScroll, ...rest }, ref) {
+  function EndlessScrollableContainer({ children, callOnMount = false, onScroll, onScrollInterval = 100, ...rest }, ref) {
     const $container = useRef<HTMLDivElement>(null)
     const programmaticScrolledRef = useRef(false)
 
     const handleEndlessScroll = useDebouncedCallback((e) => {
       if (!programmaticScrolledRef.current) onScroll?.(e)
-    }, 100)
+    }, onScrollInterval)
 
     useImperativeHandle(ref, () => ({
       $el: $container.current,
