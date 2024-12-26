@@ -13,6 +13,7 @@ import Timer from './timer/Timer'
 import Stopwatch from './stopwatch/Stopwatch'
 import TimerView from './timer_view/TimerView'
 import EndlessScrollableContainer from './endless_scrollable_container/EndlessScrollableContainer'
+import LoaderInEndlessScrollableContainer from './endless_scrollable_container/loader/Loader'
 import NoDataText from './no_data_text/NoDataText'
 import SelectWithItemCreating from './select_with_item_creating/SelectWithItemCreating'
 import {
@@ -38,6 +39,7 @@ export {
   Timer,
   TimerView,
   EndlessScrollableContainer,
+  LoaderInEndlessScrollableContainer,
   NoDataText,
   SelectWithItemCreating,
 }

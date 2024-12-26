@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import { List, notification } from 'antd'
-import { ActivityItem, Loader } from './components'
+import { ActivityItem } from './components'
 import { ActivityDeleteError, ActivityForm, ActivityListItem, GetActivityError } from 'app/store/slices/activity/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
@@ -147,7 +147,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
             itemLayout="horizontal"
             dataSource={activities}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
-            renderItem={(item: ActivityListItem, index: number) => (
+            renderItem={(item: ActivityListItem) => (
               <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
                 <ActivityItem
                   loadingActivityId={loadingId}
@@ -159,7 +159,6 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
                   isLoading={activitiesToDelete[item.id] && isDeleting}
                   {...item}
                 />
-                {isLoading && index === activities.length - 1 && <Loader>{intl.common.loading}</Loader>}
               </SelectableList.Item>
             )}
           />

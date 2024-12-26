@@ -8,7 +8,7 @@ import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Dayjs } from 'dayjs'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { EndlessScrollableContainer } from 'app/components'
+import { EndlessScrollableContainer, LoaderInEndlessScrollableContainer as Loader } from 'app/components'
 import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/utils'
 import { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
@@ -125,6 +125,7 @@ const Activities = () => {
           isDeleting={isDeleting}
           activities={activitiesToShow}
         />
+        {isFetching && !!activitiesInStore.length && <Loader>{intl.common.loading}</Loader>}
       </EndlessScrollableContainer>
     </>
   )
