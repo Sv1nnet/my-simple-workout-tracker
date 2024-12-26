@@ -63,7 +63,7 @@ export type ExerciseCopySuccess = IResponse<null>
 export type ExerciseCopyError = IResponse<null>
 
 export type GetExerciseServerPayload = Omit<ExerciseForm<number>, 'muscle_groups'> & { muscle_groups: MuscleGroup[] }
-export type GetExerciseSuccess = IResponse<ExerciseForm<number | Dayjs>>
+export type GetExerciseSuccess = IResponse<ExerciseForm<number | Dayjs> & { is_in_activity?: boolean }>
 export type GetExerciseError = IResponse<null>
 
 export type GetExerciseListSuccess = IResponse<ExerciseListItem<number>[]>

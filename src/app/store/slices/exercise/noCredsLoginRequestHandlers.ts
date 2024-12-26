@@ -11,6 +11,7 @@ import intl from 'app/constants/intl.json'
 import EntityModel from 'store//utils/EntityModel'
 import { MuscleGroupModel } from 'store/slices/muscleGroup/models/MuscleGroupsModel'
 import { GetExerciseServerPayload } from './types'
+import { WorkoutModel } from 'store/slices/workout/models/WorkoutModel'
 
 const parseEntityStr = <T extends { archived: boolean, title: string }>(archivedPostfix: string) => (entity: string): T => {
   const parsed: T = JSON.parse(entity)
@@ -27,12 +28,35 @@ const sortByTitle = (a: { title: string }, b: { title: string }) => {
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
     const [ ,,,id ] = args
-    const { exercisesTable } = browserDB.getTables()
+    const { exercisesTable, workoutsTable, activitiesTable } = browserDB.getTables()
     const exercise = JSON.parse(await browserDB.db?.get(exercisesTable, id))
+    
+    let isInActivity = false
+
+    if (exercise.in_workouts.length) {
+      const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
+        .map(activity => JSON.parse(activity))
+
+      const workouts = (await browserDB.db?.getAllValues(workoutsTable))
+        .map(workout => JSON.parse(workout))
+        .filter(workout => exercise.in_workouts.includes(workout.id))
+        .map(workout => new WorkoutModel(workout))
+
+
+      for (const workout of workouts) {
+        if (await workout.isInActivity(allActivities)) {
+          isInActivity = true
+          break
+        }
+      }
+    }
 
     return {
       data: {
-        data: exercise,
+        data: {
+          ...exercise,
+          is_in_activity: isInActivity,
+        },
         success: true,
         error: null,
       },

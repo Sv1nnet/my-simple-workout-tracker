@@ -287,6 +287,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   useHandleMounted()
 
   const isFormItemDisabled = !isEditMode || isFetching
+  const isInActivity = initialValues.is_in_activity
 
   return (
     <StyledForm preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
@@ -303,7 +304,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         <Input disabled={isFormItemDisabled} size="large" />
       </Form.Item>
       <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
-        <Select disabled={isFormItemDisabled || _initialValues.is_in_workout} size="large">
+        <Select disabled={isFormItemDisabled || isInActivity} size="large">
           <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
           <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
           <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
@@ -322,7 +323,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         />
       </Form.Item>
       <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
-        <Checkbox disabled={isFormItemDisabled || _initialValues.is_in_workout}>
+        <Checkbox disabled={isFormItemDisabled || isInActivity}>
           {input_labels.each_side}
         </Checkbox>
       </Form.Item>
@@ -346,7 +347,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
                 ? (
                   <ShortFormItem $margin name="time" label={input_labels.time}>
                     <TimePicker
-                      disabled={isFormItemDisabled}
+                      disabled={isFormItemDisabled || isInActivity}
                       inputReadOnly
                       showNow={false}
                       size="large"
@@ -357,18 +358,18 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
                 )
                 : (
                   <ShortFormItem name="repeats" label={input_labels.repeats} $margin>
-                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled || isInActivity} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
                   </ShortFormItem>
                 )}
               {shouldRenderWeightInput
                 ? (
                   <ShortFormItem name="weight" label={input_labels.weight}>
-                    <CustomInput.Number onlyPositive disabled={isFormItemDisabled} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
+                    <CustomInput.Number onlyPositive disabled={isFormItemDisabled || isInActivity} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
                   </ShortFormItem>
                 )
                 : (
                   <ShortFormItem name="repeats" label={input_labels.repeats}>
-                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled || isInActivity} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
                   </ShortFormItem>
                 )}
             </>

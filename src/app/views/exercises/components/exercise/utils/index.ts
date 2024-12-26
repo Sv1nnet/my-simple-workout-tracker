@@ -61,7 +61,7 @@ export interface IExercise {
   id?: string;
   isEdit?: boolean;
   isFetching?: boolean;
-  initialValues?: ExerciseForm;
+  initialValues?: ExerciseForm & { is_in_activity?: boolean };
   isError: boolean;
   error?: string;
   errorCode?: number;

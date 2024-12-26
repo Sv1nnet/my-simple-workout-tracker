@@ -54,12 +54,12 @@ export class ExerciseModel extends EntityModel {
   
   public mass_unit?: MassUnit
 
-  public static async getOneFromDB(id: Pick<EntityModel, 'id'>): Promise<EntityModel | undefined> {
+  public static async getOneFromDB(id: EntityModel['id']): Promise<EntityModel | undefined> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(ExerciseModel, exercisesTable.name, id)
   }
 
-  public static override async getManyFromDB(ids: Pick<EntityModel, | 'id'>[]): Promise<ExerciseModel[]> {
+  public static override async getManyFromDB(ids: EntityModel['id'][]): Promise<ExerciseModel[]> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getManyFromDB(ExerciseModel, exercisesTable.name, ids)
   }
