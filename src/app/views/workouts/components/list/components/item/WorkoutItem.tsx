@@ -8,7 +8,7 @@ import React, { FC, useMemo } from 'react'
 import { InspectButton } from 'app/components/list_buttons'
 import { useToggle } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { Description, HeaderContainer, ImageContainer, StyledCheckbox, StyledTagsPanel, TagsContainer, Title } from './components'
+import { Description, HeaderContainer, ImageContainer, StyledBreakText, StyledCheckbox, StyledTagsPanel, TagsContainer, Title } from './components'
 import { StyledPanel } from './components'
 
 interface IWorkout extends WorkoutListItem {
@@ -132,7 +132,7 @@ const WorkoutItem: FC<IWorkout> = ({
                 )}
                 description={<Description rounds={rounds} round_break={round_break} payloadDictionary={payloadDictionary} workoutDictionary={workoutDictionary} />}
               />
-              {break_enabled && <Typography.Title level={5} style={{ width: '100%' }}>{workoutDictionary.input_labels.break}: {timeToHms(
+              {break_enabled && <StyledBreakText>{workoutDictionary.input_labels.break}: {timeToHms(
                 interExercisesBreak,
                 {
                   hms: [
@@ -141,7 +141,7 @@ const WorkoutItem: FC<IWorkout> = ({
                     payloadDictionary.time.second.short,
                   ],
                 },
-              ) || `0${payloadDictionary.time.second.short}`}</Typography.Title>}
+              ) || `0${payloadDictionary.time.second.short}`}</StyledBreakText>}
             </React.Fragment>
           ))}
         </StyledPanel>

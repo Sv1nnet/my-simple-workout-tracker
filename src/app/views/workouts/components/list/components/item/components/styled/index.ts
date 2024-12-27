@@ -1,4 +1,5 @@
-import { Checkbox, Collapse } from 'antd'
+import { theme } from 'src/styles/vars'
+import { Checkbox, Collapse, Typography } from 'antd'
 import styled from 'styled-components'
 
 const { Panel } = Collapse
@@ -65,4 +66,12 @@ export const HeaderContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+`
+
+export const StyledBreakText = styled(Typography.Text)`
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: ${theme.textColorSecondary};
 `
