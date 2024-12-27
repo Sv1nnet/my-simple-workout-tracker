@@ -67,7 +67,7 @@ const AuthTemplate = () => {
         children: <RestorePassword onSuccess={handleSuccessRestorePassword} active={tab === AUTH_FORM_TABS.RESTORE_PASSWORD} />,
       },
     ]
-  ), [ tab ])
+  ), [ tab, lang ])
 
   useEffect(() => {
     if (location.pathname !== '/') {

@@ -4,7 +4,7 @@ export const SelectorContainer = styled.div`
   display: flex;
   align-items: center;
   position: absolute;
-  right: 15px;
+  left: 15px;
   top: 15px;
 
   .ant-select-selector {
@@ -22,6 +22,5 @@ export const OptionsContainer = styled.div`
       justify-content: center;
       align-items: center;
     }
-
   }
 `
