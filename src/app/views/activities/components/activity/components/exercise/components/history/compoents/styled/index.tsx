@@ -55,6 +55,7 @@ export const ListContainer = React.memo(React.forwardRef<React.HTMLAttributes<HT
   onResultClick,
   opacityIndex,
   containerProps,
+  setSelectedRoundIndex,
   ...props
 }, ref) {
   return (
@@ -64,6 +65,7 @@ export const ListContainer = React.memo(React.forwardRef<React.HTMLAttributes<HT
         <Chart
           {...props}
           type={type}
+          setSelectedRoundIndex={setSelectedRoundIndex}
           opacityIndex={opacityIndex}
           isTimeType={isTimeType}
           height={height}

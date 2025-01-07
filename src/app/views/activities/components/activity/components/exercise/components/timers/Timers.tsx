@@ -60,10 +60,9 @@ const Timers = ({ eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOv
             resetButton
             onTimeOver={handleTimeOver(Side.LEFT)}
             notificationTitle={`(${timerDictionary.side.left}) ${timerDictionary.round_break.title}`}
-            notificationOptions={{
+            webNotificationOptions={{
               tag: 'break_timer_left',
               body: getNotificationBody(Side.LEFT),
-              renotify: true,
               icon: '/manifest-icon-192.maskable.png',
             }}
             hoursOn={hoursOn}
@@ -77,10 +76,9 @@ const Timers = ({ eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOv
             resetButton
             onTimeOver={handleTimeOver(Side.RIGHT)}
             notificationTitle={`(${timerDictionary.side.right}) ${timerDictionary.round_break.title}`}
-            notificationOptions={{
+            webNotificationOptions={{
               tag: 'break_timer_right',
               body: getNotificationBody(Side.RIGHT),
-              renotify: true,
               icon: '/manifest-icon-192.maskable.png',
             }}
             hoursOn={hoursOn}
@@ -96,10 +94,9 @@ const Timers = ({ eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOv
           resetButton
           onTimeOver={handleTimeOver(Side.NON_SIDE)}
           notificationTitle={timerDictionary.round_break.title}
-          notificationOptions={{
+          webNotificationOptions={{
             tag: 'break_timer',
             body: getNotificationBody(Side.NON_SIDE),
-            renotify: true,
             icon: '/manifest-icon-192.maskable.png',
           }}
           hoursOn={hoursOn}

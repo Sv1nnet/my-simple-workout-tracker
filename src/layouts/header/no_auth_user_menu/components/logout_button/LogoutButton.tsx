@@ -4,9 +4,9 @@ import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
-import { resetListState as resetExerciseListState } from 'app/store/slices/exercise'
-import { resetListState as resetWorkoutListState } from 'app/store/slices/workout'
-import { resetListState as resetActivityListState } from 'app/store/slices/activity'
+import { resetState as resetExerciseState } from 'app/store/slices/exercise'
+import { resetState as resetWorkoutState } from 'app/store/slices/workout'
+import { resetState as resetActivityState } from 'app/store/slices/activity'
 import { Link } from 'react-router-dom'
 import { MouseEventHandler } from 'react'
 
@@ -26,9 +26,9 @@ const LogoutButton = ({ onClick }) => {
     function completeLogout(modal: ReturnType<typeof Modal.confirm>) {
       modal.destroy()
       dispatch(logoutWithNoAuth())
-      dispatch(resetExerciseListState())
-      dispatch(resetWorkoutListState())
-      dispatch(resetActivityListState())
+      dispatch(resetExerciseState())
+      dispatch(resetWorkoutState())
+      dispatch(resetActivityState())
     }
 
     const modal = Modal.confirm({

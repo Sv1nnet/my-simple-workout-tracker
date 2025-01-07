@@ -65,6 +65,12 @@ export const workoutSlice = createSlice({
       state.list.data = action.payload
       state.list.status = API_STATUS.LOADED
     },
+    resetState: (state) => {
+      state.list = initialState.list
+      state.single = initialState.single
+      state.isOpen = initialState.isOpen
+      state.pageType = initialState.pageType
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -111,7 +117,7 @@ export const workoutSlice = createSlice({
   },
 })
 
-export const { updateList, resetListState, resetSingleState, open, close, setPageType } = workoutSlice.actions
+export const { updateList, resetListState, resetSingleState, open, close, setPageType, resetState } = workoutSlice.actions
 
 export const selectIsOpen = (state: AppState) => state.workout.isOpen
 export const selectPageType = (state: AppState) => state.workout.pageType

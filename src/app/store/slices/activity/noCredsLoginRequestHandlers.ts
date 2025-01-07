@@ -230,7 +230,7 @@ const handlers = {
     const activitiesByPage = activitiesWithWorkout.slice(startIndex, endIndex)
 
     const workout = await browserDB.db?.get(workoutsTable, workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
-    
+
     const results = activitiesByPage.reduce((acc, activity) => {
       activity.results.forEach((exerciseResults) => {
         if (!acc[exerciseResults.id_in_workout].total) {
@@ -245,7 +245,7 @@ const handlers = {
 
       return acc
     }, workout.exercises.reduce((acc, exercise) => {
-      acc[exercise._id] = { items: [], total: 0 }
+      acc[exercise._id] = { items: [], total: activitiesWithWorkout.length }
       return acc
     }, {}))
 

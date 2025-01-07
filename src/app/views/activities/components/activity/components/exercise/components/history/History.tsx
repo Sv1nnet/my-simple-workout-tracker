@@ -23,6 +23,7 @@ const RESULT_HEIGHT = 22
 const EACH_SIDE_RESULT_HEIGHT = 36
 const MIN_LIST_HEIGHT = 120
 const LIST_OFFSET = 130
+const BASE_HISTORY_PERIOD = 30
 
 export const HEADER_HEIGHT = 23
 
@@ -38,9 +39,9 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds,
     if (isLoading && !_history) return [ null, null ]
 
     const hist = [ ..._history ]
-    const _lastHistoryItem = hist.length < 31 ? hist[hist.length - 1] : hist.pop()
+    const _lastHistoryItem = hist.length && hist.length < total ? hist.pop() : hist[hist.length - 1]
     return [ hist, _lastHistoryItem ]
-  }, [ isLoading, _history ])
+  }, [ isLoading, _history, total ])
 
   const $vList = useRef<IVirtualListRef | null>(null)
 
@@ -76,7 +77,7 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds,
   ), [ mode, side_labels, history, isTimeType ])
 
   const getNextRoundData = (index) => {
-    if (index !== 0 && (index + 1) % 30 === 0) {
+    if (index !== 0 && (index + 1) % BASE_HISTORY_PERIOD === 0) {
       return lastHistoryItem?.results
     } 
     return history[index + 1]?.results
@@ -100,8 +101,13 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds,
             onRenderedItemsChange={({ endIndex }) => {
               if (isHistoryLoading) return
 
-              if (history.length && endIndex === history.length) {
-                loadHistory({ page: pagesLoaded + 1, byPage: 30, workoutId: selectedWorkout, activityId: form.getFieldValue('id') })
+              const shouldLoadMore = history.length &&
+                total > BASE_HISTORY_PERIOD &&
+                history.length < total &&
+                endIndex === history.length
+
+              if (shouldLoadMore) {
+                loadHistory({ page: pagesLoaded + 1, byPage: BASE_HISTORY_PERIOD, workoutId: selectedWorkout, activityId: form.getFieldValue('id') })
               }
             }}
             orientation="horizontal"

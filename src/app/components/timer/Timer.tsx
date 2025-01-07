@@ -8,7 +8,7 @@ import { TimerView } from 'app/components'
 export interface ITimer {
   duration: number,
   notificationTitle?: string,
-  notificationOptions?: NotificationOptions,
+  webNotificationOptions?: NotificationOptions,
   msOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
@@ -30,7 +30,7 @@ export interface ITimer {
 
 const Timer: FC<ITimer> = ({
   notificationTitle = 'Time is over!',
-  notificationOptions = defaultNotificationProps,
+  webNotificationOptions = defaultNotificationProps,
   duration = 0,
   msOn = true,
   onChange,
@@ -111,7 +111,7 @@ const Timer: FC<ITimer> = ({
 
   const notify = () => {
     navigator.serviceWorker.ready.then(async (registration) => {
-      await registration.showNotification(notificationTitle, notificationOptions)
+      await registration.showNotification(notificationTitle, webNotificationOptions)
 
       isNotifiedRef.current = true
       notificationCountRef.current++

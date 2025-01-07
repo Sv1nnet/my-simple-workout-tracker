@@ -131,6 +131,15 @@ export const activitySlice = createSlice({
     resetHistoryState: (state) => {
       state.history = initialState.history
     },
+    resetState: (state) => {
+      state.history = initialState.history
+      state.list = initialState.list
+      state.cachedActivity = initialState.cachedActivity
+      state.single = initialState.single
+      state.charts = initialState.charts
+      state.isOpen = initialState.isOpen
+      state.pageType = initialState.pageType
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -213,6 +222,7 @@ export const {
   removeCachedActivity,
   updateHistoryQuery,
   resetHistoryState,
+  resetState,
 } = activitySlice.actions
 
 export const selectIsOpen = (state: AppState) => state.activity.isOpen
