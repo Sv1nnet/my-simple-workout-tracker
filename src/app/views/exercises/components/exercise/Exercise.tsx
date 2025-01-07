@@ -164,7 +164,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         <Select.Option value="lb">{payload.mass_unit.lb[0]}</Select.Option>
       </Select>
     </Form.Item>
-  ), [ isEditMode, isFetching ])
+  ), [ isEditMode, isFetching, lang ])
 
   const handleWeightChange = value => form.setFieldsValue({ weight: value })
 
