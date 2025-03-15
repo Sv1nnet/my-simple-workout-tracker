@@ -15,6 +15,8 @@ import timezone from 'dayjs/plugin/timezone'
 import { Lang } from 'app/store/slices/config/types'
 import RootRouter from './router'
 import { useLocalStorage } from './app/hooks'
+import { applyTheme, useSystemTheme } from './utils/theme'
+
 import './styles/theme.less'
 
 dayjs.extend(duration)
@@ -30,9 +32,17 @@ export default function App({ lang }: AppProps) {
   const [ isNoAuthLogin ] = useLocalStorage('isNoAuthLogin', false)
   const store = useMemo(() => getStore({ lang, isNoAuthLogin }), [])
 
+  useSystemTheme()
+
   return (
-    <Provider store={store}>
-      <RootRouter />
-    </Provider>
+    <>
+      <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', zIndex: 1000 }}>
+        <button onClick={() => applyTheme('light')}>Light</button>
+        <button onClick={() => applyTheme('dark')}>Dark</button>
+      </div>
+      <Provider store={store}>
+        <RootRouter />
+      </Provider>
+    </>
   )
 }
