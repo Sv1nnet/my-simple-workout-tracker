@@ -26,6 +26,7 @@ import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/act
 import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
 import { useHistoryContext } from 'app/views/activities/components/activity/contexts'
+// import { Timer } from '@/src/app/components'
 
 const modeOptions = [
   { label: <ChartIcon />, value: 'chart' },
@@ -48,6 +49,7 @@ export interface IExerciseProps {
   id: TExercise<number | Dayjs>['id'];
   exerciseIndex: number;
   cacheFormData: CacheFormData;
+  orderInWorkout: number;
 }
 
 const Exercise: FC<IExerciseProps> = ({
@@ -128,6 +130,17 @@ const Exercise: FC<IExerciseProps> = ({
 
   return (
     <div ref={$exercise} style={{ marginBottom: '10px' }}>
+      {/* <Timer
+        // @ts-ignore
+        duration={window.tms || 12}
+        notificationTitle="Test"
+        id={`${id}_test-timer`}
+        webNotificationOptions={{
+          tag: 'test',
+          body: 'Test',
+          icon: '/manifest-icon-192.maskable.png',
+        }}
+      /> */}
       <Header>
         <div>
           <ExerciseTitle level={5}>{exercise.title}</ExerciseTitle>
@@ -198,6 +211,7 @@ const Exercise: FC<IExerciseProps> = ({
       />
       {isRestTimersVisible && (
         <Timers
+          id={id}
           eachSide={exercise.each_side}
           timerDictionary={timer}
           totalRounds={rounds}
@@ -209,6 +223,7 @@ const Exercise: FC<IExerciseProps> = ({
       {!!exerciseBreak && (
         <BreakTimer
           isEdit={isEdit}
+          id={id}
           nextExerciseTitle={exerciseList[exerciseIndex + 1]?.exercise.title}
           isLastRestOver={isLastRestOver}
           isAllResultsFilled={isAllResultsFilled}

@@ -12,6 +12,8 @@ import { selectIsNoAuthLogin } from 'app/store/slices/auth'
 import useReduxSetPageInfo from './utils/useReduxSetPageInfo'
 
 const StyledTabs = styled(Tabs)`
+  background: white;
+
   .ant-tabs-nav {
     margin-top: 0;
     margin-bottom: 0;

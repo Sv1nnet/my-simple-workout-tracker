@@ -5,6 +5,7 @@ import { Timer } from 'app/components'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 export interface IBreakTimer {
+  id?: string;
   isAllResultsFilled: boolean;
   isLastRestOver: boolean;
   exerciseBreak: number;
@@ -30,7 +31,7 @@ export interface IBreakTimer {
   };
 }
 
-const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak, nextExerciseTitle, workoutsDictionary, payloadDictionary, isLastRestOver }) => {
+const BreakTimer: FC<IBreakTimer> = ({ id, isAllResultsFilled, isEdit, exerciseBreak, nextExerciseTitle, workoutsDictionary, payloadDictionary, isLastRestOver }) => {
   const { timer } = useIntlContext().intl.pages.activities
   const [ isBreakOver, setIsBreakOver ] = useState(false)
   const [ isBreakTimerVisible, setIsBreakTimerVisible ] = useState(!isEdit)
@@ -52,11 +53,21 @@ const BreakTimer: FC<IBreakTimer> = ({ isAllResultsFilled, isEdit, exerciseBreak
       {isBreakTimerVisible && (isAllResultsFilled || isLastRestOver) && (
         <Timer
           resetButton
+          id={id}
           notificationTitle={timer.break.title}
-          notificationOptions={{
+          appNotificationOptions={{
+            running: {
+              label: timer.break.title,
+              body: nextExerciseTitle ? `${timer.break.message} ${nextExerciseTitle}.` : timer.break.workout_is_over,
+            },
+            over: {
+              label: timer.break.title,
+              body: timer.break.workout_is_over,
+            },
+          }}
+          webNotificationOptions={{
             tag: 'break_timer',
             body: nextExerciseTitle ? `${timer.break.message} ${nextExerciseTitle}.` : timer.break.workout_is_over,
-            renotify: true,
             icon: '/manifest-icon-192.maskable.png',
           }}
           duration={exerciseBreak * 1000}

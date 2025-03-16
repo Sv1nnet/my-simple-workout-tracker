@@ -1,6 +1,7 @@
 import { Preferences } from '@capacitor/preferences'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar'
+import { theme } from 'src/styles/vars'
 import { useEffect, useRef } from 'react'
 
 // Theme types
@@ -9,10 +10,10 @@ export type ThemeMode = 'light' | 'dark' | 'system'
 // Theme constants
 export const NAVIGATION_BAR_LIGHT = { darkButtons: true, color: '#ffffff' }
 export const NAVIGATION_BAR_DARK = { darkButtons: false, color: '#000000' }
-export const STATUS_BAR_LIGHT = { style: Style.Light }
+export const STATUS_BAR_LIGHT = { style: Style.Dark }
 export const STATUS_BAR_DARK = { style: Style.Dark }
-export const STATUS_BAR_LIGHT_BG = '#ffffff'
-export const STATUS_BAR_DARK_BG = '#000000'
+export const STATUS_BAR_LIGHT_BG = theme.primaryColor
+export const STATUS_BAR_DARK_BG = theme.primaryColor
 
 // Key for storing theme preference
 export const THEME_PREFERENCE_KEY = 'theme-mode'
@@ -29,8 +30,8 @@ export const getSystemTheme = (): 'light' | 'dark' => {
 }
 
 // Function to set theme in the UI
-export const applyTheme = async (theme: 'light' | 'dark'): Promise<void> => {
-  if (theme === 'light') {
+export const applyTheme = async (themeMode: 'light' | 'dark'): Promise<void> => {
+  if (themeMode === 'light') {
     // Apply light theme styles
     document.body.classList.remove('dark-theme')
     document.body.classList.add('light-theme')
@@ -83,26 +84,27 @@ export const useSystemTheme = () => {
         const savedTheme = await getSavedThemePreference()
         
         // If the preference is 'system' or undefined, use the system theme
-        const themeToApply = savedTheme === 'system' ? getSystemTheme() : savedTheme
+        // const themeToApply = savedTheme === 'system' ? getSystemTheme() : savedTheme
         
         // Apply theme including the status bar background color
-        await applyTheme(themeToApply)
+        // await applyTheme(themeToApply)
         
         // Add listener for system theme changes if preference is 'system'
         if (savedTheme === 'system' && window.matchMedia) {
           const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
           
-          const handleThemeChange = (e: MediaQueryListEvent) => {
+          // const handleThemeChange = (e: MediaQueryListEvent) => {
+          const handleThemeChange = (_e: MediaQueryListEvent) => {
             if (changeHandlerTimeoutIdRef.current) {
               clearTimeout(changeHandlerTimeoutIdRef.current)
             }
-            const newTheme = e.matches ? 'dark' : 'light'
+            // const newTheme = e.matches ? 'dark' : 'light'
             
             // Apply theme immediately and again after a short delay to ensure it's applied after app initialization
             // since the system theme change event is not triggered on app initialization on open after theme changed
-            applyTheme(newTheme)
+            // applyTheme(newTheme)
             changeHandlerTimeoutIdRef.current = setTimeout(() => {
-              applyTheme(newTheme)
+              // applyTheme(newTheme)
             }, 2000)
           }
           

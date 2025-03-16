@@ -30,8 +30,8 @@ const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, com
     isTimeType
       ? eachSide && isEachSideRound(current[i])
         ? {
-          right: convertToHistoryItem(current[i]?.right),
-          left: convertToHistoryItem(current[i]?.left),
+          right: convertToHistoryItem((current[i] as EachSideRound<string | number | dayjs.Dayjs>)?.right),
+          left: convertToHistoryItem((current[i] as EachSideRound<string | number | dayjs.Dayjs>)?.left),
         }
         : convertToHistoryItem(current[i])
       : current[i],

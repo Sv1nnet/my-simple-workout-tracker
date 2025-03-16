@@ -274,6 +274,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
                     isFormItemDisabled={isFormItemDisabled}
                     isEdit={isEdit}
                     cacheFormData={cacheFormData}
+                    orderInWorkout={i}
                     {...exercise}
                     id={exercise._id}
                   />

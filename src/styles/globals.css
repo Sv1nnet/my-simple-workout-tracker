@@ -1,14 +1,39 @@
+
+:root {
+  --statusbar-height: env(safe-area-inset-top);
+  --control-buttons-height: env(safe-area-inset-bottom);
+  --background-dark: black;
+  --background-light: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--background-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: var(--background-light);
+  }
+}
+
 html,
 html body {
-  background: black;
+  background: var(--background);
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+html {
+  padding-top: var(--statusbar-height);
+  padding-bottom: var(--control-buttons-height);
+}
+
 #root {
-  max-width: 475px;
+  max-width: 500px;
   margin: auto;
   height: 100%;
   background-color: white;

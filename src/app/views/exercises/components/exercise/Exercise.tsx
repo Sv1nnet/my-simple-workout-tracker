@@ -166,9 +166,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     </Form.Item>
   ), [ isEditMode, isFetching, lang ])
 
-  const handleWeightChange = value => form.setFieldsValue({ weight: value })
+  const handleWeightChange = (value: number | null) => form.setFieldsValue({ weight: value })
 
-  const handleRepeatsChange = value => form.setFieldsValue({ repeats: value })
+  const handleRepeatsChange = (value: number | null) => form.setFieldsValue({ repeats: value })
 
   const handleCancelEditing = () => {
     setEditMode(false)
