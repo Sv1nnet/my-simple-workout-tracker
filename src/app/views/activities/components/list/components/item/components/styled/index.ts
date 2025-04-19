@@ -1,3 +1,4 @@
+import { EditFilled } from '@ant-design/icons'
 import { Collapse, Checkbox, List, Typography } from 'antd'
 import styled from 'styled-components'
 
@@ -6,10 +7,24 @@ const { Title, Text } = Typography
 
 export const StyledCheckbox = styled(Checkbox)`
   position: absolute;
-  top: 25px;
+  top: 19px;
   left: 16px;
   z-index: 1;
 `
+
+export const Container = styled.div`
+  position: relative;
+  width: 100%;
+  overflow-x: hidden;
+`
+
+export const StyledCollapse = styled(Collapse)`
+  width: 100%;
+  background-color: white;
+  padding-block: 12px;
+  border-radius: unset;
+`
+
 export const TagsContainer = styled.div<{ $isInTitle?: boolean }>`
   margin-top: ${({ $isInTitle }) => $isInTitle ? 0 : 12}px;
   margin-bottom: 4px;
@@ -23,16 +38,21 @@ export const TagsContainer = styled.div<{ $isInTitle?: boolean }>`
 `
 
 export const StyledPanel = styled(Panel)`
-  &.ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
-    padding: 0 0 0 32px;
+  &.ant-collapse-item {
+    &.panel-header {
+      padding-inline: 15px;
+    }
+
+    & > .ant-collapse-content > .ant-collapse-content-box {
+      padding: 0 0 0 32px;
+    }
   }
 
   &.ant-collapse-item > .ant-collapse-header {
     padding: 0;
-    padding-left: 7px;
 
     & .ant-collapse-arrow {
-      vertical-align: -16px;
+      vertical-align: -7px;
     }
   }
 `
@@ -63,12 +83,6 @@ export const WorkoutTitle = styled(Title)`
   line-height: 1 !important;
 `
 
-export const HeaderContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-`
-
 export const ExerciseTitle = styled(Text)`
   line-height: 1;
   margin-bottom: 0;
@@ -85,12 +99,20 @@ export const StyledListItemMeta = styled(List.Item.Meta)`
 `
 
 export const Description = styled(Typography.Text)`
-  margin-top: 6px;
-  padding-left: 32px;
-  display: inline-block;
+  margin-top: -6px;
+  padding-bottom: 6px;
+  padding-inline: 40px 15px;
+  display: block;
+  background-color: white;
 `
 
 export const StyledText = styled(Typography.Text)`
   display: block;
   line-height: 1;
+`
+
+export const StyledActionIcon = styled(EditFilled)`
+  font-size: 28px;
+  margin-left: 20px;
+  color: white;
 `

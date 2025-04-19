@@ -16,10 +16,12 @@ import EndlessScrollableContainer from './endless_scrollable_container/EndlessSc
 import LoaderInEndlessScrollableContainer from './endless_scrollable_container/loader/Loader'
 import NoDataText from './no_data_text/NoDataText'
 import SelectWithItemCreating from './select_with_item_creating/SelectWithItemCreating'
+import Swipable from './swipable/Swipable'
 import {
   FormActionButtonsContainer,
   ToggleEdit,
 } from './styled'
+import SwipeActions from './swipe_actions/SwipeActions'
 
 export {
   AuthTemplate,
@@ -42,4 +44,6 @@ export {
   LoaderInEndlessScrollableContainer,
   NoDataText,
   SelectWithItemCreating,
+  Swipable,
+  SwipeActions,
 }

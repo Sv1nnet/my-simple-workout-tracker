@@ -124,6 +124,7 @@ const Activities = () => {
           isLoading={status === API_STATUS.LOADING}
           isDeleting={isDeleting}
           activities={activitiesToShow}
+          containerRef={$container.current?.$el}
         />
         {isFetching && !!activitiesInStore.length && <Loader>{intl.common.loading}</Loader>}
       </EndlessScrollableContainer>

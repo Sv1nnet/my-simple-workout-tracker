@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, ReactElement, MouseEventHandler, ForwardRefExoticComponent, RefAttributes, FC, useMemo, TouchEventHandler } from 'react'
+import React, { useState, useImperativeHandle, ReactElement, MouseEventHandler, ForwardRefExoticComponent, RefAttributes, FC, useMemo, TouchEventHandler, useRef } from 'react'
 import styled from 'styled-components'
 import { ListControls } from 'app/components'
 import { StyledSelectableListItem, SelectableModal } from './components'
@@ -46,11 +46,20 @@ export interface ISelectableList {
   className?: string,
 }
 
+export type SelectableListRef = {
+  selected: SelectedListItems
+  selectionEnabled: boolean
+  isAllSelected: boolean
+  select: (e: React.MouseEvent<HTMLDivElement>) => void
+  cancelSelection: () => void
+  $listEl: React.RefObject<HTMLDivElement>
+}
+
 const SelectableList: ForwardRefExoticComponent<
-ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Function; }>
+ISelectableList & RefAttributes<SelectableListRef>
 > & { Item?: typeof StyledSelectableListItem }
 & { Modal?: FC<ISelectableModalProps> & { useModalUtils: Function }
-} = React.forwardRef<{ selected: object, handleCancelSelection: Function }, ISelectableList>((
+} = React.forwardRef<SelectableListRef, ISelectableList>((
   {
     children,
     list,
@@ -70,6 +79,8 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
   const [ selected, setSelected ] = useState<SelectedListItems>({})
   const [ selectionEnabled, setSelectionEnabled ] = useState(false)
   const [ isAllSelected, setIsAllSelected ] = useState(false)
+
+  const $listContainer = useRef<HTMLDivElement>(null)
 
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!selectionEnabled) {
@@ -139,12 +150,13 @@ ISelectableList & RefAttributes<{ selected: object; handleCancelSelection: Funct
     selected,
     selectionEnabled,
     isAllSelected,
-    handleSelect,
-    handleCancelSelection,
-  }), [ selected, selectionEnabled, isAllSelected, handleSelect, handleCancelSelection ])
+    select: handleSelect,
+    cancelSelection: handleCancelSelection,
+    $listEl: $listContainer,
+  }), [ selected, selectionEnabled, isAllSelected, handleSelect, handleCancelSelection, $listContainer ])
 
   return (
-    <ListContainer style={style} className={className}>
+    <ListContainer ref={$listContainer} style={style} className={className}>
       {isFunction(children)
         ? children({
           selected,

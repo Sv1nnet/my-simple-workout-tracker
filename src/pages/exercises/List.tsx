@@ -96,6 +96,7 @@ const Exercises = () => {
         isDeleting={isDeleting}
         isCopying={isCopying}
         exercises={exercisesToShow}
+        containerRef={$container.current?.$el}
       />
     </EndlessScrollableContainer>
   )

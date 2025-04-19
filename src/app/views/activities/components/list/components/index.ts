@@ -1,5 +1,2 @@
-import ActivityItem from './item/ActivityItem'
-
-export {
-  ActivityItem,
-}
+export { default as ActivityItem } from './item/ActivityItem'
+export * from './styled'

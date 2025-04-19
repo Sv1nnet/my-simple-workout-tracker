@@ -23,12 +23,12 @@ export class MuscleGroupModel extends EntityModel {
 
   public archived: boolean
 
-  public static async getOneFromDB(id: Pick<EntityModel, 'id'>): Promise<EntityModel | undefined> {
+  public static async getOneFromDB(id: EntityModel['id']): Promise<EntityModel | undefined> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(MuscleGroupModel, exercisesTable.name, id)
   }
 
-  public static override async getManyFromDB(ids: Pick<EntityModel, | 'id'>[]): Promise<MuscleGroupModel[]> {
+  public static override async getManyFromDB(ids: EntityModel['id'][]): Promise<MuscleGroupModel[]> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getManyFromDB(MuscleGroupModel, exercisesTable.name, ids)
   }

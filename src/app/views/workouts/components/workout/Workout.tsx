@@ -23,7 +23,7 @@ import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { useNavigate, useParams } from 'react-router'
-import { ROUTES } from 'src/router'
+import { BASE_ROUTES } from 'src/router'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
@@ -185,7 +185,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         content: error || default_content.error,
         okText: ok_text,
         onOk() {
-          if (errorCode === 404) navigate(ROUTES.WORKOUTS)
+          if (errorCode === 404) navigate(BASE_ROUTES.WORKOUTS)
         },
       })
     }

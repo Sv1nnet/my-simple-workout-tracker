@@ -8,7 +8,7 @@ import { useAppDispatch } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ROUTES } from 'src/router'
+import { BASE_ROUTES } from 'src/router'
 
 const StyledAvatar = styled(Avatar)`
   position: absolute;
@@ -31,13 +31,13 @@ const UserMenu = () => {
     const closeMenu = () => setIsOpen(false)
 
     return [
-      ...(location.pathname !== ROUTES.PROFILE
+      ...(location.pathname !== BASE_ROUTES.PROFILE
         ? [
           {
             key: 'profile',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={ROUTES.PROFILE}>{intl.header.profile}</Link>
+                <Link to={BASE_ROUTES.PROFILE}>{intl.header.profile}</Link>
               </Button>
             ),
           },
@@ -47,7 +47,7 @@ const UserMenu = () => {
             key: 'exercises',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={ROUTES.EXERCISES}>{`${intl.header.exercises}`}</Link>
+                <Link to={BASE_ROUTES.EXERCISES}>{`${intl.header.exercises}`}</Link>
               </Button>
             ),
           },
@@ -55,7 +55,7 @@ const UserMenu = () => {
             key: 'workouts',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={ROUTES.WORKOUTS}>{`${intl.header.workouts}`}</Link>
+                <Link to={BASE_ROUTES.WORKOUTS}>{`${intl.header.workouts}`}</Link>
               </Button>
             ),
           },
@@ -63,7 +63,7 @@ const UserMenu = () => {
             key: 'activities',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={ROUTES.ACTIVITIES}>{`${intl.header.activities}`}</Link>
+                <Link to={BASE_ROUTES.ACTIVITIES}>{`${intl.header.activities}`}</Link>
               </Button>
             ),
           },

@@ -27,7 +27,7 @@ export type DescriptionProps = {
 }
 
 const Description = ({ rounds, round_break, payloadDictionary, workoutDictionary }: DescriptionProps) => (
-  <div>
+  <div style={{ lineHeight: 1 }}>
     <Typography.Text>{workoutDictionary.input_labels.rounds}: {rounds}</Typography.Text>
     &nbsp;|&nbsp;
     <Typography.Text>{workoutDictionary.input_labels.round_break}: {round_break

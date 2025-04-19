@@ -33,14 +33,17 @@ export interface IWorkoutList {
   isLoading: boolean;
   isDeleting: boolean;
   isCopying: boolean;
+  containerRef: HTMLElement | null;
 }
 
-const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts }) => {
-  const { isMounted, useHandleMounted } = useMounted()
+const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts, containerRef }) => {
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
+  const [ loadingId, setLoadingId ] = useState(null)
+
+  const { isMounted, useHandleMounted } = useMounted()
   const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = workoutApi.useLazyGetQuery()
   const navigate = useNavigate()
-  const [ loadingId, setLoadingId ] = useState(null)
+
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
   const { payload } = intl.pages.exercises
@@ -64,7 +67,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setWorkoutsToDelete({})
-        selectionRef.current?.handleCancelSelection()
+        selectionRef.current?.cancelSelection()
       }
     })
   }
@@ -77,7 +80,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setWorkoutsToDelete({})
-        selectionRef.current?.handleCancelSelection()
+        selectionRef.current?.cancelSelection()
       }
       return res
     })
@@ -124,14 +127,14 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
   }, [ itemLoadingError ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.handleCancelSelection()
+    if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.cancelSelection()
   }, [ error, isLoading, isDeleting, isCopying ])
 
   return (
     <SelectableList
       ref={selectionRef}
       list={workouts}
-      style={{ paddingBottom: 45 }}
+      style={{ paddingBottom: 45, paddingInline: 0 }}
       onDelete={openModal}
       onCopy={handleCopy}
       onCancelSelection={closeModal}
@@ -153,7 +156,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
             dataSource={workouts}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<WorkoutListItem & { id: number | string }, 'image'> & { image: Image }) => (
-              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
+              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} $noPadding {...onTouchHandlers}>
                 <WorkoutItem
                   loadWorkout={handleLoadWorkout}
                   payloadDictionary={payload}
@@ -162,6 +165,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   isLoading={workoutsToDelete[item.id] && isDeleting}
+                  listEl={containerRef}
                   {...item}
                 />
               </SelectableList.Item>

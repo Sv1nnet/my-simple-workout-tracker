@@ -41,8 +41,7 @@ const useReduxSetPageInfo = (pageInfo: {
 
   const { activeTab, formInfo } = pageInfo
 
-  useOnPreviousChange(
-    [ pageInfo ],
+  useOnPreviousChange<[typeof pageInfo]>(
     useCallback(([ prev ], [ curr ]) => {
       let currHandler = pageHandlers[curr.activeTab]
       if (!currHandler) currHandler = pageHandlers.activities
@@ -56,6 +55,7 @@ const useReduxSetPageInfo = (pageInfo: {
         dispatch(pageHandlers[prev.activeTab].close())
       }
     }, []),
+    [ pageInfo ],
     {
       callInUseEffect: true,
     },

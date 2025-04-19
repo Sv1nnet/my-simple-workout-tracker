@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import { List, notification } from 'antd'
-import { ActivityItem } from './components'
+import { ActivityItem, ListContainer } from './components'
 import { ActivityDeleteError, ActivityForm, ActivityListItem, GetActivityError } from 'app/store/slices/activity/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
@@ -27,6 +27,7 @@ export type ApiGetActivityError = {
 type DeleteActivityPayload = { ids: ActivityForm['id'][] }
 
 export interface IActivityList {
+  containerRef: HTMLElement | null
   activities: ActivityListItem[];
   deleteActivities: (ids: DeleteActivityPayload) => any;
   error: FetchBaseQueryError | SerializedError | CustomBaseQueryError;
@@ -34,7 +35,7 @@ export interface IActivityList {
   isDeleting: boolean;
 }
 
-const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, isDeleting, activities }) => {
+const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error, isLoading, isDeleting, activities }) => {
   const { status: workoutListStatus } = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = activityApi.useLazyGetQuery()
@@ -65,7 +66,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setActivitiesToDelete({})
-        selectionRef.current?.handleCancelSelection()
+        selectionRef.current?.cancelSelection()
       }
     })
   }
@@ -121,14 +122,14 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
   }, [ itemLoadingError ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.handleCancelSelection()
+    if (!error && !isLoading && !isDeleting && isMounted()) selectionRef.current.cancelSelection()
   }, [ error, isLoading, isDeleting ])
 
   return (
     <SelectableList
       ref={selectionRef}
       list={activities}
-      style={{ paddingBottom: 45 }}
+      style={{ paddingBottom: 45, paddingInline: 0 }}
       onDelete={openModal}
       onCancelSelection={closeModal}
       isLoading={isLoading}
@@ -142,7 +143,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
         onContextMenu,
         onTouchHandlers,
       }) => (
-        <>
+        <ListContainer>
           <List
             itemLayout="horizontal"
             dataSource={activities}
@@ -157,6 +158,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   isLoading={activitiesToDelete[item.id] && isDeleting}
+                  listEl={containerRef}
                   {...item}
                 />
               </SelectableList.Item>
@@ -171,7 +173,7 @@ const ActivityList: FC<IActivityList> = ({ deleteActivities, error, isLoading, i
             text={activityModal.delete.body}
             selected={selected}
           />
-        </>
+        </ListContainer>
       )}
     </SelectableList>
   )

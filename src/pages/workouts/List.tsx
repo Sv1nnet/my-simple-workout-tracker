@@ -100,6 +100,7 @@ const Workouts = () => {
         isDeleting={isDeleting}
         isCopying={isCopying}
         workouts={workoutsToShow}
+        containerRef={$container.current?.$el}
       />
     </EndlessScrollableContainer>
   )
