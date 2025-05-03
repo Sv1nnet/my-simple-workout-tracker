@@ -51,11 +51,12 @@ export const StyledPanel = styled(Panel)`
   }
 `
 
-export const StyledCollapse = styled(Collapse)`
+export const StyledCollapse = styled(Collapse)<{ $isSelected?: boolean }>`
   width: 100%;
   background-color: white;
   padding-block: 12px;
   border-radius: unset;
+  ${({ $isSelected }) => $isSelected && `background-color: ${theme.ghostPrimaryColor};`}
 `
 
 export const StyledTagsPanel = styled(StyledPanel)`
@@ -97,14 +98,29 @@ export const StyledBreakText = styled(Typography.Text)`
   line-height: 1;
 `
 
-export const StyledLeftActionIcon = styled(EditFilled)`
+
+export const ActionText = styled.span<{ $marginTop?: number }>`
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  line-height: 1;
+  margin-top: ${({ $marginTop = 0 }) => $marginTop}px;
+`
+
+export const ActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+`
+
+export const StyledActionIcon = styled(EditFilled)`
   font-size: 28px;
-  margin-left: 20px;
   color: white;
 `
 
 export const StyledRightActionIcon = styled(CaretRightFilled)`
   font-size: 36px;
-  margin-right: 12px;
+  margin-left: 5px;
   color: white;
 `

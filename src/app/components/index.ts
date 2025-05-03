@@ -16,7 +16,7 @@ import EndlessScrollableContainer from './endless_scrollable_container/EndlessSc
 import LoaderInEndlessScrollableContainer from './endless_scrollable_container/loader/Loader'
 import NoDataText from './no_data_text/NoDataText'
 import SelectWithItemCreating from './select_with_item_creating/SelectWithItemCreating'
-import Swipable from './swipable/Swipable'
+import Swipeable from './swipeable/Swipeable'
 import {
   FormActionButtonsContainer,
   ToggleEdit,
@@ -44,6 +44,6 @@ export {
   LoaderInEndlessScrollableContainer,
   NoDataText,
   SelectWithItemCreating,
-  Swipable,
+  Swipeable,
   SwipeActions,
 }

@@ -1,4 +1,5 @@
 import React, { FC, useMemo, useState } from 'react'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Collapse, Tag } from 'antd'
 import dayjs from 'dayjs'
 import ExerciseDetails from '../exercise_details/ExerciseDetails'
@@ -18,11 +19,13 @@ import {
   TagsContainer,
   WorkoutTitle,
   StyledActionIcon,
-} from './components/styled'
+  ActionContainer,
+  ActionText,
+} from './components'
 import { useToggle } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { Swipable, SwipeActions } from 'app/components'
-import { SwipableDirection } from 'app/components/swipable/Swipable'
+import { Swipeable, SwipeActions } from 'app/components'
+import { SwipeableDirection } from 'app/components/swipeable/Swipeable'
 
 export type ActivityItemProps = ActivityListItem & {
   exercisePayloadDictionary: any;
@@ -69,15 +72,20 @@ const ActivityItem: FC<ActivityItemProps> = ({
   }
 
   const handleSwipedOnMaxDistance = (
-    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
   ) => {
-    setShouldEditActivity(isOnMaxDistance && direction === SwipableDirection.RIGHT)
+    if (isOnMaxDistance && direction === SwipeableDirection.RIGHT) {
+      setShouldEditActivity(true)
+      return Haptics.impact({ style: ImpactStyle.Light })
+    }
+
+    setShouldEditActivity(false)
   }
 
   const handleRelease = (
-    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
   ) => {
-    if (isOnMaxDistance && direction === SwipableDirection.RIGHT) {
+    if (isOnMaxDistance && direction === SwipeableDirection.RIGHT) {
       loadActivity(id)
     }
   }
@@ -88,13 +96,18 @@ const ActivityItem: FC<ActivityItemProps> = ({
         leftAction={
           <SwipeActions.Left
             isActive={shouldEditActivity}
-            icon={<StyledActionIcon />}
-          />
+          >
+            <ActionContainer>
+              <StyledActionIcon />
+              <ActionText>{intl?.pages?.activities?.action_labels?.edit}</ActionText>
+            </ActionContainer>
+          </SwipeActions.Left>
         }
       />
-      <Swipable
-        direction={selectionEnabled ? SwipableDirection.NONE : SwipableDirection.RIGHT}
-        maxDistance={90}
+      <Swipeable
+        direction={selectionEnabled ? SwipeableDirection.NONE : SwipeableDirection.RIGHT}
+        maxDistance={80}
+        moveToInitialOnMaxRelease={false}
         onMaxDistance={handleSwipedOnMaxDistance}
         onRelease={handleRelease}
         scrollableContainer={listEl}
@@ -104,6 +117,7 @@ const ActivityItem: FC<ActivityItemProps> = ({
           onChange={handleCollapse}
           expandIconPosition="start"
           collapsible={selectionEnabled ? 'disabled' : undefined}
+          $isSelected={selected}
         >
           <StyledPanel key="exercises" className="panel-header" header={(
             <div>
@@ -165,7 +179,7 @@ const ActivityItem: FC<ActivityItemProps> = ({
         </StyledCollapse>
         {selectionEnabled && <StyledCheckbox checked={selected} />}
         {description && <Description>{description}</Description>}
-      </Swipable>
+      </Swipeable>
     </Container>
   )
 }

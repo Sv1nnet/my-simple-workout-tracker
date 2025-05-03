@@ -1,24 +1,31 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { isNullish } from 'utility-types'
-import { isFunction } from '../../utils/typeCheckers'
+import { isFunction } from 'app/utils/typeCheckers'
 import { useIsScrolling, useOnPreviousChange } from 'app/hooks'
 import numInRange from 'app/utils/numInRange'
 
-export enum SwipableDirection {
+export enum SwipeableDirection {
   NONE = 'none',
   LEFT = 'left',
   RIGHT = 'right',
   BOTH = 'both',
 }
 
-export type SwipableProps = {
-  children: React.ReactNode | ((props: { isSwiping: boolean, delta: number, pointerPos: number, startPos: number, isOnMaxDistance: boolean, direction: SwipableDirection }) => React.ReactNode)
-  direction: SwipableDirection
+export interface SwipeableRef {
+  reset: () => void
+}
+
+const TOUCH_MOVE_COUNT_THRESHOLD = 2
+
+export type SwipeableProps = {
+  children: React.ReactNode | ((props: { isSwiping: boolean, delta: number, pointerPos: number, startPos: number, isOnMaxDistance: boolean, direction: SwipeableDirection }) => React.ReactNode)
+  direction: SwipeableDirection
   disabled?: boolean
   style?: React.CSSProperties
   moveToInitialTimingFunction?: string
   moveToInitialDuration?: number
   moveToInitialOnRelease?: boolean
+  moveToInitialOnMaxRelease?: boolean
   isAnimatedMoveToInitial?: boolean
   gap?: number
   onMaxDistance?: (
@@ -27,7 +34,7 @@ export type SwipableProps = {
       direction,
       pointerPos,
       delta,
-    }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
     event: React.TouchEvent<HTMLDivElement>
   ) => void
   onReset?: (event: TransitionEvent) => void
@@ -37,7 +44,7 @@ export type SwipableProps = {
       direction,
       pointerPos,
       delta,
-    }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
     event: React.TouchEvent<HTMLDivElement>
   ) => void
   onStart?: (event: React.TouchEvent<HTMLDivElement>) => void
@@ -48,13 +55,14 @@ export type SwipableProps = {
   scrollableContainer?: HTMLElement | null
 }
 
-const Swipable: FC<SwipableProps> = ({
+const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
   children,
   maxDistance,
   maxDistanceLeft = maxDistance,
   maxDistanceRight = maxDistance,
-  direction = SwipableDirection.BOTH,
+  direction = SwipeableDirection.BOTH,
   moveToInitialOnRelease = true,
+  moveToInitialOnMaxRelease = true,
   isAnimatedMoveToInitial = true,
   moveToInitialTimingFunction = 'ease-in-out',
   moveToInitialDuration = 0.25,
@@ -67,7 +75,7 @@ const Swipable: FC<SwipableProps> = ({
   onStart,
   onMove,
   scrollableContainer,
-}) => {
+}, ref) => {
   if (!isNullish(maxDistance)) {
     maxDistance = Math.abs(maxDistance)
   }
@@ -84,7 +92,7 @@ const Swipable: FC<SwipableProps> = ({
   const [ isSwiping, setIsSwiping ] = useState(false)
 
   const [ isOnMaxDistance, setIsOnMaxDistance ] = useState(false)
-  const [ currentDirection, setCurrentDirection ] = useState(SwipableDirection.NONE)
+  const [ currentDirection, setCurrentDirection ] = useState(SwipeableDirection.NONE)
 
   const [ currentGap, setCurrentGap ] = useState(0)
   const [ startPos, setStartPos ] = useState(0)
@@ -93,10 +101,16 @@ const Swipable: FC<SwipableProps> = ({
   const [ delta, setDelta ] = useState(0)
   const [ deltaY, setDeltaY ] = useState(0)
 
-  const $swipable = useRef<HTMLDivElement>(null)
+  // Used to count the number of touch move events.
+  // It's needed to prevent the swipe from being triggered while container is scrolling.
+  const touchMoveCountRef = useRef(0)
+
+  const $swipeable = useRef<HTMLDivElement>(null)
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     if (!isSwipeAllowed) return
+
+    setDelta($swipeable.current?.getBoundingClientRect().left ?? 0)
 
     setIsSwiping(true)
     setStartPos(event.touches[0].clientX)
@@ -105,11 +119,12 @@ const Swipable: FC<SwipableProps> = ({
   }
 
   const resetAll = () => {
+    touchMoveCountRef.current = 0
     setCurrentGap(0)
     setDelta(0)
     setDeltaY(0)
     setIsOnMaxDistance(false)
-    setCurrentDirection(SwipableDirection.NONE)
+    setCurrentDirection(SwipeableDirection.NONE)
     setPrevPointerPos(0)
     setIsSwiping(false)
     setPointerPos(0)
@@ -117,23 +132,25 @@ const Swipable: FC<SwipableProps> = ({
   }
 
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!isSwipeAllowed || event.touches.length > 1) return
+    touchMoveCountRef.current++
+    
+    if (touchMoveCountRef.current < TOUCH_MOVE_COUNT_THRESHOLD || !isSwipeAllowed || event.touches.length > 1) return
 
     const touch = event.touches[0]
     const currentPointerPos = touch.clientX
     const step = currentPointerPos - prevPointerPos
 
     const _delta = !currentGap
-      ? currentDirection === SwipableDirection.NONE
+      ? currentDirection === SwipeableDirection.NONE
         ? startPos - currentPointerPos
         : delta - step
       : delta
 
-    const _currentDirection = _delta > 0 ? SwipableDirection.LEFT : _delta < 0 ? SwipableDirection.RIGHT : SwipableDirection.NONE
-    const isAllowedDirection = direction !== SwipableDirection.NONE && (direction === SwipableDirection.BOTH || direction === _currentDirection)
+    const _currentDirection = _delta > 0 ? SwipeableDirection.LEFT : _delta < 0 ? SwipeableDirection.RIGHT : SwipeableDirection.NONE
+    const isAllowedDirection = direction !== SwipeableDirection.NONE && (direction === SwipeableDirection.BOTH || direction === _currentDirection)
     
-    const _maxDistance = _currentDirection === SwipableDirection.LEFT ? maxDistanceLeft : _currentDirection === SwipableDirection.RIGHT ? maxDistanceRight : maxDistance
-    const deltaToGetGap = Math.abs(currentDirection === SwipableDirection.NONE ? startPos - currentPointerPos : _delta - step)
+    const _maxDistance = _currentDirection === SwipeableDirection.LEFT ? maxDistanceLeft : _currentDirection === SwipeableDirection.RIGHT ? maxDistanceRight : maxDistance
+    const deltaToGetGap = Math.abs(currentDirection === SwipeableDirection.NONE ? startPos - currentPointerPos : _delta - step)
     const _currentGap = numInRange(currentGap + (deltaToGetGap > _maxDistance ? deltaToGetGap - _maxDistance : -(_maxDistance - deltaToGetGap)), [ 0, gap ])
 
     if (isAllowedDirection) {
@@ -159,7 +176,7 @@ const Swipable: FC<SwipableProps> = ({
         }
       } else if (_delta !== 0) {
         setIsOnMaxDistance(true)
-        setDelta(_currentDirection === SwipableDirection.LEFT ? _maxDistance : -_maxDistance)
+        setDelta(_currentDirection === SwipeableDirection.LEFT ? _maxDistance : -_maxDistance)
 
         if (!isOnMaxDistance) {
           onMaxDistance?.({
@@ -180,24 +197,26 @@ const Swipable: FC<SwipableProps> = ({
 
         onMaxDistance?.({
           isOnMaxDistance: false,
-          direction: SwipableDirection.NONE,
+          direction: SwipeableDirection.NONE,
           pointerPos: touch.clientX,
           delta: 0,
         }, event)
       }
     }
 
-    if (_delta === 0) setCurrentDirection(SwipableDirection.NONE)
+    if (_delta === 0) setCurrentDirection(SwipeableDirection.NONE)
 
     onMove?.(event)
   }
 
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    touchMoveCountRef.current = 0
+
     if (!isSwipeAllowed) return
     setIsSwiping(false)
     setIsOnMaxDistance(false)
 
-    if (moveToInitialOnRelease) {
+    if ((isOnMaxDistance && moveToInitialOnMaxRelease) || (!isOnMaxDistance && moveToInitialOnRelease)) {
       setCurrentGap(0)
       setStartPos(0)
       setPointerPos(0)
@@ -205,6 +224,7 @@ const Swipable: FC<SwipableProps> = ({
       setDelta(0)
       setDeltaY(0)
     }
+
     onRelease?.({ isOnMaxDistance, direction: currentDirection, pointerPos, delta }, event)
   }  
 
@@ -216,11 +236,11 @@ const Swipable: FC<SwipableProps> = ({
   }, [ maxDistance ])
 
   useOnPreviousChange(() => {
-    const isAllowedDirection = direction !== SwipableDirection.NONE && (direction === SwipableDirection.BOTH || direction === currentDirection)
+    const isAllowedDirection = direction !== SwipeableDirection.NONE && (direction === SwipeableDirection.BOTH || direction === currentDirection)
     if (isSwiping && !isAllowedDirection) {
       setIsOnMaxDistance(false)
       setDelta(0)
-      setCurrentDirection(SwipableDirection.NONE)
+      setCurrentDirection(SwipeableDirection.NONE)
       setPrevPointerPos(0)
     }
   }, [ direction ])
@@ -238,25 +258,29 @@ const Swipable: FC<SwipableProps> = ({
     onScrollEnd: () => setIsSwipeAllowed(true),
   })
 
+  useImperativeHandle(ref, () => ({
+    reset: () => resetAll(),
+  }))
+
   useEffect(() => {
-    if ($swipable.current) {
+    if ($swipeable.current) {
       const handleTransitionEnd = (e: TransitionEvent) => {
         if (e.propertyName === 'transform') {
           onReset?.(e)
-          setCurrentDirection(SwipableDirection.NONE)
+          setCurrentDirection(SwipeableDirection.NONE)
         }
       }
-      $swipable.current.addEventListener('transitionend', handleTransitionEnd)
+      $swipeable.current.addEventListener('transitionend', handleTransitionEnd)
 
       return () => {
-        $swipable.current?.removeEventListener('transitionend', handleTransitionEnd)
+        $swipeable.current?.removeEventListener('transitionend', handleTransitionEnd)
       }
     }
   }, [])
 
   return (
     <div
-      ref={$swipable}
+      ref={$swipeable}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -269,6 +293,6 @@ const Swipable: FC<SwipableProps> = ({
       {isFunction(children) ? children({ isSwiping, delta, pointerPos, startPos, isOnMaxDistance, direction: currentDirection }) : children}
     </div>
   )
-}
+})
 
-export default Swipable
+export default Swipeable

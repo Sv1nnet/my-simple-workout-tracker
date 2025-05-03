@@ -1,6 +1,7 @@
 import { EditFilled } from '@ant-design/icons'
 import { Collapse, Checkbox, List, Typography } from 'antd'
 import styled from 'styled-components'
+import { theme } from 'styles/vars'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography
@@ -18,11 +19,12 @@ export const Container = styled.div`
   overflow-x: hidden;
 `
 
-export const StyledCollapse = styled(Collapse)`
+export const StyledCollapse = styled(Collapse)<{ $isSelected?: boolean }>`
   width: 100%;
   background-color: white;
   padding-block: 12px;
   border-radius: unset;
+  ${({ $isSelected }) => $isSelected && `background-color: ${theme.ghostPrimaryColor};`}
 `
 
 export const TagsContainer = styled.div<{ $isInTitle?: boolean }>`
@@ -111,8 +113,20 @@ export const StyledText = styled(Typography.Text)`
   line-height: 1;
 `
 
+export const ActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+`
+
+export const ActionText = styled.span`
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+`
+
 export const StyledActionIcon = styled(EditFilled)`
   font-size: 28px;
-  margin-left: 20px;
   color: white;
 `

@@ -1,4 +1,5 @@
 import routes from 'app/constants/end_points'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { Image } from 'app/store/slices/exercise/types'
 import { WorkoutListItem } from 'app/store/slices/workout/types'
 import { timeToHms } from 'app/utils/time'
@@ -17,12 +18,14 @@ import {
   TagsContainer,
   Title,
   Container,
-  StyledLeftActionIcon,
   StyledRightActionIcon,
+  StyledActionIcon,
+  ActionText,
+  ActionContainer,
 } from './components'
 import { StyledPanel } from './components'
-import { Swipable, SwipeActions } from 'app/components'
-import { SwipableDirection } from 'app/components/swipable/Swipable'
+import { Swipeable, SwipeActions } from 'app/components'
+import { SwipeableDirection } from 'app/components/swipeable/Swipeable'
 import { setCachedActivity } from 'app/store/slices/activity'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
@@ -31,7 +34,7 @@ import { useAppDispatch } from 'app/hooks'
 import { getResultsFromWorkoutList } from 'app/views/activities/components/activity/utils'
 import classes from './style.module.scss'
 
-interface IWorkout extends WorkoutListItem {
+export interface IWorkout extends WorkoutListItem {
   payloadDictionary: {
     time: {
       hour: {
@@ -52,6 +55,7 @@ interface IWorkout extends WorkoutListItem {
   image: Image;
   loadWorkout: (id: string) => void;
   listEl: HTMLElement | null;
+  actionLabels: { edit: string, start: string };
   isLoading?: boolean;
 }
 
@@ -67,6 +71,7 @@ const WorkoutItem: FC<IWorkout> = ({
   workoutDictionary,
   loadWorkout,
   listEl,
+  actionLabels,
 }) => {
   const [ shouldStartActivity, setShouldStartActivity ] = useState(false)
   const [ shouldEditActivity, setShouldEditActivity ] = useState(false)
@@ -91,17 +96,19 @@ const WorkoutItem: FC<IWorkout> = ({
   }
 
   const handleSwipedOnMaxDistance = (
-    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
   ) => {
-    setShouldStartActivity(isOnMaxDistance && direction === SwipableDirection.LEFT)
-    setShouldEditActivity(isOnMaxDistance && direction === SwipableDirection.RIGHT)
+    setShouldStartActivity(isOnMaxDistance && direction === SwipeableDirection.LEFT)
+    setShouldEditActivity(isOnMaxDistance && direction === SwipeableDirection.RIGHT)
+
+    if (isOnMaxDistance) Haptics.impact({ style: ImpactStyle.Light })
   }
 
   const handleRelease = (
-    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
   ) => {
     if (isOnMaxDistance) {
-      if (direction === SwipableDirection.LEFT) {
+      if (direction === SwipeableDirection.LEFT) {
         dispatch(setCachedActivity({
           data: {
             date: dayjs(),
@@ -123,7 +130,7 @@ const WorkoutItem: FC<IWorkout> = ({
         return
       }
 
-      if (direction === SwipableDirection.RIGHT) {
+      if (direction === SwipeableDirection.RIGHT) {
         loadWorkout(id)
       }
     }
@@ -132,12 +139,27 @@ const WorkoutItem: FC<IWorkout> = ({
   return (
     <Container>
       <SwipeActions
-        leftAction={<SwipeActions.Left isActive={shouldEditActivity} icon={<StyledLeftActionIcon />} />}
-        rightAction={<SwipeActions.Right isActive={shouldStartActivity} icon={<StyledRightActionIcon />} />}
+        leftAction={
+          <SwipeActions.Left isActive={shouldEditActivity}>
+            <ActionContainer>
+              <StyledActionIcon />
+              <ActionText>{actionLabels.edit}</ActionText>
+            </ActionContainer>
+          </SwipeActions.Left>
+        }
+        rightAction={
+          <SwipeActions.Right isActive={shouldStartActivity}>
+            <ActionContainer>
+              <StyledRightActionIcon />
+              <ActionText $marginTop={-5}>{actionLabels.start}</ActionText>
+            </ActionContainer>
+          </SwipeActions.Right>
+        }
       />
-      <Swipable
-        direction={selectionEnabled ? SwipableDirection.NONE : SwipableDirection.BOTH}
-        maxDistance={90}
+      <Swipeable
+        direction={selectionEnabled ? SwipeableDirection.NONE : SwipeableDirection.BOTH}
+        maxDistance={80}
+        moveToInitialOnMaxRelease={false}
         onMaxDistance={handleSwipedOnMaxDistance}
         onRelease={handleRelease}
         scrollableContainer={listEl}
@@ -147,6 +169,7 @@ const WorkoutItem: FC<IWorkout> = ({
           onChange={handleCollapse}
           expandIconPosition="start"
           collapsible={selectionEnabled ? 'disabled' : undefined}
+          $isSelected={selected}
         >
           <StyledPanel key="exercises" className="panel-header" header={(
             <HeaderContainer>
@@ -223,7 +246,7 @@ const WorkoutItem: FC<IWorkout> = ({
         {selectionEnabled && <StyledCheckbox checked={selected} />}
 
         {description && <Typography.Text style={{ marginTop: '6px', display: 'inline-block' }}>{description}</Typography.Text>}
-      </Swipable>
+      </Swipeable>
     </Container>
   )
 }

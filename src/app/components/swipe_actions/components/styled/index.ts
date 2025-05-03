@@ -8,6 +8,7 @@ export const ActionContainer = styled.div`
   bottom: 0;
   right: 0;
   display: flex;
+  overflow: hidden;
 `
 
 const Action = styled.div`

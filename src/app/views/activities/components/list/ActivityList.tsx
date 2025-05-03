@@ -47,7 +47,7 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
   const { modal, common } = intl
   const { payload: exercisePayloadDictionary } = intl.pages.exercises
   const { activities: activityDictionary } = intl.pages
-  const { modal: activityModal } = activityDictionary
+  const { modal: activityModal, list_buttons: activityListButtons } = activityDictionary
   const {
     isModalVisible,
     selectionRef,
@@ -134,6 +134,7 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
       onCancelSelection={closeModal}
       isLoading={isLoading}
       isDeleting={isDeleting}
+      createTooltipTitle={activityListButtons.start}
       createHref="/activities/create"
     >
       {({

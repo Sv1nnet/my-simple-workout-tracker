@@ -1,5 +1,5 @@
 import { ChangeEventHandler, useEffect, useMemo, useRef, useState } from 'react'
-import { CloseOutlined, LoadingOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons'
+import { CloseOutlined, SearchOutlined } from '@ant-design/icons'
 import AddButton from '../add_button/AddButton'
 import {
   AddButtonText,
@@ -14,7 +14,7 @@ import {
   StyledSearchButton,
 } from './components'
 import { useToggle } from 'app/hooks'
-import { Collapse, notification, Select, SelectProps, Spin } from 'antd'
+import { Collapse, notification, Select, SelectProps } from 'antd'
 import { Tag } from 'src/@types'
 import { muscleGroupApi } from 'app/store/slices/muscleGroup/api'
 import { OnChangeHandler } from './utils'
@@ -27,9 +27,10 @@ export type SearchPanelProps = {
   onChange: (...args: Parameters<OnChangeHandler>) => unknown,
   refetch: () => unknown,
   loading: boolean,
+  shouldShowReloadButton?: boolean,
 }
 
-const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: SearchPanelProps) => {
+const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldShowReloadButton = true }: SearchPanelProps) => {
   const { intl } = useIntlContext()
   const { state: isOpen, setState: setIsOpen } = useToggle(false)
   const [ searchValue, setSearchValue ] = useState('')
@@ -128,17 +129,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading }: Search
             href={href}
             text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
           />
-          {loading
-            ? (
-              <ReloadButton>
-                <Spin size="small" indicator={<LoadingOutlined />} />
-              </ReloadButton>
-            )
-            : (
-              <ReloadButton onClick={refetch}>
-                <ReloadOutlined />
-              </ReloadButton>
-            )}
+          {shouldShowReloadButton && <ReloadButton loading={loading} refetch={refetch} />}
         </ButtonsContainer>
         <StyledCollapse bordered={false} ghost activeKey={isOpen ? '1' : null} destroyInactivePanel className='tags-container'>
           <Collapse.Panel header='' key='1' showArrow={false}>

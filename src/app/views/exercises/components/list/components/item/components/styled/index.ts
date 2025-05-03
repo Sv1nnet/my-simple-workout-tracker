@@ -1,6 +1,7 @@
 import { EditFilled } from '@ant-design/icons'
 import { Checkbox, Tag } from 'antd'
 import styled from 'styled-components'
+import { theme } from 'styles/vars'
 
 export const ImageContainer = styled.div`
   position: relative;
@@ -41,17 +42,30 @@ export const Container = styled.div`
   flex-wrap: wrap;
 `
 
-export const InnerContainer = styled.div`
+export const InnerContainer = styled.div<{ $isSelected?: boolean }>`
   background-color: white;
   padding: 15px;
+  ${({ $isSelected }) => $isSelected && `background-color: ${theme.ghostPrimaryColor};`}
 
   .ant-list-item-meta-content {
     width: 100%;
   }
 `
 
+export const ActionText = styled.span`
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+`
+
+export const ActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+`
+
 export const StyledActionIcon = styled(EditFilled)`
   font-size: 28px;
-  margin-left: 20px;
   color: white;
 `

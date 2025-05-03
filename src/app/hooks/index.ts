@@ -5,7 +5,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 import type { AppDispatch, AppState } from '../store'
-import { isUndefined } from '../utils/typeCheckers'
+import { isUndefined } from 'app/utils/typeCheckers'
 
 export * from './numberInputHooks'
 

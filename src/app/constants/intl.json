@@ -319,6 +319,12 @@
       }
     },
     "exercises": {
+      "action_labels": {
+        "edit": {
+          "ru": "Изменить",
+          "eng": "Edit"
+        }
+      },
       "notifications": {
         "create": {
           "success": {
@@ -570,6 +576,16 @@
       }
     },
     "workouts": {
+      "action_labels": {
+        "edit": {
+          "ru": "Изменить",
+          "eng": "Edit"
+        },
+        "start": {
+          "ru": "Начать",
+          "eng": "Start"
+        }
+      },
       "notifications": {
         "create": {
           "success": {
@@ -718,6 +734,12 @@
       }
     },
     "activities": {
+      "action_labels": {
+        "edit": {
+          "ru": "Изменить",
+          "eng": "Edit"
+        }
+      },
       "notifications": {
         "create": {
           "success": {
@@ -893,9 +915,9 @@
           "ru": "Больше вариантов",
           "eng": "More options"
         },
-        "add": {
-          "ru": "Добавить",
-          "eng": "Add"
+        "start": {
+          "ru": "Начать",
+          "eng": "Start"
         }
       },
       "error_message": {

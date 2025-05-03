@@ -162,6 +162,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
                   payloadDictionary={payload}
                   loadingWorkoutId={loadingId}
                   workoutDictionary={workoutDictionary}
+                  actionLabels={intl.pages.workouts.action_labels}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   isLoading={workoutsToDelete[item.id] && isDeleting}

@@ -86,6 +86,7 @@ const Workouts = () => {
   return (
     <EndlessScrollableContainer ref={$container}>
       <SearchPanel
+        shouldShowReloadButton={false}
         onChange={onSearchInputChange}
         refetch={onRefetchClick}
         loading={isFetching}

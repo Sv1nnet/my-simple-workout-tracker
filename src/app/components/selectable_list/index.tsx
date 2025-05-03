@@ -42,8 +42,9 @@ export interface ISelectableList {
       onTouchCancel: TouchEventHandler;
     }
   }) => ReactElement) | ReactElement | ReactElement[];
-  style?: React.CSSProperties,
-  className?: string,
+  style?: React.CSSProperties;
+  className?: string;
+  createTooltipTitle?: string;
 }
 
 export type SelectableListRef = {
@@ -73,6 +74,7 @@ ISelectableList & RefAttributes<SelectableListRef>
     createHref,
     style,
     className,
+    createTooltipTitle,
   },
   ref,
 ) => {
@@ -201,6 +203,7 @@ ISelectableList & RefAttributes<SelectableListRef>
         onCancel={handleCancelSelection}
         onCopy={onCopy}
         onDelete={onDelete}
+        createTooltipTitle={createTooltipTitle}
       />
     </ListContainer>
   )

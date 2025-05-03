@@ -3,7 +3,34 @@ import { useEffect, useState } from 'react'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { CancelSelectionButton, CopyButton, CreateButton, DeleteButton, DeselectAllButton, SelectAllButton } from './components/styled'
 
-const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, selected, isAllSelected, onDelete, onCopy, onCancel, onSelect }) => {
+export type IListControls <Selected = any> = {
+  createHref: string
+  isDeleting: boolean
+  isCopying: boolean
+  isSelectionActive: boolean
+  selected: Record<string, Selected>
+  isAllSelected: boolean
+  onDelete?: Function
+  onCopy?: Function
+  onCancel?: Function
+  onSelect?: Function
+  createTooltipTitle?: string
+}
+
+const ListControls = <Selected = any>(
+  {
+    createTooltipTitle,
+    createHref,
+    isDeleting,
+    isCopying,
+    isSelectionActive,
+    selected,
+    isAllSelected,
+    onDelete,
+    onCopy,
+    onCancel,
+    onSelect,
+  }: IListControls<Selected>) => {
   const { list_buttons } = useIntlContext().intl.pages.exercises
   const [ expanded, setExpanded ] = useState(false)
 
@@ -20,7 +47,7 @@ const ListControls = ({ createHref, isDeleting, isCopying, isSelectionActive, se
   
   return (
     <MainButtonContainer>
-      {createHref && <CreateButton tooltipTitle={list_buttons.add} href={createHref} />}
+      {createHref && <CreateButton tooltipTitle={createTooltipTitle ?? list_buttons.add} href={createHref} />}
       <MoreOptionsButtonContainer $expanded={isSelectionActive} $items={activeExtraButtons}>
         <MoreOptionsButtonContainer.Inner>
           {

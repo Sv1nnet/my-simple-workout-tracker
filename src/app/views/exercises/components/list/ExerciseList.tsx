@@ -44,7 +44,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, conta
   const navigate = useNavigate()
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
-  const { payload, modal: exerciseModal } = intl.pages.exercises
+  const { payload, modal: exerciseModal, action_labels } = intl.pages.exercises
   const {
     isModalVisible,
     selectionRef,
@@ -159,6 +159,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, conta
                   loadingExerciseId={loadingId}
                   loadExercise={handleLoadExercise}
                   payloadDictionary={payload}
+                  actionLabels={action_labels}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   isLoading={exercisesToDelete[item.id] && isDeleting}

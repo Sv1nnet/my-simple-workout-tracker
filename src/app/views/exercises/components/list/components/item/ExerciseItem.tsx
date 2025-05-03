@@ -1,13 +1,14 @@
 import routes from 'app/constants/end_points'
+import { Haptics, ImpactStyle } from '@capacitor/haptics'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import { List, Image as AntImage } from 'antd'
 import itemImagePlaceholder from 'constants/item_image_placeholder'
 import { FC, useState } from 'react'
-import { ImageContainer, StyledCheckbox, StyledTag, TagsContainer, Title, Container, InnerContainer, StyledActionIcon } from './components'
-import { Swipable, SwipeActions } from 'app/components'
-import { SwipableDirection } from 'app/components/swipable/Swipable'
+import { ImageContainer, StyledCheckbox, StyledTag, TagsContainer, Title, Container, InnerContainer, StyledActionIcon, ActionText, ActionContainer } from './components'
+import { Swipeable, SwipeActions } from 'app/components'
+import { SwipeableDirection } from 'app/components/swipeable/Swipeable'
 
-interface IExerciseForm extends Omit<ExerciseForm, 'muscle_groups'> {
+export interface IExerciseForm extends Omit<ExerciseForm, 'muscle_groups'> {
   loadingExerciseId: string | null;
   listEl: HTMLElement | null;
   payloadDictionary: Record<string, { [key: string]: any }>;
@@ -17,6 +18,7 @@ interface IExerciseForm extends Omit<ExerciseForm, 'muscle_groups'> {
   muscle_groups: { id: string, title: string }[];
   loadExercise: (id: string) => void;
   isLoading?: boolean;
+  actionLabels: { edit: string };
 }
 
 const ExerciseItem: FC<IExerciseForm> = ({
@@ -33,20 +35,23 @@ const ExerciseItem: FC<IExerciseForm> = ({
   selected,
   loadExercise,
   payloadDictionary,
+  actionLabels,
 }) => {
   const [ shouldEditExercise, setShouldEditExercise ] = useState(false)
   
   const handleSwipedOnMaxDistance = (
-    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
   ) => {
-    setShouldEditExercise(isOnMaxDistance && direction === SwipableDirection.RIGHT)
+    setShouldEditExercise(isOnMaxDistance && direction === SwipeableDirection.RIGHT)
+
+    if (isOnMaxDistance) Haptics.impact({ style: ImpactStyle.Light })
   }
 
   const handleRelease = (
-    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipableDirection, pointerPos: number, delta: number },
+    { isOnMaxDistance, direction }: { isOnMaxDistance: boolean, direction: SwipeableDirection, pointerPos: number, delta: number },
   ) => {
     if (isOnMaxDistance) {
-      if (direction === SwipableDirection.RIGHT) {
+      if (direction === SwipeableDirection.RIGHT) {
         loadExercise(id)
       }
     }
@@ -55,17 +60,25 @@ const ExerciseItem: FC<IExerciseForm> = ({
   return (
     <Container>
       <SwipeActions
-        leftAction={<SwipeActions.Left isActive={shouldEditExercise} icon={<StyledActionIcon />} />}
+        leftAction={(
+          <SwipeActions.Left isActive={shouldEditExercise}>
+            <ActionContainer>
+              <StyledActionIcon />
+              <ActionText>{actionLabels.edit}</ActionText>
+            </ActionContainer>
+          </SwipeActions.Left>
+        )}
       />
-      <Swipable
-        direction={selectionEnabled ? SwipableDirection.NONE : SwipableDirection.RIGHT}
-        maxDistance={90}
+      <Swipeable
+        direction={selectionEnabled ? SwipeableDirection.NONE : SwipeableDirection.RIGHT}
+        maxDistance={80}
+        moveToInitialOnMaxRelease={false}
         onMaxDistance={handleSwipedOnMaxDistance}
         onRelease={handleRelease}
         scrollableContainer={listEl}
         style={{ width: '100%' }}
       >
-        <InnerContainer>
+        <InnerContainer $isSelected={selected}>
           {!!muscle_groups.length && (
             <TagsContainer>
               {muscle_groups.map(muscleGroup => (
@@ -102,7 +115,7 @@ const ExerciseItem: FC<IExerciseForm> = ({
             )}
           />
         </InnerContainer>
-      </Swipable>
+      </Swipeable>
     </Container>
   )
 }

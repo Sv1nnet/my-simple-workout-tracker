@@ -14,14 +14,11 @@ const StyledContainer = styled.div<{ $isActive: boolean }>`
 
 export type RightActionProps = HTMLAttributes<HTMLDivElement> & {
   isActive: boolean
-  text?: string
-  icon?: React.ReactNode
 }
 
-const RightAction = ({ isActive, text, icon, ...props }: RightActionProps) => (
+const RightAction = ({ isActive, children, ...props }: RightActionProps) => (
   <StyledContainer $isActive={isActive} {...props}>
-    {icon}
-    {text}
+    {children}
   </StyledContainer>
 )
 
