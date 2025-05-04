@@ -82,6 +82,7 @@ const Exercises = () => {
   return (
     <EndlessScrollableContainer ref={$container}>
       <SearchPanel
+        shouldShowReloadButton={false}
         onChange={onSearchInputChange}
         refetch={onRefetchClick}
         loading={isFetching}
@@ -96,6 +97,7 @@ const Exercises = () => {
         isDeleting={isDeleting}
         isCopying={isCopying}
         exercises={exercisesToShow}
+        containerRef={$container.current?.$el}
       />
     </EndlessScrollableContainer>
   )

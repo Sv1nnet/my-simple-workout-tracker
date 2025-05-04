@@ -33,9 +33,10 @@ export interface IExerciseList {
   isLoading: boolean;
   isDeleting: boolean;
   isCopying: boolean;
+  containerRef: HTMLElement | null;
 }
 
-const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error, isLoading, isDeleting, isCopying, exercises }) => {
+const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, containerRef, error, isLoading, isDeleting, isCopying, exercises }) => {
   const { isMounted, useHandleMounted } = useMounted()
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = exerciseApi.useLazyGetQuery()
@@ -43,7 +44,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
   const navigate = useNavigate()
   const { intl, lang } = useIntlContext()
   const { modal, common } = intl
-  const { payload, modal: exerciseModal } = intl.pages.exercises
+  const { payload, modal: exerciseModal, action_labels } = intl.pages.exercises
   const {
     isModalVisible,
     selectionRef,
@@ -62,7 +63,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setExercisesToDelete({})
-        selectionRef.current?.handleCancelSelection()
+        selectionRef.current?.cancelSelection()
       }
       return res
     })
@@ -76,7 +77,7 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
     }).then((res) => {
       if (isMounted() && res?.data?.success) {
         setExercisesToDelete({})
-        selectionRef.current?.handleCancelSelection()
+        selectionRef.current?.cancelSelection()
       }
       return res
     })
@@ -123,14 +124,14 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
   }, [ itemLoadingError ])
 
   useEffect(() => {
-    if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.handleCancelSelection()
+    if (!error && !isLoading && !isDeleting && !isCopying && isMounted()) selectionRef.current.cancelSelection()
   }, [ error, isLoading, isDeleting ])
 
   return (
     <SelectableList
       ref={selectionRef}
       list={exercises}
-      style={{ paddingBottom: 45 }}
+      style={{ paddingBottom: 45, paddingInline: 0 }}
       onDelete={openModal}
       onCopy={handleCopy}
       onCancelSelection={closeModal}
@@ -152,11 +153,13 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, error
             dataSource={exercises}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
-              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
+              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} $noPadding {...onTouchHandlers}>
                 <ExerciseItem
+                  listEl={containerRef}
                   loadingExerciseId={loadingId}
                   loadExercise={handleLoadExercise}
                   payloadDictionary={payload}
+                  actionLabels={action_labels}
                   selectionEnabled={selectionEnabled}
                   selected={selected[item.id]}
                   isLoading={exercisesToDelete[item.id] && isDeleting}

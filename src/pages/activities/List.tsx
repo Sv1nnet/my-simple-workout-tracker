@@ -32,7 +32,7 @@ const Activities = () => {
   const $container = useRef<Ref>(null)
   const { listEl, setListEl } = useListContext($container.current)
   const { intl } = useIntlContext()
-  const { add } = intl.pages.workouts.list_buttons
+  const { start } = intl.pages.activities.list_buttons
   const [ loadActivities, { error, isError, isFetching } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore = [], total, status } = useAppSelector(selectList)
   const prevRequestRef = useRef<ReturnType<typeof loadActivities>>(null)
@@ -112,11 +112,12 @@ const Activities = () => {
       <PageHeaderTitle>{intl.header.activities}</PageHeaderTitle>
       <EndlessScrollableContainer ref={$container} callOnMount onScroll={handleScroll}>
         <SearchPanel
+          shouldShowReloadButton={false}
           loading={isFetching}
           onChange={onSearchInputChange}
           refetch={onRefetchClick}
           href={CREATE_ROUTE}
-          addButtonText={add}
+          addButtonText={start}
         />
         <ActivityList
           deleteActivities={handleDeleteActivities}
@@ -124,6 +125,7 @@ const Activities = () => {
           isLoading={status === API_STATUS.LOADING}
           isDeleting={isDeleting}
           activities={activitiesToShow}
+          containerRef={$container.current?.$el}
         />
         {isFetching && !!activitiesInStore.length && <Loader>{intl.common.loading}</Loader>}
       </EndlessScrollableContainer>

@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button as AntButton, Tooltip } from 'antd'
+import { Button as AntButton, ButtonProps as AntButtonProps, Tooltip } from 'antd'
 import {
   PlusOutlined,
-  StopOutlined,
+  CloseOutlined,
   BarsOutlined,
   SwitcherOutlined,
   DeleteOutlined,
@@ -54,7 +54,7 @@ unknown,
   isDelete?: boolean,
   isMoreOptions?: boolean,
   icon: React.ReactElement,
-}>(({
+} & AntButtonProps>(({
   tooltipTitle,
   isCancel,
   isDelete,
@@ -73,7 +73,7 @@ export const CreateButton = ({ href, ...props }) => (
     <ListButton $isCreate icon={<PlusOutlined />} {...props} />
   </Link>
 )
-export const CancelSelectionButton = props => <ListButton isCancel danger type={undefined} icon={<StopOutlined />} {...props} />
+export const CancelSelectionButton = props => <ListButton isCancel danger type={undefined} icon={<CloseOutlined />} {...props} />
 export const SelectAllButton = props => <ListButton icon={<BarsOutlined />} {...props} />
 export const DeselectAllButton = props => <ListButton icon={<SwitcherOutlined />} {...props} />
 export const CopyButton = props => <ListButton isCopy icon={<CopyOutlined />} {...props} />

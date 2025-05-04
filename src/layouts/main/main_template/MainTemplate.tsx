@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { PageLayoutWithNav, PageLayout } from 'layouts/header'
-import { ROUTES } from 'src/router'
+import { BASE_ROUTES } from 'src/router'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
 import { useLocalStorage, useOnPreviousChange } from 'app/hooks'
 
@@ -27,11 +27,11 @@ const MainTemplate: FC = () => {
 
   useEffect(() => {
     if (location.pathname === '' || location.pathname === '/') {
-      navigate(ROUTES.ACTIVITIES, { replace: true })
+      navigate(BASE_ROUTES.ACTIVITIES, { replace: true })
       return
     }
     if (!routes.find(_route => _route === route || _route === '/404')) {
-      navigate(ROUTES.NOT_FOUND, { replace: true })
+      navigate(BASE_ROUTES.NOT_FOUND, { replace: true })
     }
   })
 

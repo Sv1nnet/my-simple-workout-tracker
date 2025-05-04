@@ -51,13 +51,6 @@ export const StyledInput = styled(Input)<{ $collapsed: boolean }>`
   ` : ''}
 `
 
-export const ReloadButton = styled(Button)`
-  margin-left: 5px;
-  flex-shrink: 0;
-  flex-basis: 46px;
-  height: 40px;
-`
-
 export const StyledInputGroup = styled(Input.Group)<{ $collapsed: boolean }>`
   display: flex;
   flex-wrap: nowrap;

@@ -2,7 +2,7 @@ import { GetHistoryListSuccess, HistoryRequestQuery, HistoryResponseData, Histor
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
 import { FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/dist/query'
-import { CustomBaseQueryError } from '@/src/app/store/utils/baseQueryWithReauth'
+import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { BaseQueryFn } from '@reduxjs/toolkit/dist/query/react'
 import { QueryDefinition } from '@reduxjs/toolkit/dist/query/react'
 import { LazyQueryTrigger } from '@reduxjs/toolkit/dist/query/react/buildHooks'
@@ -71,7 +71,7 @@ const getHistory = (historyData: HistoryResponseData) => Object.entries({ ...his
 const HistoryProvider = ({ children, historyData, loadHistory, isLoading }: HistoryProviderProps) => {
   const [ history, setHistory ] = useState<ExerciseHistory>(() => historyData ? getHistory(historyData) : {})
 
-  useOnPreviousChange([ historyData ], (_, [ nextHistoryData ]) => {
+  useOnPreviousChange((_, [ nextHistoryData ]) => {
     const exerciseIds = Object.keys(nextHistoryData)
     const newHistory = getHistory(nextHistoryData)
 
@@ -86,7 +86,7 @@ const HistoryProvider = ({ children, historyData, loadHistory, isLoading }: Hist
       acc[exerciseId] = newExerciseHistory
       return acc
     }, { ...history }))
-  })
+  }, [ historyData ])
 
   const getByExerciseId = useCallback((exerciseId: string) => history?.[exerciseId] ?? null, [ history ])
 
