@@ -2,19 +2,22 @@
 :root {
   --statusbar-height: env(safe-area-inset-top);
   --control-buttons-height: env(safe-area-inset-bottom);
+  --main-color: #0aa679;
+  --html-background-dark: linear-gradient(to bottom, #075c44 50%, black 50%);
+  --html-background-light: linear-gradient(to bottom, #0aa679 50%, white 50%);
   --background-dark: black;
   --background-light: white;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: var(--background-dark);
+    --background: var(--html-background-dark);
   }
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --background: var(--background-light);
+    --background: var(--html-background-light);
   }
 }
 
@@ -34,10 +37,12 @@ html {
 
 #root {
   max-width: 500px;
-  margin: auto;
   height: 100%;
+  margin: auto;
   background-color: white;
+  position: relative;
 }
+
 @media screen and (max-width: 425px) {
   #root {
     border: none;

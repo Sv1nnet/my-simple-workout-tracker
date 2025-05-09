@@ -4,7 +4,7 @@ import { Container, EachSideContainer, SideLabel } from './components/styled'
 import { useState } from 'react'
 // import { AppNotificationData, AppNotificationOptions } from '@/src/app/components/timer/utils'
 
-const defaultTimerId = 'default_timer_id'
+const DEFAULT_TIMER_ID = 'default_timer_id'
 
 enum Side {
   NON_SIDE = 0,
@@ -39,7 +39,7 @@ export type TimersProps = {
 
 const getSideIndex = (side: Side) => +!!side
 
-const Timers = ({ id = defaultTimerId, eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOver, timerDictionary }: TimersProps) => {
+const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOver, timerDictionary }: TimersProps) => {
   const [ currentRound, setCurrentRound ] = useState(() => eachSide ? [ 1, 1 ] : [ 1 ])
   const [ finishedRounds, setFinishedRounds ] = useState({})
   // const [ appNotificationOptions, setAppNotificationOptions ] = useState(getDefaultAppNotificationOptions)

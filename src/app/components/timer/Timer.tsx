@@ -2,11 +2,17 @@ import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { useNotificationPermissionRequest } from 'app/hooks'
-import { defaultNotificationProps, runCountingDown } from './utils'
+import { defaultWebNotificationOptions, defaultAppNotificationOptions, runCountingDown, AppNotificationOptions } from './utils'
 import { TimerView } from 'app/components'
+import { Capacitor } from '@capacitor/core'
+import TimerService from 'src/plugins/timer_service/TimeService'
+
+export const DEFAULT_TIMER_ID = 'default_timer_id'
 
 export interface ITimer {
   duration: number,
+  appNotificationOptions?: AppNotificationOptions,
+  id?: string,
   notificationTitle?: string,
   webNotificationOptions?: NotificationOptions,
   msOn?: boolean,
@@ -15,7 +21,7 @@ export interface ITimer {
   onChange?: (value: ReturnType<typeof millisecondsToTimeArray>, timeLeftInMs: number) => void,
   onReset?: VoidFunction,
   onPause?: (timeLeftInMs: number) => void,
-  onRunTimer?: (timeLeftInMs: number) => void,
+  onRun?: (timeLeftInMs: number) => void,
   onTimeOver?: (duration: number) => void,
   resetButton?: boolean,
   containerProps?: React.HTMLAttributes<HTMLDivElement>,
@@ -25,18 +31,20 @@ export interface ITimer {
   },
   resetButtonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
-  }
+  },
 }
 
 const Timer: FC<ITimer> = ({
   notificationTitle = 'Time is over!',
-  webNotificationOptions = defaultNotificationProps,
+  appNotificationOptions = defaultAppNotificationOptions,
+  webNotificationOptions = defaultWebNotificationOptions,
+  id = DEFAULT_TIMER_ID,
   duration = 0,
   msOn = true,
   onChange,
   onReset,
   onPause,
-  onRunTimer,
+  onRun,
   onTimeOver,
   hoursOn,
   resetButton,
@@ -45,6 +53,7 @@ const Timer: FC<ITimer> = ({
   resetButtonProps,
   ...rest
 }) => {
+  const timerId = id === DEFAULT_TIMER_ID ? DEFAULT_TIMER_ID : id
   const initialValue = useMemo(() => millisecondsToTimeArray(duration), [ duration ])
   
   const { permitted } = useNotificationPermissionRequest()
@@ -65,8 +74,7 @@ const Timer: FC<ITimer> = ({
   const isNotifiedRef = useRef(false)
   const renotificationTimeoutIdRef = useRef(0 as unknown as NodeJS.Timeout)
 
-
-  const handleResetTimer = (e) => {
+  const handleResetTimer = async (e) => {
     clearTimeout(renotificationTimeoutIdRef.current)
     
     setIsRunning(false)
@@ -89,24 +97,12 @@ const Timer: FC<ITimer> = ({
     onChange?.([ ...initialValue ], newTimeLeftRef.current)
     onReset?.()
 
+    await TimerService.stopTimer({
+      timerId,
+    })
+
     if (resetButton) resetButtonProps?.onClick?.(false, e)
     if (!resetButton) buttonProps?.onClick?.(false, e)
-  }
-
-  const handleRunTimer = (e) => {
-    setIsRunning(true)
-    setIsPaused(false)
-    
-    onRunTimer?.(newTimeLeftRef.current)
-    buttonProps?.onClick?.(true, e)
-  }
-
-  const handlePauseTimer = (e) => {
-    setIsRunning(false)
-    setIsPaused(true)
-
-    onPause?.(newTimeLeftRef.current)
-    buttonProps?.onClick?.(false, e)
   }
 
   const notify = () => {
@@ -121,9 +117,56 @@ const Timer: FC<ITimer> = ({
       } else {
         notificationCountRef.current = 0
       }
-
       return registration
     })
+  }
+
+  const handleRun = async (e) => {
+    try {
+      if (Capacitor.isNativePlatform()) {    
+        if (!isPaused && !isRunning) {
+          await TimerService.startTimer({
+            duration: Math.floor(newTimeLeftRef.current || duration), // Cut decimal part
+            timerId: timerId,
+            label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
+            body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
+          })
+        } else if (isPaused) {
+          await TimerService.resumeTimer({
+            timerId: timerId,
+            label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
+            body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
+          })
+        }
+      }
+      
+      setIsRunning(true)
+      setIsPaused(false)
+      onRun?.(newTimeLeftRef.current)
+      buttonProps?.onClick?.(true, e)
+    } catch (error) {
+      console.error('Failed to start timer service:', error)
+    }
+  }
+
+  const handlePauseTimer = async (e) => {
+    setIsRunning(false)
+    setIsPaused(true)
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await TimerService.pauseTimer({
+          timerId: timerId,
+          label: appNotificationOptions.paused?.label || defaultAppNotificationOptions.paused.label,
+          body: appNotificationOptions.paused?.body || defaultAppNotificationOptions.paused.body,
+        })
+      } catch (error) {
+        console.error('Failed to stop timer service:', error)
+      }
+    }
+
+    onPause?.(newTimeLeftRef.current)
+    buttonProps?.onClick?.(false, e)
   }
 
   useEffect(() => {
@@ -162,14 +205,14 @@ const Timer: FC<ITimer> = ({
   }, [ isFinished ])
 
   useEffect(() => {
-    if (!isNotifiedRef.current && isFinished && permitted) {
+    if (!Capacitor.isNativePlatform() && !isNotifiedRef.current && isFinished && permitted) {
       notify()
     }
   }, [ isFinished, permitted ])
 
   return (
     <TimerView
-      onRunTimer={handleRunTimer}
+      onRun={handleRun}
       onPause={handlePauseTimer}
       onReset={handleResetTimer}
       isRunning={isRunning}

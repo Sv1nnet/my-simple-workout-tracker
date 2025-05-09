@@ -128,8 +128,33 @@ export const runCountingDown = ({
   }
 }
 
-export const defaultNotificationProps: NotificationOptions = {
+export const defaultWebNotificationOptions: NotificationOptions = {
   tag: 'timer',
   body: 'Get back to work!',
-  renotify: true,
+}
+
+export type AppNotificationData = {
+  label?: string,
+  body?: string,
+}
+
+export type AppNotificationOptions = {
+  running?: AppNotificationData,
+  paused?: AppNotificationData,
+  over?: AppNotificationData,
+}
+
+export const defaultAppNotificationOptions: AppNotificationOptions = {
+  running: {
+    label: 'Timer',
+    body: 'In progress.',
+  },
+  paused: {
+    label: 'Timer',
+    body: 'Paused.',
+  },
+  over: {
+    label: 'Timer',
+    body: 'Time is over!',
+  },
 }

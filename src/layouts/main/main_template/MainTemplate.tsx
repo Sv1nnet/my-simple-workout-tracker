@@ -19,11 +19,14 @@ const MainTemplate: FC = () => {
   const [ , setLastOpenedPage ] = useLocalStorage('lastOpenedPage', location.pathname)
   const [ , route ] = location.pathname.split('/') as [any, typeof routes[number], string]
 
-  useOnPreviousChange([ location.pathname ], ([ previousPathname ]) => {
-    if (previousPathname !== location.pathname) {
-      setLastOpenedPage(location.pathname)
-    }
-  })
+  useOnPreviousChange(
+    (prev, curr) => {
+      if (prev[0] !== curr[0]) {
+        setLastOpenedPage(curr[0])
+      }
+    },
+    [ location.pathname ],
+  )
 
   useEffect(() => {
     if (location.pathname === '' || location.pathname === '/') {

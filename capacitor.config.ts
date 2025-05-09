@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.mysimpleworkouttracker.app',
+  appId: 'com.mswt.app',
   appName: 'My Simple Workout Tracker',
   webDir: 'dist',
   server: {
@@ -38,7 +38,10 @@ const config: CapacitorConfig = {
       style: 'dark',
       backgroundColor: '#ffffff',
     },
+    Permissions: {
+      notifications: true,
+    },
   },
 }
 
-export default config 
+export default config

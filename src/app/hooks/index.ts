@@ -3,6 +3,8 @@ import { ChangeEvent, Dispatch, SetStateAction, useCallback, useMemo, useState }
 import { useEffect, useRef } from 'react'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { LocalNotifications } from '@capacitor/local-notifications'
+import { Capacitor } from '@capacitor/core'
 
 import type { AppDispatch, AppState } from '../store'
 import { isUndefined } from 'app/utils/typeCheckers'
@@ -124,18 +126,29 @@ export const useDebouncedCallback = <T extends Function>(callback: T, delay: num
   }, [])
 }
 
+const Notification = window.Notification
 export const useNotificationPermissionRequest = () => {
   const [ permission, setPermission ] = useState(typeof Notification !== 'undefined' ? Notification.permission : null)
 
   useEffect(() => {
-    if (isUndefined(Notification)) return setPermission(null)
-    if (Notification.permission === 'denied' || Notification.permission === 'granted') return setPermission(Notification.permission)
-
-    Notification
-      .requestPermission()
-      .then(setPermission)
-
-    setPermission(Notification.permission)
+    (async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const { display } = await LocalNotifications.requestPermissions()
+          setPermission(display ? 'granted' : 'denied')
+        } else if (!isUndefined(Notification)) {
+          if (Notification.permission === 'denied' || Notification.permission === 'granted') return setPermission(Notification.permission)
+      
+          Notification
+            .requestPermission()
+            .then(setPermission)
+      
+          setPermission(Notification.permission)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })()
   }, [])
 
   return {

@@ -17,7 +17,7 @@ export interface IStopwatch {
   onChange?: (value: number) => void,
   onReset?: VoidFunction,
   onPause?: (timeLeftInMs: number) => void,
-  onRunTimer?: (timeLeftInMs: number) => void,
+  onRun?: (timeLeftInMs: number) => void,
   onTimeOver?: (duration: number) => void,
   showResetButton?: boolean,
   containerProps?: React.HTMLAttributes<HTMLDivElement>,
@@ -49,7 +49,7 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
     onChange,
     onReset,
     onPause,
-    onRunTimer,
+    onRun,
     hoursOn,
     showResetButton,
     timeElementProps,
@@ -103,7 +103,7 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
       setIsRunning(true)
       setIsPaused(false)
     
-      onRunTimer?.(timeArrayToMilliseconds(value))
+      onRun?.(timeArrayToMilliseconds(value))
       buttonProps?.onClick?.(true, e)
     }
 
@@ -160,7 +160,7 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
 
     return (
       <TimerView
-        onRunTimer={handleRunTimer}
+        onRun={handleRunTimer}
         onPause={handlePauseTimer}
         onReset={handleResetTimer}
         isRunning={isRunning}

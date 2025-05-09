@@ -1,5 +1,6 @@
 export const theme = {
   primaryColor: '#0aa679', // primary color for all components
+  primaryColorDark: '#075c44', // primary color for all components
   ghostPrimaryColor: '#e7f5f0', // primary color for all components
   linkColor: '#1890ff', // link color
   successColor: '#52c41a', // success state color

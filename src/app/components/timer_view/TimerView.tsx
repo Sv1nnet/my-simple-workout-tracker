@@ -30,7 +30,7 @@ export interface TimerViewProps {
   keepPageAwake?: boolean,
   onReset?: ButtonProps['onClick'],
   onPause?: ButtonProps['onClick'],
-  onRunTimer?: ButtonProps['onClick'],
+  onRun?: ButtonProps['onClick'],
   onTimeOver?: (duration: number) => void,
   timeElementProps?: React.HTMLAttributes<HTMLSpanElement>,
   buttonProps?: Omit<ButtonProps, 'onClick'> & {
@@ -53,7 +53,7 @@ const TimerView = ({
   duration,
   msOn,
   hoursOn,
-  onRunTimer,
+  onRun,
   onPause,
   showResetButton,
   resetButtonProps,
@@ -76,7 +76,7 @@ const TimerView = ({
           icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
           onClick: (e) => {
             onReset?.(e)
-            onRunTimer?.(e)
+            onRun?.(e)
           },
         }
         : {
@@ -85,9 +85,9 @@ const TimerView = ({
         }
       : {
         icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
-        onClick: onRunTimer,
+        onClick: onRun,
       },
-  [ onPause, onReset, onRunTimer, isRunning, isFinished, showResetButton ])
+  [ onPause, onReset, onRun, isRunning, isFinished, showResetButton ])
 
   return (
     <TimerContainer {...rest} $isFinished={isFinished}>
