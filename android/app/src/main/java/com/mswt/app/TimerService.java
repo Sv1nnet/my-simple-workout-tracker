@@ -74,9 +74,12 @@ public class TimerService extends Service {
                 NotificationChannel serviceChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Timer Service Channel",
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_HIGH
                 );
                 serviceChannel.setDescription("Shows ongoing timer");
+                serviceChannel.setShowBadge(true);
+                serviceChannel.enableVibration(true);
+                serviceChannel.setVibrationPattern(new long[]{0, 100});
                 notificationManager.createNotificationChannel(serviceChannel);
 
                 NotificationChannel alertsChannel = new NotificationChannel(
@@ -107,9 +110,13 @@ public class TimerService extends Service {
             String action = intent.getStringExtra("action");
             String timerId = intent.getStringExtra("timerId");
 
-            if (action == null || !action.equals("stop")) {
-                startForeground(CONSOLIDATED_NOTIFICATION_ID, createConsolidatedNotification());
-            }
+            // Show immediate notification before any processing
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    startForeground(CONSOLIDATED_NOTIFICATION_ID, createInitialNotification());
+                }
+            }).start();
 
             if (action != null) {
                 switch (action) {
@@ -146,6 +153,36 @@ public class TimerService extends Service {
         }
     }
 
+    private Notification createInitialNotification() {
+        try {
+            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
+                PendingIntent.FLAG_IMMUTABLE
+            );
+
+            return new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("Starting Timer...")
+                    .setContentText("Initializing timer service...")
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                    .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+                    .setOngoing(true)
+                    .setAutoCancel(false)
+                    .setContentIntent(pendingIntent)
+                    .build();
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating initial notification", e);
+            return new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("Timer Service")
+                    .setContentText("Starting...")
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build();
+        }
+    }
+
     private int startNewTimer(Intent intent) {
         String timerId = intent.getStringExtra("timerId");
         Log.d(TAG, "Timer ID in startNewTimer: " + timerId);
@@ -165,18 +202,23 @@ public class TimerService extends Service {
             return START_NOT_STICKY;
         }
 
-        // Create and start timer
+        // Create timer info first
         long endTime = System.currentTimeMillis() + duration;
         TimerInfo timerInfo = new TimerInfo(endTime, label, timerId, CONSOLIDATED_NOTIFICATION_ID);
         TimerService.activeTimers.put(timerId, timerInfo);
 
-        // Update notification immediately before starting the runnable
-        updateConsolidatedNotification();
-
-        // Then start the timer runnable
+        // Start the timer runnable
         Runnable timerRunnable = createTimerRunnable(timerId, CONSOLIDATED_NOTIFICATION_ID);
         timerInfo.runnable = timerRunnable;
-        handler.post(timerRunnable);
+
+        // Post the runnable with a very short delay to ensure notification is shown first
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateConsolidatedNotification();
+                handler.post(timerRunnable);
+            }
+        }, 100);
 
         return START_STICKY;
     }
@@ -190,11 +232,14 @@ public class TimerService extends Service {
     private Notification createConsolidatedNotification() {
         StringBuilder contentBuilder = new StringBuilder();
         int activeTimerCount = TimerService.activeTimers.size();
-        String title = activeTimerCount > 0 ? 
-            activeTimerCount + " Active Timer" + (activeTimerCount > 1 ? "s" : "") :
-            "Starting timer...";
-
-        if (activeTimerCount > 0) {
+        
+        // Show "Starting timer..." only when we're actually starting a new timer
+        String title;
+        if (activeTimerCount == 0) {
+            title = "Starting timer...";
+            contentBuilder.append("Initializing timer...");
+        } else {
+            title = activeTimerCount + " Active Timer" + (activeTimerCount > 1 ? "s" : "");
             for (TimerInfo timer : TimerService.activeTimers.values()) {
                 long remaining = timer.isPaused ? timer.remainingTime : timer.endTime - System.currentTimeMillis();
                 String status = timer.isPaused ? "⏸" : "⏱";
@@ -205,8 +250,6 @@ public class TimerService extends Service {
                              .append(formatTime(remaining))
                              .append("\n");
             }
-        } else {
-            contentBuilder.append("Initializing...");
         }
 
         try {
@@ -216,22 +259,32 @@ public class TimerService extends Service {
                 PendingIntent.FLAG_IMMUTABLE
             );
 
-            return new NotificationCompat.Builder(this, CHANNEL_ID)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(contentBuilder.toString().trim())
                     .setStyle(new NotificationCompat.BigTextStyle()
                             .bigText(contentBuilder.toString().trim()))
                     .setSmallIcon(getApplicationInfo().icon)
-                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(NotificationCompat.CATEGORY_ALARM)
                     .setOngoing(true)
-                    .setContentIntent(pendingIntent)
-                    .build();
+                    .setAutoCancel(false)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setContentIntent(pendingIntent);
+
+            // Add vibration for initial notification
+            if (activeTimerCount == 0) {
+                builder.setVibrate(new long[]{0, 100});
+            }
+
+            return builder.build();
         } catch (Exception e) {
             Log.e(TAG, "Error creating consolidated notification", e);
             return new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText("Timer service running")
                     .setSmallIcon(getApplicationInfo().icon)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .build();
         }
     }

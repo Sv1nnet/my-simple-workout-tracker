@@ -1,25 +1,9 @@
 import React, { useMemo } from 'react'
-import styled from 'styled-components'
 import { Button, ButtonProps } from 'antd'
 import { CaretRightOutlined, PauseOutlined, RedoOutlined } from '@ant-design/icons'
 import { timeArrayToSeconds } from 'app/utils/time'
-import { theme } from 'src/styles/vars'
-import { getFinalValue } from './utils'
-
-const TimerContainer = styled.div<{ $isFinished?: boolean }>`
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid ${theme.borderColorBase};
-  border-radius: 2px;
-  font-size: 16px;
-  box-shadow: ${({ $isFinished }) => $isFinished ? '0px 0px 3px red' : 'none'};
-`
-
-const TimeText = styled.span<{ $disabled?: boolean }>`
-  margin-right: 4px;
-  color: ${({ $disabled }) => $disabled ? theme.textColorSecondary : ''};
-`
+import { getFinalValue, ICON_STYLE } from './utils'
+import { StopIcon, ResetButton, TimeText, TimerContainer } from './components'
 
 export interface TimerViewProps {
   notificationTitle?: string,
@@ -67,24 +51,24 @@ const TimerView = ({
 }: TimerViewProps) => {
   const buttonAttributes = useMemo(() => isRunning
     ? {
-      icon: <PauseOutlined style={{ fontSize: 26 }} />,
+      icon: <PauseOutlined style={ICON_STYLE} />,
       onClick: onPause,
     }
     : isFinished
       ? showResetButton
         ? {
-          icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
+          icon: <RedoOutlined style={ICON_STYLE} />,
           onClick: (e) => {
             onReset?.(e)
             onRun?.(e)
           },
         }
         : {
-          icon: <RedoOutlined style={{ fontSize: 26 }} />,
+          icon: <StopIcon />,
           onClick: onReset,
         }
       : {
-        icon: <CaretRightOutlined style={{ fontSize: 26 }} />,
+        icon: <CaretRightOutlined style={ICON_STYLE} />,
         onClick: onRun,
       },
   [ onPause, onReset, onRun, isRunning, isFinished, showResetButton ])
@@ -96,11 +80,12 @@ const TimerView = ({
         {getFinalValue(value, msOn, hoursOn, initialValue, duration === undefined ? 1 : -1)}
       </TimeText>
       {showResetButton && (
-        <Button
+        <ResetButton
           type="text"
           size="middle"
           disabled={disabled || duration === timeArrayToSeconds(value) * 1000}
-          icon={<RedoOutlined style={{ fontSize: 26 }} />}
+          icon={<StopIcon />}
+          style={{ display: 'inline-flex' }}
           {...resetButtonProps}
           onClick={onReset}
         />

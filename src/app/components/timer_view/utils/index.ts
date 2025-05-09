@@ -18,3 +18,7 @@ export const getFinalValue = (value: number[], msOn: boolean, hoursOn: boolean, 
   if (msOn) return `${result}.${getTimeDateUnit(Math.floor(ms / 10), true)}`
   return result
 }
+
+export const ICON_STYLE = {
+  fontSize: 26,
+}
