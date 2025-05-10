@@ -234,12 +234,7 @@ public class TimerService extends Service {
         int activeTimerCount = TimerService.activeTimers.size();
         
         // Show "Starting timer..." only when we're actually starting a new timer
-        String title;
-        if (activeTimerCount == 0) {
-            title = "Starting timer...";
-            contentBuilder.append("Initializing timer...");
-        } else {
-            title = activeTimerCount + " Active Timer" + (activeTimerCount > 1 ? "s" : "");
+        String title = activeTimerCount + " Active Timer" + (activeTimerCount > 1 ? "s" : "");
             for (TimerInfo timer : TimerService.activeTimers.values()) {
                 long remaining = timer.isPaused ? timer.remainingTime : timer.endTime - System.currentTimeMillis();
                 String status = timer.isPaused ? "⏸" : "⏱";
@@ -250,7 +245,6 @@ public class TimerService extends Service {
                              .append(formatTime(remaining))
                              .append("\n");
             }
-        }
 
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());

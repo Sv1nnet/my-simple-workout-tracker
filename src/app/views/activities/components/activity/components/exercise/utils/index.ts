@@ -1,3 +1,5 @@
+import { isNull, isNumber } from 'app/utils/typeCheckers'
+
 export const getIsAllResultsFilled = (form, exercise, exerciseIndex) => {
   const allResults = form.getFieldValue([ 'results', exerciseIndex, 'rounds' ])
 
@@ -6,19 +8,18 @@ export const getIsAllResultsFilled = (form, exercise, exerciseIndex) => {
   if (exercise.each_side) {
     return allResults.every(result => (
       result?.right !== '' &&
-      result?.right !== null &&
-      typeof +result?.right === 'number' &&
+      !isNull(result?.right) &&
+      isNumber(+result?.right) &&
       result?.left !== '' &&
-      result?.left &&
-      typeof +result?.left === 'number'
+      !isNull(result?.left) &&
+      isNumber(+result?.left)
     ))
   }
 
   return allResults.every(result => (
     result !== '' &&
-    result !== null &&
-    typeof +result === 'number' &&
-    typeof +result === 'number'
+    !isNull(result) &&
+    isNumber(+result)
   ))
 }
 
@@ -32,22 +33,20 @@ export const getIsAllResultWithoutPenultimateFilled = (form, exercise, exerciseI
   const allResultsLength = allResults.length
   const allResultsWithoutLast = allResults.slice(0, allResultsLength - 1)
 
-
   if (exercise.each_side) {
     return allResultsWithoutLast.every(result => (
       result?.right !== '' &&
-        result?.right !== null &&
-        typeof +result?.right === 'number' &&
+        !isNull(result?.right) &&
+        isNumber(+result?.right) &&
         result?.left !== '' &&
-        result?.left &&
-        typeof +result?.left === 'number'
+        !isNull(result?.left) &&
+        isNumber(+result?.left)
     ))
   }
 
   return allResultsWithoutLast.every(result => (
     result !== '' &&
-      result !== null &&
-      typeof +result === 'number' &&
-      typeof +result === 'number'
+      !isNull(result) &&
+      isNumber(+result)
   ))
 }

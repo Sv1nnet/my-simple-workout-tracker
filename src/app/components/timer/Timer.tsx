@@ -1,8 +1,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
-import { useNotificationPermissionRequest } from 'app/hooks'
-import { defaultWebNotificationOptions, defaultAppNotificationOptions, runCountingDown, AppNotificationOptions } from './utils'
+import { defaultAppNotificationOptions, runCountingDown, AppNotificationOptions } from './utils'
 import { TimerView } from 'app/components'
 import { Capacitor } from '@capacitor/core'
 import TimerService from 'src/plugins/timer_service/TimeService'
@@ -35,9 +34,8 @@ export interface ITimer {
 }
 
 const Timer: FC<ITimer> = ({
-  notificationTitle = 'Time is over!',
+  // notificationTitle = 'Time is over!',
   appNotificationOptions = defaultAppNotificationOptions,
-  webNotificationOptions = defaultWebNotificationOptions,
   id = DEFAULT_TIMER_ID,
   duration = 0,
   msOn = true,
@@ -55,8 +53,6 @@ const Timer: FC<ITimer> = ({
 }) => {
   const timerId = id === DEFAULT_TIMER_ID ? DEFAULT_TIMER_ID : id
   const initialValue = useMemo(() => millisecondsToTimeArray(duration), [ duration ])
-  
-  const { permitted } = useNotificationPermissionRequest()
 
   const [ value, setValue ] = useState(initialValue)
   const [ isRunning, setIsRunning ] = useState(false)
@@ -103,22 +99,6 @@ const Timer: FC<ITimer> = ({
 
     if (resetButton) resetButtonProps?.onClick?.(false, e)
     if (!resetButton) buttonProps?.onClick?.(false, e)
-  }
-
-  const notify = () => {
-    navigator.serviceWorker.ready.then(async (registration) => {
-      await registration.showNotification(notificationTitle, webNotificationOptions)
-
-      isNotifiedRef.current = true
-      notificationCountRef.current++
-
-      if (notificationCountRef.current < 3 ) {
-        renotificationTimeoutIdRef.current = setTimeout(notify, 1500)
-      } else {
-        notificationCountRef.current = 0
-      }
-      return registration
-    })
   }
 
   const handleRun = async (e) => {
@@ -203,12 +183,6 @@ const Timer: FC<ITimer> = ({
   useEffect(() => {
     if (isFinished) onTimeOver?.(duration)
   }, [ isFinished ])
-
-  useEffect(() => {
-    if (!Capacitor.isNativePlatform() && !isNotifiedRef.current && isFinished && permitted) {
-      notify()
-    }
-  }, [ isFinished, permitted ])
 
   return (
     <TimerView

@@ -3,7 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router'
 import { PageLayoutWithNav, PageLayout } from 'layouts/header'
 import { BASE_ROUTES } from 'src/router'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
-import { useLocalStorage, useOnPreviousChange } from 'app/hooks'
+import { useLocalStorage, useMounted, useOnPreviousChange } from 'app/hooks'
+import { routes as appRoutes } from 'src/router'
 
 const routes = [
   '',
@@ -16,7 +17,8 @@ const routes = [
 const MainTemplate: FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [ , setLastOpenedPage ] = useLocalStorage('lastOpenedPage', location.pathname)
+  const { isMounted, useHandleMounted } = useMounted()
+  const [ lastOpenedPage, setLastOpenedPage ] = useLocalStorage('lastOpenedPage', location.pathname)
   const [ , route ] = location.pathname.split('/') as [any, typeof routes[number], string]
 
   useOnPreviousChange(
@@ -29,14 +31,24 @@ const MainTemplate: FC = () => {
   )
 
   useEffect(() => {
-    if (location.pathname === '' || location.pathname === '/') {
-      navigate(BASE_ROUTES.ACTIVITIES, { replace: true })
-      return
-    }
-    if (!routes.find(_route => _route === route || _route === '/404')) {
-      navigate(BASE_ROUTES.NOT_FOUND, { replace: true })
+    if (isMounted()) {
+      if (location.pathname === '' || location.pathname === '/') {
+        navigate(lastOpenedPage === appRoutes.activities.create() ? lastOpenedPage : BASE_ROUTES.WORKOUTS, { replace: true })
+        return
+      }
+      if (!routes.find(_route => _route === route || _route === '/404')) {
+        navigate(BASE_ROUTES.WORKOUTS, { replace: true })
+      }
     }
   })
+
+  useEffect(() => {
+    if (lastOpenedPage === appRoutes.activities.create()) {
+      navigate(lastOpenedPage)
+    }
+  }, [])
+
+  useHandleMounted()
 
   return route === 'profile' 
     ? (

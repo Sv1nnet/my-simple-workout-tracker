@@ -6,7 +6,6 @@ export const Container = styled.div<{ $eachSide?: boolean }>`
   ${({ $eachSide }) => $eachSide ? `
     display: flex;
     justify-content: flex-start;
-    flex-wrap: wrap;
   ` : ''}
 `
 
@@ -15,19 +14,9 @@ export const SideLabel = styled(Typography.Paragraph)`
 `
 
 export const EachSideContainer = styled.div<{ $right?: boolean, $left?: boolean }>`
-  margin-left: ${({ $right }) => $right ? '10px' : ''};
-  margin-right: ${({ $right }) => !$right ? '15px' : ''};
+  margin-left: ${({ $left }) => $left ? '15px' : ''};
 
   ${SideLabel} {
     margin-bottom: 0;
-  }
-
-  @media (max-width: 375px) {
-    & {
-      width: 100%;
-      margin-left: 0;
-      order: ${({ $left }) => $left ? 1 : ''};
-      margin-top: ${({ $left }) => $left ? '6px' : ''};  
-    }
   }
 `
