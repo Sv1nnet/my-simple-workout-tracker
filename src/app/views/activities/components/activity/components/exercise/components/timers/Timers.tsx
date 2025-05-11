@@ -2,6 +2,7 @@ import { Timer } from 'app/components'
 import { SECONDS_IN_HOUR } from 'app/utils/time'
 import { Container, EachSideContainer, SideLabel } from './components/styled'
 import { useState } from 'react'
+import { ITimer } from 'app/components/timer/Timer'
 // import { AppNotificationData, AppNotificationOptions } from '@/src/app/components/timer/utils'
 
 const DEFAULT_TIMER_ID = 'default_timer_id'
@@ -23,6 +24,10 @@ export type TimersProps = {
     round_break: { title: string, message: string, no_more_rounds: string }
     side: { left: string, right: string }
   }
+}
+
+const buttonProps: ITimer['buttonProps'] = {
+  size: 'middle',
 }
 
 // type CurrentAppNotificationOptions = {
@@ -130,7 +135,7 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
             webNotificationOptions={webNotificationOptions}
             hoursOn={hoursOn}
             duration={duration}
-            buttonProps={{ size: 'middle' }}
+            buttonProps={buttonProps}
           />
         </EachSideContainer>
         <EachSideContainer $left>
@@ -146,7 +151,7 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
             webNotificationOptions={webNotificationOptions}
             hoursOn={hoursOn}
             duration={duration}
-            buttonProps={{ size: 'middle' }}
+            buttonProps={buttonProps}
           />
         </EachSideContainer>
       </Container>
@@ -164,7 +169,7 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
           webNotificationOptions={webNotificationOptions}
           hoursOn={hoursOn}
           duration={duration}
-          buttonProps={{ size: 'middle' }}
+          buttonProps={buttonProps}
         />
       </Container>
     )

@@ -15,7 +15,7 @@ export const getFinalValue = (value: number[], msOn: boolean, hoursOn: boolean, 
   }
 
   const result = (hoursOn ? [ h, m, s ] : [ m, s ]).map(time => getTimeDateUnit(Math[direction < 0 ? 'ceil' : 'floor'](time), true)).join(':')
-  if (msOn) return `${result}.${getTimeDateUnit(Math.floor(ms / 10), true)}`
+  if (msOn) return `${result}:${getTimeDateUnit(Math.floor(ms / 10), true)}`
   return result
 }
 

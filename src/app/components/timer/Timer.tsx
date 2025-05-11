@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, MouseEvent, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { defaultAppNotificationOptions, runCountingDown, AppNotificationOptions } from './utils'
@@ -31,9 +31,20 @@ export interface ITimer {
   resetButtonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   },
+  stopOnUnmount?: boolean,
 }
 
-const Timer: FC<ITimer> = ({
+export type TimerRef = {
+  isRunning: boolean,
+  isPaused: boolean,
+  isFinished: boolean,
+  getTimeLeft: () => [number, number, number, number],
+  pause: (e?: MouseEvent<HTMLElement>) => Promise<void>,
+  run: (e?: MouseEvent<HTMLElement>) => Promise<void>,
+  reset: (e?: MouseEvent<HTMLElement>) => Promise<void>,
+}
+
+const Timer = forwardRef<TimerRef, ITimer>(({
   // notificationTitle = 'Time is over!',
   appNotificationOptions = defaultAppNotificationOptions,
   id = DEFAULT_TIMER_ID,
@@ -49,8 +60,9 @@ const Timer: FC<ITimer> = ({
   timeElementProps,
   buttonProps,
   resetButtonProps,
+  stopOnUnmount = true,
   ...rest
-}) => {
+}, ref) => {
   const timerId = id === DEFAULT_TIMER_ID ? DEFAULT_TIMER_ID : id
   const initialValue = useMemo(() => millisecondsToTimeArray(duration), [ duration ])
 
@@ -70,7 +82,7 @@ const Timer: FC<ITimer> = ({
   const isNotifiedRef = useRef(false)
   const renotificationTimeoutIdRef = useRef(0 as unknown as NodeJS.Timeout)
 
-  const handleResetTimer = async (e) => {
+  const handleResetTimer = async (e?: MouseEvent<HTMLElement>) => {
     clearTimeout(renotificationTimeoutIdRef.current)
     
     setIsRunning(false)
@@ -97,11 +109,13 @@ const Timer: FC<ITimer> = ({
       timerId,
     })
 
-    if (resetButton) resetButtonProps?.onClick?.(false, e)
-    if (!resetButton) buttonProps?.onClick?.(false, e)
+    if (e) {
+      if (resetButton) resetButtonProps?.onClick?.(false, e)
+      if (!resetButton) buttonProps?.onClick?.(false, e)
+    }
   }
 
-  const handleRun = async (e) => {
+  const handleRun = async (e?: MouseEvent<HTMLElement>) => {
     try {
       if (Capacitor.isNativePlatform()) {    
         if (!isPaused && !isRunning) {
@@ -123,13 +137,13 @@ const Timer: FC<ITimer> = ({
       setIsRunning(true)
       setIsPaused(false)
       onRun?.(newTimeLeftRef.current)
-      buttonProps?.onClick?.(true, e)
+      if (e) buttonProps?.onClick?.(true, e)
     } catch (error) {
       console.error('Failed to start timer service:', error)
     }
   }
 
-  const handlePauseTimer = async (e) => {
+  const handlePauseTimer = async (e?: MouseEvent<HTMLElement>) => {
     setIsRunning(false)
     setIsPaused(true)
 
@@ -146,8 +160,18 @@ const Timer: FC<ITimer> = ({
     }
 
     onPause?.(newTimeLeftRef.current)
-    buttonProps?.onClick?.(false, e)
+    if (e) buttonProps?.onClick?.(false, e)
   }
+
+  useImperativeHandle(ref, () => ({
+    isRunning,
+    isPaused,
+    isFinished,
+    getTimeLeft: () => valueRef.current,
+    run: handleRun,
+    pause: handlePauseTimer,
+    reset: handleResetTimer,
+  }), [ isRunning, isPaused, isFinished, handleRun, handlePauseTimer, handleResetTimer ])
 
   useEffect(() => {
     if (duration !== timeArrayToMilliseconds(value)) {
@@ -184,6 +208,10 @@ const Timer: FC<ITimer> = ({
     if (isFinished) onTimeOver?.(duration)
   }, [ isFinished ])
 
+  useEffect(() => () => {
+    if (stopOnUnmount) handleResetTimer()
+  }, [ stopOnUnmount ])
+
   return (
     <TimerView
       onRun={handleRun}
@@ -203,6 +231,6 @@ const Timer: FC<ITimer> = ({
       {...rest}
     />
   )
-}
+})
 
 export default Timer

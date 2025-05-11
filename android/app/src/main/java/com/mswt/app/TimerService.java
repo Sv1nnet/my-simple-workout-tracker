@@ -110,13 +110,15 @@ public class TimerService extends Service {
             String action = intent.getStringExtra("action");
             String timerId = intent.getStringExtra("timerId");
 
-            // Show immediate notification before any processing
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    startForeground(CONSOLIDATED_NOTIFICATION_ID, createInitialNotification());
-                }
-            }).start();
+            // Only show notification if we're starting a new timer
+            if (action == null || action.equals("start")) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        startForeground(CONSOLIDATED_NOTIFICATION_ID, createInitialNotification());
+                    }
+                }).start();
+            }
 
             if (action != null) {
                 switch (action) {
@@ -329,6 +331,7 @@ public class TimerService extends Service {
             }
         }
         TimerService.activeTimers.clear();
+        notificationManager.cancelAll();
         stopForeground(true);
         stopSelf();
     }
