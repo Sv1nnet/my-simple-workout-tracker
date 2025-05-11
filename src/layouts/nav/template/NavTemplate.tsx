@@ -1,6 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Tabs } from 'antd'
+import Icon from '@ant-design/icons'
 import { useLocation, useNavigate } from 'react-router'
 import TabLabel from '../tab_label/TabLabel'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -10,6 +11,8 @@ import { API_STATUS } from 'app/constants/api_statuses'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 import { selectIsNoAuthLogin } from 'app/store/slices/auth'
 import useReduxSetPageInfo from './utils/useReduxSetPageInfo'
+import { ActivityIcon, DumbbellAndListIcon, DumbbellIcon } from 'src/assets/icons'
+import { theme } from 'styles/vars'
 
 const StyledTabs = styled(Tabs)`
   background: white;
@@ -40,9 +43,17 @@ const StyledTabs = styled(Tabs)`
         height: 100%;
       }
 
+      .anticon {
+        margin-right: 0;
+      }
+
       &:nth-child(4) {
         display: none;
       }
+    }
+
+    .ant-tabs-tab-active svg * {
+      stroke: ${theme.primaryColor};
     }
   }
 `
@@ -111,9 +122,9 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
 
   const isScreenSmall = width === 'sm'
   const labels = {
-    exercises: ((isScreenSmall ? intl.header.exercises.short : (intl.header.exercises)) || '').toUpperCase(),
-    workouts: ((isScreenSmall ? intl.header.workouts.short : (intl.header.workouts)) || '').toUpperCase(),
-    activities: ((isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '').toUpperCase(),
+    exercises: (isScreenSmall ? intl.header.exercises.short : (intl.header.exercises)) || '',
+    workouts: (isScreenSmall ? intl.header.workouts.short : (intl.header.workouts)) || '',
+    activities: (isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '',
   }
 
   useEffect(() => {
@@ -129,7 +140,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
             id="exercises-tab-pane"
             tab="exercises"
             onClick={handleNavClick}
-            label={labels.exercises}
+            label={<Icon component={DumbbellIcon} title={labels.exercises} />}
             loading={!isNoAuthLogin && loadingTab === 'exercises'}
           />
         ),
@@ -141,7 +152,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
             id="workouts-tab-pane"
             tab="workouts"
             onClick={handleNavClick}
-            label={labels.workouts}
+            label={<Icon component={DumbbellAndListIcon} title={labels.workouts} />}
             loading={!isNoAuthLogin && loadingTab === 'workouts'}
           />
         ),
@@ -153,7 +164,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
             id="activities-tab-pane"
             tab="activities"
             onClick={handleNavClick}
-            label={labels.activities}
+            label={<Icon component={ActivityIcon} title={labels.activities} />}
             loading={!isNoAuthLogin && loadingTab === 'activities'}
           />
         ),

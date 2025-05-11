@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { Spin } from 'antd'
-import { FC, HTMLProps } from 'react'
+import { FC, HTMLProps, ReactNode } from 'react'
 import { theme } from 'styles/vars'
 
 const LoaderContainer = styled.div`
@@ -19,17 +19,18 @@ const StyledSpinner = styled(Spin)`
   transform: translate(-50%, -50%);
 `
 
-const Text = styled.div`
+const Label = styled.div`
   text-align: center;
   height: 100%;
   align-items: center;
   flex-grow: 1;
   display: grid;
-  border-top: 2px solid ${theme.borderColorBase};
+  border-top: 2px solid ${theme.navBorderColor};
+  font-size: 40px;
 `
 
-export interface ITabLabel extends Omit<HTMLProps<HTMLDivElement>, 'onClick'> {
-  label: string;
+export interface ITabLabel extends Omit<HTMLProps<HTMLDivElement>, 'onClick' | 'label'> {
+  label: ReactNode;
   tab: string;
   loading?: boolean;
   loaderProps?: object;
@@ -43,7 +44,7 @@ const TabLabel: FC<ITabLabel> = ({ loading, label, loaderProps, tab, onClick, ..
 
   return (
     <>
-      <Text {...rest} onClick={handleLabelClick}>{label}</Text>
+      <Label {...rest} onClick={handleLabelClick}>{label}</Label>
       {loading && (
         <LoaderContainer {...loaderProps}>
           <StyledSpinner />

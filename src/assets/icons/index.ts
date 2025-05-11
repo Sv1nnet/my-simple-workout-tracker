@@ -1,2 +1,5 @@
 export { default as ChartIcon } from './ChartIcon'
 export { default as TableIcon } from './TableIcon'
+export { default as DumbbellIcon } from './DumbbellIcon'
+export { default as DumbbellAndListIcon } from './DumbbellAndListIcon'
+export { default as ActivityIcon } from './ActivityIcon'
