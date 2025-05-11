@@ -47,7 +47,7 @@ const StyledTabs = styled(Tabs)`
         margin-right: 0;
       }
 
-      &:nth-child(4) {
+      &:nth-last-child(2) {
         display: none;
       }
     }
@@ -55,6 +55,15 @@ const StyledTabs = styled(Tabs)`
     .ant-tabs-tab-active svg * {
       stroke: ${theme.primaryColor};
     }
+  }
+`
+
+const StyledDumbbellIcon = styled(DumbbellIcon)`
+  width: 1.25em;
+  height: 1.25em;
+
+  path {
+    stroke-width: 2.5px;
   }
 `
 
@@ -125,6 +134,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
     exercises: (isScreenSmall ? intl.header.exercises.short : (intl.header.exercises)) || '',
     workouts: (isScreenSmall ? intl.header.workouts.short : (intl.header.workouts)) || '',
     activities: (isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '',
+    profile: (isScreenSmall ? intl.header.profile.short : (intl.header.profile)) || '',
   }
 
   useEffect(() => {
@@ -140,7 +150,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
             id="exercises-tab-pane"
             tab="exercises"
             onClick={handleNavClick}
-            label={<Icon component={DumbbellIcon} title={labels.exercises} />}
+            label={<Icon component={StyledDumbbellIcon} title={labels.exercises} />}
             loading={!isNoAuthLogin && loadingTab === 'exercises'}
           />
         ),
@@ -173,14 +183,15 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
         key: 'subRoute',
         label: undefined,
       },
-    ]
-  , [
+    ],
+  [
     loadingTab,
     location.pathname,
     listEl,
     labels.exercises,
     labels.workouts,
     labels.activities,
+    labels.profile,
   ])
 
   const [ , route, subRoute ] = location.pathname.split('/')

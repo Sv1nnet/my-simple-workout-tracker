@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
-import { PageLayoutWithNav, PageLayout } from 'layouts/header'
+import { PageLayoutWithNav } from 'layouts/header'
 import { BASE_ROUTES } from 'src/router'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
 import { useLocalStorage, useMounted, useOnPreviousChange } from 'app/hooks'
@@ -50,17 +50,11 @@ const MainTemplate: FC = () => {
 
   useHandleMounted()
 
-  return route === 'profile' 
-    ? (
-      <PageLayout>
-        <Outlet />
-      </PageLayout>
-    )
-    : (
-      <PageLayoutWithNav route={route as TabRoutes}>
-        <Outlet />
-      </PageLayoutWithNav>
-    )
+  return (
+    <PageLayoutWithNav route={route as TabRoutes}>
+      <Outlet />
+    </PageLayoutWithNav>
+  )
 }
 
 export default MainTemplate

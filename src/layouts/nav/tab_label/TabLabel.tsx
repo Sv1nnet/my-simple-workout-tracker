@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import { Spin } from 'antd'
 import { FC, HTMLProps, ReactNode } from 'react'
 import { theme } from 'styles/vars'
+import { isFunction } from 'app/utils/typeCheckers'
 
 const LoaderContainer = styled.div`
   position: absolute;
@@ -39,7 +40,7 @@ export interface ITabLabel extends Omit<HTMLProps<HTMLDivElement>, 'onClick' | '
 
 const TabLabel: FC<ITabLabel> = ({ loading, label, loaderProps, tab, onClick, ...rest }) => {
   const handleLabelClick = (e) => {
-    if (typeof onClick === 'function') onClick(tab, e)
+    if (isFunction(onClick)) onClick(tab, e)
   }
 
   return (

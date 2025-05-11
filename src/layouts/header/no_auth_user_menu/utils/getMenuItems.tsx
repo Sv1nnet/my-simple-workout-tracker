@@ -3,22 +3,20 @@ import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
 import { IndexedDBTable } from 'app/utils/IndexedDBUtils'
 import parseImportedDataFile, { BaseParsedDataEntity } from 'app/utils/parseImportedData'
 import { Button, notification } from 'antd'
-import { logoutWithNoAuth } from 'app/store/slices/auth'
-import { resetListState as resetExerciseListState } from 'app/store/slices/exercise'
-import { resetListState as resetWorkoutListState } from 'app/store/slices/workout'
-import { resetListState as resetActivityListState } from 'app/store/slices/activity'
 import { LogoutButton } from '../components'
+import { BASE_ROUTES } from 'src/router'
+import { NavigateFunction } from 'react-router'
 
-const getMenuItems = (dispatch, {
+const getMenuItems = ({
+  navigate,
   closeMenu,
-  closeMenuImmediately,
   openImportMenu,
   intl,
   onFileChange,
   onImportFinished,
 }: {
+  navigate: NavigateFunction
   closeMenu: () => void
-  closeMenuImmediately: () => void
   openImportMenu: () => void
   intl: IIntlContextValue['intl']
   onFileChange: (file: File) => void,
@@ -103,34 +101,27 @@ const getMenuItems = (dispatch, {
     console.warn(error)
   }
 
-  const navigateToLoginPage = async () => {
-    const db = await browserDBLoader.get()
-    db.disconnect()
-
-    dispatch(logoutWithNoAuth())
-    dispatch(resetExerciseListState())
-    dispatch(resetWorkoutListState())
-    dispatch(resetActivityListState())
+  const openProfilePage = async () => {
+    navigate(BASE_ROUTES.PROFILE)
+    closeMenu()
   }
 
   const importData = () => {
     fileInput.click()
     closeMenu()
-    closeMenuImmediately()
   }
 
   const exportData = () => {
     closeMenu()
     openImportMenu()
-    closeMenuImmediately()
   }
 
   return [
     {
-      key: 'login',
+      key: 'profile',
       label: (
-        <Button type="link" block onClick={navigateToLoginPage}>
-          {intl.header.login}
+        <Button type="link" block onClick={openProfilePage}>
+          {intl.header.profile}
         </Button>
       ),
     },

@@ -162,8 +162,6 @@ public class TimerService extends Service {
             );
 
             return new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("Starting Timer...")
-                    .setContentText("Initializing timer service...")
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setCategory(NotificationCompat.CATEGORY_SERVICE)
@@ -175,8 +173,6 @@ public class TimerService extends Service {
         } catch (Exception e) {
             Log.e(TAG, "Error creating initial notification", e);
             return new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("Timer Service")
-                    .setContentText("Starting...")
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .build();

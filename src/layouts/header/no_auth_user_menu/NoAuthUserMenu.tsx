@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import style from './NoAuthUserMenu.module.scss'
 import { useAppDispatch, useAppSelector, useToggle } from 'app/hooks'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ImportOptionsModal } from './components'
 import getMenuItems from './utils/getMenuItems'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
@@ -24,9 +24,11 @@ const StyledAvatar = styled(Avatar)`
 `
 
 const NoAuthUserMenu = () => {
+  const navigate = useNavigate()
+
   const { state: isOpen, toggle: toggleIsOpen, setFalse: closeMenu } = useToggle(false)
   const { state: isImportMenuOpen, setTrue: openImportMenu, setFalse: closeImportMenu } = useToggle(false)
-  const { state: isMenuImmediatelyClosed, setFalse: removeMenuImmediateClosed, setTrue: closeMenuImmediately } = useToggle(false)
+  const { state: isMenuImmediatelyClosed, setFalse: removeMenuImmediateClosed } = useToggle(false)
 
   const exercisePageInfo = useAppSelector(selectExercisePageInfo)
   const workoutPageInfo = useAppSelector(selectWorkoutPageInfo)
@@ -42,9 +44,9 @@ const NoAuthUserMenu = () => {
   const dispatch = useAppDispatch()
   const loaderPromiseRef = useRef<Promise<void>>()
 
-  const items = useMemo(() => getMenuItems(dispatch, {
+  const items = useMemo(() => getMenuItems({
+    navigate,
     closeMenu,
-    closeMenuImmediately,
     openImportMenu,
     intl,
     onFileChange: () => {
@@ -99,8 +101,8 @@ const NoAuthUserMenu = () => {
     }
 
     if (isOpen) {
-      document.addEventListener('click', handleDocumentClick)
-      return () => document.removeEventListener('click', handleDocumentClick)
+      document.body.querySelector('#root').addEventListener('click', handleDocumentClick)
+      return () => document.body.querySelector('#root').removeEventListener('click', handleDocumentClick)
     }
   }, [ isOpen ])
 
@@ -111,7 +113,7 @@ const NoAuthUserMenu = () => {
       <Dropdown
         destroyPopupOnHide
         open={isOpen}
-        overlayStyle={{ display: isMenuImmediatelyClosed ? 'none' : '', width: 'calc(100% - 30px)', left: '0', right: '0', margin: 'auto', maxWidth: '475px' }}
+        overlayStyle={{ display: isMenuImmediatelyClosed ? 'none' : '', width: '100%', top: '74px', left: '0', right: '0', bottom: '0', margin: 'auto' }}
         overlayClassName={style['user-menu-dropdown']}
         menu={{ items }}
         placement="bottomRight"
