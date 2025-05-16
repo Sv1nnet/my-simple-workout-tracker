@@ -38,6 +38,7 @@ export interface IExerciseList {
 
 const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, containerRef, error, isLoading, isDeleting, isCopying, exercises }) => {
   const { isMounted, useHandleMounted } = useMounted()
+  const [ isSelectionDisabled, setIsSelectionDisabled ] = useState(false)
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
   const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = exerciseApi.useLazyGetQuery()
   const [ loadingId, setLoadingId ] = useState(null)
@@ -138,11 +139,12 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, conta
       isLoading={isLoading}
       isDeleting={isDeleting}
       isCopying={isCopying}
+      isDisabled={isSelectionDisabled}
       createHref="/exercises/create"
     >
       {({
         selected,
-        selectionEnabled,
+        isSelectionEnabled,
         onSelect,
         onContextMenu,
         onTouchHandlers,
@@ -160,9 +162,10 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, conta
                   loadExercise={handleLoadExercise}
                   payloadDictionary={payload}
                   actionLabels={action_labels}
-                  selectionEnabled={selectionEnabled}
+                  isSelectionEnabled={isSelectionEnabled}
                   selected={selected[item.id]}
                   isLoading={exercisesToDelete[item.id] && isDeleting}
+                  setIsSelectionDisabled={setIsSelectionDisabled}
                   {...item}
                 />
               </SelectableList.Item>

@@ -41,6 +41,7 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
   const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = activityApi.useLazyGetQuery()
   const navigate = useNavigate()
   const [ loadingId, setLoadingId ] = useState(null)
+  const [ isSelectionDisabled, setIsSelectionDisabled ] = useState(false)
   const { isMounted, useHandleMounted } = useMounted()
   const [ activitiesToDelete, setActivitiesToDelete ] = useState({})
   const { intl, lang } = useIntlContext()
@@ -135,11 +136,12 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
       isLoading={isLoading}
       isDeleting={isDeleting}
       createTooltipTitle={activityListButtons.start}
+      isDisabled={isSelectionDisabled}
       createHref="/activities/create"
     >
       {({
         selected,
-        selectionEnabled,
+        isSelectionEnabled,
         onSelect,
         onContextMenu,
         onTouchHandlers,
@@ -156,10 +158,11 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
                   loadActivity={handleLoadActivity}
                   activityDictionary={activityDictionary}
                   exercisePayloadDictionary={exercisePayloadDictionary}
-                  selectionEnabled={selectionEnabled}
+                  isSelectionEnabled={isSelectionEnabled}
                   selected={selected[item.id]}
                   isLoading={activitiesToDelete[item.id] && isDeleting}
                   listEl={containerRef}
+                  setIsSelectionDisabled={setIsSelectionDisabled}
                   {...item}
                 />
               </SelectableList.Item>

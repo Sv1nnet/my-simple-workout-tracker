@@ -22,6 +22,7 @@ export type DescriptionProps = {
     input_labels: {
       rounds: string
       round_break: string
+      break: string
     }
   }
 }

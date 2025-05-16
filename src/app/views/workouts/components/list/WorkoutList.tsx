@@ -37,6 +37,7 @@ export interface IWorkoutList {
 }
 
 const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts, containerRef }) => {
+  const [ isSelectionDisabled, setIsSelectionDisabled ] = useState(false)
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const [ loadingId, setLoadingId ] = useState(null)
 
@@ -141,11 +142,12 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
       isLoading={isLoading}
       isDeleting={isDeleting}
       isCopying={isCopying}
+      isDisabled={isSelectionDisabled}
       createHref="/workouts/create"
     >
       {({
         selected,
-        selectionEnabled,
+        isSelectionEnabled,
         onSelect,
         onContextMenu,
         onTouchHandlers,
@@ -163,10 +165,11 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
                   loadingWorkoutId={loadingId}
                   workoutDictionary={workoutDictionary}
                   actionLabels={intl.pages.workouts.action_labels}
-                  selectionEnabled={selectionEnabled}
-                  selected={selected[item.id]}
+                  isSelectionEnabled={isSelectionEnabled}
+                  isSelected={selected[item.id]}
                   isLoading={workoutsToDelete[item.id] && isDeleting}
                   listEl={containerRef}
+                  setIsSelectionDisabled={setIsSelectionDisabled}
                   {...item}
                 />
               </SelectableList.Item>

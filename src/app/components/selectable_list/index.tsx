@@ -1,4 +1,19 @@
-import React, { useState, useImperativeHandle, ReactElement, MouseEventHandler, ForwardRefExoticComponent, RefAttributes, FC, useMemo, TouchEventHandler, useRef } from 'react'
+import React, {
+  useState,
+  useImperativeHandle,
+  ReactElement,
+  MouseEventHandler,
+  ForwardRefExoticComponent,
+  RefAttributes,
+  FC,
+  useMemo,
+  TouchEventHandler,
+  useRef,
+  useEffect,
+  createContext,
+  useCallback,
+  useContext,
+} from 'react'
 import styled from 'styled-components'
 import { ListControls } from 'app/components'
 import { StyledSelectableListItem, SelectableModal } from './components'
@@ -11,6 +26,28 @@ const ListContainer = styled.div`
   padding-top: 0;
 `
 
+const SelectableListContext = createContext<{
+  isSelectionEnabled: boolean
+  isAllSelected: boolean
+  selected: SelectedListItems
+  cancelSelection: () => void
+  select: (e: React.MouseEvent<HTMLDivElement>) => void
+  enableSelection: () => void
+  disableSelection: () => void
+  selectAll: () => void
+  deselectAll: () => void
+}>({
+      isSelectionEnabled: false,
+      isAllSelected: false,
+      selected: {},
+      cancelSelection: () => {},
+      select: () => {},
+      enableSelection: () => {},
+      disableSelection: () => {},
+      selectAll: () => {},
+      deselectAll: () => {},
+    })
+
 export type SelectedListItems = {
   [key: string]: boolean | undefined,
 }
@@ -19,6 +56,8 @@ export interface ISelectableList {
   list: {
     id: string | number;
   }[];
+
+  isDisabled?: boolean;
   onDelete?: Function;
   onCopy?: Function;
   onSelect?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>, selected: SelectedListItems, isAllSelected: boolean) => void;
@@ -30,7 +69,7 @@ export interface ISelectableList {
   createHref: string;
   children: ((options: {
     selected: object,
-    selectionEnabled: boolean,
+    isSelectionEnabled: boolean,
     isAllSelected: boolean,
     onSelect: React.MouseEventHandler<HTMLElement>,
     onCancelSelection: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
@@ -49,7 +88,7 @@ export interface ISelectableList {
 
 export type SelectableListRef = {
   selected: SelectedListItems
-  selectionEnabled: boolean
+  isSelectionEnabled: boolean
   isAllSelected: boolean
   select: (e: React.MouseEvent<HTMLDivElement>) => void
   cancelSelection: () => void
@@ -64,6 +103,7 @@ ISelectableList & RefAttributes<SelectableListRef>
   {
     children,
     list,
+    isDisabled,
     onDelete,
     onCopy,
     onSelect,
@@ -79,17 +119,19 @@ ISelectableList & RefAttributes<SelectableListRef>
   ref,
 ) => {
   const [ selected, setSelected ] = useState<SelectedListItems>({})
-  const [ selectionEnabled, setSelectionEnabled ] = useState(false)
+  const [ isSelectionEnabled, setIsSelectionEnabled ] = useState(false)
   const [ isAllSelected, setIsAllSelected ] = useState(false)
 
   const $listContainer = useRef<HTMLDivElement>(null)
 
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!selectionEnabled) {
-      e.preventDefault()
-      window.getSelection().removeAllRanges()
+  const handleContextMenu = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (isDisabled) return
 
-      setSelectionEnabled(true)
+    e.preventDefault()
+    window.getSelection().removeAllRanges()
+
+    if (!isSelectionEnabled) {
+      setIsSelectionEnabled(true)
 
       const { selectableId } = (e.currentTarget || (e.target as HTMLElement).closest('[data-selectable-id]')).dataset || {}
 
@@ -101,10 +143,10 @@ ISelectableList & RefAttributes<SelectableListRef>
       }
 
     }
-  }
+  }, [ isDisabled, isSelectionEnabled, selected ])
 
-  const handleSelect = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!selectionEnabled) return
+  const handleSelect = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isSelectionEnabled || isDisabled) return
 
     const { dataset } = e.currentTarget
     const { selectableId } = dataset
@@ -132,54 +174,56 @@ ISelectableList & RefAttributes<SelectableListRef>
       }
     }
     if (isFunction(onSelect)) onSelect(e, newSelected, _isAllSelected)
-  }
+  }, [ list, onSelect, selected, isAllSelected, isDisabled ])
 
-  const contextMenuHandler = useMemo(() => new AppleContextMenuHandler(handleContextMenu), [ handleContextMenu, selectionEnabled, selected ])
+  const contextMenuHandler = useMemo(() => new AppleContextMenuHandler(handleContextMenu), [ handleContextMenu, isSelectionEnabled, selected ])
 
-  const handleSelectDeselectAll = (shouldSelect: boolean) => {
+  const handleSelectDeselectAll = useCallback((shouldSelect: boolean) => {
     setSelected(list.reduce((acc, { id }) => { acc[id] = shouldSelect; return acc }, {}))
     setIsAllSelected(shouldSelect)
     if (isFunction(onSelectDeselectAll)) onSelectDeselectAll(shouldSelect)
-  }
+  }, [ list, onSelectDeselectAll ])
 
-  const handleCancelSelection = () => {
+  const handleCancelSelection = useCallback(() => {
     handleSelectDeselectAll(false)
-    setSelectionEnabled(false)
+    setIsSelectionEnabled(false)
     if (isFunction(onCancelSelection)) onCancelSelection()
-  }
+  }, [ handleSelectDeselectAll, onCancelSelection ])
 
   useImperativeHandle(ref, () => ({
     selected,
-    selectionEnabled,
+    isSelectionEnabled,
     isAllSelected,
     select: handleSelect,
     cancelSelection: handleCancelSelection,
     $listEl: $listContainer,
-  }), [ selected, selectionEnabled, isAllSelected, handleSelect, handleCancelSelection, $listContainer ])
+  }), [ selected, isSelectionEnabled, isAllSelected, handleSelect, handleCancelSelection, $listContainer ])
+
+  useEffect(() => {
+    if (isDisabled) {
+      handleCancelSelection()
+    }
+  }, [ isDisabled, handleCancelSelection ])
+
+  const value = useMemo(() => ({
+    isSelectionEnabled,
+    isAllSelected,
+    selected,
+    cancelSelection: handleCancelSelection,
+    select: handleSelect,
+    enableSelection: () => setIsSelectionEnabled(true),
+    disableSelection: () => setIsSelectionEnabled(false),
+    selectAll: () => handleSelectDeselectAll(true),
+    deselectAll: () => handleSelectDeselectAll(false),
+  }), [ isSelectionEnabled, isAllSelected, selected, handleCancelSelection, handleSelect, handleSelectDeselectAll ])
 
   return (
-    <ListContainer ref={$listContainer} style={style} className={className}>
-      {isFunction(children)
-        ? children({
-          selected,
-          selectionEnabled,
-          isAllSelected,
-          onSelect: handleSelect,
-          onCancelSelection: handleCancelSelection,
-          onContextMenu: handleContextMenu,
-          onTouchHandlers: {
-            onTouchStart: contextMenuHandler.onTouchStart,
-            onTouchCancel: contextMenuHandler.onTouchCancel,
-            onTouchEnd: contextMenuHandler.onTouchEnd,
-            onTouchMove: contextMenuHandler.onTouchMove,
-          },
-        })
-        : React.Children.map(children, (child: ReactElement) => React.cloneElement(
-          child,
-          {
-            ...child.props,
+    <SelectableListContext.Provider value={value}>
+      <ListContainer ref={$listContainer} style={style} className={className}>
+        {isFunction(children)
+          ? children({
             selected,
-            selectionEnabled,
+            isSelectionEnabled,
             isAllSelected,
             onSelect: handleSelect,
             onCancelSelection: handleCancelSelection,
@@ -190,22 +234,40 @@ ISelectableList & RefAttributes<SelectableListRef>
               onTouchEnd: contextMenuHandler.onTouchEnd,
               onTouchMove: contextMenuHandler.onTouchMove,
             },
-          },
-        ))}
-      <ListControls
-        createHref={createHref}
-        isDeleting={isDeleting}
-        isCopying={isCopying}
-        selected={selected}
-        isAllSelected={isAllSelected}
-        onSelect={handleSelectDeselectAll}
-        isSelectionActive={selectionEnabled}
-        onCancel={handleCancelSelection}
-        onCopy={onCopy}
-        onDelete={onDelete}
-        createTooltipTitle={createTooltipTitle}
-      />
-    </ListContainer>
+          })
+          : React.Children.map(children, (child: ReactElement) => React.cloneElement(
+            child,
+            {
+              ...child.props,
+              selected,
+              isSelectionEnabled,
+              isAllSelected,
+              onSelect: handleSelect,
+              onCancelSelection: handleCancelSelection,
+              onContextMenu: handleContextMenu,
+              onTouchHandlers: {
+                onTouchStart: contextMenuHandler.onTouchStart,
+                onTouchCancel: contextMenuHandler.onTouchCancel,
+                onTouchEnd: contextMenuHandler.onTouchEnd,
+                onTouchMove: contextMenuHandler.onTouchMove,
+              },
+            },
+          ))}
+        <ListControls
+          createHref={createHref}
+          isDeleting={isDeleting}
+          isCopying={isCopying}
+          selected={selected}
+          isAllSelected={isAllSelected}
+          onSelect={handleSelectDeselectAll}
+          isSelectionActive={isSelectionEnabled}
+          onCancel={handleCancelSelection}
+          onCopy={onCopy}
+          onDelete={onDelete}
+          createTooltipTitle={createTooltipTitle}
+        />
+      </ListContainer>
+    </SelectableListContext.Provider>
   )
 })
 
@@ -213,3 +275,11 @@ SelectableList.Item = StyledSelectableListItem
 SelectableList.Modal = SelectableModal
 
 export default SelectableList
+
+export const useSelectableListContext = () => {
+  const context = useContext(SelectableListContext)
+  if (!context) {
+    throw new Error('useSelectableListContext must be used within a SelectableList')
+  }
+  return context
+}

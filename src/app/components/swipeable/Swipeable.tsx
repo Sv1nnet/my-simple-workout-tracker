@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { createContext, forwardRef, MouseEvent, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { isNullish } from 'utility-types'
 import { isFunction } from 'app/utils/typeCheckers'
 import { useIsScrolling, useOnPreviousChange } from 'app/hooks'
@@ -11,6 +11,22 @@ export enum SwipeableDirection {
   BOTH = 'both',
 }
 
+const SwipeableContext = createContext<{
+  isSwiping: boolean
+  delta: number
+  pointerPos: number
+  startPos: number
+  isOnMaxDistance: boolean
+  direction: SwipeableDirection
+}>({
+  isSwiping: false,
+  delta: 0,
+  pointerPos: 0,
+  startPos: 0,
+  isOnMaxDistance: false,
+  direction: SwipeableDirection.NONE,
+})
+
 export interface SwipeableRef {
   reset: () => void
 }
@@ -20,7 +36,7 @@ const TOUCH_MOVE_COUNT_THRESHOLD = 2
 export type SwipeableProps = {
   children: React.ReactNode | ((props: { isSwiping: boolean, delta: number, pointerPos: number, startPos: number, isOnMaxDistance: boolean, direction: SwipeableDirection }) => React.ReactNode)
   direction: SwipeableDirection
-  disabled?: boolean
+  isDisabled?: boolean
   style?: React.CSSProperties
   moveToInitialTimingFunction?: string
   moveToInitialDuration?: number
@@ -55,7 +71,7 @@ export type SwipeableProps = {
   scrollableContainer?: HTMLElement | null
 }
 
-const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
+const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(function Swipeable({
   children,
   maxDistance,
   maxDistanceLeft = maxDistance,
@@ -68,14 +84,14 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
   moveToInitialDuration = 0.25,
   gap = 30,
   style,
-  disabled = false,
+  isDisabled = false,
   onMaxDistance,
   onReset,
   onRelease,
   onStart,
   onMove,
   scrollableContainer,
-}, ref) => {
+}, ref) {
   if (!isNullish(maxDistance)) {
     maxDistance = Math.abs(maxDistance)
   }
@@ -88,7 +104,7 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
     maxDistanceRight = Math.abs(maxDistanceRight)
   }
 
-  const [ isSwipeAllowed, setIsSwipeAllowed ] = useState(!disabled)
+  const [ isSwipeAllowed, setIsSwipeAllowed ] = useState(!isDisabled || direction === SwipeableDirection.NONE)
   const [ isSwiping, setIsSwiping ] = useState(false)
 
   const [ isOnMaxDistance, setIsOnMaxDistance ] = useState(false)
@@ -108,13 +124,21 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
   const $swipeable = useRef<HTMLDivElement>(null)
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!isSwipeAllowed) return
+    if (!isSwipeAllowed || isDisabled) return
 
-    setDelta($swipeable.current?.getBoundingClientRect().left ?? 0)
+    setDelta(-($swipeable.current?.getBoundingClientRect().left ?? 0))
 
-    setIsSwiping(true)
+    // setIsSwiping(true)
     setStartPos(event.touches[0].clientX)
     setDeltaY(event.touches[0].clientY)
+
+    // if user put pointer before item got back to initial position after touch end
+    if (currentDirection !== SwipeableDirection.NONE) {
+      setIsSwiping(true)
+      setPrevPointerPos(event.touches[0].clientX)
+      touchMoveCountRef.current = TOUCH_MOVE_COUNT_THRESHOLD
+    }
+    
     onStart?.(event)
   }
 
@@ -132,9 +156,13 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
   }
 
   const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!isSwipeAllowed || isDisabled) return
+
     touchMoveCountRef.current++
     
     if (touchMoveCountRef.current < TOUCH_MOVE_COUNT_THRESHOLD || !isSwipeAllowed || event.touches.length > 1) return
+
+    setIsSwiping(true)
 
     const touch = event.touches[0]
     const currentPointerPos = touch.clientX
@@ -212,7 +240,7 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
     touchMoveCountRef.current = 0
 
-    if (!isSwipeAllowed) return
+    if (!isSwipeAllowed || isDisabled) return
     setIsSwiping(false)
     setIsOnMaxDistance(false)
 
@@ -226,7 +254,12 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
     }
 
     onRelease?.({ isOnMaxDistance, direction: currentDirection, pointerPos, delta }, event)
-  }  
+  }
+
+  const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    window.getSelection().removeAllRanges()
+  }
 
   useOnPreviousChange(() => {
     if (isSwiping && Math.abs(delta) > maxDistance) {
@@ -236,20 +269,20 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
   }, [ maxDistance ])
 
   useOnPreviousChange(() => {
-    const isAllowedDirection = direction !== SwipeableDirection.NONE && (direction === SwipeableDirection.BOTH || direction === currentDirection)
+    const isAllowedDirection = !isDisabled && direction !== SwipeableDirection.NONE && (direction === SwipeableDirection.BOTH || direction === currentDirection)
     if (isSwiping && !isAllowedDirection) {
       setIsOnMaxDistance(false)
       setDelta(0)
       setCurrentDirection(SwipeableDirection.NONE)
       setPrevPointerPos(0)
     }
-  }, [ direction ])
+  }, [ direction, isDisabled ])
 
   useOnPreviousChange(() => {
-    if (!isSwipeAllowed) {
+    if (!isSwipeAllowed || isDisabled) {
       resetAll()
     }
-  }, [ isSwipeAllowed ])
+  }, [ isSwipeAllowed, isDisabled ])
 
   useIsScrolling(scrollableContainer, {
     isBoundedToPointer: true,
@@ -278,21 +311,42 @@ const Swipeable = forwardRef<SwipeableRef, SwipeableProps>(({
     }
   }, [])
 
+  const value = useMemo(() => ({
+    isDisabled,
+    isSwiping,
+    delta,
+    pointerPos,
+    startPos,
+    isOnMaxDistance,
+    direction: currentDirection,
+  }), [ isSwiping, delta, pointerPos, startPos, isOnMaxDistance, isDisabled ])
+
   return (
-    <div
-      ref={$swipeable}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      style={{
-        ...style,
-        transition: !isSwiping && isAnimatedMoveToInitial ? `transform ${moveToInitialDuration}s ${moveToInitialTimingFunction}` : 'none',
-        transform: `translateX(${-delta}px)`,
-      }}
-    >
-      {isFunction(children) ? children({ isSwiping, delta, pointerPos, startPos, isOnMaxDistance, direction: currentDirection }) : children}
-    </div>
+    <SwipeableContext.Provider value={value}>
+      <div
+        ref={$swipeable}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onContextMenu={!isDisabled && (isSwiping || currentDirection !== SwipeableDirection.NONE) ? handleContextMenu : undefined}
+        style={{
+          ...style,
+          transition: !isSwiping && isAnimatedMoveToInitial ? `transform ${moveToInitialDuration}s ${moveToInitialTimingFunction}` : 'none',
+          transform: `translateX(${-delta}px)`,
+        }}
+      >
+        {isFunction(children) ? children({ isSwiping, delta, pointerPos, startPos, isOnMaxDistance, direction: currentDirection }) : children}
+      </div>
+    </SwipeableContext.Provider>
   )
 })
 
 export default Swipeable
+
+export const useSwipeableContext = () => {
+  const context = useContext(SwipeableContext)
+  if (!context) {
+    throw new Error('useSwipeableContext must be used within a SwipeableContext.Provider')
+  }
+  return context
+}

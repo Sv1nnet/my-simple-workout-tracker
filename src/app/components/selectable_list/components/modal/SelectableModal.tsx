@@ -4,14 +4,14 @@ import { FC, useRef, useState } from 'react'
 export const useModalUtils = ({
   visible = false,
   selected = {},
-  selectionEnabled = false,
+  isSelectionEnabled = false,
   allSelected = false,
   handleCancelSelection = () => {},
   handleSelect = () => {},
 } = {
   visible: false,
   selected: {},
-  selectionEnabled: false,
+  isSelectionEnabled: false,
   allSelected: false,
   handleCancelSelection: () => {},
   handleSelect: () => {},
@@ -19,7 +19,7 @@ export const useModalUtils = ({
   const [ isModalVisible, setModalVisible ] = useState<boolean>(visible)
   const selectionRef = useRef({
     selected,
-    selectionEnabled,
+    isSelectionEnabled,
     allSelected,
     handleCancelSelection,
     handleSelect,
