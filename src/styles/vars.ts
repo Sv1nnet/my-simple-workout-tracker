@@ -2,7 +2,6 @@ export const theme = {
   navIconColor: '#7e7e7e',
   navBorderColor: '#c5c5c5',
   primaryColor: '#0aa679', // primary color for all components
-  primaryColorDark: '#075c44', // primary color for all components
   ghostPrimaryColor: '#e7f5f0', // primary color for all components
   linkColor: '#1890ff', // link color
   successColor: '#52c41a', // success state color
@@ -28,4 +27,10 @@ export const theme = {
       inactive: '#0aa679',
     },
   },
+}
+
+export const darkTheme = {
+  ...theme,
+  primaryColor: '#075c44',
+  ghostPrimaryColor: '#075c440f',
 }

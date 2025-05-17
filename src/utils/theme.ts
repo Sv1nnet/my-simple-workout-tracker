@@ -1,7 +1,7 @@
 import { Preferences } from '@capacitor/preferences'
 import { StatusBar, Style } from '@capacitor/status-bar'
 import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar'
-import { theme } from 'src/styles/vars'
+import { darkTheme, theme } from 'src/styles/vars'
 import { useEffect } from 'react'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
@@ -14,7 +14,7 @@ export const NAVIGATION_BAR_DARK = { darkButtons: false, color: '#000000' }
 export const STATUS_BAR_LIGHT = { style: Style.Dark }
 export const STATUS_BAR_DARK = { style: Style.Dark }
 export const STATUS_BAR_LIGHT_BG = theme.primaryColor
-export const STATUS_BAR_DARK_BG = theme.primaryColorDark
+export const STATUS_BAR_DARK_BG = darkTheme.primaryColor
 
 // Key for storing theme preference
 export const THEME_PREFERENCE_KEY = 'theme-mode'
