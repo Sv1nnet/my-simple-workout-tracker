@@ -24,7 +24,7 @@ export const configApi = createApi({
       }),
       providesTags: () => [ AUTH_TAG_TYPES.CONFIG ],
     }),
-    update: build.query<UpdateConfigSuccess, { config: Config }>({
+    update: build.query<UpdateConfigSuccess, { config: Partial<Config> }>({
       query: ({ config }) => ({
         url: routes.config.v1.update.full,
         method: 'PATCH',

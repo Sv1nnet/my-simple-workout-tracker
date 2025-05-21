@@ -3,19 +3,33 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import cookie from 'js-cookie'
 import { configApi } from './api'
-import { ILangs, Lang } from './types'
+import { Lang, Langs, Theme, Themes, Unit, Units } from './types'
 import { isUndefined } from 'app/utils/typeCheckers'
 
 export interface IConfigState {
   data: {
     lang: Lang,
+    theme: Theme;
+    units: Unit;
   };
   updateRequestCount: number;
   status: ApiStatus;
 }
-export const langs: ILangs = {
+
+export const themes: Themes = {
+  light: 'light',
+  dark: 'dark',
+  system: 'system',
+} as const
+
+export const langs: Langs = {
   ru: 'ru',
   eng: 'eng',
+} as const
+
+export const units: Units = {
+  kg: 'kg',
+  lb: 'lb',
 } as const
 
 let localLang: Lang = langs.eng
@@ -32,6 +46,8 @@ if (!isUndefined(localStorage)) {
 const initialState: IConfigState = {
   data: {
     lang: localLang,
+    theme: themes.light,
+    units: units.kg,
   },
   updateRequestCount: 0,
   status: API_STATUS.INITIAL,
@@ -50,8 +66,16 @@ export const authSlice = createSlice({
   name: 'config',
   initialState,
   reducers: {
-    changeLang: (state, action: PayloadAction<string>) => {
+    changeLang: (state, action: PayloadAction<Lang>) => {
       state.data.lang = langs[action.payload] ?? langs.eng
+      updateConfigLocally(state)
+    },
+    changeTheme: (state, action: PayloadAction<Theme>) => {
+      state.data.theme = action.payload
+      updateConfigLocally(state)
+    },
+    changeUnits: (state, action: PayloadAction<Unit>) => {
+      state.data.units = action.payload
       updateConfigLocally(state)
     },
   },
@@ -105,7 +129,7 @@ export const authSlice = createSlice({
   },
 })
 
-export const { changeLang } = authSlice.actions
+export const { changeLang, changeTheme, changeUnits } = authSlice.actions
 
 export const selectLang = (state: AppState) => state.config.data.lang
 

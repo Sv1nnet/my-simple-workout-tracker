@@ -1,6 +1,7 @@
 import { Preferences } from '@capacitor/preferences'
-import { StatusBar, Style } from '@capacitor/status-bar'
-import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar'
+// import { StatusBar, Style } from '@capacitor/status-bar'
+// import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar'
+import { Style } from '@capacitor/status-bar'
 import { darkTheme, theme } from 'src/styles/vars'
 import { useEffect } from 'react'
 
@@ -31,19 +32,19 @@ export const getSystemTheme = (): 'light' | 'dark' => {
 }
 
 // Function to set theme in the UI
-export const applyTheme = async (themeMode: 'light' | 'dark'): Promise<void> => {
+export const applyTheme = async (themeMode: 'light' | 'dark' | 'system'): Promise<void> => {
   let themeToRemove = DARK_THEME_CLASS
   let themeToAdd = LIGHT_THEME_CLASS
-  let navigationBarColor = NAVIGATION_BAR_LIGHT
-  let statusBarStyle = STATUS_BAR_LIGHT
-  let statusBarColor = STATUS_BAR_LIGHT_BG
+  // let navigationBarColor = NAVIGATION_BAR_LIGHT
+  // let statusBarStyle = STATUS_BAR_LIGHT
+  // let statusBarColor = STATUS_BAR_LIGHT_BG
 
   if (themeMode === 'dark') {
     themeToRemove = LIGHT_THEME_CLASS
     themeToAdd = DARK_THEME_CLASS
-    navigationBarColor = NAVIGATION_BAR_DARK
-    statusBarStyle = STATUS_BAR_DARK
-    statusBarColor = STATUS_BAR_DARK_BG
+    // navigationBarColor = NAVIGATION_BAR_DARK
+    // statusBarStyle = STATUS_BAR_DARK
+    // statusBarColor = STATUS_BAR_DARK_BG
   }
 
   // Apply light theme styles
@@ -52,9 +53,9 @@ export const applyTheme = async (themeMode: 'light' | 'dark'): Promise<void> => 
 
   // Set status bar and navigation bar for light theme
   try {
-    await NavigationBar.setColor(navigationBarColor)
-    await StatusBar.setStyle(statusBarStyle)
-    await StatusBar.setBackgroundColor({ color: statusBarColor })
+    // await NavigationBar.setColor(navigationBarColor)
+    // await StatusBar.setStyle(statusBarStyle)
+    // await StatusBar.setBackgroundColor({ color: statusBarColor })
   } catch (error) {
     console.error('Error setting light theme for status/navigation bar:', error)
   }

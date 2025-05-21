@@ -15,38 +15,63 @@ import androidx.core.content.ContextCompat;
 import android.view.WindowManager;
 import android.graphics.drawable.GradientDrawable;
 
-public class MainActivity extends BridgeActivity {
+public class MainActivity extends BridgeActivity implements UserConfig.OnThemeChangeListener {
+    private UserConfig userConfig;
+    private Window window;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(TimerServicePlugin.class);  // Make sure this line is before super.onCreate()
+        registerPlugin(UserConfigPlugin.class);
         super.onCreate(savedInstanceState);
 
+        // Initialize UserConfig
+        userConfig = new UserConfig(this);
+        userConfig.setOnThemeChangeListener(this);
+
         // Set theme colors for status and navigation bars
-        Window window = getWindow();
-        
-        // Define colors from resources
-        int colorPrimary = ContextCompat.getColor(this, R.color.colorPrimary);      // Light theme color
-        int colorWhite = ContextCompat.getColor(this, R.color.white);               // White color
+        window = getWindow();
+        updateThemeColors();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (userConfig.getTheme() == UserConfig.Theme.SYSTEM) {
+            updateThemeColors();
+        }
+    }
+
+    @Override
+    public void onThemeChanged(boolean isDarkMode) {
+        updateThemeColors();
+    }
+
+    private void updateThemeColors() {
+        // Get colors based on current theme
+        int statusBarColor = userConfig.getStatusBarColor();
+        int navigationBarColor = userConfig.getNavigationBarColor();
 
         // Set the status bar color
-        window.setStatusBarColor(colorPrimary);
-        
-        // Set the navigation bar color to white
-        window.setNavigationBarColor(colorWhite);
+        window.setStatusBarColor(statusBarColor);
 
-        // Set up window insets listener
-        window.getDecorView().setOnApplyWindowInsetsListener((view, windowInsets) -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        // Set the navigation bar color
+        window.setNavigationBarColor(navigationBarColor);
+
+        // Update gradient background
+        View decorView = window.getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            decorView.setOnApplyWindowInsetsListener((view, windowInsets) -> {
                 Insets insets = windowInsets.getInsets(WindowInsets.Type.systemBars());
 
                 // Set the gradient background
                 GradientDrawable gradientDrawable = new GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{
-                        colorPrimary, // 0%
-                        colorPrimary, // 30%
-                        colorWhite,   // 70%
-                        colorWhite    // 100%
+                        statusBarColor,    // 0%
+                        statusBarColor,    // 30%
+                        navigationBarColor, // 70%
+                        navigationBarColor  // 100%
                     }
                 );
                 view.setBackground(gradientDrawable);
@@ -58,9 +83,8 @@ public class MainActivity extends BridgeActivity {
                     view.getPaddingRight(),
                     insets.bottom
                 );
-                return windowInsets.consumeSystemWindowInsets();
-            }
-            return windowInsets;
-        });
+                return windowInsets;
+            });
+        }
     }
 }
