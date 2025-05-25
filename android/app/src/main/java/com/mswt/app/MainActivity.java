@@ -37,7 +37,7 @@ public class MainActivity extends BridgeActivity implements UserConfig.OnThemeCh
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (userConfig.getTheme() == UserConfig.Theme.SYSTEM) {
+        if (userConfig.getTheme().equals(UserConfig.Theme.SYSTEM)) {
             updateThemeColors();
         }
     }
@@ -47,36 +47,38 @@ public class MainActivity extends BridgeActivity implements UserConfig.OnThemeCh
         updateThemeColors();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (userConfig != null) {
+            userConfig.setOnThemeChangeListener(null);
+        }
+    }
+
     private void updateThemeColors() {
         // Get colors based on current theme
         int statusBarColor = userConfig.getStatusBarColor();
         int navigationBarColor = userConfig.getNavigationBarColor();
 
-        // Set the status bar color
-        window.setStatusBarColor(statusBarColor);
-
-        // Set the navigation bar color
-        window.setNavigationBarColor(navigationBarColor);
-
         // Update gradient background
         View decorView = window.getDecorView();
+
+        // Set the gradient background
+        GradientDrawable gradientDrawable = new GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            new int[]{
+                statusBarColor,    // 0%
+                statusBarColor,    // 30%
+                navigationBarColor, // 70%
+                navigationBarColor  // 100%
+            }
+        );
+        decorView.setBackground(gradientDrawable);
+
+        // Handle insets based on Android version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             decorView.setOnApplyWindowInsetsListener((view, windowInsets) -> {
                 Insets insets = windowInsets.getInsets(WindowInsets.Type.systemBars());
-
-                // Set the gradient background
-                GradientDrawable gradientDrawable = new GradientDrawable(
-                    GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{
-                        statusBarColor,    // 0%
-                        statusBarColor,    // 30%
-                        navigationBarColor, // 70%
-                        navigationBarColor  // 100%
-                    }
-                );
-                view.setBackground(gradientDrawable);
-
-                // Set the paddings
                 view.setPadding(
                     view.getPaddingLeft(),
                     insets.top,
@@ -85,6 +87,31 @@ public class MainActivity extends BridgeActivity implements UserConfig.OnThemeCh
                 );
                 return windowInsets;
             });
+        } else {
+            // For older Android versions
+            int statusBarHeight = getStatusBarHeight();
+            decorView.setPadding(
+                decorView.getPaddingLeft(),
+                statusBarHeight,
+                decorView.getPaddingRight(),
+                decorView.getPaddingBottom()
+            );
         }
+
+        // Force immediate update
+        decorView.invalidate();
+    }
+
+    private int getStatusBarHeight() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsets windowInsets = window.getDecorView().getRootWindowInsets();
+            if (windowInsets != null) {
+                return windowInsets.getInsets(WindowInsets.Type.statusBars()).top;
+            }
+        } else {
+            // For older Android versions, use a default value
+            return (int) (24 * getResources().getDisplayMetrics().density);
+        }
+        return 0;
     }
 }

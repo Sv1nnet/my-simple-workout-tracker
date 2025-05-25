@@ -4,9 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+
 import androidx.core.content.ContextCompat;
 
 public class UserConfig {
+    private static final String DEFAULT_LIGHT_STATUS_BAR_COLOR = "#0AA679";
+    private static final String DEFAULT_DARK_STATUS_BAR_COLOR = "#075C44";
     private static final String PREFS_NAME = "UserConfigPrefs";
     private static final String KEY_THEME = "theme";
     private static final String KEY_DARK_STATUS_BAR = "darkStatusBar";
@@ -45,10 +49,15 @@ public class UserConfig {
 
     public boolean isDarkMode() {
         Theme currentTheme = getTheme();
-        return currentTheme == Theme.DARK || 
-            (currentTheme == Theme.SYSTEM && 
-             (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) 
-             == Configuration.UI_MODE_NIGHT_YES);
+        if (currentTheme == Theme.LIGHT) {
+            return false;
+        }
+        if (currentTheme == Theme.DARK) {
+            return true;
+        }
+        // Only check system theme if theme is set to SYSTEM
+        return (context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) 
+            == Configuration.UI_MODE_NIGHT_YES;
     }
 
     public Theme getTheme() {
@@ -68,13 +77,9 @@ public class UserConfig {
     }
 
     public int getStatusBarColor() {
-        if (isDarkMode()) {
-            return preferences.getInt(KEY_DARK_STATUS_BAR, 
-                ContextCompat.getColor(context, R.color.statusBarColorDark));
-        } else {
-            return preferences.getInt(KEY_LIGHT_STATUS_BAR, 
-                ContextCompat.getColor(context, R.color.statusBarColor));
-        }
+        return isDarkMode()
+            ? preferences.getInt(KEY_DARK_STATUS_BAR, Color.parseColor(DEFAULT_DARK_STATUS_BAR_COLOR))
+            : preferences.getInt(KEY_LIGHT_STATUS_BAR, Color.parseColor(DEFAULT_LIGHT_STATUS_BAR_COLOR));
     }
 
     public int getNavigationBarColor() {
