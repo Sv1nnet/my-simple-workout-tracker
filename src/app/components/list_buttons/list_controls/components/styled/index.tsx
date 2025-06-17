@@ -24,24 +24,16 @@ export const StyledButton = styled(AntButton)<{
   $activeItems?: number,
 }>`
   z-index: 998;
-  transform: ${({ $activeItems }) => `translateX(-${50 + $activeItems * 50}px)`};
-  ${({ $isSelectionActive, $isCancel, $isDelete, $isCopy, $isCreate, $isMoreOptions, $expanded, $activeItems }) => (
-    $isCancel && `
-      margin-left: 60px;
-      transition: .3s all;
-      ${$isSelectionActive ? `transform: translateX(-${100 + $activeItems * 50}px);` : `transform: translateX(-${$activeItems * 50}px);`}
-    ` ||
-    ($isDelete || $isCopy) && 'margin-left: 10px;' ||
-    $isCreate && 'transform: translateX(0);' ||
-    $isMoreOptions && `
-      position: fixed;
-      transform: translateX(${$expanded ? '-145px' : '-45px'});
-      transition-timing-function: ease-out;
-    ` ||
-    '')}
   & svg {
     ${({ $isMoreOptions, $expanded }) => $isMoreOptions ? `transform: scale(${$expanded ? '-.9' : '.9'}, 1.5);` : ''}
   }
+`
+
+export const StyledLink = styled(Link)<{ $expanded?: boolean }>`
+  transition: .23s all;
+  transition-delay: .07s;
+  display: inline-block;
+  transform: ${({ $expanded }) => $expanded ? 'translateX(100%)' : 'translateX(0px)'};
 `
 
 export const ListButton = React.forwardRef<
@@ -68,10 +60,10 @@ unknown,
 ))
 
 export const MoreOptionsButton = props => <ListButton isMoreOptions type="text" icon={props.expanded ? <RightOutlined /> : <LeftOutlined />} {...props} />
-export const CreateButton = ({ href, ...props }) => (
-  <Link to={href}>
+export const CreateButton = ({ href, $expanded, ...props }) => (
+  <StyledLink to={href} $expanded={$expanded}>
     <ListButton $isCreate icon={<PlusOutlined />} {...props} />
-  </Link>
+  </StyledLink>
 )
 export const CancelSelectionButton = props => <ListButton isCancel danger type={undefined} icon={<CloseOutlined />} {...props} />
 export const SelectAllButton = props => <ListButton icon={<BarsOutlined />} {...props} />
