@@ -21,7 +21,7 @@
     "cap:open:ios": "npx cap open ios"
   },
   "dependencies": {
-    "@ant-design/icons": "^4.7.0",
+    "@ant-design/icons": "^6.0.0",
     "@capacitor/android": "^6.0.2",
     "@capacitor/app": "^6.0.2",
     "@capacitor/cli": "^6.0.2",
@@ -49,6 +49,7 @@
     "antd": "^4.24.10",
     "antd-dayjs-webpack-plugin": "^1.0.6",
     "bson": "^4.7.2",
+    "capacitor-plugin-safe-area": "^3.0.4",
     "cross-env": "^7.0.3",
     "d3": "^7.8.4",
     "dayjs": "^1.11.7",

@@ -10,8 +10,6 @@ import style from '../NoAuthUserMenu.module.scss'
 import { SwitchChangeEventHandler } from 'antd/lib/switch'
 import { ThemeSwitch } from 'app/components'
 
-
-
 const getMenuItems = ({
   navigate,
   closeMenu,

@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { useAppDispatch, useAppSelector, useMounted } from 'app/hooks'
 import { changeTheme as changeThemeAction, selectTheme } from 'app/store/slices/config'
 import { Theme } from 'app/store/slices/config/types'
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo } from 'react'
@@ -22,19 +22,26 @@ const ThemeContext = createContext<ThemeContextType>({
 const ThemeContextProvider = ({ children }: PropsWithChildren) => {
   const themeName = useAppSelector(selectTheme)
   const dispatch = useAppDispatch()
+  const { isMounted, useHandleMounted } = useMounted()
 
   const changeTheme = useCallback((newTheme: Theme) => {
     applyTheme(newTheme)
     dispatch(changeThemeAction(newTheme))
   }, [ dispatch ])
   
-  const currentTheme = useMemo(() => ({
+  const value = useMemo(() => ({
     theme: themeName,
     styles: themeName === 'dark' ? darkTheme : theme,
     changeTheme,
   }), [ themeName, changeTheme ])
 
-  return <ThemeContext.Provider value={currentTheme}>{children}</ThemeContext.Provider>
+  if (!isMounted()) {
+    applyTheme(themeName)
+  }
+
+  useHandleMounted()
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
 export const useThemeContext = (): ThemeContextType => useContext(ThemeContext)
