@@ -18,7 +18,7 @@ const StyledSpin = styled(Spin)`
   top: 0;
   height: 100%;
   width: 100%;
-  background-color: rgba(255, 255, 255, .6);
+  background-color: var(--loader-background-color);
   z-index: 999;
 
   & .ant-spin-dot.ant-spin-dot-spin {
@@ -47,7 +47,9 @@ const SpinContainer = styled.div<{ $show: boolean; }>`
         max-height: 100%;
 
         & > .ant-spin-dot.ant-spin-dot-spin, & > .ant-spin-text {
-          top: calc(50% - 72px);
+          top: calc(50% - 72px - var(--statusbar-height));
+          color: var(--loader-text-color);
+          text-shadow: 0 1px 2px var(--loader-text-shadow-color);
         }
       }
     }

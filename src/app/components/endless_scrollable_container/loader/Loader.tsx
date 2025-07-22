@@ -7,6 +7,7 @@ const LoaderText = styled.div`
   width: 100%;
   font-size: 18px;
   text-align: center;
+  color: var(--text-color);
 `
 
 const LoaderContainer = styled.div`

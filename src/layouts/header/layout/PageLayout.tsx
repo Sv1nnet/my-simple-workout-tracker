@@ -10,7 +10,7 @@ import { useSearchParams } from 'react-router-dom'
 import { PageHeaderTitle, useHeaderTitleContext } from 'app/contexts/header_title/HeaderTItleContextProvider'
 
 const ContentContainer = styled.div<{ $height?: string }>`
-  height: calc(${({ $height }) => `${$height || '100vh'}`} - 57px - 74px);
+  height: calc(${({ $height }) => `${$height || '100vh'}`} - 57px - 74px - var(--statusbar-height) - var(--control-buttons-height));
   overflow-y: scroll;
   position: relative;
   background-color: var(--background-color);

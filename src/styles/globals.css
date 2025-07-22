@@ -1,6 +1,6 @@
 :root {
-  --statusbar-height: env(safe-area-inset-top);
-  --control-buttons-height: env(safe-area-inset-bottom);
+  --statusbar-height: var(--safe-area-inset-top);
+  --control-buttons-height: var(--safe-area-inset-bottom);
 
   /* Colors from vars.ts */
   --background-color-light: #fff;
@@ -83,6 +83,15 @@
   --action-color-start-active: #3acba1;
   --action-color-start-inactive: #0aa679;
 
+  --loader-background-color-light: rgba(255, 255, 255, .6);
+  --loader-background-color-dark: rgba(0, 0, 0, .6);
+
+  --loader-text-color-light: var(--primary-color-light);
+  --loader-text-color-dark: var(--primary-color-light);
+
+  --loader-text-shadow-color-light: #fff;
+  --loader-text-shadow-color-dark: #000;
+
   --html-background-dark: linear-gradient(to bottom, var(--primary-color-dark) 50%, black 50%);
   --html-background-light: linear-gradient(to bottom, var(--primary-color-light) 50%, white 50%);
 
@@ -112,6 +121,10 @@ body.light-theme {
   --round-count-color: var(--round-count-color-light);
   --round-divider-color: var(--round-divider-color-light);
 
+  --loader-background-color: var(--loader-background-color-light);
+  --loader-text-color: var(--loader-text-color-light);
+  --loader-text-shadow-color: var(--loader-text-shadow-color-light);
+
   /* Legacy variables for backward compatibility */
   --body-background: var(--html-background-light);
   --background: var(--main-color-light);
@@ -137,6 +150,10 @@ body.dark-theme {
   --avatar-background: var(--avatar-background-dark);
   --round-divider-color: var(--round-divider-color-dark);
 
+  --loader-background-color: var(--loader-background-color-dark);
+  --loader-text-color: var(--loader-text-color-dark);
+  --loader-text-shadow-color: var(--loader-text-shadow-color-dark);
+
   /* Legacy variables for backward compatibility */
   --body-background: var(--html-background-dark);
   --background: var(--main-color-dark);
@@ -144,7 +161,7 @@ body.dark-theme {
 
 html,
 html body {
-  background: var(--body-background);
+  background: linear-gradient(to bottom, var(--primary-color) 50%, var(--background-color) 50%);
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
