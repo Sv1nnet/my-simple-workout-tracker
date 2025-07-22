@@ -50,7 +50,7 @@
 
   --border-radius-base: 2px;
   --border-color-base-light: #d9d9d9;
-  --border-color-base-dark: #383838;
+  --border-color-base-dark: #4e4e4e;
 
   --round-count-color-light: #a5a3a3;
   --round-count-color-dark: #7e7e7e;
@@ -72,8 +72,6 @@
   --main-color-dark: var(--primary-color-dark);
   --background-dark: black;
   --background-light: white;
-  --text-color-disabled: var(--disabled-color-light);
-  --text-color-disabled-dark: var(--disabled-color-dark);
   --text-color-heading: var(--heading-color-light);
   --text-color-heading-dark: var(--heading-color-dark);
 
@@ -96,7 +94,7 @@
   --html-background-light: linear-gradient(to bottom, var(--primary-color-light) 50%, white 50%);
 
   --tag-background-color-light: #fafafa;
-  --tag-background-color-dark: #353535;
+  --tag-background-color-dark: #444444;
 }
 
 

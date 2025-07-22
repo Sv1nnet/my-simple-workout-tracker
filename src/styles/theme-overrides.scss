@@ -57,6 +57,37 @@ body.dark-theme {
   .results-text-shadow {
     filter: none;
   }
+
+  .ant-modal {
+    &-content, &-header {
+      background: var(--background-color);
+    }
+  
+    &-header {
+      border-bottom-color: var(--disabled-background-color);
+    }
+
+    &-footer {
+      border-top-color: var(--disabled-background-color);
+    }
+  
+    &-title, &-body, &-close-x {
+      color: var(--text-color);
+    }
+  }
+
+  .ant-list-empty-text {
+    color: var(--disabled-color);
+  }
+}
+
+
+.ant-modal-content, .ant-modal-header {
+  background: var(--background-color);
+
+  .ant-modal-title {
+    color: var(--text-color);
+  }
 }
 
 .ant-form-item-label > label {
