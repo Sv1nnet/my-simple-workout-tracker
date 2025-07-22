@@ -14,13 +14,15 @@ export type ThemeContextType = {
   changeTheme: (newTheme: Theme) => void
 }
 
+const defaultInsets = {
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+}
+
 const ThemeContext = createContext<ThemeContextType>({
-  insets: {
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
+  insets: defaultInsets,
   theme: 'light',
   styles: theme,
   changeTheme: () => {
@@ -29,12 +31,8 @@ const ThemeContext = createContext<ThemeContextType>({
 })
 
 const ThemeContextProvider = ({ children }: PropsWithChildren) => {
-  const [ insets, setInsets ] = useState<SafeAreaInsets['insets']>({
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  })
+  const [ insets, setInsets ] = useState<SafeAreaInsets['insets']>(defaultInsets)
+
   const themeName = useAppSelector(selectTheme)
   const dispatch = useAppDispatch()
   const { isMounted, useHandleMounted } = useMounted()
