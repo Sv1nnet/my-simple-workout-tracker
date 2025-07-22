@@ -95,6 +95,9 @@
 
   --tag-background-color-light: #fafafa;
   --tag-background-color-dark: #444444;
+
+  --dropdown-box-shadow-light: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --dropdown-box-shadow-dark: 0 3px 6px -4px rgb(0 0 0), 0 6px 16px 0 rgb(0 0 0 / 85%), 0 9px 28px 8px rgb(0 0 0 / 10%);
 }
 
 
@@ -122,6 +125,8 @@ body.light-theme {
   --loader-background-color: var(--loader-background-color-light);
   --loader-text-color: var(--loader-text-color-light);
   --loader-text-shadow-color: var(--loader-text-shadow-color-light);
+
+  --dropdown-box-shadow: var(--dropdown-box-shadow-light);
 
   /* Legacy variables for backward compatibility */
   --body-background: var(--html-background-light);
@@ -151,6 +156,8 @@ body.dark-theme {
   --loader-background-color: var(--loader-background-color-dark);
   --loader-text-color: var(--loader-text-color-dark);
   --loader-text-shadow-color: var(--loader-text-shadow-color-dark);
+
+  --dropdown-box-shadow: var(--dropdown-box-shadow-dark);
 
   /* Legacy variables for backward compatibility */
   --body-background: var(--html-background-dark);

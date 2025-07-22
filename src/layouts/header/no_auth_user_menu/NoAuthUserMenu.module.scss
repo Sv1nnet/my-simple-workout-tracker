@@ -3,7 +3,7 @@
   left: 0 !important;
   right: 0 !important;
 
-  height: calc(100vh - 133px - var(--statusbar-height) - var(--control-buttons-height)) !important;
+  height: calc(100vh - 132px - var(--statusbar-height) - var(--control-buttons-height)) !important;
 
   & ul[data-menu-list="true"] {
     height: 100%;
