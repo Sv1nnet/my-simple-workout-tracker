@@ -25,11 +25,11 @@ export const colors = [
   },
   {
     line: '#7c7cff',
-    text: 'blue',
+    text: '#0067ff',
   },
   {
     line: '#ff4bff',
-    text: 'purple',
+    text: '#9f009f',
   },
   {
     line: '#abff00',

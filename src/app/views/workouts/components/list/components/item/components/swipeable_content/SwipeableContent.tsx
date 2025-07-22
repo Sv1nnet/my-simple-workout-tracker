@@ -1,7 +1,6 @@
 import routes from 'app/constants/end_points'
 import { Collapse, List, Tag, Typography } from 'antd'
 import classes from './style.module.scss'
-import itemImagePlaceholder from 'constants/item_image_placeholder'
 import Description, { DescriptionProps } from './components/description/Description'
 import { timeToHms } from 'app/utils/time'
 import Title from './components/title/Title'
@@ -34,6 +33,7 @@ export type SwipeableContentProps = {
   workoutDictionary: DescriptionProps['workoutDictionary'];
   isOpen: boolean;
   setIsSelectionDisabled: (shouldDisable: boolean) => void;
+  itemImagePlaceholder: string;
 }
 
 const SwipeableContent = ({
@@ -49,6 +49,7 @@ const SwipeableContent = ({
   workoutDictionary,
   isOpen,
   setIsSelectionDisabled,
+  itemImagePlaceholder,
 }: SwipeableContentProps) => {
   const { isSwiping, direction } = useSwipeableContext()
 
@@ -107,7 +108,8 @@ const SwipeableContent = ({
                       ? image.url.startsWith('data:image/')
                         ? image.url
                         : `${routes.base}${image.url}`
-                      : itemImagePlaceholder}/>
+                      : itemImagePlaceholder}
+                    />
                   </ImageContainer>
                 )}
                 title={(

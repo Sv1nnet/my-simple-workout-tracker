@@ -24,6 +24,17 @@ export const StyledButton = styled(AntButton)<{
   $activeItems?: number,
 }>`
   z-index: 998;
+
+  &.ant-btn:not(.ant-btn-dangerous) {
+    border-color: var(--primary-color-light);
+
+    &.ant-btn-primary[disabled] {
+      background: var(--disabled-background-color);
+      color: var(--disabled-color);
+      border-color: var(--disabled-color);
+    } 
+  }
+
   & svg {
     ${({ $isMoreOptions, $expanded }) => $isMoreOptions ? `transform: scale(${$expanded ? '-.9' : '.9'}, 1.5);` : ''}
   }

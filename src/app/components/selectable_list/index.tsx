@@ -121,7 +121,6 @@ ISelectableList & RefAttributes<SelectableListRef>
   const [ selected, setSelected ] = useState<SelectedListItems>({})
   const [ isSelectionEnabled, setIsSelectionEnabled ] = useState(false)
   const [ isAllSelected, setIsAllSelected ] = useState(false)
-
   const $listContainer = useRef<HTMLDivElement>(null)
 
   const handleContextMenu = useCallback((e: React.MouseEvent<HTMLDivElement>) => {

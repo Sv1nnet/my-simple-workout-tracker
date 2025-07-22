@@ -122,6 +122,7 @@ export const ResultTexts = ({ dataToRender: _dataToRender, left, right, minY, xS
             opacity={opacities[_round]}
             textAnchor="middle"
             fill={colors[_round].text}
+            className="results-text-shadow"
           >
             {prefix ? `${prefix}: ${results}` : results}
           </TextShadow>

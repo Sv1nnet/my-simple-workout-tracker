@@ -12,6 +12,7 @@ import { SelectableList } from 'app/components'
 import { useMounted } from 'app/hooks'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { useNavigate } from 'react-router'
+import useItemImagePlaceholder from 'app/hooks/useItemImagePlaceholder'
 
 export type ApiDeleteWorkoutError = {
   data: WorkoutDeleteError;
@@ -37,6 +38,8 @@ export interface IWorkoutList {
 }
 
 const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, isLoading, isDeleting, isCopying, workouts, containerRef }) => {
+  const [ itemImagePlaceholder ] = useItemImagePlaceholder()
+
   const [ isSelectionDisabled, setIsSelectionDisabled ] = useState(false)
   const [ workoutsToDelete, setWorkoutsToDelete ] = useState({})
   const [ loadingId, setLoadingId ] = useState(null)
@@ -158,8 +161,17 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
             dataSource={workouts}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<WorkoutListItem & { id: number | string }, 'image'> & { image: Image }) => (
-              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} $noPadding {...onTouchHandlers}>
+              <SelectableList.Item
+                data-selectable-id={item.id}
+                key={item.id}
+                onContextMenu={onContextMenu}
+                onClick={onSelect}
+                $selected={selected[item.id]}
+                $noPadding
+                {...onTouchHandlers}
+              >
                 <WorkoutItem
+                  itemImagePlaceholder={itemImagePlaceholder}
                   loadWorkout={handleLoadWorkout}
                   payloadDictionary={payload}
                   loadingWorkoutId={loadingId}

@@ -14,6 +14,7 @@ const StyledAvatar = styled(Avatar)`
   position: absolute;
   right: 3px;
   cursor: pointer;
+  background: var(--avatar-background);
 `
 
 const UserMenu = () => {

@@ -121,7 +121,7 @@ const VirtualList = React.forwardRef<IVirtualListRef, IVirtualList>(
       height,
       width,
       overflow: 'scroll',
-      backgroundColor: 'white',
+      backgroundColor: 'var(--background-color)',
       ...componentStyle,
     }
 

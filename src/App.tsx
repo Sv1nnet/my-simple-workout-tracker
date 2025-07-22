@@ -13,24 +13,26 @@ import isoWeek from 'dayjs/plugin/isoWeek'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { Lang, Theme, Unit } from 'app/store/slices/config/types'
+import { Lang, Unit } from 'app/store/slices/config/types'
 import RootRouter from './router'
 import { useAppDispatch, useLocalStorage } from './app/hooks'
 
 import './styles/theme.less'
-import { applyTheme } from 'utils/theme'
-import { changeLang, changeTheme, changeUnits } from 'app/store/slices/config'
+import './styles/theme-overrides.scss'
+import { applyTheme, useSystemTheme } from 'utils/theme'
+import { changeLang, changeUnits } from 'app/store/slices/config'
 import { UserConfig } from './plugins'
+import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
+import RootProvider from 'app/contexts/root'
 
 dayjs.extend(duration)
 dayjs.extend(isoWeek)
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-type AppProps = {
-  lang: Lang,
+interface AppProps {
+  lang: Lang
 }
-
 
 CapacitorApp.addListener('backButton', ({ canGoBack }) => {
   if (!canGoBack) {
@@ -40,13 +42,16 @@ CapacitorApp.addListener('backButton', ({ canGoBack }) => {
   }
 })
 
-const ThemeSwitcher = () => {
+export const ThemeSwitcher = () => {
   const dispatch = useAppDispatch()
+  const { theme: currentTheme, changeTheme } = useThemeContext()
   const { getUserConfig, setUserConfig } = UserConfig
+
+  useSystemTheme(currentTheme)
 
   useEffect(() => {
     getUserConfig().then(({ theme, lang, units }) => {
-      dispatch(changeTheme(theme))
+      changeTheme(theme)
       dispatch(changeLang(lang))
       dispatch(changeUnits(units))
     })
@@ -56,21 +61,21 @@ const ThemeSwitcher = () => {
     <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 1000 }}>
       <button onClick={() => {
         applyTheme('dark')
-        dispatch(changeTheme('dark'))
+        changeTheme('dark')
         setUserConfig({ theme: 'dark' })
       }}>
         Dark
       </button>
       <button onClick={() => {
         applyTheme('light')
-        dispatch(changeTheme('light'))
+        changeTheme('light')
         setUserConfig({ theme: 'light' })
       }}>
         Light
       </button>
       <button onClick={() => {
         applyTheme('system')
-        dispatch(changeTheme('system'))
+        changeTheme('system')
         setUserConfig({ theme: 'system' })
       }}>
         System
@@ -81,17 +86,16 @@ const ThemeSwitcher = () => {
 
 export default function App({ lang }: AppProps) {
   const [ isNoAuthLogin ] = useLocalStorage('isNoAuthLogin', false)
-  const [ theme ] = useLocalStorage<Theme>('theme', 'light')
   const [ units ] = useLocalStorage<Unit>('units', 'kg')
 
-  const store = useMemo(() => getStore({ lang, isNoAuthLogin, theme, units }), [ lang, isNoAuthLogin, theme, units ])
+  const store = useMemo(() => getStore({ lang, isNoAuthLogin, units }), [ lang, isNoAuthLogin, units ])
 
   return (
-    <>
-      <Provider store={store}>
+    <Provider store={store}>
+      <RootProvider>
         <ThemeSwitcher />
         <RootRouter />
-      </Provider>
-    </>
+      </RootProvider>
+    </Provider>
   )
 }

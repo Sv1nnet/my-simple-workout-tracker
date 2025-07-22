@@ -1,5 +1,4 @@
 import { Route, BrowserRouter, Routes } from 'react-router-dom'
-import RootProvider from 'app/contexts/root'
 import { AuthLayout } from 'layouts/authorization'
 import NotFound404 from 'pages/404'
 import CreateWorkout from 'pages/workouts/Create'
@@ -49,33 +48,31 @@ export const routes = {
 }
 
 const RootRouter = () => (
-  <RootProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AuthLayout />}>
-          <Route path={routes.exercises.create()} element={<CreateExercise />} />
-          <Route path={routes.exercises.item()()} element={<ExerciseItem />} />
-          <Route path={routes.exercises.list()} element={<Exercises />} />
+  <BrowserRouter>
+    <Routes>
+      <Route element={<AuthLayout />}>
+        <Route path={routes.exercises.create()} element={<CreateExercise />} />
+        <Route path={routes.exercises.item()()} element={<ExerciseItem />} />
+        <Route path={routes.exercises.list()} element={<Exercises />} />
 
-          <Route path={routes.workouts.create()} element={<CreateWorkout />} />
-          <Route path={routes.workouts.item()()} element={<WorkoutItem />} />
-          <Route path={routes.workouts.list()} element={<Workouts />} />
+        <Route path={routes.workouts.create()} element={<CreateWorkout />} />
+        <Route path={routes.workouts.item()()} element={<WorkoutItem />} />
+        <Route path={routes.workouts.list()} element={<Workouts />} />
 
-          {[ '/', BASE_ROUTES.ACTIVITIES ].map(path => (
-            <React.Fragment key={path}>
-              <Route path={createRoute(path)('create')()} element={<CreateActivity />} />
-              <Route path={createRoute(path)()()} element={<ActivityItem />} />
-              <Route path={path} element={<Activities />} />
-            </React.Fragment>
-          ))}
+        {[ '/', BASE_ROUTES.ACTIVITIES ].map(path => (
+          <React.Fragment key={path}>
+            <Route path={createRoute(path)('create')()} element={<CreateActivity />} />
+            <Route path={createRoute(path)()()} element={<ActivityItem />} />
+            <Route path={path} element={<Activities />} />
+          </React.Fragment>
+        ))}
 
-          <Route path="/profile" element={<Profile />}/>
+        <Route path="/profile" element={<Profile />}/>
 
-          <Route path="*" element={<NotFound404 />}/>
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  </RootProvider>
+        <Route path="*" element={<NotFound404 />}/>
+      </Route>
+    </Routes>
+  </BrowserRouter>
 )
 
 export default RootRouter

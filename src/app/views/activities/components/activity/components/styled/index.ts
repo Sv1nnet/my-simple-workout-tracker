@@ -1,4 +1,3 @@
-import { theme } from 'src/styles/vars'
 import { Form, Modal } from 'antd'
 import styled from 'styled-components'
 
@@ -81,10 +80,10 @@ export const StopwatchContainer = styled.div`
   margin-left: 32px;
   display: flex;
   margin-block: -1px;
-  color: ${theme.textColor};
+  color: var(--text-color);
   font-weight: 400;
 
   & .activity-timer {
-    background-color: white;
+    background-color: var(--background-color);
   }
 `

@@ -9,7 +9,7 @@ import { Capacitor } from '@capacitor/core'
 import type { AppDispatch, AppState } from '../store'
 import { isUndefined } from 'app/utils/typeCheckers'
 
-export * from './numberInputHooks'
+export * from './numberInputHooks/index'
 
 export const useForm = <TContent>(defaultValues: TContent) =>
   (handler: (content: TContent) => void) =>

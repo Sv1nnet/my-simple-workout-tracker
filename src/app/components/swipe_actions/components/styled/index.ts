@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { theme } from 'styles/vars'
 
 export const ActionContainer = styled.div`
   position: absolute;
@@ -21,11 +20,11 @@ const Action = styled.div`
 `
 
 export const ActionRight = styled(Action)`
-  background: ${theme.primaryColor};
+  background: var(--primary-color-light);
   justify-content: flex-end;
 `
 
 export const ActionLeft = styled(Action)`
-  background: ${theme.warningColor};
+  background: var(--warning-color);
   justify-content: flex-start;
 `

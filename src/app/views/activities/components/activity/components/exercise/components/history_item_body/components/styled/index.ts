@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Body = styled.div`
   overflow-y: scroll;
-  border-right: 1px solid lightgrey;
+  border-right: 1px solid var(--round-divider-color);
   border-left: none;
   height: 100%;
 `

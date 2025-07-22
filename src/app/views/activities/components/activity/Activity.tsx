@@ -20,10 +20,13 @@ import { QueryStatus } from '@reduxjs/toolkit/dist/query'
 import { setCachedActivity } from 'app/store/slices/activity'
 import HistoryProvider from './contexts/history_provider/HistoryProvider'
 import ActivityProvider from './contexts/activity_provider/ActivityProvider'
+import useItemImagePlaceholder from 'app/hooks/useItemImagePlaceholder'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
 
 const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
+  const [ itemImagePlaceholder ] = useItemImagePlaceholder()
+
   const [ cachedFormValues, setCachedFormValues, removeCachedFormValues, getCachedFormValues ] = useLocalStorage<InitialValues | null>('cached_activity', null)
 
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
@@ -267,6 +270,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
                 ?.exercises.map((exercise: WorkoutListExercise<number>, i, list) => (
                   <Exercise
                     key={exercise._id as string}
+                    itemImagePlaceholder={itemImagePlaceholder}
                     exerciseList={list as WorkoutListExercise<number>[]}
                     roundResults={initialValues.results[i]}
                     form={form}

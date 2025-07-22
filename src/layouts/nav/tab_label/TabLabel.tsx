@@ -1,8 +1,6 @@
 import styled from 'styled-components'
 import { Spin } from 'antd'
 import { FC, HTMLProps, ReactNode } from 'react'
-import { theme } from 'styles/vars'
-import { isFunction } from 'app/utils/typeCheckers'
 
 const LoaderContainer = styled.div`
   position: absolute;
@@ -26,7 +24,7 @@ const Label = styled.div`
   align-items: center;
   flex-grow: 1;
   display: grid;
-  border-top: 2px solid ${theme.navBorderColor};
+  border-top: 2px solid var(--nav-border-color);
   font-size: 40px;
 `
 
@@ -39,9 +37,7 @@ export interface ITabLabel extends Omit<HTMLProps<HTMLDivElement>, 'onClick' | '
 }
 
 const TabLabel: FC<ITabLabel> = ({ loading, label, loaderProps, tab, onClick, ...rest }) => {
-  const handleLabelClick = (e) => {
-    if (isFunction(onClick)) onClick(tab, e)
-  }
+  const handleLabelClick = (e: React.MouseEvent<HTMLDivElement>) => onClick?.(tab, e)
 
   return (
     <>

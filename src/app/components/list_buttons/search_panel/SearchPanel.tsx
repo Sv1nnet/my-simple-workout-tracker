@@ -12,6 +12,7 @@ import {
   StyledInput,
   StyledInputGroup,
   StyledSearchButton,
+  StyledSelect,
 } from './components'
 import { useToggle } from 'app/hooks'
 import { Collapse, notification, Select, SelectProps } from 'antd'
@@ -20,6 +21,8 @@ import { muscleGroupApi } from 'app/store/slices/muscleGroup/api'
 import { OnChangeHandler } from './utils'
 import { NoDataText } from 'app/components'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
+import styles from './SearchPanel.module.scss'
 
 export type SearchPanelProps = {
   href: string,
@@ -30,7 +33,10 @@ export type SearchPanelProps = {
   shouldShowReloadButton?: boolean,
 }
 
+const VERTICAL_PADDING = 6
+
 const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldShowReloadButton = true }: SearchPanelProps) => {
+  const theme = useThemeContext()
   const { intl } = useIntlContext()
   const { state: isOpen, setState: setIsOpen } = useToggle(false)
   const [ searchValue, setSearchValue ] = useState('')
@@ -47,7 +53,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldSh
     if (initialPlaceholderHeight.current !== null) {
       const tagsContainer = entries[0].target
       const tagsContainerHeight = tagsContainer.clientHeight
-      $placeholder.current.style.height = `${initialPlaceholderHeight.current + tagsContainerHeight}px`
+      $placeholder.current.style.height = `${initialPlaceholderHeight.current + tagsContainerHeight + VERTICAL_PADDING}px`
     }
   }), [ initialPlaceholderHeight ])
 
@@ -94,7 +100,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldSh
     }
   
     return <StyledSearchButton onClick={handleClick} icon={Icon} />
-  }, [ isOpen, tags ])
+  }, [ isOpen, tags, theme ])
 
   useEffect(() => {
     if (fetchMuscleGroupsError) {
@@ -134,7 +140,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldSh
         <StyledCollapse bordered={false} ghost activeKey={isOpen ? '1' : null} destroyInactivePanel className='tags-container'>
           <Collapse.Panel header='' key='1' showArrow={false}>
             <SelectContainer $collapsed={!isOpen}>
-              <Select
+              <StyledSelect
                 value={tags}
                 loading={isLoadingMuscleGroups || isFetchingMuscleGroups}
                 placeholder={intl.rest.muscle_group.select_muscle_groups}
@@ -147,11 +153,12 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldSh
                 notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
                 menuItemSelectedIcon={null}
                 onChange={handleSelectTagsChange}
+                popupClassName={styles.tagsPopup}
               >
                 {muscleGroupsItems?.map(item => (
                   <Select.Option key={item.id} label={item.label} value={item.id}>{item.label}</Select.Option>
                 ))}
-              </Select>
+              </StyledSelect>
             </SelectContainer>
           </Collapse.Panel>
         </StyledCollapse>

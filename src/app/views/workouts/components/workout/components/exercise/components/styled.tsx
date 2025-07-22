@@ -16,10 +16,10 @@ export const MoveExerciseButtonContainer = styled.div<{ $hasTopButton?: boolean,
   z-index: 1;
   top: ${({ $hasTopButton }) => $hasTopButton ? '-25px' : '0px'};
   left: 50%;
-  background: white;
-  border: 1px lightgrey solid;
-  ${({ $hasBottomButton }) => !$hasBottomButton ? 'border-bottom: 1px white solid;' : ''}
-  ${({ $hasTopButton }) => !$hasTopButton ? 'border-top: 1px white solid;' : ''}
+  background: var(--background-color);
+  border: 1px var(--round-divider-color) solid;
+  ${({ $hasBottomButton }) => !$hasBottomButton ? 'border-bottom: 1px var(--background-color) solid;' : ''}
+  ${({ $hasTopButton }) => !$hasTopButton ? 'border-top: 1px var(--background-color) solid;' : ''}
   transform: translateX(-50%);
   border-radius: ${({ $hasBottomButton, $hasTopButton }) => `${$hasTopButton ? '25px 25px' : '0 0'} ${$hasBottomButton ? '25px 25px' : '0 0'}`};
   width: 50px;

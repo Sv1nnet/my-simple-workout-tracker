@@ -3,7 +3,6 @@ import { SVGProps } from 'react'
 const ChartIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg width="26" height="20" xmlns="http://www.w3.org/2000/svg" {...props}>
     <g>
-      <title>Layer 1</title>
       <line stroke="#000" id="svg_2" y2="9.83546" x2="10.49194" y1="17.02614" x1="3.62091" fill="none"/>
       <line
         transform="rotate(-3.84568 11.9545 11.8749)"

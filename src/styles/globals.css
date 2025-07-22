@@ -1,29 +1,150 @@
-
 :root {
   --statusbar-height: env(safe-area-inset-top);
   --control-buttons-height: env(safe-area-inset-bottom);
-  --main-color: #0aa679;
-  --html-background-dark: linear-gradient(to bottom, #075c44 50%, black 50%);
-  --html-background-light: linear-gradient(to bottom, #0aa679 50%, white 50%);
+
+  /* Colors from vars.ts */
+  --background-color-light: #fff;
+  --background-color-dark: #191919;
+
+  --nav-icon-color: #7e7e7e;
+  --nav-border-color-light: #c5c5c5;
+  --nav-border-color-dark: #4c4c4c;
+
+  --primary-color-light: #0aa679;
+  --primary-color-dark: #075c44;
+
+  --ghost-primary-color-light: #e7f5f0;
+  --ghost-primary-color-dark: #0c2921;
+
+  --selected-list-item-color-light: #e7f5f0;
+  --selected-list-item-color-dark: #22352e;
+
+  --avatar-background-light: #ccc;
+  --avatar-background-dark: #7a7a7a;
+
+  --link-color: #1890ff;
+  --success-color: #52c41a;
+  --warning-color: #faad14;
+  --error-color: #f5222d;
+  --result-positive-color: #01c515;
+
+  --font-size-base: 14px;
+
+  --heading-color-light: rgba(0, 0, 0, 0.85);
+  --heading-color-dark: rgba(255, 255, 255, 0.85);
+
+  --text-color-light: rgba(0, 0, 0, 0.65);
+  --text-color-dark: #d1d1d1d1;
+
+  --text-color-secondary-light: rgba(0, 0, 0, 0.45);
+  --text-color-secondary-dark: rgba(255, 255, 255, 0.45);
+
+  --disabled-color-light: rgba(0, 0, 0, 0.5);
+  --disabled-color-dark: rgba(255, 255, 255, 0.5);
+
+  --disabled-background-color-light: #f5f5f5;
+  --disabled-background-color-dark: #313131;
+
+  --addon-background-color-light: #fafafa;
+  --addon-background-color-dark: #161616;
+
+  --border-radius-base: 2px;
+  --border-color-base-light: #d9d9d9;
+  --border-color-base-dark: #383838;
+
+  --round-count-color-light: #a5a3a3;
+  --round-count-color-dark: #7e7e7e;
+
+  --round-divider-color-light: lightgrey;
+  --round-divider-color-dark: #505050;
+
+  --box-shadow-base-light: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  --box-shadow-base-dark: 0 3px 6px -4px rgba(255, 255, 255, 0.12), 0 6px 16px 0 rgba(255, 255, 255, 0.08), 0 9px 28px 8px rgba(255, 255, 255, 0.05);
+
+  /* Action colors */
+  --action-edit-active: #ffce6c;
+  --action-edit-inactive: #faad14;
+  --action-start-active: #3acba1;
+  --action-start-inactive: #0aa679;
+
+  /* Legacy variables (keeping for backward compatibility) */
+  --main-color-light: var(--primary-color-light);
+  --main-color-dark: var(--primary-color-dark);
   --background-dark: black;
   --background-light: white;
+  --text-color-disabled: var(--disabled-color-light);
+  --text-color-disabled-dark: var(--disabled-color-dark);
+  --text-color-heading: var(--heading-color-light);
+  --text-color-heading-dark: var(--heading-color-dark);
+
+  --action-color-edit-active: #ffce6c;
+  --action-color-edit-inactive: #faad14;
+
+  --action-color-start-active: #3acba1;
+  --action-color-start-inactive: #0aa679;
+
+  --html-background-dark: linear-gradient(to bottom, var(--primary-color-dark) 50%, black 50%);
+  --html-background-light: linear-gradient(to bottom, var(--primary-color-light) 50%, white 50%);
+
+  --tag-background-color-light: #fafafa;
+  --tag-background-color-dark: #353535;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: var(--html-background-dark);
-  }
+
+body,
+body.light-theme {
+  /* Override variables for light theme (explicit for clarity) */
+  --background-color: var(--background-color-light);
+  --primary-color: var(--primary-color-light);
+  --ghost-primary-color: var(--ghost-primary-color-light);
+  --text-color: var(--text-color-light);
+  --text-color-secondary: var(--text-color-secondary-light);
+  --disabled-color: var(--disabled-color-light);
+  --disabled-background-color: var(--disabled-background-color-light);
+  --addon-background-color: var(--addon-background-color-light);
+  --heading-color: var(--heading-color-light);
+  --border-color-base: var(--border-color-base-light);
+  --box-shadow-base: var(--box-shadow-base-light);
+  --selected-list-item-color: var(--selected-list-item-color-light);
+  --tag-background-color: var(--tag-background-color-light);
+  --nav-border-color: var(--nav-border-color-light);
+  --avatar-background: var(--avatar-background-light);
+  --round-count-color: var(--round-count-color-light);
+  --round-divider-color: var(--round-divider-color-light);
+
+  /* Legacy variables for backward compatibility */
+  --body-background: var(--html-background-light);
+  --background: var(--main-color-light);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: var(--html-background-light);
-  }
+body.dark-theme {
+  /* Override variables for dark theme */
+  --background-color: var(--background-color-dark);
+  --primary-color: var(--primary-color-dark);
+  --ghost-primary-color: var(--ghost-primary-color-dark);
+  --text-color: var(--text-color-dark);
+  --text-color-secondary: var(--text-color-secondary-dark);
+  --disabled-color: var(--disabled-color-dark);
+  --disabled-background-color: var(--disabled-background-color-dark);
+  --addon-background-color: var(--addon-background-color-dark);
+  --heading-color: var(--heading-color-dark);
+  --border-color-base: var(--border-color-base-dark);
+  --round-count-color: var(--round-count-color-dark);
+  --box-shadow-base: var(--box-shadow-base-dark);
+  --selected-list-item-color: var(--selected-list-item-color-dark);
+  --tag-background-color: var(--tag-background-color-dark);
+  --nav-border-color: var(--nav-border-color-dark);
+  --avatar-background: var(--avatar-background-dark);
+  --round-divider-color: var(--round-divider-color-dark);
+
+  /* Legacy variables for backward compatibility */
+  --body-background: var(--html-background-dark);
+  --background: var(--main-color-dark);
 }
 
 html,
 html body {
-  background: var(--background);
+  background: var(--body-background);
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
@@ -39,7 +160,7 @@ html {
   max-width: 500px;
   height: 100%;
   margin: auto;
-  background-color: white;
+  background-color: var(--background-color);
   position: relative;
 }
 

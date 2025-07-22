@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { FormInstance, RadioChangeEvent, Typography } from 'antd'
 import { BreakTimer, History, Note, Rounds, Timers } from './components'
-import itemImagePlaceholder from 'constants/item_image_placeholder'
 import routes from 'app/constants/end_points'
 import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
@@ -50,6 +49,7 @@ export interface IExerciseProps {
   exerciseIndex: number;
   cacheFormData: CacheFormData;
   orderInWorkout: number;
+  itemImagePlaceholder: string;
 }
 
 const Exercise: FC<IExerciseProps> = ({
@@ -65,6 +65,7 @@ const Exercise: FC<IExerciseProps> = ({
   exerciseIndex,
   id,
   cacheFormData,
+  itemImagePlaceholder,
 }) => {
   const dispatch = useAppDispatch()
   const selectedRoundIndex = useAppSelector(selectSelectedRoundIndex(id as string))

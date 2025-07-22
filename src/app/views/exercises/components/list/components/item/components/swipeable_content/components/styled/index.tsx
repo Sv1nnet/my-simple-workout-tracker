@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import { Checkbox, Tag } from 'antd'
-import { theme } from 'styles/vars'
 
 export const ImageContainer = styled.div`
   position: relative;
@@ -9,7 +8,7 @@ export const ImageContainer = styled.div`
   align-items: center;
   width: 75px;
   height: 75px;
-  background-color: #f5f5f5;
+  background-color: var(--disabled-background-color);
   & a {
     margin: 0 auto;
   }
@@ -32,9 +31,10 @@ export const StyledTag = styled(Tag)`
 `
 
 export const InnerContainer = styled.div<{ $isSelected?: boolean }>`
-  background-color: white;
+  background-color: var(--background-color);
+  color: var(--text-color);
   padding: 15px;
-  ${({ $isSelected }) => $isSelected && `background-color: ${theme.ghostPrimaryColor};`}
+  ${({ $isSelected }) => $isSelected && 'background-color: var(--selected-list-item-color);'}
 
   .ant-list-item-meta-content {
     width: 100%;

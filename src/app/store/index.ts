@@ -59,18 +59,18 @@ unknown,
 Action<string>
 >
 
-export default ({ lang, isNoAuthLogin, theme, units }: {
+export default ({ lang, isNoAuthLogin, theme, units }: Partial<{
   lang: AppState['config']['data']['lang'],
   isNoAuthLogin: AppState['auth']['isNoAuthLogin'],
-  theme: AppState['config']['data']['theme'],
   units: AppState['config']['data']['units'],
-}) => {
+  theme: AppState['config']['data']['theme'],
+}>) => {
   const { auth, config } = store.getState()
 
   if (config.data.lang !== lang) store.dispatch(changeLang(lang))
   if (auth.isNoAuthLogin !== isNoAuthLogin) store.dispatch(loginWithNoAuth())
-  if (config.data.theme !== theme) store.dispatch(changeTheme(theme))
-  if (config.data.units !== units) store.dispatch(changeUnits(units))
+  if (theme && config.data.theme !== theme) store.dispatch(changeTheme(theme))
+  if (units && config.data.units !== units) store.dispatch(changeUnits(units))
 
   return store
 }

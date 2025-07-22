@@ -12,10 +12,9 @@ import { useListContext } from 'app/contexts/list/ListContextProvider'
 import { selectIsNoAuthLogin } from 'app/store/slices/auth'
 import useReduxSetPageInfo from './utils/useReduxSetPageInfo'
 import { ActivityIcon, DumbbellAndListIcon, DumbbellIcon } from 'src/assets/icons'
-import { theme } from 'styles/vars'
 
 const StyledTabs = styled(Tabs)`
-  background: white;
+  background: var(--background-color);
 
   .ant-tabs-nav {
     margin-top: 0;
@@ -53,7 +52,7 @@ const StyledTabs = styled(Tabs)`
     }
 
     .ant-tabs-tab-active svg * {
-      stroke: ${theme.primaryColor};
+      stroke: var(--primary-color-light);
     }
   }
 `
@@ -122,13 +121,6 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
 
   useReduxSetPageInfo(pageInfo)
 
-  useEffect(() => {
-    const handleResize = () => window.innerWidth < 375 ? setWidth('sm') : setWidth('md')
-    window.addEventListener('resize', handleResize)
-
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
   const isScreenSmall = width === 'sm'
   const labels = {
     exercises: (isScreenSmall ? intl.header.exercises.short : (intl.header.exercises)) || '',
@@ -136,10 +128,6 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
     activities: (isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '',
     profile: (isScreenSmall ? intl.header.profile.short : (intl.header.profile)) || '',
   }
-
-  useEffect(() => {
-    setLoadingTab(getLoadingTab({ activeTab, exerciseList, workoutList, activityList }))
-  }, [ exerciseList.status, workoutList.status, activityList.status, activeTab ])
 
   const items = useMemo(() => 
     [
@@ -193,6 +181,17 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
     labels.activities,
     labels.profile,
   ])
+
+  useEffect(() => {
+    const handleResize = () => window.innerWidth < 375 ? setWidth('sm') : setWidth('md')
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    setLoadingTab(getLoadingTab({ activeTab, exerciseList, workoutList, activityList }))
+  }, [ exerciseList.status, workoutList.status, activityList.status, activeTab ])
 
   const [ , route, subRoute ] = location.pathname.split('/')
   const activeKey = !subRoute ? route : 'subRoute'

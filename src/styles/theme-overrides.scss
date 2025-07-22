@@ -1,0 +1,371 @@
+body.dark-theme {
+  .ant-btn {
+    &-text {
+      color: var(--text-color);
+
+      &:hover, &:focus {
+        color: white;
+      }
+
+      &[disabled] {
+        color: var(--disabled-background-color);
+      }
+    }
+
+  
+    &:not(.ant-btn-dangerous) {
+      &.ant-btn-default, &.ant-btn-dashed {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        border-color: var(--border-color-base);
+      }
+    
+      &.ant-btn-primary {
+        background: var(--primary-color);
+        border-color: var(--border-color-base);
+      
+        &[disabled] {
+          color: var(--disabled-color);
+        }
+      }
+    }
+  }
+
+  button.list-btn, .list-btn > button {
+    background: var(--background-color);
+    border-width: 2px;
+
+    &.ant-btn:not(.ant-btn-dangerous) {
+      border-color: var(--primary-color-light);
+  
+      &.ant-btn-primary {
+        background-color: var(--primary-color-light);
+      }
+  
+      &.ant-btn-primary[disabled] {
+        background-color: var(--tag-background-color);
+        border-color: var(--disabled-background-color);
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .results-text-shadow {
+    filter: none;
+  }
+}
+
+.ant-form-item-label > label {
+  color: var(--text-color);
+}
+
+.ant-input {
+  background-color: var(--background-color);
+  border-color: var(--border-color-base);
+  color: var(--text-color);
+
+  &:hover, &:focus {
+    border-color: var(--primary-color);
+  }
+
+  &[disabled] {
+    color: var(--disabled-color);
+    background-color: var(--disabled-background-color);
+    border-color: var(--border-color-base);
+  }
+}
+
+.ant-select {
+  color: var(--text-color);
+
+  .ant-typography {
+    color: var(--text-color);
+
+    &.ant-typography-secondary {
+      color: var(--text-color-secondary)
+    }
+  }
+
+  &.ant-select-multiple .ant-select-selector .ant-select-selection-item {
+    background-color: var(--tag-background-color);
+    border-color: var(--border-color-base);
+    color: var(--text-color);
+
+    .ant-select-selection-item-remove {
+      color: var(--text-color);
+    }
+  }
+
+  &.ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: var(--disabled-background-color);
+    color: var(--disabled-color);
+  }
+
+  &:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: var(--background-color);
+    border-color: var(--border-color-base);
+  }
+
+  &.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector  {
+    border-color: var(--primary-color);
+  }
+
+  &.ant-select-disabled.ant-select-multiple .ant-select-selection-item {
+    color: var(--disabled-color);
+  }
+
+  &.ant-select-disabled .ant-select-selector .ant-select-selection-item .ant-typography {
+    color: var(--disabled-color);
+  }
+
+  .ant-select-arrow {
+    color: var(--text-color-secondary);
+  }
+}
+
+.ant-select-dropdown {
+  background-color: var(--background-color);
+  border-color: var(--border-color-base);
+  
+  .ant-select-item {
+    color: var(--text-color);
+  }
+
+  .ant-select-item-option-content {
+    .ant-typography {
+      color: var(--text-color);
+    }
+    .ant-typography-secondary {
+      color: var(--text-color-secondary)
+    }
+  }
+  
+  .ant-select-item.ant-select-item-option.ant-select-item-option-selected {
+    background-color: var(--selected-list-item-color);
+    color: var(--text-color);
+  }
+  
+  .ant-select-item.ant-select-item-option.ant-select-item-option-active {
+    background-color: var(--ghost-primary-color);
+    color: var(--text-color);
+  }
+}
+
+.ant-checkbox-wrapper {
+  color: var(--text-color);
+
+  &-disabled, .ant-checkbox-disabled + span {
+    color: var(--text-color);
+  }
+
+  .ant-checkbox-disabled .ant-checkbox-inner {
+    border-color: var(--border-color-base) !important;
+  }
+
+  & .ant-checkbox-inner {
+    background-color: var(--background-color);
+    border-color: var(--border-color-base);
+  }
+
+  &:hover .ant-checkbox-inner, .ant-checkbox:hover .ant-checkbox-inner, .ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color: var(--primary-color);
+  }
+
+  .ant-checkbox-disabled.ant-checkbox-checked .ant-checkbox-inner::after {
+    border-color: var(--disabled-color);
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: var(--primary-color);
+  }
+}
+
+.ant-picker {
+  background: var(--background-color);
+  border-color: var(--border-color-base);
+
+  &.ant-picker-disabled {
+    background-color: var(--disabled-background-color);
+    border-color: var(--border-color-base);
+
+    & .ant-picker-suffix {
+      color: var(--disabled-color);    
+    }
+  }
+
+  & .ant-picker-suffix {
+    color: var(--disabled-color);    
+  }
+
+  &-focused, &:focus, &:hover {
+    border-color: var(--primary-color);
+  }
+
+  &-input > input {
+    color: var(--text-color);
+  
+    &:focus, &:hover {
+      border-color: var(--primary-color);
+    }
+  }
+
+  &-input > input[disabled] {
+    color: var(--disabled-color);
+  }
+}
+
+.ant-input-disabled + .ant-input-group-addon {
+  background-color: var(--disabled-background-color);
+}
+
+.ant-input-textarea-show-count::after {
+  color: var(--text-color-secondary);
+}
+
+.ant-input-group-addon {
+  background-color: var(--addon-background-color);
+  border-color: var(--border-color-base);
+
+  .ant-select-arrow {
+    color: var(--disabled-color);
+  }
+}
+
+.ant-upload {
+  &.ant-upload-drag {
+    background-color: var(--addon-background-color);
+    border-color: var(--border-color-base);
+
+    & .anticon.anticon-plus {
+      color: var(--disabled-color);
+    }
+  }
+}
+
+.ant-tag {
+  background-color: var(--tag-background-color);
+  border-color: var(--border-color-base);
+  color: var(--text-color);
+}
+
+.ant-typography {
+  color: var(--text-color);
+
+  &.ant-typography-secondary {
+    color: var(--text-color-secondary);
+  }
+}
+
+h2, h3, h4, h5 {
+  &.ant-typography {
+    color: var(--heading-color);
+  }
+}
+
+.ant-collapse-expand-icon {
+  color: var(--heading-color);
+}
+
+.ant-divider {
+  color: var(--text-color);
+  border-top-color: var(--round-divider-color);
+}
+
+.ant-picker-panel-container {
+  background: var(--background-color);
+
+  .ant-picker-time-panel-column:not(:first-child) {
+    border-color: var(--round-divider-color);
+  }
+
+  .ant-picker-time-panel-column {
+    &:not(:first-child) {
+      border-color: var(--round-divider-color);
+    }
+
+    & > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+      background-color: var(--ghost-primary-color);
+      color: var(--text-color);
+
+      &:hover {
+        background-color: var(--primary-color);
+      }
+    }
+
+    & > li.ant-picker-time-panel-cell .ant-picker-time-panel-cell-inner {
+      color: var(--text-color);
+    }
+  }
+
+  .ant-picker-panel, .ant-picker-footer {
+    border-color: var(--round-divider-color);
+  }
+}
+
+.ant-input-affix-wrapper {
+  background-color: var(--background-color);
+
+  border-color: var(--border-color-base);
+
+  &:not(.ant-input-affix-wrapper-disabled):hover {
+    border-color: var(--primary-color);
+  }
+
+  &:hover, &:focus {
+    border-color: var(--primary-color);
+  }
+
+  &.ant-input-affix-wrapper-focused {
+    border-color: var(--primary-color);
+  }
+
+  &.ant-input-affix-wrapper-status-error:not(.ant-input-affix-wrapper-disabled):not(.ant-input-affix-wrapper-borderless).ant-input-affix-wrapper {
+    background-color: var(--background-color);
+  }
+
+  .ant-input-password-icon.anticon {
+    color: var(--text-color-secondary);
+  }
+}
+
+.ant-form-item-extra {
+  color: var(--text-color-secondary);
+}
+
+.ant-picker-header {
+  color: var(--heading-color);
+
+  & .ant-picker-header-next-btn, & .ant-picker-header-prev-btn, & .ant-picker-header-super-prev-btn, & .ant-picker-header-super-next-btn {
+    color: var(--disabled-color);
+
+    &:hover {
+      color: var(--text-color);
+    }
+  }
+}
+
+.ant-picker-cell.ant-picker-cell-in-view .ant-picker-cell-inner {
+  color: var(--text-color);
+}
+
+.ant-picker-content th {
+  color: var(--text-color);
+}
+
+.ant-picker-content.ant-picker-cell-in-view .ant-picker-cell-inner {
+  color: var(--text-color);
+}
+
+.ant-picker-cell {
+  .ant-picker-cell-inner {
+    color: var(--disabled-color);
+  }
+
+  &.ant-picker-cell-in-view .ant-picker-cell-inner {
+    color: var(--text-color);
+  }
+
+  &.ant-picker-cell-selected .ant-picker-cell-inner {
+    color: white;
+  }
+}

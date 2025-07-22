@@ -4,17 +4,20 @@ import AppLoaderProvider from 'app/contexts/loader/AppLoaderContextProvider'
 import { ErrorBoundary } from 'app/components'
 import ListContextProvider from 'app/contexts/list/ListContextProvider'
 import HeaderTitleProvider from '../header_title/HeaderTItleContextProvider'
+import ThemeContextProvider from '../theme/ThemeContextProvider'
 
 const RootProvider = ({ children }: PropsWithChildren) => (
   <IntlContextProvider>
     <ErrorBoundary>
-      <ListContextProvider>
-        <AppLoaderProvider>
-          <HeaderTitleProvider>
-            {children}
-          </HeaderTitleProvider>
-        </AppLoaderProvider>
-      </ListContextProvider>
+      <ThemeContextProvider>
+        <ListContextProvider>
+          <AppLoaderProvider>
+            <HeaderTitleProvider>
+              {children}
+            </HeaderTitleProvider>
+          </AppLoaderProvider>
+        </ListContextProvider>
+      </ThemeContextProvider>
     </ErrorBoundary>
   </IntlContextProvider>
 )

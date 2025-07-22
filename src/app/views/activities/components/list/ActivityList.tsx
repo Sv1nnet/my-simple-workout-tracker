@@ -152,7 +152,14 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
             dataSource={activities}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: ActivityListItem) => (
-              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} {...onTouchHandlers}>
+              <SelectableList.Item
+                data-selectable-id={item.id}
+                key={item.id}
+                onContextMenu={onContextMenu}
+                onClick={onSelect}
+                $selected={selected[item.id]}
+                {...onTouchHandlers}
+              >
                 <ActivityItem
                   loadingActivityId={loadingId}
                   loadActivity={handleLoadActivity}

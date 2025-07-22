@@ -102,6 +102,7 @@ export const RoundsTable = styled.table`
 
 export const THeadCell = styled.th<{ $eachSide?: boolean, $previous?: boolean, $isHours?: boolean, $isTimeType?: boolean }>`
   font-weight: normal;
+  color: var(--text-color);
   padding-left: ${({ $eachSide }) => $eachSide ? '15px' : ''};
   width: ${({ $previous, $eachSide, $isTimeType, $isHours }) => (
     !$previous
@@ -125,6 +126,7 @@ export const THeadCell = styled.th<{ $eachSide?: boolean, $previous?: boolean, $
 
 export const StyledTd = styled.td<{ $hours?: boolean }>`
   text-align: center;
+  color: var(--text-color);
   padding: 0;
   padding-bottom: 5px;
 

@@ -11,7 +11,7 @@ const RoundsUl = styled.ul`
     display: inline-block;
     margin-right: 5px;
     padding-right: 5px;
-    border-right: 2px solid lightgrey;
+    border-right: 2px solid var(--round-divider-color);
     list-style: none;
   }
 `
@@ -21,7 +21,7 @@ const SideRoundsContainer = styled.div`
 `
 
 const RoundCount = styled(Typography.Text)`
-  color: #a5a3a3;
+  color: var(--round-count-color);
 `
 
 const Rounds = ({ rounds, type, hours, activityDictionary }) => (

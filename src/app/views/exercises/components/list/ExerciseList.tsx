@@ -10,6 +10,7 @@ import { SelectableList } from 'app/components'
 import { useMounted } from 'app/hooks'
 import { useNavigate } from 'react-router'
 import { exerciseApi } from 'app/store/slices/exercise/api'
+import useItemImagePlaceholder from 'app/hooks/useItemImagePlaceholder'
 
 export type ApiDeleteExerciseError = {
   data: ExerciseDeleteError;
@@ -37,6 +38,7 @@ export interface IExerciseList {
 }
 
 const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, containerRef, error, isLoading, isDeleting, isCopying, exercises }) => {
+  const [ itemImagePlaceholder ] = useItemImagePlaceholder()
   const { isMounted, useHandleMounted } = useMounted()
   const [ isSelectionDisabled, setIsSelectionDisabled ] = useState(false)
   const [ exercisesToDelete, setExercisesToDelete ] = useState({})
@@ -155,8 +157,17 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, conta
             dataSource={exercises}
             locale={{ emptyText: isLoading ? common.loading : common.no_data }}
             renderItem={(item: Omit<Exercise, 'image'> & { image: Image }) => (
-              <SelectableList.Item data-selectable-id={item.id} key={item.id} onContextMenu={onContextMenu} onClick={onSelect} $selected={selected[item.id]} $noPadding {...onTouchHandlers}>
+              <SelectableList.Item
+                data-selectable-id={item.id}
+                key={item.id}
+                onContextMenu={onContextMenu}
+                onClick={onSelect}
+                $selected={selected[item.id]}
+                $noPadding
+                {...onTouchHandlers}
+              >
                 <ExerciseItem
+                  itemImagePlaceholder={itemImagePlaceholder}
                   listEl={containerRef}
                   loadingExerciseId={loadingId}
                   loadExercise={handleLoadExercise}

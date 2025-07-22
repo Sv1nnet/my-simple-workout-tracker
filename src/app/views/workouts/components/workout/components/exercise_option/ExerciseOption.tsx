@@ -4,7 +4,6 @@ import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
 import { Dayjs } from 'dayjs'
 import { FC } from 'react'
-import { theme } from 'styles/vars'
 
 const OptionContainer = styled.div<{ $disabled: boolean }>`
   display: flex;
@@ -12,7 +11,7 @@ const OptionContainer = styled.div<{ $disabled: boolean }>`
   height: 100%;
   align-items: center;
   .ant-typography {
-    color: ${({ $disabled }) => $disabled ? theme.disabledColor : ''};
+    color: ${({ $disabled }) => $disabled ? 'var(--disabled-color)' : ''};
     text-wrap: auto;
     text-wrap-mode: wrap;
   }

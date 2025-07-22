@@ -9,6 +9,16 @@ const StyledButton = styled(Button)`
   margin: 5px auto 0;
   width: calc(100% - 10px);
   overflow: hidden;
+  background: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--border-color-base);
+  transition-property: background, border-color, box-shadow;
+
+  &:hover, &:focus {
+    background: var(--background-color);
+    color: var(--text-color);
+    border-color: var(--primary-color);
+  }
 
   & > span {
     position: relative;

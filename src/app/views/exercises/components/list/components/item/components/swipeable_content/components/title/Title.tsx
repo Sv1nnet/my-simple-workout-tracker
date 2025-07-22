@@ -4,6 +4,7 @@ import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
 import { FC } from 'react'
 import { Dayjs } from 'dayjs'
+import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 
 export interface ITitle {
   title: string
@@ -15,6 +16,8 @@ export interface ITitle {
 }
 
 const Title: FC<ITitle> = ({ title, repeats, time, weight, massUnit = 'kg', payloadDictionary }) => {
+  const theme = useThemeContext()
+
   repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
   time = time
     ? timeToHms(
@@ -35,7 +38,7 @@ const Title: FC<ITitle> = ({ title, repeats, time, weight, massUnit = 'kg', payl
   return (
     <div>
       <LoadType>
-        {loadTypeText && <Typography.Text type="secondary">{loadTypeText}</Typography.Text>}
+        {loadTypeText && <Typography.Text type="secondary" color={theme.styles.textColorSecondary}>{loadTypeText}</Typography.Text>}
       </LoadType>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <StyledTitle level={4}>{title}</StyledTitle>

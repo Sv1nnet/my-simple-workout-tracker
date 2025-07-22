@@ -11,4 +11,8 @@ export const OptionContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  .ant-btn-dangerous {
+    background-color: var(--background-color);
+  }
 `

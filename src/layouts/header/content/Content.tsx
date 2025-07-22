@@ -23,8 +23,18 @@ const Wrapper = styled.div`
     .ant-select-selector {
       padding-left: 2px;
       padding-right: 2px;
+
+      background-color: var(--background-color);
+      color: var(--textColor);
+      border-color: var(--border-color-base);
     }
   }
+`
+
+const Label = styled.span`
+  color: var(--text-color);
+  padding-left: 12px;
+  padding-right: 12px;
 `
 
 const OptionsContainer = styled.div`
@@ -69,11 +79,11 @@ const Content = () => {
         options={[
           {
             value: 'eng',
-            label: <span style={{ paddingLeft: 12, paddingRight: 12 }}>EN</span>,
+            label: <Label>EN</Label>,
           },
           {
             value: 'ru',
-            label: <span style={{ paddingLeft: 12, paddingRight: 12 }}>РУ</span>,
+            label: <Label>РУ</Label>,
           },
         ]}
       />

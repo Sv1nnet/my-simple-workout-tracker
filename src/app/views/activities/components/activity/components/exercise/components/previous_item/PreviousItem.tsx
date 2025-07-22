@@ -1,7 +1,7 @@
-import { theme } from 'styles/vars'
 import { timeToHms } from 'app/utils/time'
 import { FC } from 'react'
 import { Container, Diff, Value } from './components/styled'
+import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 
 
 export interface IPreviousItem {
@@ -20,8 +20,10 @@ export interface IPreviousItem {
 const zeroEqualValues = [ null, '', '.', '.-', '-.', '-' ]
 
 const PreviousItem: FC<IPreviousItem> = ({ omitValue, comparator, curr, prev, isTimeType, hours, marginTop }) => {
+  const theme = useThemeContext()
+
   let diff = zeroEqualValues.some(value => curr === value) ? 0 : ((+curr * 1000) - ((prev ?? +curr) * 1000)) / 1000
-  const color = comparator.neg(diff, 0) ? theme.errorColor : comparator.pos(diff, 0) ? theme.resultPositiveColor : theme.textColorSecondary
+  const color = comparator.neg(diff, 0) ? theme.styles.errorColor : comparator.pos(diff, 0) ? theme.styles.resultPositiveColor : theme.styles.textColorSecondary
   const noDiff = Math.abs(diff) === 0
   const sign = diff > 0 ? '+' : '-'
   diff = Math.abs(Math.floor(diff * 1000) / 1000)

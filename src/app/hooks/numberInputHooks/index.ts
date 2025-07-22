@@ -1,5 +1,5 @@
 import { ChangeEvent, ClipboardEvent, ChangeEventHandler, ClipboardEventHandler, FocusEvent, FocusEventHandler, MutableRefObject, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { FLOAT_REGEX, isFloat, isInt, isNegInt, isPos, isPosInt, isSeparator, isSignedSeparator, isZero, stringifyValue } from '../utils/validateNumberUtils'
+import { FLOAT_REGEX, isFloat, isInt, isNegInt, isPos, isPosInt, isSeparator, isSignedSeparator, isZero, stringifyValue } from 'app/utils/validateNumberUtils'
 import { isNumber } from 'app/utils/typeCheckers'
 
 /**

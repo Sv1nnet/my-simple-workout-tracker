@@ -1,12 +1,11 @@
 import styled from 'styled-components'
-import { theme } from 'src/styles/vars'
 
 const FaceBody = styled.div`
   position: relative;
   margin: -50px auto 50px;
   width: 200px;
   height: 200px;
-  border: 10px solid ${theme.primaryColor};
+  border: 10px solid var(--primary-color);
   border-radius: 50%;
 `
 const FaceEyeContainer = styled.div`
@@ -19,7 +18,7 @@ const FaceEyeContainer = styled.div`
 const FaceEye = styled.div`
   width: 20px;
   height: 20px;
-  background: ${theme.primaryColor};
+  background: var(--primary-color);
   border-radius: 50%;
 `
 
@@ -29,7 +28,7 @@ const FaceMouth = styled.div`
   width: 25px;
   height: 25px;
   border-radius: 50%;
-  background: ${theme.primaryColor};
+  background: var(--primary-color);
 `
 
 const Face = () => (

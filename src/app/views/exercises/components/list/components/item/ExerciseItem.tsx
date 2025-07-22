@@ -17,6 +17,7 @@ export interface IExerciseForm extends Omit<ExerciseForm, 'muscle_groups'> {
   isLoading?: boolean;
   actionLabels: { edit: string };
   setIsSelectionDisabled: (isDisabled: boolean) => void;
+  itemImagePlaceholder: string;
 }
 
 const ExerciseItem: FC<IExerciseForm> = ({
@@ -35,6 +36,7 @@ const ExerciseItem: FC<IExerciseForm> = ({
   payloadDictionary,
   actionLabels,
   setIsSelectionDisabled,
+  itemImagePlaceholder,
 }) => {
   const [ shouldEditExercise, setShouldEditExercise ] = useState(false)
   
@@ -79,6 +81,7 @@ const ExerciseItem: FC<IExerciseForm> = ({
         style={{ width: '100%' }}
       >
         <SwipeableContent
+          itemImagePlaceholder={itemImagePlaceholder}
           muscle_groups={muscle_groups}
           image={image}
           selected={selected}

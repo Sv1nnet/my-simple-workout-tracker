@@ -1,6 +1,5 @@
 import { Collapse, Checkbox, List, Typography } from 'antd'
 import styled from 'styled-components'
-import { theme } from 'styles/vars'
 
 const { Panel } = Collapse
 const { Title, Text } = Typography
@@ -14,10 +13,10 @@ export const StyledCheckbox = styled(Checkbox)`
 
 export const StyledCollapse = styled(Collapse)<{ $isSelected?: boolean }>`
   width: 100%;
-  background-color: white;
+  background-color: var(--background-color);
   padding-block: 12px;
   border-radius: unset;
-  ${({ $isSelected }) => $isSelected && `background-color: ${theme.ghostPrimaryColor};`}
+  ${({ $isSelected }) => $isSelected && 'background-color: var(--selected-list-item-color);'}
 `
 
 export const TagsContainer = styled.div<{ $isInTitle?: boolean }>`
@@ -98,7 +97,7 @@ export const Description = styled(Typography.Text)`
   padding-bottom: 6px;
   padding-inline: 40px 15px;
   display: block;
-  background-color: white;
+  background-color: var(--background-color);
 `
 
 export const StyledText = styled(Typography.Text)`

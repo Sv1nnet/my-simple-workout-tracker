@@ -19,7 +19,7 @@ export const ImageContainer = styled.div`
   overflow: hidden;
   height: 120px;
   width: 120px;
-  background-color: #f5f5f5;
+  background-color: var(--disabled-background-color);
 `
 
 export const HistoryButtonsContainer = styled.div`
@@ -28,8 +28,37 @@ export const HistoryButtonsContainer = styled.div`
 `
 
 export const StyledRadio = styled(Radio.Group)`
-  & > label.ant-radio-button-wrapper {
+
+& > label.ant-radio-button-wrapper {
+    background-color: var(--background-color);
+    border-color: var(--border-color-base);
     border-width: 2px;
+
+    &.ant-radio-button-wrapper-checked:not([class*=' ant-radio-button-wrapper-disabled']).ant-radio-button-wrapper:first-child {
+      background-color: var(--background-color);
+      border-color: var(--primary-color);
+    }
+
+    &:not(.ant-radio-button-wrapper-checked) {
+      &:before {
+        background-color: var(--border-color-base);
+      }
+    }
+
+    &.ant-radio-button-wrapper-checked {
+      background-color: var(--background-color);
+      border-color: var(--primary-color);
+      
+      &:before {
+        background-color: var(--primary-color);
+      }
+    }
+
+    & svg {
+      line, rect {
+        stroke: var(--text-color);
+      }
+    }
   }
 `
 

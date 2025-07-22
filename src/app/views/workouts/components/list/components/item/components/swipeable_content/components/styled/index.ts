@@ -1,6 +1,5 @@
 import { Checkbox, Collapse, Typography } from 'antd'
 import styled from 'styled-components'
-import { theme } from 'styles/vars'
 
 const { Panel } = Collapse
 
@@ -17,7 +16,7 @@ export const ImageContainer = styled.div`
   align-items: center;
   width: 75px;
   height: 75px;
-  background-color: #f5f5f5;
+  background-color: var(--disabled-background-color);
   & a {
     margin: 0 auto;
   }
@@ -32,7 +31,7 @@ export const StyledBreakText = styled(Typography.Text)`
   width: 100%;
   margin-bottom: 10px;
   font-weight: bold;
-  color: ${theme.textColorSecondary};
+  color: var(--text-color-secondary);
   line-height: 1;
 `
 
@@ -45,10 +44,10 @@ export const StyledCheckbox = styled(Checkbox)`
 
 export const StyledCollapse = styled(Collapse)<{ $isSelected?: boolean }>`
   width: 100%;
-  background-color: white;
+  background-color: var(--background-color);
   padding-block: 12px;
   border-radius: unset;
-  ${({ $isSelected }) => $isSelected && `background-color: ${theme.ghostPrimaryColor};`}
+  ${({ $isSelected }) => $isSelected && 'background-color: var(--selected-list-item-color);'}
 `
 
 export const StyledPanel = styled(Panel)`

@@ -43,6 +43,7 @@ export interface IWorkout extends WorkoutListItem {
   loadWorkout: (id: string) => void;
   listEl: HTMLElement | null;
   actionLabels: { edit: string, start: string };
+  itemImagePlaceholder: string;
   isLoading?: boolean;
 }
 
@@ -60,6 +61,7 @@ const WorkoutItem: FC<IWorkout> = ({
   listEl,
   actionLabels,
   setIsSelectionDisabled,
+  itemImagePlaceholder,
 }) => {
   const [ shouldStartActivity, setShouldStartActivity ] = useState(false)
   const [ shouldEditActivity, setShouldEditActivity ] = useState(false)
@@ -155,6 +157,7 @@ const WorkoutItem: FC<IWorkout> = ({
       >
         <SwipeableContent
           intl={intl}
+          itemImagePlaceholder={itemImagePlaceholder}
           onCollapse={handleCollapse}
           isSelectionEnabled={isSelectionEnabled}
           isSelected={isSelected}

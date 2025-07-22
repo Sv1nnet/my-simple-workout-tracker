@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 export const HistoryItemHeader = styled.h4`
-  border: 1px solid lightgrey;
+  color: var(--text-color);
+  border: 1px solid var(--round-divider-color);
   border-top: none;
   border-left: none;
   margin-bottom: 0;

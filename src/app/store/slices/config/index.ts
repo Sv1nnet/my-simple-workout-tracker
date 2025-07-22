@@ -33,10 +33,17 @@ export const units: Units = {
 } as const
 
 let localLang: Lang = langs.eng
+let theme: Theme = themes.light
 
 if (!isUndefined(localStorage)) {
   try {
-    localLang = (JSON.parse(localStorage.getItem('config')) as { lang: Lang })?.lang ?? langs.eng
+    const configFromLocalStorage = JSON.parse(localStorage.getItem('config')) as IConfigState['data'] || null
+    localLang = configFromLocalStorage?.lang ?? langs.eng
+    theme = configFromLocalStorage?.theme ?? (window?.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? themes.dark
+        : themes.light
+      : theme)
     cookie.set('lang', localLang)
   } catch {
     console.warn('Get lang locally error')
@@ -46,7 +53,7 @@ if (!isUndefined(localStorage)) {
 const initialState: IConfigState = {
   data: {
     lang: localLang,
-    theme: themes.light,
+    theme,
     units: units.kg,
   },
   updateRequestCount: 0,
@@ -132,5 +139,8 @@ export const authSlice = createSlice({
 export const { changeLang, changeTheme, changeUnits } = authSlice.actions
 
 export const selectLang = (state: AppState) => state.config.data.lang
+export const selectTheme = (state: AppState) => state.config.data.theme
+export const selectUnits = (state: AppState) => state.config.data.units
+export const selectConfig = (state: AppState) => state.config.data
 
 export default authSlice.reducer

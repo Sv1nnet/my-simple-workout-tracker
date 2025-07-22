@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { renderHook, act } from '@testing-library/react-hooks'
-import { useFixNumber, useValidateNumber } from '../numberInputHooks'
+import { useFixNumber, useValidateNumber } from '..'
 
 describe('useFixNumber', () => {
   const testCases = [

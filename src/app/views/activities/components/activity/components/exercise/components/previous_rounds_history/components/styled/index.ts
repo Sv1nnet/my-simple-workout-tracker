@@ -34,6 +34,6 @@ export const StyledTr = styled.tr<{ $eachSide?: boolean }>`
     right: 0;
     height: ${({ $eachSide }) => !$eachSide ? '22px' : '100%'};
     width: 2px;
-    background-color: lightgrey;
+    background-color: var(--round-divider-color);
   }
 `

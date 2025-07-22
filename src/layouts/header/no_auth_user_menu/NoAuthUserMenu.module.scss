@@ -10,6 +10,11 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    background: var(--background-color);
+
+    & :global(li.ant-dropdown-menu-item:hover), :global(li.ant-dropdown-menu-item.ant-dropdown-menu-item-active) {
+      background-color: var(--ghost-primary-color-dark);
+    }
 
     & li:last-child {
       position: absolute;

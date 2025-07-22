@@ -2,7 +2,6 @@ import { FC, ReactNode, useLayoutEffect, useState } from 'react'
 import styled from 'styled-components'
 import { PageHeader } from 'antd'
 import { useLocation } from 'react-router'
-import { theme } from 'styles/vars'
 import { NavTemplate } from 'layouts/nav'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
@@ -14,10 +13,12 @@ const ContentContainer = styled.div<{ $height?: string }>`
   height: calc(${({ $height }) => `${$height || '100vh'}`} - 57px - 74px);
   overflow-y: scroll;
   position: relative;
+  background-color: var(--background-color);
 `
 
 const StyledPageHeader = styled(PageHeader)`
-  background-color: ${theme.primaryColor};
+  background-color: var(--primary-color);
+
   .ant-page-header-heading-extra {
     display: flex;
     align-items: center;

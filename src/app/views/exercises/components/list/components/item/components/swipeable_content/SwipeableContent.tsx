@@ -1,6 +1,5 @@
 import routes from 'app/constants/end_points'
 import { List, Image as AntImage } from 'antd'
-import itemImagePlaceholder from 'constants/item_image_placeholder'
 import { ImageContainer, StyledCheckbox, StyledTag, TagsContainer, Title, InnerContainer } from './components'
 import { MuscleGroup } from 'app/store/slices/muscleGroup/types'
 import { Image } from 'app/store/slices/exercise/types'
@@ -19,6 +18,7 @@ export type SwipeableContentProps = {
   mass_unit: string
   payloadDictionary: Record<string, string>
   setIsSelectionDisabled: (isDisabled: boolean) => void
+  itemImagePlaceholder: string;
 }
 
 const SwipeableContent = ({
@@ -33,6 +33,7 @@ const SwipeableContent = ({
   mass_unit,
   payloadDictionary,
   setIsSelectionDisabled,
+  itemImagePlaceholder,
 }) => {
   const { isSwiping, direction } = useSwipeableContext()
 

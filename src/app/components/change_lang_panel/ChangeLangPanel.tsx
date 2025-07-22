@@ -5,7 +5,7 @@ import { SelectorContainer, OptionsContainer } from './components/styled'
 import { Lang } from 'store/slices/config/types'
 import { Select } from 'antd'
 import { TranslationOutlined } from '@ant-design/icons'
-import { theme } from 'styles/vars'
+import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 
 export interface IChangeLangPanel {
   className?: string;
@@ -15,6 +15,7 @@ export interface IChangeLangPanel {
 const ChangeLangPanel: FC<IChangeLangPanel> = ({ className = '', onChange }) => {
   const [ isOpen, setIsOpen ] = useState(false)
   const $flagsContainer = useRef(null)
+  const { styles } = useThemeContext()
   const lang = useAppSelector(selectLang)
   const dispatch = useAppDispatch()
 
@@ -30,7 +31,7 @@ const ChangeLangPanel: FC<IChangeLangPanel> = ({ className = '', onChange }) => 
   return (
     <SelectorContainer className={className} ref={$flagsContainer}>
       <label htmlFor="lang" style={{ cursor: 'pointer' }}>
-        <TranslationOutlined style={{ fontSize: 24, marginRight: 6, color: theme.primaryColor }} />
+        <TranslationOutlined style={{ fontSize: 24, marginRight: 6, color: styles.primaryColor }} />
       </label>
       <Select
         id="lang"

@@ -1,6 +1,5 @@
 import { HTMLAttributes } from 'react'
 import styled from 'styled-components'
-import { theme } from 'styles/vars'
 
 const StyledContainer = styled.div<{ $isActive: boolean }>`
   height: 100%;
@@ -8,7 +7,7 @@ const StyledContainer = styled.div<{ $isActive: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  background: ${({ $isActive }) => $isActive ? theme.actionColors.start.active : theme.actionColors.start.inactive};
+  background: ${({ $isActive }) => $isActive ? 'var(--action-color-start-active)' : 'var(--action-color-start-inactive)'};
   transition: background 0.15s ease;
 `
 

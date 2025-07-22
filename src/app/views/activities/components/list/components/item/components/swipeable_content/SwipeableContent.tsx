@@ -57,6 +57,7 @@ const SwipeableContent = ({
   useEffect(() => {
     setIsSelectionDisabled(direction !== SwipeableDirection.NONE || isSwiping)
   }, [ isSwiping, direction ])
+
   return (
     <>
       <StyledCollapse
