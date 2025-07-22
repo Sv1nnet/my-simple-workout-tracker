@@ -22,6 +22,7 @@ import {
   ToggleEdit,
 } from './styled'
 import SwipeActions from './swipe_actions/SwipeActions'
+import ThemeSwitch from './theme_switch/ThemeSwitch'
 
 export {
   AuthTemplate,
@@ -46,4 +47,5 @@ export {
   SelectWithItemCreating,
   Swipeable,
   SwipeActions,
+  ThemeSwitch,
 }

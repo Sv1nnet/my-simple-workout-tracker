@@ -29,6 +29,10 @@ body.dark-theme {
         }
       }
     }
+
+    .theme-switch {
+      background-color: var(--background-color);
+    }
   }
 
   button.list-btn, .list-btn > button {

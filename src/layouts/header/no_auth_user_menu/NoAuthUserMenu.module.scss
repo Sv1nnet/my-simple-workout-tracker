@@ -13,10 +13,14 @@
     background: var(--background-color);
 
     & :global(li.ant-dropdown-menu-item:hover), :global(li.ant-dropdown-menu-item.ant-dropdown-menu-item-active) {
-      background-color: var(--ghost-primary-color-dark);
+      background-color: var(--ghost-primary-color);
     }
 
-    & li:last-child {
+    & .user-menu-dropdown__theme-switch {
+      background-color: transparent;
+    }
+
+    & .user-menu-dropdown__logout-button {
       position: absolute;
       bottom: 0;
       width: 100%;

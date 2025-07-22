@@ -15,6 +15,7 @@ import { ACTIVITY_PAGE_TYPE, selectPageInfo as selectActivityPageInfo } from 'ap
 import { exerciseApi } from 'store/slices/exercise/api'
 import { workoutApi } from 'store/slices/workout/api'
 import { ACTIVITY_TAG_TYPES, activityApi } from 'store/slices/activity/api'
+import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 
 
 const StyledAvatar = styled(Avatar)`
@@ -26,6 +27,7 @@ const StyledAvatar = styled(Avatar)`
 
 const NoAuthUserMenu = () => {
   const navigate = useNavigate()
+  const { theme, changeTheme } = useThemeContext()
 
   const { state: isOpen, toggle: toggleIsOpen, setFalse: closeMenu } = useToggle(false)
   const { state: isImportMenuOpen, setTrue: openImportMenu, setFalse: closeImportMenu } = useToggle(false)
@@ -84,7 +86,11 @@ const NoAuthUserMenu = () => {
         }
       })
     },
-  }), [ lang, location, activityPageInfo, workoutPageInfo, exercisePageInfo ])
+    onThemeSwitch: (checked) => {
+      changeTheme(checked ? 'light' : 'dark')
+    },
+    isLightTheme: theme === 'light',
+  }), [ lang, location, activityPageInfo, workoutPageInfo, theme, changeTheme, exercisePageInfo ])
 
   const handleAvatarClick = (e) => {
     e.stopPropagation()

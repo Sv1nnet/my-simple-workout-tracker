@@ -2,23 +2,32 @@ import { IIntlContextValue } from 'app/contexts/intl/IntContextProvider'
 import browserDBLoader from 'app/store/utils/BrowserDB/browserDB.loader'
 import { IndexedDBTable } from 'app/utils/IndexedDBUtils'
 import parseImportedDataFile, { BaseParsedDataEntity } from 'app/utils/parseImportedData'
-import { Button, notification } from 'antd'
+import { Button, MenuProps, notification } from 'antd'
 import { LogoutButton } from '../components'
 import { BASE_ROUTES } from 'src/router'
 import { NavigateFunction } from 'react-router'
+import style from '../NoAuthUserMenu.module.scss'
+import { SwitchChangeEventHandler } from 'antd/lib/switch'
+import { ThemeSwitch } from 'app/components'
+
+
 
 const getMenuItems = ({
   navigate,
   closeMenu,
   openImportMenu,
   intl,
+  isLightTheme,
   onFileChange,
+  onThemeSwitch,
   onImportFinished,
 }: {
   navigate: NavigateFunction
   closeMenu: () => void
   openImportMenu: () => void
   intl: IIntlContextValue['intl']
+  isLightTheme?: boolean,
+  onThemeSwitch?: SwitchChangeEventHandler,
   onFileChange: (file: File) => void,
   onImportFinished?: (data: {
     data: {
@@ -30,7 +39,7 @@ const getMenuItems = ({
     isSuccess: boolean,
     error: Error | Event | null,
   }) => void
-}) => {
+}): MenuProps['items'] => {
   const showErrorNotification = (description?: string) => {
     notification.error({
       message: 'Ошибка',
@@ -142,7 +151,15 @@ const getMenuItems = ({
       ),
     },
     {
+      key: 'themeSwitch',
+      className: style['user-menu-dropdown__theme-switch'],
+      label: (
+        <ThemeSwitch onChange={onThemeSwitch} isLightTheme={isLightTheme} />
+      ),
+    },
+    {
       key: 'logout',
+      className: style['user-menu-dropdown__logout-button'],
       label: <LogoutButton onClick={closeMenu} />,
     },
   ]

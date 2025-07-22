@@ -3,6 +3,7 @@ import { changeTheme as changeThemeAction, selectTheme } from 'app/store/slices/
 import { Theme } from 'app/store/slices/config/types'
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo } from 'react'
 import { darkTheme, theme } from 'styles/vars'
+import { applyTheme } from 'utils/theme'
 
 export type ThemeContextType = {
   theme: Theme
@@ -23,6 +24,7 @@ const ThemeContextProvider = ({ children }: PropsWithChildren) => {
   const dispatch = useAppDispatch()
 
   const changeTheme = useCallback((newTheme: Theme) => {
+    applyTheme(newTheme)
     dispatch(changeThemeAction(newTheme))
   }, [ dispatch ])
   
