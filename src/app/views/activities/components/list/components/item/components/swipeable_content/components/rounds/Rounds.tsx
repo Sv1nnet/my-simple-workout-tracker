@@ -21,7 +21,9 @@ const SideRoundsContainer = styled.div`
 `
 
 const RoundCount = styled(Typography.Text)`
-  color: var(--round-count-color);
+  span&.ant-typography {
+    color: var(--round-count-color);
+  }
 `
 
 const Rounds = ({ rounds, type, hours, activityDictionary }) => (
