@@ -74,6 +74,17 @@ body.dark-theme {
     &-title, &-body, &-close-x {
       color: var(--text-color);
     }
+
+    &-confirm-body {
+      .ant-modal-confirm {
+        &-title {
+          color: var(--heading-color);
+        }
+        &-content {
+          color: var(--text-color);
+        }
+      }
+    }
   }
 
   .ant-list-empty-text {
