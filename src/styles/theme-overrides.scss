@@ -168,6 +168,10 @@ body.dark-theme {
       color: var(--disabled-color);
     }
 
+    &.ant-select-disabled.ant-select-multiple .ant-select-selector .ant-select-selection-item {
+      background-color: var(--tag-background-color-disabled);
+    }
+
     &.ant-select-disabled .ant-select-selector .ant-select-selection-item .ant-typography {
       color: var(--disabled-color);
     }

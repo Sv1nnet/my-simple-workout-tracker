@@ -94,7 +94,10 @@
   --html-background-light: linear-gradient(to bottom, var(--primary-color-light) 50%, white 50%);
 
   --tag-background-color-light: #fafafa;
-  --tag-background-color-dark: #444444;
+  --tag-background-color--disabled-light: #fafafa;
+
+  --tag-background-color-dark: #2f2f2f;
+  --tag-background-color-disabled-dark: #444444;
 
   --dropdown-box-shadow-light: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
   --dropdown-box-shadow-dark: 0 3px 6px -4px rgb(0 0 0), 0 6px 16px 0 rgb(0 0 0 / 85%), 0 9px 28px 8px rgb(0 0 0 / 10%);
@@ -117,6 +120,7 @@ body.light-theme {
   --box-shadow-base: var(--box-shadow-base-light);
   --selected-list-item-color: var(--selected-list-item-color-light);
   --tag-background-color: var(--tag-background-color-light);
+  --tag-background-color-disabled: var(--tag-background-color-disabled-light);
   --nav-border-color: var(--nav-border-color-light);
   --avatar-background: var(--avatar-background-light);
   --round-count-color: var(--round-count-color-light);
@@ -149,6 +153,7 @@ body.dark-theme {
   --box-shadow-base: var(--box-shadow-base-dark);
   --selected-list-item-color: var(--selected-list-item-color-dark);
   --tag-background-color: var(--tag-background-color-dark);
+  --tag-background-color-disabled: var(--tag-background-color-disabled-dark);
   --nav-border-color: var(--nav-border-color-dark);
   --avatar-background: var(--avatar-background-dark);
   --round-divider-color: var(--round-divider-color-dark);

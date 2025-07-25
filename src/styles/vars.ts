@@ -20,6 +20,7 @@ export const theme = {
   borderColorBase: '#d9d9d9', // major border color
   selectedListItemColor: '#e7f5f0',
   tagBackgroundColor: '#fafafa',
+  tagBackgroundColorDisabled: '#fafafa',
   avatarBackground: '#ccc',
   boxShadowBase: '0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05)', // major shadow for layers
   roundColor: '#a5a3a3',
@@ -41,7 +42,8 @@ export const darkTheme = {
   ...theme,
   headingColor: 'rgba(255, 255, 255, 0.85)',
   navBorderColor: '#4c4c4c',
-  tagBackgroundColor: '#353535',
+  tagBackgroundColor: '#2f2f2f',
+  tagBackgroundColorDisabled: '#444444',
   selectedListItemColor: '#22352e',
   avatarBackground: '#7a7a7a',
   textColor: '#d1d1d1d1',
