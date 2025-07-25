@@ -37,12 +37,14 @@ const PreviousItem: FC<IPreviousItem> = ({ omitValue, comparator, curr, prev, is
             : curr}
         </Value>
       )}
-      <Diff $color={color}>
+      {prev && (
+        <Diff $color={color}>
         &nbsp;{diff !== 0 ? sign : ''}{
-          isTimeType
-            ? timeToHms(diff, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })
-            : diff}
-      </Diff>
+            isTimeType
+              ? timeToHms(diff, { hms: ':', zeroIncluded: true, leadingZero: true, cutHours: !hours })
+              : diff}
+        </Diff>
+      )}
     </Container>
   )
 }

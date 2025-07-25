@@ -33,14 +33,14 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds,
   const { getByExerciseId, loadHistory, isLoading: isHistoryLoading } = useHistoryContext()
   const { selectedWorkout, form } = useActivityContext()
 
-  const { results: _history, total, pagesLoaded } = getByExerciseId(exerciseId) || {}
+  const { results: _history, total, hasLast, pagesLoaded } = getByExerciseId(exerciseId) || {}
 
   const [ history, lastHistoryItem ] = useMemo(() => {
     if (isLoading && !_history) return [ null, null ]
 
     const hist = [ ..._history ]
-    const _lastHistoryItem = hist.length && hist.length < total ? hist.pop() : hist[hist.length - 1]
-    return [ hist, _lastHistoryItem ]
+    const last = hasLast ? hist[hist.length - 1] : hist.pop()
+    return [ hist, last ]
   }, [ isLoading, _history, total ])
 
   const $vList = useRef<IVirtualListRef | null>(null)
@@ -127,7 +127,7 @@ const History = ({ exerciseId, loaderDictionary, isLoading, exerciseRef, rounds,
             data={history}
             overscanCount={8}
             listComponent={ListComponent}
-            itemContainerRenderer={({ style, index, children, key }) => <ItemContainer key={key} $last={total === index + 1} style={style}>{children}</ItemContainer>}
+            itemContainerRenderer={({ style, children, key }) => <ItemContainer key={key} style={style}>{children}</ItemContainer>}
           >
             {(historyItem, index) => (
               <>

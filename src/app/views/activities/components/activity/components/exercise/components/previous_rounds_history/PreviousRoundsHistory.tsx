@@ -25,7 +25,16 @@ export type PreviousRoundsHistoryProps = {
   hours: boolean;
 }
 
-const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, comparator, loaderDictionary, eachSide, isTimeType, hours }: PreviousRoundsHistoryProps) => {
+const PreviousRoundsHistory = ({
+  current = [],
+  isLoading,
+  history: _history,
+  comparator,
+  loaderDictionary,
+  eachSide,
+  isTimeType,
+  hours,
+}: PreviousRoundsHistoryProps) => {
   const history = useMemo(() => _history?.map((result, i) => [
     isTimeType
       ? eachSide && isEachSideRound(current[i])
@@ -107,7 +116,13 @@ const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, com
                   {previous.map((el, i, arr) => (
                     <StyledTd key={i}>
                       <PreviousItemContainer $isTimeType={isTimeType} key={i}>
-                        <PreviousItem omitValue={i === 0} comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
+                        <PreviousItem
+                          omitValue={i === 0}
+                          comparator={comparator}
+                          curr={el} prev={arr[i + 1]}
+                          isTimeType={isTimeType}
+                          hours={hours}
+                        />
                       </PreviousItemContainer>
                     </StyledTd>
                   ))}
@@ -118,7 +133,13 @@ const PreviousRoundsHistory = ({ current = [], isLoading, history: _history, com
                   {previous.map((el, i, arr) => i !== arr.length - 1 && (
                     <StyledTd key={i}>
                       <PreviousItemContainer $isTimeType={isTimeType} key={i}>
-                        <PreviousItem omitValue={i === 0} comparator={comparator} curr={el} prev={arr[i + 1]} isTimeType={isTimeType} hours={hours} />
+                        <PreviousItem
+                          omitValue={i === 0}
+                          comparator={comparator}
+                          curr={el} prev={arr[i + 1]}
+                          isTimeType={isTimeType}
+                          hours={hours}
+                        />
                       </PreviousItemContainer>
                     </StyledTd>
                   ))}

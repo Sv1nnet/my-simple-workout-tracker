@@ -91,6 +91,7 @@ export type HistoryResponseData<T = string> = {
       date: T,
       results: HistoryResult[]
     }[],
+    hasLast: boolean,
     total: number,
   }
 }

@@ -223,11 +223,15 @@ const handlers = {
 
     // we need to offset by 1 if activity_id is provided because current activity is already loaded
     // and we need next 30 ones
-    if (activity_id) offset = activitiesWithWorkout.findIndex(activity => activity.id === activity_id) + (page <= 1 ? 1 : 0)
+    if (activity_id) {
+      offset = activitiesWithWorkout.findIndex(activity => activity.id === activity_id) + 1
+    }
+
 
     const startIndex = ((page - 1) * byPage) + offset
     const endIndex = startIndex + byPage + 1 // byPage (30 by default) + 1 to get byPage and 1 activity more
     const activitiesByPage = activitiesWithWorkout.slice(startIndex, endIndex)
+    const hasLast = endIndex >= activitiesWithWorkout.length
 
     const workout = await browserDB.db?.get(workoutsTable, workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
 
@@ -245,7 +249,7 @@ const handlers = {
 
       return acc
     }, workout.exercises.reduce((acc, exercise) => {
-      acc[exercise._id] = { items: [], total: activitiesWithWorkout.length }
+      acc[exercise._id] = { items: [], hasLast, total: activitiesWithWorkout.length }
       return acc
     }, {}))
 

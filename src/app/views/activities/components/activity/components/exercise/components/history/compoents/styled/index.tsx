@@ -12,7 +12,7 @@ export const Container = styled.div`
   margin-right: 10px;
 `
 
-export const ItemContainer = styled.div<{ $last?: boolean }>`
+export const ItemContainer = styled.div`
   text-align: center;
   overflow-y: hidden;
   &:last-of-type ${Header}, &:last-of-type ${Body} {
@@ -20,13 +20,16 @@ export const ItemContainer = styled.div<{ $last?: boolean }>`
   }
   &:after {
     content: '';
-    display: ${({ $last }) => $last ? 'none' : 'block'};
+    display: block;
     width: 1px;
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     background-color: var(--round-divider-color);
+  }
+  &:last-of-type:after {
+    display: none;
   }
 `
 

@@ -18,6 +18,7 @@ export type ExerciseHistory = {
   [key: string]: {
     results: HistoryItem[]
     total: number
+    hasLast: boolean
     pagesLoaded: number
   }
 }
@@ -45,6 +46,8 @@ export type HistoryProviderProps = {
   >
 }
 
+const BASE_HISTORY_PERIOD = 30
+
 const initialContextValue: HistoryContextType = {
   history: {},
   isLoading: false,
@@ -62,7 +65,8 @@ const getHistory = (historyData: HistoryResponseData) => Object.entries({ ...his
       date: dayjs(item.date),
       results: item.results,
     })),
-    pagesLoaded: getPagesLoaded(results.items.length - 2, 30),
+    pagesLoaded: getPagesLoaded(results.items.length - 2, BASE_HISTORY_PERIOD),
+    hasLast: results.hasLast,
     total: results.total,
   }
   return acc
@@ -72,6 +76,7 @@ const HistoryProvider = ({ children, historyData, loadHistory, isLoading }: Hist
   const [ history, setHistory ] = useState<ExerciseHistory>(() => historyData ? getHistory(historyData) : {})
 
   useOnPreviousChange((_, [ nextHistoryData ]) => {
+    debugger
     const exerciseIds = Object.keys(nextHistoryData)
     const newHistory = getHistory(nextHistoryData)
 
@@ -80,7 +85,8 @@ const HistoryProvider = ({ children, historyData, loadHistory, isLoading }: Hist
       const newResults = acc[exerciseId]?.results ? [ ...acc[exerciseId].results.slice(0, -offset), ...newHistory[exerciseId].results ] : newHistory[exerciseId].results
       const newExerciseHistory = {
         results: newResults,
-        pagesLoaded: getPagesLoaded(newResults.length > 30 ? newResults.length - offset : newResults.length, 30),
+        hasLast: newHistory[exerciseId].hasLast,
+        pagesLoaded: getPagesLoaded(newResults.length > BASE_HISTORY_PERIOD ? newResults.length - offset : newResults.length, BASE_HISTORY_PERIOD),
         total: newHistory[exerciseId].total,
       }
       acc[exerciseId] = newExerciseHistory
