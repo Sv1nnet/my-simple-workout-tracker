@@ -12,9 +12,11 @@ import EntityModel from 'store//utils/EntityModel'
 import { MuscleGroupModel } from 'store/slices/muscleGroup/models/MuscleGroupsModel'
 import { GetExerciseServerPayload } from './types'
 import { WorkoutModel } from 'store/slices/workout/models/WorkoutModel'
+import { ActivityModel } from 'store/slices/activity/models/ActivityModel'
+import { parseIfString } from 'app/utils/parsers'
 
-const parseEntityStr = <T extends { archived: boolean, title: string }>(archivedPostfix: string) => (entity: string): T => {
-  const parsed: T = JSON.parse(entity)
+const parseEntityStr = <T extends { archived?: boolean, title: string }>(archivedPostfix: string) => (entity: string | T): T => {
+  const parsed: T = parseIfString<T>(entity)
   if (parsed.archived) parsed.title = `${parsed.title} (${archivedPostfix})`
   return parsed
 }
@@ -28,20 +30,16 @@ const sortByTitle = (a: { title: string }, b: { title: string }) => {
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
     const [ ,,,id ] = args
-    const { exercisesTable, workoutsTable, activitiesTable } = browserDB.getTables()
-    const exercise = JSON.parse(await browserDB.db?.get(exercisesTable, id))
-    
+    const exercise = await ExerciseModel.getOneFromDB(id)
+
     let isInActivity = false
 
     if (exercise.in_workouts.length) {
-      const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
-        .map(activity => JSON.parse(activity))
+      const allActivities = await ActivityModel.getAllFromDB()
 
-      const workouts = (await browserDB.db?.getAllValues(workoutsTable))
-        .map(workout => JSON.parse(workout))
+      const workouts = (await WorkoutModel.getAllFromDB())
         .filter(workout => exercise.in_workouts.includes(workout.id))
         .map(workout => new WorkoutModel(workout))
-
 
       for (const workout of workouts) {
         if (await workout.isInActivity(allActivities)) {
@@ -55,7 +53,7 @@ const handlers = {
       data: {
         data: {
           ...exercise,
-          is_in_activity: isInActivity,
+          is_in_activity: isInActivity, // to prevent from changing type of payload
         },
         success: true,
         error: null,
@@ -63,8 +61,6 @@ const handlers = {
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
-    
     let archived = false
     let workoutId = params?.get('workoutId') || ''
     let lang = params?.get('lang') || JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
@@ -79,13 +75,11 @@ const handlers = {
       ))
     }
 
-    const muscleGroupList = (await browserDB.db?.getAllValues(muscleGroupsTable))
-      .filter(Boolean)
+    const muscleGroupList = (await MuscleGroupModel.getAllFromDB())
       .map(parseEntityStr<MuscleGroupModel>(intl.rest.muscle_group.state.archived[lang]))
       .sort(sortByTitle)
 
-    const list = (await browserDB.db?.getAllValues(exercisesTable))
-      .filter(Boolean)
+    const list = (await ExerciseModel.getAllFromDB())
       .map(parseEntityStr<ExerciseModel>(intl.pages.exercises.state.archived[lang]))
       .filter(exercise => exercise.archived ? archived && exercise.in_workouts.includes(workoutId) : !exercise.archived)
       .map(exercise => ({
@@ -101,7 +95,6 @@ const handlers = {
     return { data: { data: list, success: true, error: null } }
   },
   create: async ({ body }: { body: FormData }) => {
-    const { muscleGroupsTable } = browserDB.getTables()
     const bodyKeys = body.keys()
     let data: Partial<ExerciseModelConstructorParameter> = {}
 
@@ -113,9 +106,7 @@ const handlers = {
 
     try {
       const exercise = new ExerciseModel(data as ExerciseModelConstructorParameter)
-      const muscleGroupsInExercise = (await browserDB.db?.getAllValues(muscleGroupsTable))
-        .filter(Boolean)
-        .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
+      const muscleGroupsInExercise = (await MuscleGroupModel.getAllFromDB())
         .filter(muscleGroup => data.muscle_groups.includes(muscleGroup.id))
 
       await Promise.all(muscleGroupsInExercise.map(muscleGroup => muscleGroup.update({
@@ -141,33 +132,47 @@ const handlers = {
     const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
 
     try {
-      const allExercises: PlainExerciseObject[] = (await browserDB.db?.getAllValues(exercisesTable)).map(value => JSON.parse(value))
+      const allExercises = await ExerciseModel.getAllFromDB()
       const exercisesToCopy = allExercises.filter(exercise => ids.find(id => id === exercise.id)).map(exercise => new ExerciseModel(exercise))
-      const muscleGroupsInExercises = (await browserDB.db?.getAllValues(muscleGroupsTable))
-        .filter(Boolean)
-        .map(muscleGroup => JSON.parse(muscleGroup))
+      const muscleGroupsInExercises = (await MuscleGroupModel.getAllFromDB())
         .filter(muscleGroup => exercisesToCopy.some(exercise => exercise.muscle_groups.includes(muscleGroup.id)))
         .map(muscleGroup => new MuscleGroupModel(muscleGroup))
 
-      await Promise.all(exercisesToCopy.map(async (exercise) => {
-        let newExercise = new ExerciseModel({
+      // Create all new exercises with new IDs
+      const newExercises = exercisesToCopy.map((exercise) => {
+        const newExercise = new ExerciseModel({
           ...exercise,
           title: `${exercise.title} ${lang === 'ru' ? '(копия)' : '(copy)'}`,
           is_in_workout: false,
           in_workouts: [],
         })
         newExercise.update({ id: EntityModel.createId() })
-        newExercise = await newExercise.save()
+        return newExercise
+      })
 
-        const muscleGroupsInNewExercise = muscleGroupsInExercises.filter(muscleGroup => exercisesToCopy.some(_exercise => _exercise.muscle_groups.includes(muscleGroup.id)))
+      // Batch insert all new exercises using batchInsert method
+      const exerciseDataToInsert = newExercises.map(exercise => ({
+        key: exercise.id,
+        value: exercise.toPlainObject(),
+      }))
+
+      await browserDB.db?.batchInsert(exercisesTable, exerciseDataToInsert)
+
+      // Update muscle groups for all new exercises
+      const muscleGroupUpdates = newExercises.flatMap((newExercise) => {
+        const muscleGroupsInNewExercise = muscleGroupsInExercises.filter(muscleGroup => 
+          newExercise.muscle_groups.includes(muscleGroup.id))
         
-        await Promise.all(muscleGroupsInNewExercise.map(muscleGroup => muscleGroup.update({
+        return muscleGroupsInNewExercise.map(muscleGroup => muscleGroup.update({
           is_in_exercise: true,
           in_exercises: [ ...muscleGroup.in_exercises, newExercise.id ],
-        }).save()))
-        
-        return newExercise
-      }))
+        }))
+      })
+
+      await browserDB.db?.batchUpdate(muscleGroupsTable, muscleGroupUpdates.map(muscleGroup => ({
+        key: muscleGroup.id,
+        value: muscleGroup.toPlainObject(),
+      })))
       
       return { data: { data: null, success: true, error: null } }
     } catch (e) {
@@ -176,7 +181,7 @@ const handlers = {
     }
   },
   update: async ({ body }: { body: FormData }) => {
-    const { exercisesTable, workoutsTable, muscleGroupsTable } = browserDB.getTables()
+    const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
     
     const bodyKeys = body.keys()
     let data: Partial<ExerciseModel & Partial<ImageFields>> = {}
@@ -192,27 +197,31 @@ const handlers = {
       ({ image, restForm } = mapFormDataToImageAndRestForm(restForm))
     }
 
-    const exerciseFromDb = JSON.parse(await browserDB.db?.get(exercisesTable, data.id))
+    const rawExerciseFromDb = await browserDB.db?.get(exercisesTable, data.id)
+    const exercise = new ExerciseModel(parseIfString<PlainExerciseObject>(rawExerciseFromDb))
 
-    /**
-     * if the same image is sent, then just save itself.
-     */
     try {
-      const exercise = new ExerciseModel(exerciseFromDb)
-      const workouts = (await browserDB.db?.getAllValues(workoutsTable)).map(value => JSON.parse(value))
-  
+      // const exercise = new ExerciseModel(exerciseFromDb)
+      const workouts = await WorkoutModel.getAllFromDB()
+
+      /**
+       * if the same image is sent, then just save itself.
+       */
       if (exercise.image) {
         await exercise.image.imageSetter
       }
 
-      const isInWorkout = await exercise.isInWorkout(workouts)
-      const isWorkoutInActivity = isInWorkout && workouts
-        .some(
-          workout => workout
-            .exercises
-            .find(exerciseInWorkout => exerciseInWorkout.id === exercise.id)
-            ?.is_in_activity,
-        )
+      const inWorkouts = await exercise.inWorkouts(workouts)
+      const isInWorkout = !!inWorkouts.length
+      let isWorkoutInActivity = false
+
+      if (isInWorkout) {
+        for (let workout of inWorkouts) {
+          isWorkoutInActivity = await workout.isInActivity()
+
+          if (isWorkoutInActivity) break
+        }
+      }
 
       if (isWorkoutInActivity) {
         await exercise.update({ title: restForm.title, description: restForm.description, image: image ? new ImageModel(image) : restForm.image })
@@ -220,15 +229,25 @@ const handlers = {
         await exercise.update(image ? { ...restForm, image: new ImageModel(image) } : restForm)
       }
 
-      const allMuscleGroups = (await browserDB.db?.getAllValues(muscleGroupsTable))
-        .filter(Boolean)
-        .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
+      const allMuscleGroups = await MuscleGroupModel.getAllFromDB()
 
-      const muscleGroupsToRemove = allMuscleGroups.filter(muscleGroup => exerciseFromDb.muscle_groups.includes(muscleGroup.id) && !exercise.muscle_groups.includes(muscleGroup.id))
-      const muscleGroupsToAdd = allMuscleGroups.filter(muscleGroup => !exerciseFromDb.muscle_groups.includes(muscleGroup.id) && exercise.muscle_groups.includes(muscleGroup.id))
+      const muscleGroupsToRemove = allMuscleGroups.filter(muscleGroup => !exercise.muscle_groups.includes(muscleGroup.id))
+      const muscleGroupsToAdd = allMuscleGroups.filter(muscleGroup => exercise.muscle_groups.includes(muscleGroup.id) && !muscleGroup.in_exercises.includes(exercise.id))
 
-      await Promise.all(muscleGroupsToRemove.map(muscleGroup => muscleGroup.removeExercise(exercise.id).save()))
-      await Promise.all(muscleGroupsToAdd.map(muscleGroup => muscleGroup.addExercise(exercise.id).save()))
+      let muscleGroupsToUpdate = []
+      muscleGroupsToRemove.forEach((muscleGroup) => {
+        muscleGroup.removeExercise(exercise.id)
+        muscleGroupsToUpdate.push(muscleGroup)
+      })
+      muscleGroupsToAdd.forEach((muscleGroup) => {
+        muscleGroup.addExercise(exercise.id)
+        muscleGroupsToUpdate.push(muscleGroup)
+      })
+
+      await browserDB.db?.batchUpdate(muscleGroupsTable, muscleGroupsToUpdate.map(muscleGroup => ({
+        key: muscleGroup.id,
+        value: muscleGroup.toPlainObject(),
+      })))
   
       await exercise.save()
 
@@ -243,30 +262,42 @@ const handlers = {
     return handlers.deleteMany({ body: { ids: [ id ] } })
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
-    const { exercisesTable, workoutsTable, muscleGroupsTable } = browserDB.getTables()
-    
     const { ids } = body
-    const workouts = (await browserDB.db?.getAllValues(workoutsTable))
-      .map(workout => JSON.parse(workout))
+    const workouts = await WorkoutModel.getAllFromDB()
 
-    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(exercisesTable, id))))
-      .map(exercise => new ExerciseModel(JSON.parse(exercise)))
-      .map(async (exercise) => {
-        await exercise.delete(workouts)
+    const exercises = await ExerciseModel.getManyFromDB(ids)
+    const muscleGroupIds = exercises.flatMap(exercise => exercise.muscle_groups)
+    const muscleGroupsToRemoveExercise = await MuscleGroupModel.getManyFromDB(muscleGroupIds)
 
-        for (const muscleGroupId of exercise.muscle_groups) {
-          await new MuscleGroupModel(
-            JSON.parse(
-              await browserDB.db?.get(muscleGroupsTable, muscleGroupId),
-            ),
-          )
-            .removeExercise(exercise.id)
-            .save()
+    let toArchive = []
+    let toDelete = []
+
+    for (const exercise of exercises) {
+      if (await exercise.isInWorkout(workouts)) {
+        toArchive.push(exercise)
+      } else {
+        toDelete.push(exercise)
+      }
+    }
+
+    await ExerciseModel.deleteMany(toDelete)
+
+    toArchive.forEach(exercise => exercise.archive())
+    await ExerciseModel.updateMany(toArchive)
+
+    let muscleGroupsToUpdate = []
+    exercises.forEach((exercise) => {
+      exercise.muscle_groups.forEach((muscleGroupId) => {
+        const muscleGroup = muscleGroupsToRemoveExercise.find(_muscleGroup => _muscleGroup.id === muscleGroupId)
+
+        if (muscleGroup) {
+          muscleGroup.removeExercise(exercise.id)
+          muscleGroupsToUpdate.push(muscleGroup)
         }
-        return exercise
       })
-    
-    await Promise.all(awaitingForDeletingPromises)
+    })
+
+    await MuscleGroupModel.updateMany(muscleGroupsToUpdate)
 
     return handlers.list()
   },

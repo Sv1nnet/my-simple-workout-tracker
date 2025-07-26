@@ -11,4 +11,4 @@ export const API_STATUS: { [key in ApiStatusKeys]: ApiStatus } = {
   LOADING: 'loading',
   LOADED: 'loaded',
   ERROR: 'error',
-}
+} as const

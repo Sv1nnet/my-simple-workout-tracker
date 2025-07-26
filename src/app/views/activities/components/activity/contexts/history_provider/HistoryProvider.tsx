@@ -76,7 +76,6 @@ const HistoryProvider = ({ children, historyData, loadHistory, isLoading }: Hist
   const [ history, setHistory ] = useState<ExerciseHistory>(() => historyData ? getHistory(historyData) : {})
 
   useOnPreviousChange((_, [ nextHistoryData ]) => {
-    debugger
     const exerciseIds = Object.keys(nextHistoryData)
     const newHistory = getHistory(nextHistoryData)
 

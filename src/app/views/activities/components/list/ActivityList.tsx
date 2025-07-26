@@ -175,7 +175,8 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
               </SelectableList.Item>
             )}
           />
-          <SelectableList.Modal 
+          <SelectableList.Modal
+            okButtonProps={{ danger: true }}
             okText={activityModal.delete.ok_button}
             cancelText={activityModal.delete.cancel_button}
             open={isModalVisible} 

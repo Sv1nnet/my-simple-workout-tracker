@@ -71,13 +71,13 @@ export const muscleGroupApi = createApi({
       }),
       invalidatesTags: [ MUSCLE_GROUP_TAG_TYPES.MUSCLE_GROUP_LIST ],
     }),
-    list: build.query<GetMuscleGroupListSuccess, { archived?: boolean, workoutId?: string, lang?: Lang } | void>({
+    list: build.query<GetMuscleGroupListSuccess, { archived?: boolean, workoutId?: string, exerciseId?: string, lang?: Lang } | void>({
       query: (params) => {
         let query = '?'
         if (params) {
-          const { archived, workoutId, lang } = params
+          const { archived, workoutId, exerciseId, lang } = params
           
-          query += `archived=${!!archived}${workoutId ? `&workoutId=${workoutId}` : ''}${lang ? `&lang=${lang}` : ''}`
+          query += `archived=${!!archived}${workoutId ? `&workoutId=${workoutId}` : ''}${exerciseId ? `&exerciseId=${exerciseId}` : ''}${lang ? `&lang=${lang}` : ''}`
         }
         return {
           url: `${routes.muscleGroup.v1.list.full}${query}`,

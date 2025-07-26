@@ -188,11 +188,11 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
             )}
           />
           <SelectableList.Modal
+            okButtonProps={{ danger: true }}
             okText={workoutModal.delete.ok_button}
             cancelText={workoutModal.delete.cancel_button}
             open={isModalVisible} 
-            onOk={handleDelete} 
-            okButtonProps={{ danger: true }}
+            onOk={handleDelete}
             onCancel={closeModal}
             text={workoutModal.delete.body_many}
             selected={selected}

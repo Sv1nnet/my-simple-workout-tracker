@@ -16,7 +16,7 @@ export type SelectWithItemCreatingProps<T extends Item = Item> = SelectProps<Tag
   isLoadingItems?: boolean
   isFetchingItems?: boolean
   onDropdownVisibleChange?: (open: boolean) => void
-  onSelectTagsChange?: SelectProps<Tag[]>['onChange']
+  onChange?: SelectProps<Tag[]>['onChange']
   onAddItem?: (item: { label: string, id: string }) => Promise<any>
   onDeleteItem?: (id: string) => Promise<any>
 }
@@ -38,7 +38,7 @@ const { Option } = Select
 const SelectWithItemCreating = forwardRef(function SelectWithItemCreating<T extends Item = Item>({
   isLoadingItems,
   isFetchingItems,
-  onSelectTagsChange,
+  onChange,
   onAddItem,
   onDeleteItem,
   onDropdownVisibleChange,
@@ -112,7 +112,6 @@ const SelectWithItemCreating = forwardRef(function SelectWithItemCreating<T exte
       onDropdownVisibleChange={handleDropdownVisibleChange}
       placeholder={intl.rest.muscle_group.select_muscle_groups}
       mode="multiple"
-      labelInValue
       dropdownMatchSelectWidth
       size="middle"
       optionLabelProp="label"
@@ -120,7 +119,7 @@ const SelectWithItemCreating = forwardRef(function SelectWithItemCreating<T exte
       notFoundContent={<NoDataText>{intl.common.empty_list}</NoDataText>}
       menuItemSelectedIcon={null}
       onFocus={openSelect}
-      onChange={onSelectTagsChange}
+      onChange={onChange}
       dropdownRender={menu => (
         <>
           {menu}

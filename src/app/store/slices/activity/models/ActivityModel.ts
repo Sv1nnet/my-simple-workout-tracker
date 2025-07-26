@@ -45,6 +45,11 @@ export class ActivityModel extends EntityModel {
     return EntityModel.getAllFromDB(ActivityModel, activitiesTable.name)
   }
 
+  public static deleteMany(activities: ActivityModel[]) {
+    const { activitiesTable } = browserDB.getTables()
+    return browserDB.db?.batchRemove(activitiesTable, activities.map(activity => activity.id))
+  }
+
   constructor({ id, created_at, updated_at, results, ...data }: ActivityModelConstructorParameter) {
     super({ id, created_at, updated_at })
 
@@ -65,6 +70,10 @@ export class ActivityModel extends EntityModel {
     return this
   }
 
+  toPlainObject() {
+    return { ...this, results: this.results.map(result => ({ ...result })) }
+  }
+
   async delete() {
     const { activitiesTable } = browserDB.getTables()
     await browserDB.db?.remove(activitiesTable, this.id)
@@ -73,7 +82,7 @@ export class ActivityModel extends EntityModel {
 
   async save() {
     const { activitiesTable } = browserDB.getTables()
-    await browserDB.db?.set(activitiesTable, this.id, this.toString())
+    await browserDB.db?.set(activitiesTable, this.id, this.toPlainObject())
     return this
   }
 }

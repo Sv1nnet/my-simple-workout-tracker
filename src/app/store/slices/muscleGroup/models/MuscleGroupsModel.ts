@@ -21,21 +21,35 @@ export class MuscleGroupModel extends EntityModel {
 
   public is_in_exercise: boolean
 
-  public archived: boolean
-
-  public static async getOneFromDB(id: EntityModel['id']): Promise<EntityModel | undefined> {
-    const { exercisesTable } = browserDB.getTables()
-    return EntityModel.getOneFromDB(MuscleGroupModel, exercisesTable.name, id)
+  public static async getOneFromDB(id: EntityModel['id']): Promise<MuscleGroupModel | undefined> {
+    const { muscleGroupsTable } = browserDB.getTables()
+    return EntityModel.getOneFromDB(MuscleGroupModel, muscleGroupsTable.name, id)
   }
 
   public static override async getManyFromDB(ids: EntityModel['id'][]): Promise<MuscleGroupModel[]> {
-    const { exercisesTable } = browserDB.getTables()
-    return EntityModel.getManyFromDB(MuscleGroupModel, exercisesTable.name, ids)
+    const { muscleGroupsTable } = browserDB.getTables()
+    return EntityModel.getManyFromDB(MuscleGroupModel, muscleGroupsTable.name, ids)
   }
 
   public static override async getAllFromDB(): Promise<MuscleGroupModel[]> {
-    const { exercisesTable } = browserDB.getTables()
-    return EntityModel.getAllFromDB(MuscleGroupModel, exercisesTable.name)
+    const { muscleGroupsTable } = browserDB.getTables()
+    return EntityModel.getAllFromDB(MuscleGroupModel, muscleGroupsTable.name)
+  }
+
+  public static override updateMany(muscleGroups: MuscleGroupModel[]) {
+    const { muscleGroupsTable } = browserDB.getTables()
+    return EntityModel.updateMany(muscleGroupsTable.name, muscleGroups)
+  }
+
+  public static override async removeFromDB(id: string): Promise<void> {
+    const { muscleGroupsTable } = browserDB.getTables()
+    await EntityModel.removeFromDB(muscleGroupsTable.name, id)
+    return
+  }
+
+  public static async deleteMany(muscleGroups: MuscleGroupModel[]) {
+    const { muscleGroupsTable } = browserDB.getTables()
+    return EntityModel.deleteMany(muscleGroupsTable.name, muscleGroups.map(muscleGroup => muscleGroup.id))
   }
 
   constructor({ id, created_at, updated_at, ...data }: Optional<MuscleGroupModel, 'id'> | Optional<PlainMuscleGroupObject, 'id'>) {
@@ -74,36 +88,23 @@ export class MuscleGroupModel extends EntityModel {
   }
 
   async isInExercise(exercises?: ExerciseModel[]) {
-    const { exercisesTable } = browserDB.getTables()
-    exercises = exercises || (await browserDB.db?.getAllValues(exercisesTable)).map(exercise => JSON.parse(exercise))
+    exercises = exercises || (await ExerciseModel.getAllFromDB())
     return !!exercises.find(exercise => exercise.muscle_groups.find(muscleGroupId => muscleGroupId === this.id))
   }
 
   async inExercises(exercises?: ExerciseModel[]) {
-    const { exercisesTable } = browserDB.getTables()
-    exercises = exercises || (await browserDB.db?.getAllValues(exercisesTable)).map(exercise => JSON.parse(exercise))
+    exercises = exercises || (await ExerciseModel.getAllFromDB())
     return exercises.filter(exercise => !!exercise.muscle_groups.find(muscleGroupId => muscleGroupId === this.id))
   }
 
-  async delete(exercises?: ExerciseModel[]) {
-    const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
-    exercises = exercises || (await browserDB.db?.getAllValues(exercisesTable)).map(exercise => JSON.parse(exercise))
-
-    if (await this.isInExercise(exercises)) {
-      this.archived = true
-
-      await this.save()
-
-      return this
-    }
-
-    await browserDB.db?.remove(muscleGroupsTable, this.id)
+  async delete() {
+    await MuscleGroupModel.removeFromDB(this.id)
     return this
   }
 
   async save() {
     const { muscleGroupsTable } = browserDB.getTables()
-    await browserDB.db?.set(muscleGroupsTable, this.id, this.toString())
+    await browserDB.db?.set(muscleGroupsTable, this.id, this.toPlainObject())
     return this
   }
 

@@ -1,30 +1,26 @@
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
-import browserDB from 'app/store/utils/BrowserDB'
-import { PlainWorkoutObject, WorkoutModel, WorkoutModelConstructorParameter } from './models/WorkoutModel'
-import { ExerciseModel, PlainExerciseObject } from 'app/store/slices/exercise/models/ExerciseModel'
+import { WorkoutModel, WorkoutModelConstructorParameter } from './models/WorkoutModel'
+import { ExerciseModel } from 'app/store/slices/exercise/models/ExerciseModel'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 import formatFormData from 'app/store/utils/formatFormData'
 import EntityModel from 'app/store/utils/EntityModel'
-import { WorkoutExerciseModel } from './models/WorkoutExerciseModel'
+import { MuscleGroupModel } from 'store/slices/muscleGroup/models/MuscleGroupsModel'
+import { ActivityModel } from 'store/slices/activity/models/ActivityModel'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
-    const { workoutsTable } = browserDB.getTables()
-
     const [ ,,,id ] = args
-    const workout = JSON.parse(await browserDB.db.get(workoutsTable, id))
+    const workout = await WorkoutModel.getOneFromDB(id)
 
     return {
       data: {
-        data: workout,
+        data: workout.toPlainObject(),
         success: true,
         error: null,
       },
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { workoutsTable, exercisesTable, muscleGroupsTable } = browserDB.getTables()
-
     let archived = false
     let all = false
     let in_activity = params?.get('in_activity') ?? ''
@@ -39,9 +35,8 @@ const handlers = {
       ))
     }
 
-    const rawList = (await browserDB.db?.getAllValues(workoutsTable))
+    const rawList = (await WorkoutModel.getAllFromDB())
       .filter(Boolean)
-      .map(workoutStr => JSON.parse(workoutStr))
       .filter(workout => all || archived === workout.archived || !workout.archived || workout.in_activities.includes(in_activity))
       .sort((a, b) => {
         if (a.title > b.title) return 1
@@ -49,13 +44,8 @@ const handlers = {
         return 0
       })
 
-    const allExercises = (await browserDB.db?.getAllValues(exercisesTable))
-      .filter(Boolean)
-      .map(exercise => JSON.parse(exercise))
-    
-    const allMuscleGroups = (await browserDB.db?.getAllValues(muscleGroupsTable))
-      .filter(Boolean)
-      .map(muscleGroup => JSON.parse(muscleGroup))
+    const allExercises = await ExerciseModel.getAllFromDB()
+    const allMuscleGroups = await MuscleGroupModel.getAllFromDB()
 
     const preparedList = await Promise.all(rawList.map(async (rawWorkout: WorkoutModelConstructorParameter) => {
       const exerciseIds = rawWorkout.exercises.map(({ id }) => id)
@@ -70,7 +60,6 @@ const handlers = {
               return muscleGroup ? {
                 id: muscleGroup.id,
                 title: muscleGroup.title,
-                archived: muscleGroup.archived,
               } : null
             })
             .filter(Boolean)
@@ -109,11 +98,8 @@ const handlers = {
     return { data: { data: preparedList, success: true, error: null } }
   },
   create: async ({ body }: { body: WorkoutModel }) => {
-    const { exercisesTable } = browserDB.getTables()
-    const workout = new WorkoutModel(body)
-    const exercisesInWorkout = (await Promise.all(workout.exercises.map(exercise => browserDB.db?.get(exercisesTable, exercise.id))))
-      .filter(Boolean)
-      .map(exercise => new ExerciseModel(JSON.parse(exercise)))
+    const workout = new WorkoutModel(body)    
+    const exercisesInWorkout = await ExerciseModel.getManyFromDB(workout.exercises.map(exercise => exercise.id))
 
     await Promise.all(exercisesInWorkout.map(async exercise => 
       (await exercise.update({
@@ -128,12 +114,9 @@ const handlers = {
     return { data: workout }
   },
   update: async ({ body }: { body: Partial<WorkoutModel> }) => {
-    const { activitiesTable, workoutsTable, exercisesTable } = browserDB.getTables()
-    
-    const workoutFromDb = JSON.parse(await browserDB.db?.get(workoutsTable, body.id))
-    const workout = new WorkoutModel(workoutFromDb)
+    const workout = await WorkoutModel.getOneFromDB(body.id)
     const exercisesInWorkout = workout.exercises
-    const activities = (await browserDB.db?.getAllValues(activitiesTable)).map(value => JSON.parse(value))
+    const activities = await ActivityModel.getAllFromDB()
 
     const isInActivity = await workout.isInActivity(activities)
     if (isInActivity) {
@@ -157,11 +140,7 @@ const handlers = {
       .map(({ id }) => id)
 
     if (removedExerciseIds.length) {
-      const exercisesToUpdate = (await Promise.all(
-        removedExerciseIds.map(id => browserDB.db?.get(exercisesTable, id)),
-      ))
-        .filter(Boolean)
-        .map(exerciseStr => new ExerciseModel(JSON.parse(exerciseStr)))
+      const exercisesToUpdate = await ExerciseModel.getManyFromDB(removedExerciseIds)
 
       for (const exercise of exercisesToUpdate) {
         exercise.removeWorkout(workout.id)
@@ -170,11 +149,7 @@ const handlers = {
     }
 
     if (workout.exercises.length) {
-      const exercisesToUpdate = (await Promise.all(
-        workout.exercises.map(exercise => browserDB.db?.get(exercisesTable, exercise.id)),
-      ))
-        .filter(Boolean)
-        .map(exerciseStr => new ExerciseModel(JSON.parse(exerciseStr)))
+      const exercisesToUpdate = await ExerciseModel.getManyFromDB(workout.exercises.map(exercise => exercise.id))
 
       for (const exercise of exercisesToUpdate) {
         exercise.addWorkout(workout.id)
@@ -187,49 +162,32 @@ const handlers = {
     return { data: { data: workout, success: true, error: null } }
   },
   copy: async ({ body }: { body: { ids: string[] } }) => {
-    const { exercisesTable, workoutsTable } = browserDB.getTables()
     const { ids = [] } = body
     const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
 
-    const allWorkouts: PlainWorkoutObject[] = (await browserDB.db?.getAllValues(workoutsTable)).map(value => JSON.parse(value))
-    const workoutsToCopy = allWorkouts.filter(workout => ids.find(id => id === workout.id)).map(workout => new WorkoutModel(workout))
+    const workoutsToCopy = await WorkoutModel.getManyFromDB(ids)
 
-    const newWorkouts = await Promise.all(workoutsToCopy.map(async (workout) => {
-      let newWorkout = await new WorkoutModel({
+    const newWorkouts = []
+    for (const workout of workoutsToCopy) {
+      const newWorkout = new WorkoutModel({
         ...workout,
         title: `${workout.title} ${lang === 'ru' ? '(копия)' : '(copy)'}`,
       })
       newWorkout.update({ id: EntityModel.createId() })
-      newWorkout = await newWorkout.save()
-        
-      return newWorkout
-    }))
-    
-    const allExercises: PlainExerciseObject[] = (await browserDB.db?.getAllValues(exercisesTable)).map(value => JSON.parse(value))
-    const exercisesToUpdate = workoutsToCopy
-      .reduce<WorkoutExerciseModel[]>((acc, { exercises }) => {
-      const exercisesToAdd = exercises.filter(exercise => !acc.find(_exercise => _exercise.id === exercise.id))
-      return acc.concat(exercisesToAdd)
-    }, [])
-      .reduce<ExerciseModel[]>((acc, workoutExercise) => {
-      const exercise = allExercises.find(_exercise => _exercise.id === workoutExercise.id)
-        
-      if (exercise) {
-        acc.push(new ExerciseModel(exercise))
-      }
-      
-      return acc
-    }, [])    
-    
-    await Promise.all(exercisesToUpdate.map(async (exercise) => {
-      const workoutsToAddToExercise = newWorkouts.filter(workout => workout.exercises.find(_exercise => _exercise.id === exercise.id))
+      newWorkouts.push(newWorkout)
+    }
 
-      return Promise.all(
-        workoutsToAddToExercise.map(async workout => exercise
-          .addWorkout(workout.id)
-          .save()),
-      )
-    }))
+    await WorkoutModel.updateMany(newWorkouts)
+
+    const exercisesToUpdate = await ExerciseModel.getManyFromDB([ ...new Set(newWorkouts.flatMap(workout => workout.exercises.map(exercise => exercise.id))) ])
+    for (const workout of newWorkouts) {
+      const exercisesInNewWorkout = exercisesToUpdate.filter(exercise => workout.exercises.find(workoutExercise => workoutExercise.id === exercise.id))
+      exercisesInNewWorkout.forEach((exercise) => {
+        exercise.addWorkout(workout.id)
+      })
+    }
+    
+    await ExerciseModel.updateMany(exercisesToUpdate)
       
     return { data: { data: null, success: true, error: null } }
   },
@@ -238,31 +196,34 @@ const handlers = {
     return handlers.deleteMany({ body: { ids: [ id ] } })
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
-    const { activitiesTable, workoutsTable, exercisesTable } = browserDB.getTables()
-    
     const { ids } = body
-    const activities = (await browserDB.db?.getAllValues(activitiesTable))
-      .map(activity => JSON.parse(activity))
+    const activities = await ActivityModel.getAllFromDB()
 
-    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(workoutsTable, id))))
-      .map(workout => new WorkoutModel(JSON.parse(workout)))
-      .map(async (workout) => {
-        await workout.delete(activities)
-        
-        const exerciseIds = workout.exercises.map(({ id }) => id)
-        for (const exerciseId of exerciseIds) {
-          await new ExerciseModel(
-            JSON.parse(
-              await browserDB.db?.get(exercisesTable, exerciseId),
-            ),
-          )
-            .removeWorkout(workout.id)
-            .save()            
-        }
-        return workout
+    const workouts = await WorkoutModel.getManyFromDB(ids)
+    let toArchive: WorkoutModel[] = []
+    let toDelete: WorkoutModel[] = []
+
+    for (const workout of workouts) {
+      if (await workout.isInActivity(activities)) {
+        toArchive.push(workout)
+      } else {
+        toDelete.push(workout)
+      }
+    }
+
+    toArchive.forEach(workout => workout.archive())
+    await WorkoutModel.updateMany(toArchive)
+    await WorkoutModel.deleteMany(toDelete)
+
+    const exercisesInWorkouts = await ExerciseModel.getManyFromDB([ ...new Set(toDelete.flatMap(workout => workout.exercises.map(exercise => exercise.id))) ])
+    for (const workout of toDelete) {
+      const exercisesInWorkout = exercisesInWorkouts.filter(exercise => workout.exercises.find(workoutExercise => workoutExercise.id === exercise.id))
+      exercisesInWorkout.forEach((exercise) => {
+        exercise.removeWorkout(workout.id)
       })
-    
-    await Promise.all(awaitingForDeletingPromises)
+    }
+
+    await ExerciseModel.updateMany(exercisesInWorkouts)
 
     return handlers.list()
   },

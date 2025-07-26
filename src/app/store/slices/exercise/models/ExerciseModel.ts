@@ -54,19 +54,34 @@ export class ExerciseModel extends EntityModel {
   
   public mass_unit?: MassUnit
 
-  public static async getOneFromDB(id: EntityModel['id']): Promise<EntityModel | undefined> {
+  public static override updateMany(exercises: ExerciseModel[]) {
+    const { exercisesTable } = browserDB.getTables()
+    return EntityModel.updateMany(exercisesTable.name, exercises)
+  }
+
+  public static deleteMany(exercises: ExerciseModel[]): Promise<number> {
+    const { exercisesTable } = browserDB.getTables()
+    return EntityModel.deleteMany(exercisesTable.name, exercises.map(exercise => exercise.id))
+  }
+
+  public static getOneFromDB(id: EntityModel['id']): Promise<ExerciseModel | undefined> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(ExerciseModel, exercisesTable.name, id)
   }
 
-  public static override async getManyFromDB(ids: EntityModel['id'][]): Promise<ExerciseModel[]> {
+  public static override getManyFromDB(ids: EntityModel['id'][]): Promise<ExerciseModel[]> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getManyFromDB(ExerciseModel, exercisesTable.name, ids)
   }
 
-  public static override async getAllFromDB(): Promise<ExerciseModel[]> {
+  public static override getAllFromDB(): Promise<ExerciseModel[]> {
     const { exercisesTable } = browserDB.getTables()
     return EntityModel.getAllFromDB(ExerciseModel, exercisesTable.name)
+  }
+
+  public static override removeFromDB(id: string): Promise<void> {
+    const { exercisesTable } = browserDB.getTables()
+    return EntityModel.removeFromDB(exercisesTable.name, id)
   }
 
   constructor({ id, created_at, updated_at, ...data }: ExerciseModelConstructorParameter | PlainExerciseObject) {
@@ -134,29 +149,27 @@ export class ExerciseModel extends EntityModel {
   }
 
   async isInWorkout(workouts?: WorkoutModel[]) {
-    const { workoutsTable } = browserDB.getTables()
-    workouts = workouts || (await browserDB.db?.getAllValues(workoutsTable)).map(workout => JSON.parse(workout))
+    workouts = workouts || (await WorkoutModel.getAllFromDB())
     return !!workouts.find(workout => workout.exercises.find(exercise => exercise.id === this.id))
   }
 
   async inWorkouts(workouts?: WorkoutModel[]) {
-    const { workoutsTable } = browserDB.getTables()
-    workouts = workouts || (await browserDB.db?.getAllValues(workoutsTable)).map(workout => JSON.parse(workout))
+    workouts = workouts || (await WorkoutModel.getAllFromDB())
     return workouts.filter(workout => !!workout.exercises.find(exercise => exercise.id === this.id))
   }
 
-  async delete(workouts?: any[]) {
-    const { exercisesTable } = browserDB.getTables()
+  archive() {
+    this.archived = true
+  }
 
+  async delete(workouts?: any[]) {
     if (await this.isInWorkout(workouts)) {
       this.archived = true
-
-      await this.save()
 
       return this
     }
 
-    await browserDB.db?.remove(exercisesTable, this.id)
+    await ExerciseModel.removeFromDB(this.id)
     return this
   }
   
@@ -173,7 +186,7 @@ export class ExerciseModel extends EntityModel {
 
   async save() {
     const { exercisesTable } = browserDB.getTables()
-    await browserDB.db?.set(exercisesTable, this.id, this.toString())
+    await browserDB.db?.set(exercisesTable, this.id, this.toPlainObject())
     return this
   }
 

@@ -41,6 +41,7 @@ const UserRoute = () => {
     (async () => {
       let isBaseDataInited = 'false'
       const db = await browserDBLoader.get()
+
       if (!db) {
         initBD()
       } else {

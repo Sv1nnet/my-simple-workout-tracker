@@ -182,7 +182,8 @@ const ExerciseList: FC<IExerciseList> = ({ deleteExercises, copyExercises, conta
               </SelectableList.Item>
             )}
           />
-          <SelectableList.Modal 
+          <SelectableList.Modal
+            okButtonProps={{ danger: true }}
             okText={exerciseModal.delete.ok_button}
             cancelText={exerciseModal.delete.cancel_button}
             open={isModalVisible} 

@@ -1,30 +1,26 @@
 import { WorkoutModel } from 'app/store/slices/workout/models/WorkoutModel'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
-import browserDB from 'app/store/utils/BrowserDB'
 import { ActivityModelConstructorParameter, ActivityModel } from './models/ActivityModel'
 import { ExerciseModel } from 'app/store/slices/exercise/models/ExerciseModel'
 import { MuscleGroupModel } from 'app/store/slices/muscleGroup/models/MuscleGroupsModel'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 import formatFormData from 'app/store/utils/formatFormData'
+import { parseIfString } from 'app/utils/parsers'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
-    const { activitiesTable } = browserDB.getTables()
-
     const [ ,,,id ] = args
-    const activity = JSON.parse(await browserDB.db?.get(activitiesTable, id))
+    const activity = await ActivityModel.getOneFromDB(id)
 
     return {
       data: {
-        data: activity,
+        data: activity.toPlainObject(),
         success: true,
         error: null,
       },
     }
   },
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { activitiesTable, workoutsTable, exercisesTable, muscleGroupsTable } = browserDB.getTables()
-    
     let page = 1
     let byPage = 30
     let searchValue = ''
@@ -43,23 +39,15 @@ const handlers = {
     const startIndex = ((page - 1) * byPage)
     const endIndex = startIndex + byPage
 
-    const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
-      .filter(Boolean)
-      .map(activityStr => new ActivityModel(JSON.parse(activityStr)))
+    const allActivities = (await ActivityModel.getAllFromDB())
       .sort((a, b) => b.index - a.index)
   
-    const allExercises = (await browserDB.db?.getAllValues(exercisesTable))
-      .filter(Boolean)
-      .map(exercise => new ExerciseModel(JSON.parse(exercise)))
+    const allExercises = await ExerciseModel.getAllFromDB()
 
-    const allWorkouts = (await browserDB.db?.getAllValues(workoutsTable))
-      .filter(Boolean)
-      .map(workout => new WorkoutModel(JSON.parse(workout)))
+    const allWorkouts = (await WorkoutModel.getAllFromDB())
       .filter(workout => workout.is_in_activity && workout.title.toLocaleLowerCase().includes(searchValue))
 
-    const allMuscleGroups = (await browserDB.db?.getAllValues(muscleGroupsTable))
-      .filter(Boolean)
-      .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
+    const allMuscleGroups = await MuscleGroupModel.getAllFromDB()
 
     const totalActivities = allActivities.length
     
@@ -98,7 +86,6 @@ const handlers = {
               return muscleGroup ? {
                 id: muscleGroup.id,
                 title: muscleGroup.title,
-                archived: muscleGroup.archived,
               } : null
             })
             .filter(Boolean)
@@ -138,15 +125,13 @@ const handlers = {
     return { data: { data: { list: activitiesByPage, total: totalActivities }, success: true, error: null } }
   },
   create: async ({ body }: { body: ActivityModelConstructorParameter }) => {
-    const { workoutsTable } = browserDB.getTables()
-
     const activity = new ActivityModel({
       ...body,
       index: new Date(body.date).valueOf(),
     })
     await activity.save()
 
-    const workout = await browserDB.db?.get(workoutsTable, activity.workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
+    const workout = await WorkoutModel.getOneFromDB(activity.workout_id)
     await workout
       .addActivity(activity.id)
       .save()
@@ -154,10 +139,8 @@ const handlers = {
     return { data: activity }
   },
   update: async ({ body }: { body: Partial<ActivityModel> }) => {
-    const { activitiesTable } = browserDB.getTables()
-    
-    const rawActivity = JSON.parse(await browserDB.db?.get(activitiesTable, body.id))
-    const activity = new ActivityModel(rawActivity)
+    const rawActivity = await ActivityModel.getOneFromDB(body.id)
+    const activity = new ActivityModel(parseIfString<ActivityModelConstructorParameter>(rawActivity))
 
     await activity
       .update(body)
@@ -170,34 +153,32 @@ const handlers = {
     return handlers.deleteMany({ body: { ids: [ id ] } })
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
-    const { activitiesTable, workoutsTable } = browserDB.getTables()
-
     const { ids } = body
 
-    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(activitiesTable, id))))
-      .map(activity => new ActivityModel(JSON.parse(activity)))
-      .map(async (activity) => {
-        await activity.delete()
+    const activities = await ActivityModel.getManyFromDB(ids)
+    await ActivityModel.deleteMany(activities)
 
-        let workoutInActivity: WorkoutModel = await browserDB.db?.get(workoutsTable, activity.workout_id).then(workout => new WorkoutModel(JSON.parse(workout)))
-        workoutInActivity = await workoutInActivity
-          .removeFromActivity(activity.id)
-          .save()
-        
-        if (workoutInActivity.archived && !workoutInActivity.is_in_activity) {
-          await workoutInActivity.delete([])
+    const workoutsToDelete: WorkoutModel[] = []
+    const workoutsToUpdate: WorkoutModel[] = []
+
+    const workoutsInActivities = await WorkoutModel.getManyFromDB([ ...new Set(activities.map(activity => activity.workout_id)) ])
+    workoutsInActivities.forEach((workout) => {
+      activities.forEach((activity) => {
+        workout.removeFromActivity(activity.id)
+        if (workout.archived && !workout.is_in_activity) {
+          workoutsToDelete.push(workout)
+        } else {
+          workoutsToUpdate.push(workout)
         }
-        
-        return activity
       })
-    
-    await Promise.all(awaitingForDeletingPromises)
+    })
+
+    await WorkoutModel.deleteMany(workoutsToDelete)
+    await WorkoutModel.updateMany(workoutsToUpdate)
 
     return handlers.list()
   },
   getHistory: async (_body: FetchArgs, url: URL, params: URLSearchParams) => {
-    const { activitiesTable, workoutsTable } = browserDB.getTables()
-
     const [ workout_id ] = url.pathname.match(UUID_REGEX)
 
     let page = 1
@@ -215,9 +196,8 @@ const handlers = {
       ))
     }
 
-    const allActivities = (await browserDB.db?.getAllValues(activitiesTable))
+    const allActivities = await ActivityModel.getAllFromDB()
     const activitiesWithWorkout = allActivities
-      .map(activity => new ActivityModel(JSON.parse(activity)))
       .filter(activity => activity.workout_id === workout_id)
       .sort((a, b) => new Date(b.date).valueOf() - new Date(a.date).valueOf())
 
@@ -233,7 +213,7 @@ const handlers = {
     const activitiesByPage = activitiesWithWorkout.slice(startIndex, endIndex)
     const hasLast = endIndex >= activitiesWithWorkout.length
 
-    const workout = await browserDB.db?.get(workoutsTable, workout_id).then(workoutStr => new WorkoutModel(JSON.parse(workoutStr)))
+    const workout = await WorkoutModel.getOneFromDB(workout_id)
 
     const results = activitiesByPage.reduce((acc, activity) => {
       activity.results.forEach((exerciseResults) => {

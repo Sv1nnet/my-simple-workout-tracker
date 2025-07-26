@@ -1,51 +1,23 @@
-
-import browserDB from 'app/store/utils/BrowserDB'
-import formatFormData from 'app/store/utils/formatFormData'
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
 import { MuscleGroupModel } from './models/MuscleGroupsModel'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
-// eslint-disable-next-line import/extensions
-import intl from 'app/constants/intl.json'
+import { ExerciseModel } from 'store/slices/exercise/models/ExerciseModel'
 
 const handlers = {
   get: async (...args: [FetchArgs, URL, URLSearchParams, string]) => {
-    const [ ,,,id ] = args
-    const { exercisesTable } = browserDB.getTables()
-    const exercise = JSON.parse(await browserDB.db?.get(exercisesTable, id))
+    const [ ,,,id ] = args    
+    const exercise = await ExerciseModel.getOneFromDB(id)
 
     return {
       data: {
-        data: exercise,
+        data: exercise.toPlainObject(),
         success: true,
         error: null,
       },
     }
   },
-  list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
-    const { muscleGroupsTable } = browserDB.getTables()
-    
-    let archived = false
-    let exerciseId = params?.get('exerciseId') || ''
-    let lang = params?.get('lang') || JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
-
-    if (params) {
-      ({ archived } = formatFormData<
-      { archived: string },
-      { archived: boolean }
-      >(
-        { archived: params.get('archived') || 'false' },
-        { archived: 'bool' },
-      ))
-    }
-
-    const list = (await browserDB.db?.getAllValues(muscleGroupsTable))
-      .filter(Boolean)
-      .map((muscleGroupStr) => {
-        const parsed: MuscleGroupModel = JSON.parse(muscleGroupStr)
-        if (parsed.archived) parsed.title = `${parsed.title} (${intl.rest.muscle_group.state.archived[lang]})`
-        return parsed
-      })
-      .filter(muscleGroup => muscleGroup.archived ? archived && muscleGroup.in_exercises.includes(exerciseId) : !muscleGroup.archived)
+  list: async (_body?: FetchArgs, _url?: URL) => {
+    const list = (await MuscleGroupModel.getAllFromDB())
       .sort((a, b) => {
         if (a.title > b.title) return 1
         else if (a.title < b.title) return -1
@@ -59,16 +31,13 @@ const handlers = {
       ...restBody,
       is_in_exercise: false,
       in_exercises: [],
-      archived: false,
     })
     await muscleGroup.save()
 
     return { data: { data: muscleGroup, success: true, error: null } }
   },
   update: async ({ body }: { body: Partial<MuscleGroupModel> }) => {
-    const { muscleGroupsTable } = browserDB.getTables()
-    
-    const muscleGroupFromDb = JSON.parse(await browserDB.db?.get(muscleGroupsTable, body.id))
+    const muscleGroupFromDb = await MuscleGroupModel.getOneFromDB(body.id)
     const muscleGroup = new MuscleGroupModel(muscleGroupFromDb)
 
     muscleGroup.update(body)
@@ -86,17 +55,20 @@ const handlers = {
     }
   },
   deleteMany: async ({ body }: { body: { ids: string[] } }) => {
-    const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
-    
     const { ids } = body
-    const exercises = (await browserDB.db?.getAllValues(exercisesTable))
-      .map(exercise => JSON.parse(exercise))
+    const muscleGroups = await MuscleGroupModel.getManyFromDB(ids)
+    const exercisesId = [ ...new Set(muscleGroups.map(muscleGroup => muscleGroup.in_exercises).flat()) ]
+    const exercises = await ExerciseModel.getManyFromDB(exercisesId)
 
-    const awaitingForDeletingPromises = (await Promise.all(ids.map(id => browserDB.db?.get(muscleGroupsTable, id))))
-      .map(muscleGroup => new MuscleGroupModel(JSON.parse(muscleGroup)))
-      .map(muscleGroup => muscleGroup.delete(exercises))
-    
-    await Promise.all(awaitingForDeletingPromises)
+    muscleGroups.forEach((muscleGroup) => {
+      const exercisesInMuscleGroup = exercises.filter(exercise => exercise.muscle_groups.includes(muscleGroup.id))
+      exercisesInMuscleGroup.forEach((exercise) => {
+        exercise.removeMuscleGroups(muscleGroup.id)
+      })
+    })
+
+    await ExerciseModel.updateMany(exercises)
+    await MuscleGroupModel.deleteMany(muscleGroups)
 
     return handlers.list()
   },

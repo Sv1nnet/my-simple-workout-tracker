@@ -9,7 +9,7 @@ export const ErrorContainer = styled.div`
   right: 0;
   left: 0;
   bottom: 0;
-  background: white;
+  background: var(--background-color);
 `
 
 export const ContentContainer = styled.div`

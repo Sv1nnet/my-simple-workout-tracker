@@ -9,6 +9,7 @@ import { NavigateFunction } from 'react-router'
 import style from '../NoAuthUserMenu.module.scss'
 import { SwitchChangeEventHandler } from 'antd/lib/switch'
 import { ThemeSwitch } from 'app/components'
+import { isString } from 'app/utils/typeCheckers'
 
 const getMenuItems = ({
   navigate,
@@ -65,8 +66,8 @@ const getMenuItems = ({
 
       const setDataToDB = async (table: IndexedDBTable<string>, data: BaseParsedDataEntity[]) => {
         for (const entity of data) {
-          if (typeof entity.id === 'string') {
-            await db.set(table, entity.id, JSON.stringify(entity))
+          if (isString(entity.id)) {
+            await db.set(table, entity.id, entity)
           }
         }
       }

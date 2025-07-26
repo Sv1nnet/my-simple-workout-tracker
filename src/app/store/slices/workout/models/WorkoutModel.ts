@@ -1,6 +1,6 @@
 
 import EntityModel from 'app/store/utils/EntityModel'
-import { WorkoutExerciseModel } from './WorkoutExerciseModel'
+import { PlainWorkoutExercise, WorkoutExerciseModel } from './WorkoutExerciseModel'
 import browserDB from 'app/store/utils/BrowserDB'
 import { ActivityModel } from 'app/store/slices/activity/models/ActivityModel'
 
@@ -46,6 +46,16 @@ export class WorkoutModel extends EntityModel {
     return EntityModel.getAllFromDB(WorkoutModel, workoutsTable.name)
   }
 
+  public static override updateMany(workouts: WorkoutModel[]) {
+    const { workoutsTable } = browserDB.getTables()
+    return EntityModel.updateMany(workoutsTable.name, workouts)
+  }
+
+  public static async deleteMany(workouts: WorkoutModel[]) {
+    const { workoutsTable } = browserDB.getTables()
+    return EntityModel.deleteMany(workoutsTable.name, workouts.map(workout => workout.id))
+  }
+
   constructor({ id, created_at, updated_at, exercises, ...data }: WorkoutModelConstructorParameter | PlainWorkoutObject) {
     super({ id, created_at, updated_at })
 
@@ -57,7 +67,7 @@ export class WorkoutModel extends EntityModel {
     })
   }
 
-  update(data: Partial<WorkoutModel>) {
+  update(data: Omit<Partial<WorkoutModel>, 'exercises'> & { exercises?: (WorkoutExerciseModel | PlainWorkoutExercise)[] }) {
     Object.assign(this, data)
     this.updated_at = Date.now()
 
@@ -84,14 +94,12 @@ export class WorkoutModel extends EntityModel {
   }
 
   async isInActivity(activities?: Partial<ActivityModel>[]) {
-    const { activitiesTable } = browserDB.getTables()
-    activities = activities || (await browserDB.db.getAllValues(activitiesTable)).map(activity => JSON.parse(activity))
+    activities = activities || (await ActivityModel.getAllFromDB())
     return !!activities.find(activity => activity.workout_id === this.id)
   }
 
   async inActivities(activities?: Partial<ActivityModel>[]) {
-    const { activitiesTable } = browserDB.getTables()
-    activities = activities || (await browserDB.db.getAllValues(activitiesTable)).map(activity => JSON.parse(activity))
+    activities = activities || (await ActivityModel.getAllFromDB())
     return activities.filter(activity => activity.workout_id === this.id)
   }
 
@@ -105,7 +113,7 @@ export class WorkoutModel extends EntityModel {
     if (await this.isInActivity(activities)) {
       this.archived = true
 
-      await this.save()
+      // await this.save()
 
       return this
     }
@@ -114,10 +122,19 @@ export class WorkoutModel extends EntityModel {
     return this
   }
 
+  async archive() {
+    this.archived = true
+    return this
+  }
+
   async save() {
     const { workoutsTable } = browserDB.getTables()
-    await browserDB.db.set(workoutsTable, this.id, this.toString())
+    await browserDB.db.set(workoutsTable, this.id, this.toPlainObject())
     return this
+  }
+
+  toPlainObject(): PlainWorkoutObject {
+    return { ...this, exercises: this.exercises.map(exercise => exercise.toPlainObject()) }
   }
 
   getCopy() {

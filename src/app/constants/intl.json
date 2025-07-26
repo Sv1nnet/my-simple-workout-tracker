@@ -1060,8 +1060,8 @@
           "eng": "Deleting muscle group"
         },
         "content": {
-          "ru": "Вы действительно хотите удалить группу мышц \"%name%\"?",
-          "eng": "Are you sure you want to delete \"%name%\" muscle group?"
+          "ru": "Вы действительно хотите удалить группу мышц \"%name%\"? Она также будет удалена из всех упражнений.",
+          "eng": "Are you sure you want to delete \"%name%\" muscle group? The muscle group will be deleted from all exercises."
         }
       },
       "error": {

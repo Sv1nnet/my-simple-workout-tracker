@@ -58,7 +58,7 @@ const loadBaseData = async (lang: 'ru' | 'eng'): Promise<LoadBaseDataResult> => 
 
 const setBaseDataInDb = async (db: IndexedDB<string>, table: IndexedDBTable<string>, data: Record<string, any>[]) => {
   for (const item of data) {
-    await db.set(table, item.id, JSON.stringify(item))
+    await db.set(table, item.id, item)
   }
 }
 

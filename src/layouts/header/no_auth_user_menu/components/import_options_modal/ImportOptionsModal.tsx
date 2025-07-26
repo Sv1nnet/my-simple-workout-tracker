@@ -46,10 +46,10 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
         setIsDownloading()
 
         downloadFile(JSON.stringify({
-          muscleGroups: listToExport.muscleGroups ? await db.getAllValues(tables.muscleGroupsTable) : [],
-          exercises: listToExport.exercises ? await db.getAllValues(tables.exercisesTable) : [],
-          workouts: listToExport.workouts ? await db.getAllValues(tables.workoutsTable) : [],
-          activities: listToExport.activities ? await db.getAllValues(tables.activitiesTable) : [],
+          muscleGroups: listToExport.muscleGroups ? await db.getAll(tables.muscleGroupsTable) : [],
+          exercises: listToExport.exercises ? await db.getAll(tables.exercisesTable) : [],
+          workouts: listToExport.workouts ? await db.getAll(tables.workoutsTable) : [],
+          activities: listToExport.activities ? await db.getAll(tables.activitiesTable) : [],
         }), 'my-simple-workout-tracker-data.txt', 'plain/text')
       } else {
         throw new Error('Local DB is not initialized')

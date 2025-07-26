@@ -19,7 +19,7 @@ class ErrorBoundary extends Component<PropsWithChildren<{ intlCtx: IIntlContextV
 
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
-    alert(error.message + ' ' + JSON.stringify(errorInfo))
+    // alert(error.message + ' ' + JSON.stringify(errorInfo))
     this.setState({ hasError: true, errorText: (error as { message: string }).message as string + ' ' + JSON.stringify(errorInfo as object) })
 
   }
