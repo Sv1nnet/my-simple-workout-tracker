@@ -7,6 +7,7 @@ import styled from 'styled-components'
 const LoadType = styled.div`
   text-align: left;
   width: 100%;
+  color: var(--text-color-secondary);
 `
 
 export type TitleProps = {

@@ -192,6 +192,7 @@ const WorkoutList: FC<IWorkoutList> = ({ deleteWorkouts, copyWorkouts, error, is
             cancelText={workoutModal.delete.cancel_button}
             open={isModalVisible} 
             onOk={handleDelete} 
+            okButtonProps={{ danger: true }}
             onCancel={closeModal}
             text={workoutModal.delete.body_many}
             selected={selected}
