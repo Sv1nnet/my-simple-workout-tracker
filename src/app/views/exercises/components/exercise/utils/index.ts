@@ -1,9 +1,13 @@
-import { useEffect } from 'react'
-import { notification } from 'antd'
+import { useEffect, useState } from 'react'
+import { FormInstance, notification } from 'antd'
 import { MuscleGroupError } from 'app/store/slices/muscleGroup/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { ExerciseForm } from 'app/store/slices/exercise/types'
+import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import { Dayjs } from 'dayjs'
+import { API_STATUS } from 'app/constants/api_statuses'
+import { secondsToDayjs } from 'app/utils/time'
+import routes from 'app/constants/end_points'
+import { useMounted, useOnPreviousChange } from 'app/hooks'
 
 export type ApiGetMuscleGroupError = {
   data: MuscleGroupError;
@@ -41,6 +45,97 @@ export const useShowDeleteMuscleGroupError = ([ fetchMuscleGroupsError, createMu
   }, [ deleteMuscleGroupError ])
 }
 
+const getMuscleGroupFromList = (currentMuscleGroups: (string | { label: string; value: string })[], muscleGroupsItems: {
+  label: string;
+  id: string;
+  value: string;
+}[]) => currentMuscleGroups.map((muscleGroupId) => {
+  const muscleGroupFromList = muscleGroupsItems
+    .find(muscleGroup => typeof muscleGroupId === 'string'
+      ? muscleGroup.id === muscleGroupId
+      : muscleGroup.id === muscleGroupId.value)
+
+  return muscleGroupFromList ? {
+    label: muscleGroupFromList.label,
+    value: muscleGroupFromList.id,
+  } : null
+}).filter(Boolean) || []
+
+export const useInitialValues = (
+  _initialValues: IExercise['initialValues'],
+  muscleGroupsItems: {
+    label: string;
+    id: string;
+    value: string;
+  }[],
+  muscleGroupListStatus: typeof API_STATUS[keyof typeof API_STATUS],
+  isFetching: boolean,
+  isError: boolean,
+  form: FormInstance<ExerciseForm>,
+) => {
+  const { isMounted, useHandleMounted } = useMounted()
+
+  const stateSetter = () => {
+    const {
+      is_in_workout: _is_in_workout,
+      ...exercise
+    } = { ..._initialValues }
+
+    let time: number | Dayjs = exercise.time
+    if (time && typeof time !== 'object') {
+      time = secondsToDayjs(time)
+      exercise.time = time
+    }
+
+    if (!exercise.mass_unit) {
+      exercise.mass_unit = 'kg'
+    }
+
+    if (exercise.image) {
+      const image = exercise.image as Image
+      exercise.image = {
+        ...image,
+        url: image.url
+          ? image.url.startsWith('data:image/')
+            ? image.url
+            : `${routes.base}${image.url}`
+          : '',
+      }
+      exercise.image = [ image ]
+    }
+
+    if (muscleGroupListStatus === API_STATUS.LOADED) {
+      exercise.muscle_groups = getMuscleGroupFromList(exercise.muscle_groups || [], muscleGroupsItems)
+    }
+
+    return exercise
+  }
+
+  const [ initialValues, setInitialValues ] = useState(stateSetter)
+
+  useOnPreviousChange(() => {
+    setInitialValues(stateSetter)
+  }, [ _initialValues ])
+
+  useEffect(() => {
+    if (isMounted() && !isFetching && !isError) {
+      form.setFieldsValue(initialValues)
+    }
+  }, [ initialValues, isFetching ])
+
+  useEffect(() => {
+    if (isMounted() && muscleGroupListStatus === API_STATUS.LOADED) {
+      const currentMuscleGroups = form.getFieldValue('muscle_groups')
+      form.setFieldsValue({
+        muscle_groups: getMuscleGroupFromList(currentMuscleGroups || [], muscleGroupsItems),
+      })
+    }
+  }, [ muscleGroupsItems, muscleGroupListStatus ])
+
+  useHandleMounted()
+
+  return { initialValues, setInitialValues }
+}
 
 export type InitialValues = {
   title: string;

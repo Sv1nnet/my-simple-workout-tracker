@@ -11,11 +11,9 @@ import {
 import { FC, useEffect, useMemo, useReducer, useState } from 'react'
 import { PlusOutlined } from '@ant-design/icons'
 import { DeleteEditPanel, SelectWithItemCreating, TimePicker } from 'app/components'
-import { Dayjs } from 'dayjs'
-import { isExerciseTimeType, secondsToDayjs } from 'app/utils/time'
+import { isExerciseTimeType } from 'app/utils/time'
 import { ToggleEdit } from 'app/components'
-import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
-import routes from 'app/constants/end_points'
+import { ExerciseForm } from 'app/store/slices/exercise/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { Input as CustomInput } from 'app/components'
 import {
@@ -28,17 +26,16 @@ import {
   HoursFormItem,
 } from './components'
 import { useNavigate } from 'react-router'
-import { useAppSelector, useMounted } from 'app/hooks'
+import { useAppSelector } from 'app/hooks'
 import getBase64 from 'app/utils/getBase64'
 import { selectList } from 'store/slices/muscleGroup'
 import { muscleGroupApi } from 'store/slices/muscleGroup/api'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, clearValues } from './utils'
+import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, clearValues, useInitialValues } from './utils'
 import style from './utils/modal.module.scss'
 
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
-  const { isMounted, useHandleMounted } = useMounted()
   const navigate = useNavigate()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
@@ -47,7 +44,10 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const [ fetchMuscleGroupList, { error: fetchMuscleGroupsError } ] = muscleGroupApi.useLazyListQuery()
   const { data: muscleGroupList, status: muscleGroupListStatus } = useAppSelector(selectList)
-  const muscleGroupsItems = useMemo(() => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id, value: muscleGroup.id })), [ muscleGroupList ])
+  const muscleGroupsItems = useMemo(
+    () => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id, value: muscleGroup.id })),
+    [ muscleGroupList ],
+  )
 
   const [ createMuscleGroup, { error: createMuscleGroupError } ] = muscleGroupApi.useCreateMutation()
   const [ deleteMuscleGroup, { error: deleteMuscleGroupError } ] = muscleGroupApi.useDeleteMutation()
@@ -65,57 +65,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
-  const initialValues = useMemo(() => {
-    const {
-      is_in_workout: _is_in_workout,
-      ...exercise
-    } = { ..._initialValues }
-
-    let time: number | Dayjs = exercise.time
-    if (time && typeof time !== 'object') {
-      time = secondsToDayjs(time)
-      exercise.time = time
-    }
-
-    if (!exercise.mass_unit) {
-      exercise.mass_unit = 'kg'
-    }
-
-    if (exercise.image) {
-      const image = exercise.image as Image
-      exercise.image = {
-        ...image,
-        url: image.url
-          ? image.url.startsWith('data:image/')
-            ? image.url
-            : `${routes.base}${image.url}`
-          : '',
-      }
-      exercise.image = [ image ]
-    }
-
-    if (muscleGroupListStatus === API_STATUS.LOADED) {
-      exercise.muscle_groups = exercise.muscle_groups.map((muscleGroupId) => {
-        const muscleGroupFromList = muscleGroupsItems
-          .find(muscleGroup => typeof muscleGroupId === 'string'
-            ? muscleGroup.id === muscleGroupId
-            : muscleGroup.id === muscleGroupId.value)
-
-        return muscleGroupFromList ? {
-          label: muscleGroupFromList.label,
-          value: muscleGroupFromList.id,
-        } : null
-      })
-    }
-
-    return exercise
-  }, [ _initialValues, muscleGroupsItems, muscleGroupListStatus ])
+  const { initialValues } = useInitialValues(_initialValues, muscleGroupsItems, muscleGroupListStatus, isFetching, isError, form)
 
   const requestForDeleteMuscleGroupPromise = (muscleGroupName: string) => {
     setIsMuscleGroupSelectOpen(true)
 
     return new Promise((resolve) => {
       const _modal = Modal.confirm({
+        okButtonProps: { danger: true },
         title: intl.rest.muscle_group.delete_muscle_group.title,
         content: intl.rest.muscle_group.delete_muscle_group.content.replace('%name%', muscleGroupName),
         okText: intl.common.yes,
@@ -150,7 +107,9 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
             muscle_groups: form.getFieldValue('muscle_groups').filter(item => item.value !== id),
           })
         }
-        await deleteMuscleGroup({ id }).unwrap()
+        setTimeout(() => {
+          deleteMuscleGroup({ id })
+        }, 1000)
       }
     } catch (deleteError) {
       console.error(deleteError)
@@ -256,12 +215,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   })
 
   useEffect(() => {
-    if (isMounted() && !isFetching && !isError && muscleGroupListStatus !== API_STATUS.LOADING) {
-      form.setFieldsValue(initialValues)
-    }
-  }, [ initialValues, isFetching, muscleGroupListStatus ])
-
-  useEffect(() => {
     if (error || isError) {
       Modal.error({
         title: title.error,
@@ -275,7 +228,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   }, [ !!error, isError ])
 
   useEffect(() => {
-    fetchMuscleGroupList({ lang: isEdit ? lang : undefined })
+    fetchMuscleGroupList({ lang: isEdit ? lang : undefined, exerciseId: initialValues.id })
   }, [])
 
   useEffect(() => {
@@ -283,8 +236,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   }, [])
 
   useShowDeleteMuscleGroupError([ fetchMuscleGroupsError, createMuscleGroupError, deleteMuscleGroupError ] as ApiGetMuscleGroupError[])
-
-  useHandleMounted()
 
   const isFormItemDisabled = !isEditMode || isFetching
   const isInActivity = initialValues.is_in_activity
