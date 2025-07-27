@@ -67,7 +67,7 @@ export class WorkoutModel extends EntityModel {
     })
   }
 
-  update(data: Omit<Partial<WorkoutModel>, 'exercises'> & { exercises?: (WorkoutExerciseModel | PlainWorkoutExercise)[] }) {
+  update(data: Omit<Partial<WorkoutModel | PlainWorkoutObject>, 'exercises'> & { exercises?: (WorkoutExerciseModel | PlainWorkoutExercise)[] }) {
     Object.assign(this, data)
     this.updated_at = Date.now()
 
