@@ -309,7 +309,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
                       inputReadOnly
                       showNow={false}
                       size="large"
-                      allowClear={false}
                       placeholder=""
                     />
                   </ShortFormItem>

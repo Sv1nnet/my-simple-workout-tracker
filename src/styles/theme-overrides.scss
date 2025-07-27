@@ -239,8 +239,14 @@ body.dark-theme {
   }
 
   .ant-picker {
+
     background: var(--background-color);
     border-color: var(--border-color-base);
+
+    &-clear {
+      background: var(--background-color);
+      color: var(--text-color-secondary);
+    }
 
     &.ant-picker-disabled {
       background-color: var(--disabled-background-color);
