@@ -338,7 +338,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
       </Form.Item>
       <ImageFormItem label={input_labels.image} style={{ marginBottom: isEditMode ? '' : '0' }} name="image" valuePropName="fileList" getValueFromEvent={({ fileList }) => fileList}>
-        <Upload.Dragger beforeUpload={() => false} onPreview={handlePreviewOpen} listType="picture-card" maxCount={1} accept="image/*" disabled={!isEditMode || isFetching}>
+        <Upload.Dragger
+          beforeUpload={() => false}
+          onPreview={handlePreviewOpen}
+          listType="picture-card"
+          maxCount={1}
+          accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/svg+xml, image/avif"
+          disabled={!isEditMode || isFetching}
+        >
           <PlusOutlined />
         </Upload.Dragger>
       </ImageFormItem>
