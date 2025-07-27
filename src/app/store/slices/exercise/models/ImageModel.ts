@@ -91,6 +91,14 @@ export class ImageModel extends EntityModel {
     return this
   }
 
+  toPlainObject() {
+    const plainObject = {
+      ...this,
+    }
+    delete plainObject._imageSetter
+    return plainObject
+  }
+
   toString() {
     const { _imageSetter: _, imageSetter: __, ...image } = this
     return JSON.stringify(image)

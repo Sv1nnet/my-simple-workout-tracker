@@ -205,6 +205,13 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           })
         } 
         if (isEdit && !res.error && !res.data.error) setEditMode(false)
+        if (res.error || res.data?.error) {
+          notification.error({
+            message: notifications[isEdit ? 'update' : 'create'].error,
+            description: res.data?.error?.message || res.error?.message,
+            placement: 'top',
+          })
+        }
         return res
       })
   }

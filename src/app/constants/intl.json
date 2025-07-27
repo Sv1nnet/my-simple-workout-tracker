@@ -330,12 +330,20 @@
           "success": {
             "ru": "Упражнение создано",
             "eng": "Exercise created"
+          },
+          "error": {
+            "ru": "Не удалось создать упражнение",
+            "eng": "Could not create exercise"
           }
         },
         "update": {
           "success": {
             "ru": "Упражнение обновлено",
             "eng": "Exercise updated"
+          },
+          "error": {
+            "ru": "Не удалось сохранить упражнение",
+            "eng": "Could not save exercise"
           }
         },
         "error": {

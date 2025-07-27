@@ -145,6 +145,7 @@ export class ExerciseModel extends EntityModel {
   toPlainObject() {
     return {
       ...this,
+      image: this.image?.toPlainObject(),
     } as PlainExerciseObject
   }
 
