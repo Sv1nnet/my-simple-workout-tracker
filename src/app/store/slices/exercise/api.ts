@@ -13,7 +13,7 @@ import { Dayjs } from 'dayjs'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
 import { secondsToDayjs } from 'app/utils/time'
-import { Lang } from '../config/types'
+import { Lang } from '../settings/types'
 
 export const EXERCISE_TAG_TYPES = {
   EXERCISE: 'Exercise',
@@ -24,6 +24,7 @@ export const exerciseApi = createApi({
   reducerPath: 'exerciseApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
+  keepUnusedDataFor: Infinity,
   tagTypes: [ EXERCISE_TAG_TYPES.EXERCISE, EXERCISE_TAG_TYPES.EXERCISE_LIST ],
   endpoints: build => ({
     get: build.query<GetExerciseSuccess, { id: string }>({

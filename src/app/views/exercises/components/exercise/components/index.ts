@@ -1,19 +1,7 @@
-import {
-  StyledForm,
-  StyledFormItem,
-  StyledModal,
-  CreateEditFormItem,
-  ImageFormItem,
-  ShortFormItem,
-  HoursFormItem,
-} from './styled'
+export * from './styled'
 
-export {
-  StyledForm,
-  StyledFormItem,
-  StyledModal,
-  CreateEditFormItem,
-  ImageFormItem,
-  ShortFormItem,
-  HoursFormItem,
-}
+export * from './delete_modal/DeleteModal'
+export { default as DeleteModal } from './delete_modal/DeleteModal'
+
+export * from './info_modal/InfoModal'
+export { default as InfoModal } from './info_modal/InfoModal'

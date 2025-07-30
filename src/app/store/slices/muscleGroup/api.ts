@@ -12,7 +12,7 @@ import {
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { Lang } from '../config/types'
+import { Lang } from 'store/slices/settings/types'
 
 export const MUSCLE_GROUP_TAG_TYPES = {
   MUSCLE_GROUP: 'MuscleGroup',
@@ -23,6 +23,7 @@ export const muscleGroupApi = createApi({
   reducerPath: 'muscleGroupApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
+  keepUnusedDataFor: Infinity,
   tagTypes: [ MUSCLE_GROUP_TAG_TYPES.MUSCLE_GROUP, MUSCLE_GROUP_TAG_TYPES.MUSCLE_GROUP_LIST ],
   endpoints: build => ({
     get: build.query<GetMuscleGroupSuccess, { id: string }>({

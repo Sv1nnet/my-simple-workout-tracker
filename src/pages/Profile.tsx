@@ -8,7 +8,7 @@ import { profileApi } from 'store/slices/profile/api'
 import { selectCredentials } from 'store/slices/profile'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { configApi } from 'store/slices/config/api'
+import { settingsApi } from 'store/slices/settings/api'
 
 const StyledButton = styled(Button)`
   margin-top: 1em;
@@ -27,7 +27,7 @@ const Profile = () => {
   const [ updateProfile, { isLoading: isUpdatingProfile, isError: isUpdateProfileError, error: updateProfileError, isSuccess: isUpdateProfileSuccess } ] = profileApi.useLazyUpdateQuery()
 
   const { isLoading: isProfileLoading, isFetching: isFetchingProfile } = profileApi.useGetQuery()
-  configApi.useGetQuery()
+  settingsApi.useGetQuery()
 
   const validate = ({ getFieldValue }) => ({
     async validator({ field }, value) {

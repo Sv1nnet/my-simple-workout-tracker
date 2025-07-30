@@ -128,6 +128,6 @@ export const selectPageInfo = (state: AppState) => ({
 export const selectWorkout = (state: AppState) => state.workout.single
 export const selectList = (state: AppState) => state.workout.list
 
-export * as workoutHandlers from './noCredsLoginRequestHandlers'
+export * as workoutHandlers from './localRequestHandlers'
 
 export default workoutSlice.reducer

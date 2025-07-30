@@ -2,12 +2,13 @@ import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useRef,
 import styled from 'styled-components'
 import { Spin, SpinProps } from 'antd'
 
-const initialContextValue = { loading: false, forceStopLoader: () => {}, stopLoaderById: () => {}, runLoader: () => {} }
+const initialContextValue = { loading: false, forceStopLoader: () => {}, stopLoaderById: () => {}, runLoader: () => {}, forceRunLoader: () => {} }
 
 export interface IAppLoaderContextValue {
   loading: boolean;
-  forceStopLoader: (props?: IAppLoader['loaderProps']) => void;
   runLoader: (id: number | string, props?: IAppLoader['loaderProps']) => void;
+  forceRunLoader: (id: number | string, props?: IAppLoader['loaderProps']) => void;
+  forceStopLoader: (props?: IAppLoader['loaderProps']) => void;
   stopLoaderById: (id: number | string, props?: IAppLoader['loaderProps']) => void;
 }
 
@@ -68,7 +69,15 @@ const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps
   const [ loading, setLoading ] = useState(false)
   const [ loaderRunnerId, setLoaderRunnerId ] = useState(null)
   const loaderRunnerIdRef = useRef(loaderRunnerId)
+  const forcedRunnerIdRef = useRef<string[]>([])
   const [ loaderProps, setLoaderProps ] = useState<IAppLoader['loaderProps']>(_loaderProps)
+
+  const forceRunLoader = useCallback((id, props: IAppLoader['loaderProps'] = {}) => {
+    setLoading(true)
+    setLoaderProps(props)
+    setLoaderRunnerId(id)
+    forcedRunnerIdRef.current.push(id)
+  }, [])
 
   const runLoader = useCallback((id, props: IAppLoader['loaderProps'] = {}) => {
     setLoading(true)
@@ -78,7 +87,20 @@ const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps
   }, [])
 
   const stopLoaderById = useCallback((id, props: IAppLoader['loaderProps'] = {}) => {
-    if (id !== loaderRunnerIdRef.current) return
+    if (forcedRunnerIdRef.current.includes(id)) {
+      forcedRunnerIdRef.current = forcedRunnerIdRef.current.filter(i => i !== id)
+
+      if (forcedRunnerIdRef.current.length === 0) {
+        loaderRunnerIdRef.current = null
+        setLoaderRunnerId(null)
+        setLoading(false)
+        setLoaderProps(props)
+      }
+
+      return
+    }
+
+    if (forcedRunnerIdRef.current.length > 0 || id !== loaderRunnerIdRef.current) return
 
     setLoaderRunnerId(null)
     setLoading(false)
@@ -89,11 +111,13 @@ const AppLoaderProvider: FC<IAppLoader> = ({ children, loaderProps: _loaderProps
     setLoading(false)
     setLoaderProps(props)
     setLoaderRunnerId(null)
+    loaderRunnerIdRef.current = null
+    forcedRunnerIdRef.current = []
   }, [])
 
   const value = useMemo(
-    () => ({ loading, runLoader, stopLoaderById, forceStopLoader }),
-    [ loading, runLoader, stopLoaderById, forceStopLoader ],
+    () => ({ loading, runLoader, stopLoaderById, forceStopLoader, forceRunLoader }),
+    [ loading, runLoader, stopLoaderById, forceStopLoader, forceRunLoader ],
   )
 
   return (

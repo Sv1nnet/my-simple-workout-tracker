@@ -12,12 +12,14 @@ import ActivityItem from 'pages/activities/Item'
 import Activities from 'pages/activities/List'
 import React from 'react'
 import Profile from 'pages/Profile'
+import Settings from 'pages/Settings'
 
 export const BASE_ROUTES = {
   PROFILE: '/profile',
   EXERCISES: '/exercises',
   WORKOUTS: '/workouts',
   ACTIVITIES: '/activities',
+  SETTINGS: '/settings',
   NOT_FOUND: '/404',
 }
 
@@ -26,6 +28,9 @@ const createRoute = (path: string) => (id: string | null = null) => (query?: str
 export const routes = {
   profile: {
     path: () => BASE_ROUTES.PROFILE,
+  },
+  settings: {
+    path: () => BASE_ROUTES.SETTINGS,
   },
   exercises: {
     item: createRoute(BASE_ROUTES.EXERCISES),
@@ -67,7 +72,8 @@ const RootRouter = () => (
           </React.Fragment>
         ))}
 
-        <Route path="/profile" element={<Profile />}/>
+        <Route path={routes.profile.path()} element={<Profile />}/>
+        <Route path={routes.settings.path()} element={<Settings />}/>
 
         <Route path="*" element={<NotFound404 />}/>
       </Route>

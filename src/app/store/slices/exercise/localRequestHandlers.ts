@@ -53,6 +53,7 @@ const handlers = {
       data: {
         data: {
           ...exercise,
+          image: exercise.image?.toPlainObject(),
           is_in_activity: isInActivity, // to prevent from changing type of payload
         },
         success: true,
@@ -63,7 +64,7 @@ const handlers = {
   list: async (_body?: FetchArgs, _url?: URL, params?: URLSearchParams) => {
     let archived = false
     let workoutId = params?.get('workoutId') || ''
-    let lang = params?.get('lang') || JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
+    let lang = params?.get('lang') || JSON.parse(localStorage.getItem('settings') || null)?.lang || 'eng'
 
     if (params) {
       ({ archived } = formatFormData<
@@ -102,12 +103,17 @@ const handlers = {
       data[key] = body.get(key)
     }
 
-    data = formatFormData(data, fieldsToFormat)
+    let image = data.image
+    let restForm = formatFormData<typeof data, typeof data & ImageFields>(data, fieldsToFormat)
+
+    if (!image) {
+      ({ image, restForm } = mapFormDataToImageAndRestForm(restForm))
+    }
 
     try {
-      const exercise = new ExerciseModel(data as ExerciseModelConstructorParameter)
+      const exercise = new ExerciseModel({ ...restForm, image } as ExerciseModelConstructorParameter)
       const muscleGroupsInExercise = (await MuscleGroupModel.getAllFromDB())
-        .filter(muscleGroup => data.muscle_groups.includes(muscleGroup.id))
+        .filter(muscleGroup => restForm.muscle_groups.includes(muscleGroup.id))
 
       await Promise.all(muscleGroupsInExercise.map(muscleGroup => muscleGroup.update({
         is_in_exercise: true,
@@ -129,7 +135,7 @@ const handlers = {
   copy: async ({ body }: { body: { ids: string[] } }) => {
     const { exercisesTable, muscleGroupsTable } = browserDB.getTables()
     const { ids = [] } = body
-    const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
+    const lang = JSON.parse(localStorage.getItem('settings') || null)?.lang || 'eng'
 
     try {
       const allExercises = await ExerciseModel.getAllFromDB()

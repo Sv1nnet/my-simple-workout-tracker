@@ -3,10 +3,7 @@ import { Style } from '@capacitor/status-bar'
 import { darkTheme, theme } from 'src/styles/vars'
 import { useLayoutEffect } from 'react'
 import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
-import { Theme } from 'app/store/slices/config/types'
-
-
-export type ThemeMode = 'light' | 'dark' | 'system'
+import { Theme } from 'app/store/slices/settings/types'
 
 // Theme constants
 export const LIGHT_THEME_CLASS = 'light-theme'
@@ -57,10 +54,10 @@ export const applyTheme = async (themeMode: 'light' | 'dark' | 'system'): Promis
 }
 
 // Function to get the saved theme preference
-export const getSavedThemePreference = async (): Promise<ThemeMode> => {
+export const getSavedThemePreference = async (): Promise<Theme> => {
   try {
     const { value } = await Preferences.get({ key: THEME_PREFERENCE_KEY })
-    return (value as ThemeMode) || 'system'
+    return (value as Theme) || 'system'
   } catch (error) {
     console.error('Error getting theme preference:', error)
     return 'system'

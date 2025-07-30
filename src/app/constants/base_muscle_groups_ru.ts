@@ -6,6 +6,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Верхний пучок груди',
@@ -14,6 +15,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Средний пучок груди',
@@ -22,6 +24,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Нижний пучок груди',
@@ -30,6 +33,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Шея',
@@ -38,6 +42,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Ременная мышца',
@@ -46,6 +51,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Боковая мышцы шеи',
@@ -54,6 +60,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Спина',
@@ -62,6 +69,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Верхняя Трапецевидная мышца',
@@ -70,6 +78,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Нижняя Трапецевидная мышца',
@@ -78,6 +87,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Ромбовидная мышца',
@@ -86,6 +96,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Широчайшая мышца',
@@ -94,6 +105,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Выпрямляющая позвоночник мышца',
@@ -102,6 +114,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Квадратная поясничная мышца',
@@ -110,6 +123,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Плечи',
@@ -118,6 +132,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Передняя дельта плеча',
@@ -126,6 +141,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Средняя дельта плеча',
@@ -134,6 +150,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Задняя дельта плеча',
@@ -142,6 +159,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Ноги',
@@ -150,6 +168,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Квадрицепс берда',
@@ -158,6 +177,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Бицепс берда',
@@ -166,6 +186,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Подвздошная мышца',
@@ -174,6 +195,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Прямая мышца бедра',
@@ -182,6 +204,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Ягодичная мышца',
@@ -190,6 +213,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Латеральная широкая мышца',
@@ -198,6 +222,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Медиальная широкая мышца',
@@ -206,6 +231,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Икроножная мышца',
@@ -214,6 +240,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Переднаяя большеберцовая мышца',
@@ -222,6 +249,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Руки',
@@ -230,6 +258,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Трицепс',
@@ -238,6 +267,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Бицепс',
@@ -246,6 +276,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Плечелучевая мышца',
@@ -254,6 +285,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Разгибатель запястья',
@@ -262,6 +294,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Пресс',
@@ -270,6 +303,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Прямая мышца пресса',
@@ -278,6 +312,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Внешние косые мышцы пресса',
@@ -286,6 +321,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Внутренние косые мышцы пресса',
@@ -294,6 +330,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Поперечные мышцы пресса',
@@ -302,6 +339,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Кардио',
@@ -310,6 +348,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Другое',
@@ -318,6 +357,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
 ]
 

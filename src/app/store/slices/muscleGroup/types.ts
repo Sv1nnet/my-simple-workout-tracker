@@ -3,6 +3,7 @@ import { IResponse } from 'app/constants/response_types'
 export type MuscleGroup = {
   id: string;
   title: string;
+  is_default: boolean;
   /*
     Indicates if the muscle group created on frontend, and still not saved to the server.
     After saving on the server the id should be replaced with the one server sent.

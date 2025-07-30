@@ -6,6 +6,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Upper Chest',
@@ -14,6 +15,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Middle Chest',
@@ -22,6 +24,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Lower Chest',
@@ -30,6 +33,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Neck',
@@ -38,6 +42,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Strap Muscle',
@@ -46,6 +51,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Lateral Muscles of the Neck',
@@ -54,6 +60,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Back',
@@ -62,6 +69,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Upper Trapezius',
@@ -70,6 +78,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Lower Trapezius',
@@ -78,6 +87,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Rhomboid Muscle',
@@ -86,6 +96,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Latissimus Dorsi',
@@ -94,6 +105,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Erector Spinae',
@@ -102,6 +114,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Quadratus Lumbar',
@@ -110,6 +123,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Shoulders',
@@ -118,6 +132,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Anterior Deltoid',
@@ -126,6 +141,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Middle Deltoid',
@@ -134,6 +150,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Rear Deltoid',
@@ -142,6 +159,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Legs',
@@ -150,6 +168,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Quadriceps Femur',
@@ -158,6 +177,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Biceps Femur',
@@ -166,6 +186,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Iliacus Muscle',
@@ -174,6 +195,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Rectus Femur',
@@ -182,6 +204,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Gluteus Muscle',
@@ -190,6 +213,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Lateral Vastus Muscle',
@@ -198,6 +222,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Medial broad muscle',
@@ -206,6 +231,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Gastrocnemius muscle',
@@ -214,6 +240,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Anterior tibial muscle',
@@ -222,6 +249,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Arms',
@@ -230,6 +258,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Triceps',
@@ -238,6 +267,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Biceps',
@@ -246,6 +276,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Brachiradialis muscle',
@@ -254,6 +285,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Extensor carpi',
@@ -262,6 +294,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Abs',
@@ -270,6 +303,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Rectus abdominis muscle',
@@ -278,6 +312,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'External obliques',
@@ -286,6 +321,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Internal obliques',
@@ -294,6 +330,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Transverse abdominal muscles',
@@ -302,6 +339,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Cardio',
@@ -310,6 +348,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
   {
     title: 'Other',
@@ -318,6 +357,7 @@ const muscleGroups = [
     is_in_exercise: false,
     created_at: 0,
     updated_at: 0,
+    is_default: true,
   },
 ]
 

@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 import { Select } from 'antd'
-import { changeLang, selectLang } from 'store/slices/config'
+import { changeLang, selectLang } from 'store/slices/settings'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import UserMenu from 'layouts/header/user_menu/UserMenu'
-import { configApi } from 'app/store/slices/config/api'
-import { Lang } from 'app/store/slices/config/types'
+import { settingsApi } from 'app/store/slices/settings/api'
+import { Lang } from 'app/store/slices/settings/types'
 import { selectIsNoAuthLogin } from 'app/store/slices/auth'
 import NoAuthUserMenu from '../no_auth_user_menu/NoAuthUserMenu'
 
@@ -53,11 +53,11 @@ const Content = () => {
   const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
   const lang = useAppSelector(selectLang)
   const dispatch = useAppDispatch()
-  const [ updateConfig ] = configApi.useLazyUpdateQuery()
+  const [ updateSettings ] = settingsApi.useLazyUpdateQuery()
 
   const updateLang = (_lang: Lang) => {
     dispatch(changeLang(_lang))
-    updateConfig({ config: { lang: _lang } })
+    updateSettings({ settings: { lang: _lang } })
   }
 
   return (
@@ -67,26 +67,6 @@ const Content = () => {
           ? <NoAuthUserMenu />
           : <UserMenu />
       }
-      <Select
-        showArrow={false}
-        value={lang}
-        onChange={updateLang}
-        dropdownRender={options => (
-          <OptionsContainer>
-            {options}
-          </OptionsContainer>
-        )}
-        options={[
-          {
-            value: 'eng',
-            label: <Label>EN</Label>,
-          },
-          {
-            value: 'ru',
-            label: <Label>РУ</Label>,
-          },
-        ]}
-      />
     </Wrapper>
   )
 }

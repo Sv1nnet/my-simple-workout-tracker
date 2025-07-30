@@ -241,12 +241,16 @@
       "eng": "Login"
     },
     "import": {
-      "ru": "Загрузить данные из файла",
-      "eng": "Upload data from file"
+      "ru": "Импортировать данные из файла",
+      "eng": "Import data from file"
     },
     "export": {
       "ru": "Сохранить данные в файл",
       "eng": "Save data to file"
+    },
+    "settings": {
+      "ru": "Настройки",
+      "eng": "Settings"
     },
     "modal": {
       "delete_data": {
@@ -262,6 +266,70 @@
     }
   },
   "pages": {
+    "settings": {
+      "input_labels": {
+        "lang": {
+          "ru": "Язык",
+          "eng": "Language"
+        },
+        "theme": {
+          "ru": "Тема",
+          "eng": "Theme"
+        },
+        "units": {
+          "ru": "Единицы измерения",
+          "eng": "Units"
+        },
+        "timers": {
+          "ru": "Таймеры",
+          "eng": "Timers"
+        }
+      },
+      "input_options": {
+        "lang": {
+          "eng": "English",
+          "ru": "Русский"
+        },
+        "theme": {
+          "light": {
+            "eng": "Light",
+            "ru": "Светлая"
+          },
+          "dark": {
+            "eng": "Dark",
+            "ru": "Темная"
+          }
+        },
+        "units": {
+          "kg": {
+            "eng": "kg",
+            "ru": "кг"
+          },
+          "lb": {
+            "eng": "lb",
+            "ru": "фунт"
+          }
+        },
+        "timers": {
+          "vibration": {
+            "eng": "Vibration",
+            "ru": "Вибрация"
+          },
+          "sound": {
+            "eng": "Sound",
+            "ru": "Звук"
+          }
+        },
+        "success": {
+          "ru": "Настройки сохранены.",
+          "eng": "Settings saved."
+        }
+      },
+      "submit_button": {
+        "ru": "Сохранить",
+        "eng": "Save"
+      }
+    },
     "profile": {
       "main": {
         "ru": "Главная",
@@ -490,8 +558,8 @@
           "eng": "Each side (left/right arm, etc.)"
         },
         "hours": {
-          "ru": "Часовой формат",
-          "eng": "Hour format"
+          "ru": "Часовой формат в результатах",
+          "eng": "Hour format in results"
         },
         "time": {
           "ru": "Время",
@@ -575,6 +643,38 @@
           "ok_button": {
             "ru": "Удалить",
             "eng": "Delete"
+          },
+          "cancel_button": {
+            "ru": "Отмена",
+            "eng": "Cancel"
+          }
+        },
+        "info_modal": {
+          "change_default": {
+            "body": {
+              "ru": "Нельзя изменить это поле в упражнении по умолчанию. Вы можете скопировать упражнение и внести изменения в копию.",
+              "eng": "Cannot change this field in default exercise. You can copy the exercise and make changes to the copy. Copy? Current changes will be transferred to the copy."
+            }
+          },
+          "in_activity": {
+            "body": {
+              "ru": "Нельзя изменить это поле в упражнении, которое используется в активности. Вы можете скопировать упражнение и внести изменения в копию.",
+              "eng": "Cannot change this field in exercise, which is used in activity. You can copy the exercise and make changes to the copy. Copy? Current changes will be transferred to the copy."
+            }
+          },
+          "just_copy": {
+            "body": {
+              "ru": "Создать копию упражнения? Текущие изменения будут перенесены в копию.",
+              "eng": "Create copy of exercise? Current changes will be transferred to the copy."
+            }
+          },
+          "ok_button_create": {
+            "ru": "Создать",
+            "eng": "Create"
+          },
+          "ok_button": {
+            "ru": "Понятно",
+            "eng": "Got it"
           },
           "cancel_button": {
             "ru": "Отмена",

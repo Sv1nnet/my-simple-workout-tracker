@@ -14,7 +14,7 @@ export const PROFILE_TAG_TYPES = {
 export const profileApi = createApi({
   reducerPath: 'profileApi',
   baseQuery: getBaseQueryWithReauth(false),
-  refetchOnMountOrArgChange: true,
+  keepUnusedDataFor: Infinity,
   tagTypes: [ PROFILE_TAG_TYPES.PROFILE ],
   endpoints: build => ({
     get: build.query<GetProfileSuccess, void>({

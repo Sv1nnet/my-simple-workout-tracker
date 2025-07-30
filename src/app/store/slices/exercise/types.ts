@@ -27,6 +27,7 @@ export type Exercise<T = number | Dayjs> = {
   weight?: number;
   description?: string;
   image?: Image;
+  is_default?: boolean;
 }
 
 export type MuscleGroup = {

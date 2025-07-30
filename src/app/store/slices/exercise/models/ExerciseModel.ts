@@ -42,6 +42,10 @@ export class ExerciseModel extends EntityModel {
 
   public muscle_groups: string[] = []
   
+  public is_default: boolean = false
+
+  public is_favorite: boolean = false
+
   public image?: ImageModel
 
   public time?: number

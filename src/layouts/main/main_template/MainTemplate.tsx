@@ -12,6 +12,7 @@ const routes = [
   'activities',
   'workouts',
   'exercises',
+  'settings',
 ]
 
 const MainTemplate: FC = () => {

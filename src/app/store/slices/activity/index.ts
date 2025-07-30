@@ -236,6 +236,6 @@ export const selectCachedActivity = (state: AppState) => state.activity.cachedAc
 export const selectList = (state: AppState) => state.activity.list
 export const selectSelectedRoundIndex = (chartId: string) => (state: AppState) => state.activity.charts[chartId]?.selectedRoundIndex
 
-export * as activityHandlers from './noCredsLoginRequestHandlers'
+export * as activityHandlers from './localRequestHandlers'
 
 export default activitySlice.reducer

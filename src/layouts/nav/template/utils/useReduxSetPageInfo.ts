@@ -2,6 +2,7 @@ import { useOnPreviousChange, useAppDispatch } from 'app/hooks'
 import { useCallback, useEffect } from 'react'
 import { open as openExercise, close as closeExercise, EXERCISE_PAGE_TYPE } from 'app/store/slices/exercise'
 import { open as openProfile, close as closeProfile } from 'app/store/slices/profile'
+import { open as openSettings, close as closeSettings } from 'app/store/slices/settings'
 import { open as openWorkout, close as closeWorkout, WORKOUT_PAGE_TYPE } from 'app/store/slices/workout'
 import { open as openActivity, close as closeActivity, ACTIVITY_PAGE_TYPE } from 'app/store/slices/activity'
 import { TabRoutes } from '../NavTemplate'
@@ -25,6 +26,11 @@ const pageHandlers = {
   profile: {
     open: openProfile,
     close: closeProfile,
+    getType: () => null,
+  },
+  settings: {
+    open: openSettings,
+    close: closeSettings,
     getType: () => null,
   },
 }

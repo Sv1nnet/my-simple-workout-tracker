@@ -163,7 +163,7 @@ const handlers = {
   },
   copy: async ({ body }: { body: { ids: string[] } }) => {
     const { ids = [] } = body
-    const lang = JSON.parse(localStorage.getItem('config') || null)?.lang || 'eng'
+    const lang = JSON.parse(localStorage.getItem('settings') || null)?.lang || 'eng'
 
     const workoutsToCopy = await WorkoutModel.getManyFromDB(ids)
 

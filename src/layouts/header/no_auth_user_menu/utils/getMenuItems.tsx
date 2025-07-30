@@ -10,6 +10,18 @@ import style from '../NoAuthUserMenu.module.scss'
 import { SwitchChangeEventHandler } from 'antd/lib/switch'
 import { ThemeSwitch } from 'app/components'
 import { isString } from 'app/utils/typeCheckers'
+import { DownloadOutlined, SettingOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons'
+import styled from 'styled-components'
+
+const StyledButton = styled(Button)`
+  text-align: left;
+`
+
+const StyledThemeSwitch = styled(ThemeSwitch)`
+  justify-content: flex-start;
+  padding-left: 22px;
+  margin-top: 6px;
+`
 
 const getMenuItems = ({
   navigate,
@@ -124,36 +136,53 @@ const getMenuItems = ({
     openImportMenu()
   }
 
+  const openSettingsPage = () => {
+    navigate(BASE_ROUTES.SETTINGS)
+    closeMenu()
+  }
+
   return [
     {
       key: 'profile',
       label: (
-        <Button type="link" block onClick={openProfilePage}>
+        <StyledButton type="link" block onClick={openProfilePage}>
+          <UserOutlined />
           {intl.header.profile}
-        </Button>
+        </StyledButton>
       ),
     },
     {
       key: 'import',
       label: (
-        <Button type="link" block onClick={importData}>
+        <StyledButton type="link" block onClick={importData}>
+          <UploadOutlined />
           {intl.header.import}
-        </Button>
+        </StyledButton>
       ),
     },
     {
       key: 'export',
       label: (
-        <Button type="link" block onClick={exportData}>
+        <StyledButton type="link" block onClick={exportData}>
+          <DownloadOutlined />
           {intl.header.export}
-        </Button>
+        </StyledButton>
+      ),
+    },
+    {
+      key: 'settings',
+      label: (
+        <StyledButton type="link" block onClick={openSettingsPage}>
+          <SettingOutlined />
+          {intl.header.settings}
+        </StyledButton>
       ),
     },
     {
       key: 'themeSwitch',
       className: style['user-menu-dropdown__theme-switch'],
       label: (
-        <ThemeSwitch onChange={onThemeSwitch} isLightTheme={isLightTheme} />
+        <StyledThemeSwitch onChange={onThemeSwitch} isLightTheme={isLightTheme} />
       ),
     },
     {

@@ -127,6 +127,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
     workouts: (isScreenSmall ? intl.header.workouts.short : (intl.header.workouts)) || '',
     activities: (isScreenSmall ? intl.header.activities.short : (intl.header.activities)) || '',
     profile: (isScreenSmall ? intl.header.profile.short : (intl.header.profile)) || '',
+    settings: intl.header.settings || '',
   }
 
   const items = useMemo(() => 
@@ -180,6 +181,7 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
     labels.workouts,
     labels.activities,
     labels.profile,
+    labels.settings,
   ])
 
   useEffect(() => {

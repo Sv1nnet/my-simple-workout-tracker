@@ -66,6 +66,9 @@ export const exerciseSlice = createSlice({
       state.isOpen = initialState.isOpen
       state.pageType = initialState.pageType
     },
+    updateSingle: (state, { payload }: PayloadAction<ExerciseForm>) => {
+      state.single.data = payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -111,7 +114,7 @@ export const exerciseSlice = createSlice({
   },
 })
 
-export const { updateList, resetListState, open, close, setPageType, resetState } = exerciseSlice.actions
+export const { updateList, resetListState, open, close, setPageType, resetState, updateSingle } = exerciseSlice.actions
 
 export const selectIsOpen = (state: AppState) => state.exercise.isOpen
 export const selectPageType = (state: AppState) => state.exercise.pageType
@@ -122,6 +125,6 @@ export const selectPageInfo = (state: AppState) => ({
 export const selectExercise = (state: AppState) => state.exercise.single
 export const selectList = (state: AppState) => state.exercise.list
 
-export * as exerciseHandlers from './noCredsLoginRequestHandlers'
+export * as exerciseHandlers from './localRequestHandlers'
 
 export default exerciseSlice.reducer

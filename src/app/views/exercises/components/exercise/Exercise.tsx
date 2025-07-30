@@ -9,8 +9,8 @@ import {
   notification,
 } from 'antd'
 import { FC, useEffect, useMemo, useReducer, useState } from 'react'
-import { PlusOutlined } from '@ant-design/icons'
-import { DeleteEditPanel, SelectWithItemCreating, TimePicker } from 'app/components'
+import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import { SelectWithItemCreating, TimePicker, TopButtonsPanel } from 'app/components'
 import { isExerciseTimeType } from 'app/utils/time'
 import { ToggleEdit } from 'app/components'
 import { ExerciseForm } from 'app/store/slices/exercise/types'
@@ -24,28 +24,35 @@ import {
   ImageFormItem,
   ShortFormItem,
   HoursFormItem,
+  DeleteModal,
+  InfoModal,
+  StyledCheckbox,
 } from './components'
 import { useNavigate } from 'react-router'
-import { useAppSelector } from 'app/hooks'
+import { useAppDispatch, useAppSelector, useToggle } from 'app/hooks'
 import getBase64 from 'app/utils/getBase64'
 import { selectList } from 'store/slices/muscleGroup'
 import { muscleGroupApi } from 'store/slices/muscleGroup/api'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, clearValues, useInitialValues } from './utils'
 import style from './utils/modal.module.scss'
+import { updateSingle } from 'app/store/slices/exercise'
 
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
-  const [ isModalVisible, setIsModalVisible ] = useState(false)
+  const { state: isDeleteModalOpen, setTrue: openDeleteModal, setFalse: closeDeleteModal } = useToggle(false)
+  const { state: isInfoModalOpen, setTrue: openInfoModalOpen, setFalse: closeInfoModalOpen } = useToggle(false)
+  const [ infoModalType, setInfoModalType ] = useState<null | { isDefault?: boolean, isInActivity?: boolean, isJustCopy?: boolean }>(null)
   const [ isMuscleGroupSelectOpen, setIsMuscleGroupSelectOpen ] = useState<boolean | undefined>(undefined)
   const [ preview, dispatchPreview ] = useReducer(previewReducer, { visible: false, title: '', url: '' })
 
   const [ fetchMuscleGroupList, { error: fetchMuscleGroupsError } ] = muscleGroupApi.useLazyListQuery()
   const { data: muscleGroupList, status: muscleGroupListStatus } = useAppSelector(selectList)
   const muscleGroupsItems = useMemo(
-    () => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id, value: muscleGroup.id })),
+    () => muscleGroupList.map(muscleGroup => ({ label: muscleGroup.title, id: muscleGroup.id, value: muscleGroup.id, isDeletable: !muscleGroup.is_default })),
     [ muscleGroupList ],
   )
 
@@ -54,14 +61,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const handleAddItem = async (newMuscleGroup: { label: string, id: string }) => {
     try {
-      return await createMuscleGroup({ title: newMuscleGroup.label, id: newMuscleGroup.id }).unwrap()
+      return await createMuscleGroup({ title: newMuscleGroup.label, id: newMuscleGroup.id, is_default: false }).unwrap()
     } catch (createError) {
       console.error(createError)
     }
   }
 
   const { lang, intl } = useIntlContext()
-  const { input_labels, submit_button, payload, modal, notifications } = intl.pages.exercises
+  const { input_labels, submit_button, payload, notifications } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
@@ -217,9 +224,29 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   }
 
   const handleDelete = () => deleteExercise(initialValues.id).then((res) => {
-    setIsModalVisible(false)
+    closeDeleteModal()
     return res
   })
+
+  const handleCopyExercise = async () => {
+    let { image, ...values } = form.getFieldsValue()
+
+    if (image && 'length' in image && image.length) {
+      [ image ] = image
+    }
+
+    dispatch(updateSingle({
+      ...values,
+      image,
+    }))
+    
+    navigate('/exercises/create?copy=1')
+  }
+
+  const handleOpenCopyModal = (type: { isDefault?: boolean, isInActivity?: boolean, isJustCopy?: boolean }) => () => {
+    openInfoModalOpen()
+    setInfoModalType(type)
+  }
 
   useEffect(() => {
     if (error || isError) {
@@ -246,23 +273,34 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const isFormItemDisabled = !isEditMode || isFetching
   const isInActivity = initialValues.is_in_activity
+  const isDefault = initialValues.is_default
 
   return (
     <StyledForm preserve={false} form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
       {isEdit && (
-        <DeleteEditPanel
-          isEditMode={isEditMode}
+        <TopButtonsPanel
+          buttons={isEditMode ? [ 'copy', 'delete' ] : [ 'edit', 'copy', 'delete' ]}
           onEditClick={() => setEditMode(true)}
-          onDeleteClick={() => setIsModalVisible(true)}
+          onDeleteClick={openDeleteModal}
+          onCopyClick={handleOpenCopyModal({ isJustCopy: true })}
           deleteButtonProps={{ disabled: isFetching }}
           editButtonProps={{ disabled: isFetching }}
+          copyButtonProps={{ disabled: isFetching }}
         />
       )}
       <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: 'Required' } ]}>
         <Input disabled={isFormItemDisabled} size="large" />
       </Form.Item>
-      <Form.Item label={input_labels.type} name="type" required rules={[ { required: true, message: 'Required' } ]}>
-        <Select disabled={isFormItemDisabled || isInActivity} size="large">
+      <Form.Item
+        label={
+          <span>
+            {input_labels.type}
+            {(isEditMode && (isDefault || isInActivity)) && <Button type="link" size="small" onClick={handleOpenCopyModal({ isDefault, isInActivity })} icon={<QuestionCircleOutlined />} />}
+          </span>
+        }
+        name="type"
+      >
+        <Select disabled={isFormItemDisabled || isInActivity || isDefault} size="large">
           <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
           <Select.Option value="repeats">{input_labels.type.options.repeats}</Select.Option>
           <Select.Option value="distance">{input_labels.type.options.distance}</Select.Option>
@@ -281,9 +319,10 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         />
       </Form.Item>
       <Form.Item style={{ marginBottom: 0 }} name="each_side" valuePropName="checked">
-        <Checkbox disabled={isFormItemDisabled || isInActivity}>
-          {input_labels.each_side}
-        </Checkbox>
+        <StyledCheckbox disabled={isFormItemDisabled || isInActivity || isDefault}>
+          {input_labels.each_side} 
+          {(isEditMode && (isDefault || isInActivity)) && <Button type="link" size="small" onClick={handleOpenCopyModal({ isDefault, isInActivity })} icon={<QuestionCircleOutlined />} />}
+        </StyledCheckbox>
       </Form.Item>
       <HoursFormItem shouldUpdate>
         {({ getFieldValue }) => isExerciseTimeType(getFieldValue('type')) && (
@@ -354,7 +393,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
         footer={null}
         onCancel={handlePreviewClose}
       >
-        <img alt="example" style={{ width: '100%' }} src={preview.url} />
+        <img alt="exercise-image" style={{ width: '100%' }} src={preview.url} />
       </StyledModal>
       {(isEditMode || !isEdit) && (
         <CreateEditFormItem>
@@ -368,16 +407,20 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           )}
         </CreateEditFormItem>
       )}
-      <Modal
-        open={isModalVisible}
-        okText={modal.delete.ok_button}
-        onOk={handleDelete}
-        okButtonProps={{ danger: true, type: 'default', loading: isFetching }}
-        cancelText={modal.delete.cancel_button}
-        onCancel={() => setIsModalVisible(false)}
-      >
-        {modal.delete.body_single}
-      </Modal>
+
+      <DeleteModal 
+        isOpen={isDeleteModalOpen}
+        onDelete={handleDelete}
+        onCancel={closeDeleteModal}
+        isFetching={isFetching}
+      />
+
+      <InfoModal
+        isOpen={isInfoModalOpen}
+        onCancel={closeInfoModalOpen}
+        onOk={infoModalType?.isJustCopy ? handleCopyExercise : closeInfoModalOpen}
+        {...infoModalType}
+      />
     </StyledForm>
   )
 }

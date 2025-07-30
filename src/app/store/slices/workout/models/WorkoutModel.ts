@@ -31,6 +31,10 @@ export class WorkoutModel extends EntityModel {
 
   public in_activities: string[] = []
 
+  public is_default: boolean
+
+  public is_favorite: boolean = false
+
   public static async getOneFromDB(id: EntityModel['id']): Promise<WorkoutModel | undefined> {
     const { workoutsTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(WorkoutModel, workoutsTable.name, id)

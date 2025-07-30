@@ -13,7 +13,6 @@ import isoWeek from 'dayjs/plugin/isoWeek'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { Lang, Unit } from 'app/store/slices/config/types'
 import RootRouter from './router'
 import { useLocalStorage } from './app/hooks'
 
@@ -26,10 +25,6 @@ dayjs.extend(isoWeek)
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-interface AppProps {
-  lang: Lang
-}
-
 CapacitorApp.addListener('backButton', ({ canGoBack }) => {
   if (!canGoBack) {
     CapacitorApp.exitApp()
@@ -38,11 +33,10 @@ CapacitorApp.addListener('backButton', ({ canGoBack }) => {
   }
 })
 
-export default function App({ lang }: AppProps) {
+export default function App() {
   const [ isNoAuthLogin ] = useLocalStorage('isNoAuthLogin', false)
-  const [ units ] = useLocalStorage<Unit>('units', 'kg')
 
-  const store = useMemo(() => getStore({ lang, isNoAuthLogin, units }), [ lang, isNoAuthLogin, units ])
+  const store = useMemo(() => getStore({ isNoAuthLogin }), [ isNoAuthLogin ])
 
   return (
     <Provider store={store}>

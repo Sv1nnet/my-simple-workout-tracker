@@ -23,6 +23,7 @@ import {
 } from './styled'
 import SwipeActions from './swipe_actions/SwipeActions'
 import ThemeSwitch from './theme_switch/ThemeSwitch'
+import TopButtonsPanel from './top_buttons_panel/TopButtonsPanel'
 
 export {
   AuthTemplate,
@@ -48,4 +49,5 @@ export {
   Swipeable,
   SwipeActions,
   ThemeSwitch,
+  TopButtonsPanel,
 }

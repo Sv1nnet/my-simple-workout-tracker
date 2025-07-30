@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector, useMounted } from 'app/hooks'
-import { changeTheme as changeThemeAction, selectTheme } from 'app/store/slices/config'
-import { Theme } from 'app/store/slices/config/types'
+import { changeTheme as changeThemeAction, selectTheme } from 'app/store/slices/settings'
+import { Theme } from 'app/store/slices/settings/types'
 import handleSafeArea from 'app/utils/handleSafeArea'
 import { SafeAreaInsets } from 'capacitor-plugin-safe-area'
 import { createContext, PropsWithChildren, useCallback, useContext, useLayoutEffect, useMemo, useState } from 'react'

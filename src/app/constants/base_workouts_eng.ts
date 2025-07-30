@@ -40,6 +40,7 @@ const baseWorkoutsRu = [
     archived: false,
     is_in_activity: false,
     in_activities: [],
+    is_default: true,
   },
   {
     updated_at: 1734557632691,
@@ -92,6 +93,7 @@ const baseWorkoutsRu = [
     archived: false,
     is_in_activity: false,
     in_activities: [],
+    is_default: true,
   },
   {
     updated_at: 1734565035573,
@@ -144,6 +146,7 @@ const baseWorkoutsRu = [
     archived: false,
     is_in_activity: false,
     in_activities: [],
+    is_default: true,
   },
 ]
 

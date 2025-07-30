@@ -31,6 +31,7 @@ export type SelectWithItemCreatingRef = {
 export type Item = {
   label: string
   id: string
+  isDeletable?: boolean
 }
 
 const { Option } = Select
@@ -149,7 +150,7 @@ const SelectWithItemCreating = forwardRef(function SelectWithItemCreating<T exte
         >
           <OptionContent>
             <span>{item.label}</span>
-            <Button data-id={item.id} danger size='small' icon={<DeleteOutlined />} onClick={handleDeleteItem} />
+            {item.isDeletable && <Button data-id={item.id} danger size='small' icon={<DeleteOutlined />} onClick={handleDeleteItem} />}
           </OptionContent>
         </Option>
       ))}

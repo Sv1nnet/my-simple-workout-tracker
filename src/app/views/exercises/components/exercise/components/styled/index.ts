@@ -1,4 +1,4 @@
-import { Form, Modal } from 'antd'
+import { Checkbox, Form, Modal } from 'antd'
 import styled from 'styled-components'
 
 export const StyledForm = styled(Form)`
@@ -57,4 +57,10 @@ export const HoursFormItem = styled(Form.Item)`
  & .ant-form-item {
    margin-bottom: 18px;
  }
+`
+
+export const StyledCheckbox = styled(Checkbox)`
+  .ant-checkbox + span {
+    padding-right: 0;
+  }
 `

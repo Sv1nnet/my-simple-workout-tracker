@@ -1,9 +1,1 @@
-import {
-  FormActionButtonsContainer,
-  ToggleEdit,
-} from './form_items'
-
-export {
-  FormActionButtonsContainer,
-  ToggleEdit,
-}
+export * from './form_items'

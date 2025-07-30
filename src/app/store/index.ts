@@ -10,9 +10,11 @@ import exercise from './slices/exercise'
 import workout from './slices/workout'
 import activity from './slices/activity'
 import muscleGroup from './slices/muscleGroup'
-import configSlice, { changeLang, changeTheme, changeUnits } from './slices/config'
+import settingsSlice, { changeLang, changeTheme, changeUnits } from './slices/settings'
+import configSlice from './slices/config'
 import { workoutApi } from './slices/workout/api'
 import { configApi } from './slices/config/api'
+import { settingsApi } from './slices/settings/api'
 
 const rootReducer = combineReducers({
   auth: authSlice,
@@ -22,6 +24,7 @@ const rootReducer = combineReducers({
   activity,
   muscleGroup,
   config: configSlice,
+  settings: settingsSlice,
   [activityApi.reducerPath]: activityApi.reducer,
   [exerciseApi.reducerPath]: exerciseApi.reducer,
   [workoutApi.reducerPath]: workoutApi.reducer,
@@ -29,6 +32,7 @@ const rootReducer = combineReducers({
   [profileApi.reducerPath]: profileApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   [configApi.reducerPath]: configApi.reducer,
+  [settingsApi.reducerPath]: settingsApi.reducer,
 })
 
 export function makeStore() {
@@ -42,6 +46,7 @@ export function makeStore() {
       workoutApi.middleware,
       muscleGroupApi.middleware,
       configApi.middleware,
+      settingsApi.middleware,
     ),
   })
 }
@@ -60,17 +65,17 @@ Action<string>
 >
 
 export default ({ lang, isNoAuthLogin, theme, units }: Partial<{
-  lang: AppState['config']['data']['lang'],
+  lang: AppState['settings']['data']['lang'],
   isNoAuthLogin: AppState['auth']['isNoAuthLogin'],
-  units: AppState['config']['data']['units'],
-  theme: AppState['config']['data']['theme'],
+  units: AppState['settings']['data']['units'],
+  theme: AppState['settings']['data']['theme'],
 }>) => {
-  const { auth, config } = store.getState()
+  const { auth, settings } = store.getState()
 
-  if (config.data.lang !== lang) store.dispatch(changeLang(lang))
+  if (lang && settings.data.lang !== lang) store.dispatch(changeLang(lang))
   if (auth.isNoAuthLogin !== isNoAuthLogin) store.dispatch(loginWithNoAuth())
-  if (theme && config.data.theme !== theme) store.dispatch(changeTheme(theme))
-  if (units && config.data.units !== units) store.dispatch(changeUnits(units))
+  if (theme && settings.data.theme !== theme) store.dispatch(changeTheme(theme))
+  if (units && settings.data.units !== units) store.dispatch(changeUnits(units))
 
   return store
 }

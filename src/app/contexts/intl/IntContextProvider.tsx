@@ -1,8 +1,8 @@
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react'
 import _rawIntl from 'constants/intl.json'
 import { useAppSelector } from 'app/hooks'
-import { selectLang } from 'store/slices/config'
-import { Lang } from 'store/slices/config/types'
+import { selectLang } from 'store/slices/settings'
+import { Lang } from 'store/slices/settings/types'
 
 const initialContextValue: IIntlContextValue = { intl: {}, lang: 'eng' }
 

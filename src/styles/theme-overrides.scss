@@ -236,10 +236,16 @@ body.dark-theme {
     .ant-checkbox-checked .ant-checkbox-inner {
       background-color: var(--primary-color);
     }
+    .ant-checkbox-disabled.ant-checkbox-checked .ant-checkbox-inner {
+      background-color: var(--disabled-background-color);
+    }
+  }
+
+  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input {
+    background: var(--background-color)
   }
 
   .ant-picker {
-
     background: var(--background-color);
     border-color: var(--border-color-base);
 

@@ -9,7 +9,7 @@ import { updateToken } from 'store/slices/auth'
 import { ApiLoginError } from '../login/Login'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { AUTH_FORM_TABS } from '../template/Template'
-import { changeLang } from 'app/store/slices/config'
+import { changeLang } from 'app/store/slices/settings'
 import { ApiSignupError } from '../signup/types'
 
 const StyledButton = styled(Button)`

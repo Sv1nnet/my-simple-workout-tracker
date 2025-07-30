@@ -4,6 +4,7 @@ export const Container = styled.div<{ $mt?: string | number }>`
   display: flex;
   margin-top: ${({ $mt }) => $mt};
   padding-right: 8px;
+  color: var(--text-color);
 `
 
 export const Value = styled.span<{ $color?: string, $noDiff?: boolean }>`

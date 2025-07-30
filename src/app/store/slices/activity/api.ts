@@ -24,6 +24,7 @@ export const activityApi = createApi({
   reducerPath: 'activityApi',
   baseQuery: getBaseQueryWithReauth(false),
   refetchOnMountOrArgChange: true,
+  keepUnusedDataFor: Infinity,
   tagTypes: [ ACTIVITY_TAG_TYPES.ACTIVITY, ACTIVITY_TAG_TYPES.ACTIVITY_LIST, ACTIVITY_TAG_TYPES.HISTORY ],
   endpoints: build => ({
     get: build.query<GetActivitySuccess, { id: string }>({
@@ -76,6 +77,7 @@ export const activityApi = createApi({
       providesTags: () => [ ACTIVITY_TAG_TYPES.ACTIVITY_LIST ],
     }),
     getHistory: build.query<GetHistoryListSuccess, HistoryRequestQuery>({
+      keepUnusedDataFor: 60 * 60 * 1000, // 1 hour
       query: ({ workoutId, activityId, page = 1, byPage = 30, offset }) => ({
         url: `${routes.activity.v1.history.full}/${workoutId}?${activityId ? `activity_id=${activityId}&` : ''}page=${page}&byPage=${byPage}${typeof offset === 'number' ? `&offset=${offset}` : ''}`,
         method: 'GET',

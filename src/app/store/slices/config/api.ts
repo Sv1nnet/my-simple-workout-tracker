@@ -14,7 +14,7 @@ export const AUTH_TAG_TYPES = {
 export const configApi = createApi({
   reducerPath: 'configApi',
   baseQuery: getBaseQueryWithReauth(false),
-  refetchOnMountOrArgChange: true,
+  keepUnusedDataFor: Infinity,
   tagTypes: [ AUTH_TAG_TYPES.CONFIG ],
   endpoints: build => ({
     get: build.query<GetConfigSuccess, void>({

@@ -21,6 +21,8 @@ export class MuscleGroupModel extends EntityModel {
 
   public is_in_exercise: boolean
 
+  public is_default: boolean
+
   public static async getOneFromDB(id: EntityModel['id']): Promise<MuscleGroupModel | undefined> {
     const { muscleGroupsTable } = browserDB.getTables()
     return EntityModel.getOneFromDB(MuscleGroupModel, muscleGroupsTable.name, id)

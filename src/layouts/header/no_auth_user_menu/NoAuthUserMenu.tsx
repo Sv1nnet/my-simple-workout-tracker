@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Avatar, Dropdown } from 'antd'
-import { UserOutlined } from '@ant-design/icons'
+import { CloseOutlined, MenuOutlined } from '@ant-design/icons'
 import styled from 'styled-components'
 import style from './NoAuthUserMenu.module.scss'
 import { useAppDispatch, useAppSelector, useToggle } from 'app/hooks'
@@ -20,9 +20,9 @@ import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 
 const StyledAvatar = styled(Avatar)`
   position: absolute;
-  right: 3px;
+  left: 15px;
   cursor: pointer;
-  background: var(--avatar-background);
+  background: transparent;
 `
 
 const NoAuthUserMenu = () => {
@@ -125,7 +125,7 @@ const NoAuthUserMenu = () => {
         menu={{ items }}
         placement="bottomRight"
       >
-        <StyledAvatar onClick={handleAvatarClick} size="large" icon={<UserOutlined />} />
+        <StyledAvatar onClick={handleAvatarClick} size="large" icon={isOpen ? <CloseOutlined /> : <MenuOutlined />} />
       </Dropdown>
       {isImportMenuOpen && <ImportOptionsModal isOpen={isImportMenuOpen} close={closeImportMenu} />}
     </>

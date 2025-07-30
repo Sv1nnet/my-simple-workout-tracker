@@ -11,8 +11,12 @@ export const FormActionButtonsContainer = styled.div`
 
 export const ToggleEdit = styled(Button)<{ $enable?: boolean }>`
   ${({ $enable }) => $enable ? `
-    margin-right: 15px;
+    margin-right: 8px;
   ` : `
     margin-top: 15px;
   `}
+`
+
+export const CopyButton = styled(Button)`
+  margin-right: 8px;
 `

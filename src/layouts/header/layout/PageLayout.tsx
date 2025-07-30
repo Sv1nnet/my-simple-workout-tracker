@@ -98,10 +98,10 @@ export const PageLayoutWithNav: FC<{ route: TabRoutes, children?: ReactNode }> =
 
   return (
     <WithHeader>
-      <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       <ContentContainer $height={height}>
         {children}
       </ContentContainer>
+      <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       <NavTemplate activeTab={_title} />
     </WithHeader>
   )
