@@ -1,10 +1,6 @@
 import styled from 'styled-components'
-import { Select } from 'antd'
-import { changeLang, selectLang } from 'store/slices/settings'
-import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { useAppSelector } from 'app/hooks'
 import UserMenu from 'layouts/header/user_menu/UserMenu'
-import { settingsApi } from 'app/store/slices/settings/api'
-import { Lang } from 'app/store/slices/settings/types'
 import { selectIsNoAuthLogin } from 'app/store/slices/auth'
 import NoAuthUserMenu from '../no_auth_user_menu/NoAuthUserMenu'
 
@@ -31,34 +27,8 @@ const Wrapper = styled.div`
   }
 `
 
-const Label = styled.span`
-  color: var(--text-color);
-  padding-left: 12px;
-  padding-right: 12px;
-`
-
-const OptionsContainer = styled.div`
-  & .ant-select-item.ant-select-item-option {
-    padding: 0;
-
-    .ant-select-item-option-content {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
-`
-
 const Content = () => {
   const isNoAuthLogin = useAppSelector(selectIsNoAuthLogin)
-  const lang = useAppSelector(selectLang)
-  const dispatch = useAppDispatch()
-  const [ updateSettings ] = settingsApi.useLazyUpdateQuery()
-
-  const updateLang = (_lang: Lang) => {
-    dispatch(changeLang(_lang))
-    updateSettings({ settings: { lang: _lang } })
-  }
 
   return (
     <Wrapper>

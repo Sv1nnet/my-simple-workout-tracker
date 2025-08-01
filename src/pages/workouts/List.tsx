@@ -29,6 +29,7 @@ const Workouts = () => {
   const { listEl, setListEl } = useListContext($container.current)
   const [ loadWorkouts, { error, isError, isFetching } ] = workoutApi.useLazyListQuery()
   const { data: workoutsInStore, status } = useAppSelector(selectList)
+
   const { filteredList: workoutsToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
     workoutsInStore,
     {

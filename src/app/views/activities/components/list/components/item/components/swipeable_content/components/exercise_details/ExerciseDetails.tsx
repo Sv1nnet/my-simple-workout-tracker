@@ -4,6 +4,7 @@ import { timeToHms } from 'app/utils/time'
 import { ExerciseResultsDetails } from 'pages/activities/List'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { Typography } from 'antd'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 const { Text } = Typography
 
@@ -18,7 +19,8 @@ export type ExerciseDetailsProps = ExerciseResultsDetails & {
 }
 
 const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass_unit, payloadDictionary }) => {
-  const _repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
+  const { lang } = useIntlContext()
+  const _repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats, lang)}` : null
   const _time = time
     ? timeToHms(
       time,
@@ -31,7 +33,8 @@ const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass
       },
     )
     : null
-  const _weight = weight ? `${weight} ${payloadDictionary.mass_unit?.[mass_unit]?.[0]}` : null
+
+  const _weight = weight ? `${weight} ${getWordByNumber(payloadDictionary.mass_unit?.[mass_unit], weight, lang)}` : null
   return (
     <LoadType>
       <Text type="secondary">{[ _repeats, _time, _weight ].filter(Boolean).join(' / ') || <span />}</Text>

@@ -3,11 +3,14 @@ import { Dayjs } from 'dayjs'
 import { Exercise, MuscleGroup } from 'store/slices/exercise/types'
 
 export type WorkoutListExercise<T = number | Dayjs> = {
-  _id: Exercise<number | Dayjs>['id'];
-  id: Exercise<number | Dayjs>['id'];
-  exercise: Exercise;
+  _id: Exercise['id'];
+  id: Exercise['id'];
+  details: Exercise;
   rounds: number;
   round_break: T;
+  weight?: number;
+  repeats?: number;
+  time?: number;
   break?: T;
   break_enabled: boolean;
 }
@@ -15,11 +18,14 @@ export type WorkoutListExercise<T = number | Dayjs> = {
 export type WorkoutExercise<T = number | Dayjs> = {
   id: Exercise['id'];
   rounds: number;
+  break_enabled: boolean;
+  repeats?: number;
   round_break: T;
-  exercise: Exercise;
+  weight?: number;
+  details: Exercise;
+  time?: number;
   break?: T;
   _id?: string;
-  break_enabled: boolean;
 }
 
 export type Workout<T = number | Dayjs> = {
@@ -42,7 +48,7 @@ export type WorkoutListItem<T = number | Dayjs> = {
 export type WorkoutForm = Workout
 
 export type WorkoutServerPayload = Omit<Workout<number>, 'exercise'> & {
-  exercise: Pick<Exercise, 'id' | 'title' | 'image' | 'repeats' | 'weight' | 'mass_unit' | 'time'> | Pick<Exercise, 'id'>;
+  exercise: Pick<Exercise, 'id' | 'title' | 'image'> | Pick<Exercise, 'id'>;
 }
 
 export type WorkoutCreateSuccess = IResponse<WorkoutForm>

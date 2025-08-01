@@ -90,7 +90,7 @@ const handlers = {
         muscle_groups: muscleGroupsInWorkout,
         exercises: rawWorkout.exercises.map(({ ...exercise }, index) => ({
           ...exercise,
-          exercise: sortedExercises[index],
+          details: sortedExercises[index],
         })),
       }
     }))
@@ -124,6 +124,9 @@ const handlers = {
         ...body,
         exercises: body.exercises.map((exercise, index) => ({
           ...workout.exercises[index],
+          repeats: exercise.repeats,
+          weight: exercise.weight,
+          time: exercise.time,
           round_break: exercise.round_break,
           break: exercise.break,
           break_enabled: exercise.break_enabled,

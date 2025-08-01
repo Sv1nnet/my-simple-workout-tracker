@@ -76,7 +76,7 @@ const handlers = {
         const workoutInActivity = allWorkouts.find(workout => workout.id === activity.workout_id)
         const exercisesInActivity = (workoutInActivity?.exercises || []).map(({ id }) => allExercises.find(exercise => exercise.id === id))
 
-        const fullResults = results.map((result) => {
+        const fullResults = results.map((result, index) => {
           const exercise = exercisesInActivity.find(_exercise => _exercise.id === result.original_id)
           const muscleGroups = exercise
             .muscle_groups
@@ -96,10 +96,9 @@ const handlers = {
             exercise_title: exercise.title,
             type: exercise.type,
             details: {
-              repeats: exercise.repeats,
-              time: exercise.time,
-              weight: exercise.weight,
-              mass_unit: exercise.mass_unit,
+              repeats: workoutInActivity?.exercises[index].repeats,
+              time: workoutInActivity?.exercises[index].time,
+              weight: workoutInActivity?.exercises[index].weight,
             },
           }
         })

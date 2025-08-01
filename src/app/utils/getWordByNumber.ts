@@ -5,6 +5,7 @@ const getWordByNumber = <T = string>(words: T[], num: number | string, lang = 'r
   if (Number.isNaN(num)) throw new TypeError('Number argument (num) is NaN')
 
   num = Math.abs(num)
+
   if (lang !== 'ru') return num === 1 ? words[0] : words[1]
 
   // Define index in a words array

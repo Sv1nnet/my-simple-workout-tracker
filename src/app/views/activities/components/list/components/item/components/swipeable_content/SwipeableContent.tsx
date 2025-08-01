@@ -19,6 +19,9 @@ import {
 import { SwipeableDirection, useSwipeableContext } from 'app/components/swipeable/Swipeable'
 import { ActivityListItem } from 'app/store/slices/activity/types'
 import { DescriptionProps } from 'app/views/workouts/components/list/components/item/components'
+import { selectSettings } from 'app/store/slices/settings'
+import { useAppSelector } from 'app/hooks'
+import { toLbs } from 'app/utils/massUnits'
 
 export type SwipeableContentProps = {
   isSelectionEnabled: boolean;
@@ -52,6 +55,7 @@ const SwipeableContent = ({
   activityDictionary,
   intl,
 }) => {
+  const { units } = useAppSelector(selectSettings)
   const { isSwiping, direction } = useSwipeableContext()
 
   useEffect(() => {
@@ -106,11 +110,18 @@ const SwipeableContent = ({
                 title={(
                   <div style={{ marginTop: !!muscle_groups?.length ? 0 : 2 }}>
                     <ExerciseTitle>{exercise_title}</ExerciseTitle>
-                    <ExerciseDetails {...details} payloadDictionary={exercisePayloadDictionary} />
+                    <ExerciseDetails
+                      {...details}
+                      weight={units === 'lb' ? toLbs(details.weight) : details.weight}
+                      repeats={details.repeats}
+                      time={details.time}
+                      mass_unit={units}
+                      payloadDictionary={exercisePayloadDictionary}
+                    />
                   </div>
                 )}
                 description={(
-                  <div>
+                  <div style={{ marginTop: 4 }}>
                     <Rounds rounds={rounds} type={type} hours={hours} activityDictionary={activityDictionary} />
                     {note && (
                       <div style={{ marginTop: 8 }}>

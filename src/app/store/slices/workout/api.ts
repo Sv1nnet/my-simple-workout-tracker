@@ -34,13 +34,16 @@ export const workoutApi = createApi({
       transformResponse: (response: GetWorkoutSuccess<Dayjs>) => {
         if (response.success) {
           const workout = { ...response.data }
-          workout.exercises = workout.exercises.map(({ id, rounds, exercise,  round_break, break: exercise_break, break_enabled }) => ({
+          workout.exercises = workout.exercises.map(({ id, rounds, details,  round_break, break: exercise_break, break_enabled, weight, repeats, time }) => ({
             id,
             rounds,
             round_break: isNumber(round_break) ? secondsToDayjs(round_break) : round_break,
             break_enabled,
             break: isNumber(exercise_break) ? secondsToDayjs(exercise_break) : exercise_break,
-            exercise,
+            details,
+            weight,
+            repeats,
+            time,
           }))
           response.data = workout
         }

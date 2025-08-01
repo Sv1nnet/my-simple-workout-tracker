@@ -47,14 +47,14 @@ export const useFixNumber = ({
       // 001
       if (
         (cutZeroes || cutLeadingZeroes) &&
-        v.startsWith('0')
+        /(^0{2,})|(^0\d+)/.test(v)
       ) {
         return fixNumber(v.slice(1))
       }
       // -0000 or -0 or -0001
       if (
         (cutZeroes || cutLeadingZeroes) &&
-        v.startsWith('-0')
+        /(^-0{2,})|(^-0\d+)/.test(v)
       ) {
         const cutValue = v.slice(2)
         return !cutValue.length ? '0' : `-${v.slice(2)}`

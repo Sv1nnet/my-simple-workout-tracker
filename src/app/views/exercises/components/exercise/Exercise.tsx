@@ -10,19 +10,16 @@ import {
 } from 'antd'
 import { FC, useEffect, useMemo, useReducer, useState } from 'react'
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { SelectWithItemCreating, TimePicker, TopButtonsPanel } from 'app/components'
+import { SelectWithItemCreating, TopButtonsPanel } from 'app/components'
 import { isExerciseTimeType } from 'app/utils/time'
 import { ToggleEdit } from 'app/components'
 import { ExerciseForm } from 'app/store/slices/exercise/types'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
-import { Input as CustomInput } from 'app/components'
 import {
   StyledForm,
-  StyledFormItem,
   StyledModal,
   CreateEditFormItem,
   ImageFormItem,
-  ShortFormItem,
   HoursFormItem,
   DeleteModal,
   InfoModal,
@@ -34,7 +31,7 @@ import getBase64 from 'app/utils/getBase64'
 import { selectList } from 'store/slices/muscleGroup'
 import { muscleGroupApi } from 'store/slices/muscleGroup/api'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, clearValues, useInitialValues } from './utils'
+import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, useInitialValues } from './utils'
 import style from './utils/modal.module.scss'
 import { updateSingle } from 'app/store/slices/exercise'
 
@@ -68,7 +65,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
   }
 
   const { lang, intl } = useIntlContext()
-  const { input_labels, submit_button, payload, notifications } = intl.pages.exercises
+  const { input_labels, submit_button, notifications, error_message } = intl.pages.exercises
   const { title, ok_text, default_content } = intl.modal.common
 
   const [ form ] = Form.useForm<ExerciseForm>()
@@ -123,19 +120,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
     }
   }
 
-  const selectAfter = useMemo(() => (
-    <Form.Item name="mass_unit" noStyle>
-      <Select disabled={!isEditMode || isFetching}>
-        <Select.Option value="kg">{payload.mass_unit.kg[0]}</Select.Option>
-        <Select.Option value="lb">{payload.mass_unit.lb[0]}</Select.Option>
-      </Select>
-    </Form.Item>
-  ), [ isEditMode, isFetching, lang ])
-
-  const handleWeightChange = (value: number | null) => form.setFieldsValue({ weight: value })
-
-  const handleRepeatsChange = (value: number | null) => form.setFieldsValue({ repeats: value })
-
   const handleCancelEditing = () => {
     setEditMode(false)
     form.resetFields()
@@ -164,7 +148,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const handleSubmit = async (_values) => {
     let { time, image, muscle_groups, ...values } = _values
-    values = clearValues(values)
     values = (() => {
       const formData = new FormData()
       Object
@@ -288,7 +271,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           copyButtonProps={{ disabled: isFetching }}
         />
       )}
-      <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: 'Required' } ]}>
+      <Form.Item label={input_labels.title} name="title" required rules={[ { required: true, message: error_message.common.required } ]}>
         <Input disabled={isFormItemDisabled} size="large" />
       </Form.Item>
       <Form.Item
@@ -299,6 +282,7 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           </span>
         }
         name="type"
+        required rules={[ { required: true, message: error_message.common.required } ]}
       >
         <Select disabled={isFormItemDisabled || isInActivity || isDefault} size="large">
           <Select.Option value="weight">{input_labels.type.options.weight}</Select.Option>
@@ -333,45 +317,6 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
           </Form.Item>
         )}
       </HoursFormItem>
-      <StyledFormItem shouldUpdate>
-        {({ getFieldValue }) => {
-          const type = getFieldValue('type')
-          const shouldRenderTimeInput = !isExerciseTimeType(type)
-          const shouldRenderWeightInput = type !== 'weight'
-          return (
-            <>
-              {shouldRenderTimeInput
-                ? (
-                  <ShortFormItem $margin name="time" label={input_labels.time}>
-                    <TimePicker
-                      disabled={isFormItemDisabled || isInActivity}
-                      inputReadOnly
-                      showNow={false}
-                      size="large"
-                      placeholder=""
-                    />
-                  </ShortFormItem>
-                )
-                : (
-                  <ShortFormItem name="repeats" label={input_labels.repeats} $margin>
-                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled || isInActivity} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
-                  </ShortFormItem>
-                )}
-              {shouldRenderWeightInput
-                ? (
-                  <ShortFormItem name="weight" label={input_labels.weight}>
-                    <CustomInput.Number onlyPositive disabled={isFormItemDisabled || isInActivity} onChange={handleWeightChange} onBlur={handleWeightChange} size="large" addonAfter={selectAfter} />
-                  </ShortFormItem>
-                )
-                : (
-                  <ShortFormItem name="repeats" label={input_labels.repeats}>
-                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled || isInActivity} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
-                  </ShortFormItem>
-                )}
-            </>
-          )
-        }}
-      </StyledFormItem>
       <Form.Item label={input_labels.description} name="description">
         <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
       </Form.Item>
@@ -432,7 +377,6 @@ Exercise.defaultProps = {
     muscle_groups: [],
     type: 'repeats',
     each_side: false,
-    mass_unit: 'kg',
     archived: false,
   },
 }

@@ -24,11 +24,19 @@ import { API_STATUS } from 'app/constants/api_statuses'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { useNavigate, useParams } from 'react-router'
 import { BASE_ROUTES } from 'src/router'
+import { selectSettings } from 'app/store/slices/settings'
+import { toKg, toLbs } from 'app/utils/massUnits'
+import { isObject } from 'app/utils/mergeObjects'
+import { isNumber } from 'app/utils/typeCheckers'
 
 export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
   exercises: {
-    id: TExercise<number | dayjs.Dayjs>['id'];
+    id: TExercise['id'];
     rounds: number;
+    weight: number | null;
+    repeats: number | null;
+    time: Dayjs | number | null;
+    type: TExercise['type'];
     round_break: Dayjs | number;
     break?: Dayjs | number;
     break_enabled: boolean;
@@ -51,6 +59,10 @@ export interface IWorkout {
 const getDefaultExercise = () => ({
   break_enabled: true,
   id: null,
+  type: null,
+  weight: null,
+  repeats: null,
+  time: null,
   rounds: 1,
   round_break: dayjs().hour(0).minute(0).second(0),
   break: dayjs().hour(0).minute(0).second(0),
@@ -60,12 +72,17 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const { isMounted, useHandleMounted } = useMounted()
   const params = useParams()
   const navigate = useNavigate()
-  const $container = useRef(null)
-  const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
-  const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
+
   const exerciseList = useAppSelector(selectList)
+  const { units } = useAppSelector(selectSettings)
+  
+  const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
+  const [ isModalVisible, setIsModalVisible ] = useState(false)
+
+  const $container = useRef(null)
+
   const { intl, lang } = useIntlContext()
   const { payload } = intl.pages.exercises
   const { input_labels, submit_button, error_message, modal, placeholders, notifications, loader_text } = intl.pages.workouts
@@ -77,17 +94,22 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
       return {
         title: '',
         is_in_activity: false,
+        type: null,
         exercises: [],
         id: params.id,
       }
     }
 
     const workout = { ..._initialValues } as unknown as InitialValues
-    workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled }) => ({
+    workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled, weight, repeats, time }) => ({
       id,
       rounds,
-      round_break: typeof round_break === 'object' ? round_break : secondsToDayjs(round_break as number),
-      break: typeof exercise_break === 'object' ? exercise_break : secondsToDayjs(exercise_break as number),
+      weight: units === 'lb' ? toLbs(weight) : weight,
+      repeats,
+      time: isObject(time) ? time : isNumber(time) ? secondsToDayjs(time) : null,
+      type: exerciseList.data.find(exercise => exercise.id === id)?.type || null,
+      round_break: isObject(round_break) ? round_break : secondsToDayjs(isNumber(round_break) ? round_break : 0),
+      break: isObject(exercise_break) ? exercise_break : secondsToDayjs(isNumber(exercise_break) ? exercise_break : 0),
       break_enabled,
     }))
 
@@ -116,7 +138,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
       return
     }
 
-    if (value && typeof value === 'object' && 'target' in value) {
+    if (value && isObject(value) && 'target' in value) {
       value = value.target.checked
     }
 
@@ -134,9 +156,17 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
   const handleSubmit = async (_values) => {
     let { is_in_activity: _, ...values } = _values
     values = { ...values, id: initialValues.id }
-    values.exercises = values.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled }) => ({
+    values.exercises = values.exercises.map(({ id, rounds, round_break, type, break: exercise_break, break_enabled, weight, repeats, time }) => ({
       id,
-      rounds,
+      rounds: +rounds,
+      type,
+      weight: weight
+        ? units === 'lb'
+          ? toKg(+weight)
+          : +weight
+        : null,
+      repeats: repeats ? +repeats : null,
+      time: time ? dayjsToSeconds(time) : null,
       round_break: dayjsToSeconds(round_break),
       break_enabled,
       break: dayjsToSeconds(exercise_break),
@@ -245,6 +275,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
                   exerciseList={exerciseList}
                   onExerciseChange={handleExerciseChange}
                   remove={remove}
+                  massUnit={units}
                 />
               ))}
               {isEditMode && !initialValues.is_in_activity && (

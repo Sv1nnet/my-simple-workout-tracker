@@ -681,6 +681,14 @@
             "eng": "Cancel"
           }
         }
+      },
+      "error_message": {
+        "common": {
+          "required": {
+            "ru": "Обязательно",
+            "eng": "Required"
+          }
+        }
       }
     },
     "workouts": {
@@ -740,6 +748,18 @@
         "description": {
           "ru": "Описание",
           "eng": "Description"
+        },
+        "time": {
+          "ru": "Время",
+          "eng": "Time"
+        },
+        "weight": {
+          "ru": "Вес",
+          "eng": "Weight"
+        },
+        "repeats": {
+          "ru": "Повторения",
+          "eng": "Repeats"
         }
       },
       "placeholders": {

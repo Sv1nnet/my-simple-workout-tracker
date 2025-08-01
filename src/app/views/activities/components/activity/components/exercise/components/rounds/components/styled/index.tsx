@@ -108,7 +108,7 @@ export const THeadCell = styled.th<{ $eachSide?: boolean, $previous?: boolean, $
     !$previous
       ? $isTimeType
         ? $isHours
-          ? `${$eachSide ? '110px' : '75px'}`
+          ? `${$eachSide ? '110px' : '95px'}`
           : `${$eachSide ? '90px' : '75px'}`
         : `${$eachSide ? '80px' : '65px'}`
       : ''
@@ -117,7 +117,7 @@ export const THeadCell = styled.th<{ $eachSide?: boolean, $previous?: boolean, $
     !$previous
       ? $isTimeType
         ? $isHours
-          ? `${$eachSide ? '110px' : '75px'}`
+          ? `${$eachSide ? '110px' : '95px'}`
           : `${$eachSide ? '90px' : '75px'}`
         : `${$eachSide ? '80px' : '65px'}`
       : ''

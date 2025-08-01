@@ -1,7 +1,9 @@
 body.dark-theme {
   .ant-btn {
     &-text {
-      color: var(--text-color);
+      &:not(.ant-btn-dangerous) {
+        color: var(--text-color);
+      }
 
       &:hover, &:focus {
         color: white;
@@ -245,6 +247,10 @@ body.dark-theme {
     background: var(--background-color)
   }
 
+  .ant-select-status-error.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
+    background: var(--background-color)
+  }
+
   .ant-picker {
     background: var(--background-color);
     border-color: var(--border-color-base);
@@ -364,6 +370,10 @@ body.dark-theme {
 
       & > li.ant-picker-time-panel-cell .ant-picker-time-panel-cell-inner {
         color: var(--text-color);
+
+        &:hover {
+          background-color: var(--primary-color);
+        }
       }
     }
 
@@ -371,6 +381,8 @@ body.dark-theme {
       border-color: var(--round-divider-color);
     }
   }
+
+  
 
   .ant-input-affix-wrapper {
     background-color: var(--background-color);

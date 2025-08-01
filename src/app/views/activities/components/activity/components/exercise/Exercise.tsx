@@ -20,11 +20,12 @@ import {
 } from './components/styled'
 import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from './utils'
 import { WorkoutListExercise } from 'app/store/slices/workout/types'
-import { useAppDispatch, useAppSelector } from 'app/hooks'
+import { useAppDispatch, useAppSelector, useFixNumber } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
 import { useHistoryContext } from 'app/views/activities/components/activity/contexts'
+import { selectSettings } from 'app/store/slices/settings'
 // import { Timer } from '@/src/app/components'
 
 const modeOptions = [
@@ -40,16 +41,19 @@ export interface IExerciseProps {
   break?: number;
   isEdit?: boolean;
   isFormItemDisabled: boolean;
-  exercise: TExercise<number | Dayjs>,
+  details: TExercise,
   exerciseList: WorkoutListExercise<number>[],
   form: FormInstance<ActivityForm<Dayjs>>;
   round_break: number;
   rounds: number;
-  id: TExercise<number | Dayjs>['id'];
+  id: TExercise['id'];
   exerciseIndex: number;
   cacheFormData: CacheFormData;
   orderInWorkout: number;
   itemImagePlaceholder: string;
+  weight?: number,
+  repeats?: number,
+  time?: number,
 }
 
 const Exercise: FC<IExerciseProps> = ({
@@ -58,7 +62,7 @@ const Exercise: FC<IExerciseProps> = ({
   isEdit,
   exerciseList,
   break: exerciseBreak,
-  exercise,
+  details,
   form,
   round_break,
   rounds,
@@ -66,14 +70,20 @@ const Exercise: FC<IExerciseProps> = ({
   id,
   cacheFormData,
   itemImagePlaceholder,
+  weight,
+  repeats: repeatsProps,
+  time: timeProp,
 }) => {
   const dispatch = useAppDispatch()
   const selectedRoundIndex = useAppSelector(selectSelectedRoundIndex(id as string))
+  const { units } = useAppSelector(selectSettings)
   const { getByExerciseId, isLoading: isHistoryLoading } = useHistoryContext()
+  const fixNumber = useFixNumber({ cutZeroes: true })
 
   const [ isLastRestOver, setIsLastRestOver ] = useState(false)
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
-  const { exercises, activities, workouts } = useIntlContext().intl.pages
+  const { intl, lang } = useIntlContext()
+  const { exercises, activities, workouts } = intl.pages
   const { payload } = exercises
   const { input_placeholders, input_labels, loader, side_labels, timer } = activities
   const $exercise = useRef(null)
@@ -97,12 +107,10 @@ const Exercise: FC<IExerciseProps> = ({
     dispatch(setSelectedRound({ chartId: id as string, index: index === selectedRoundIndex ? null : index }))
   }
 
-  let { repeats: _repeats, time: _time, weight, mass_unit } = exercise
-
-  const repeats = _repeats ? `${_repeats} ${getWordByNumber(payload.repeats.short, _repeats)}` : null
-  const time = _time
+  const repeats = repeatsProps ? `${repeatsProps} ${getWordByNumber(payload.repeats.short, repeatsProps, lang)}` : null
+  const time = timeProp
     ? timeToHms(
-      _time,
+      timeProp,
       {
         hms: [
           payload.time.hour.short,
@@ -112,13 +120,13 @@ const Exercise: FC<IExerciseProps> = ({
       },
     )
     : null
-  const weightStr = weight ? `${weight} ${payload.mass_unit[mass_unit][0]}` : null
+  const weightStr = weight ? `${fixNumber((+weight).toFixed(2))} ${getWordByNumber(payload.mass_unit[units], weight, lang)}` : null
 
-  const isTimeType = isExerciseTimeType(exercise.type)
+  const isTimeType = isExerciseTimeType(details.type)
 
-  const isAllResultsFilled = getIsAllResultsFilled(form, exercise, exerciseIndex)
+  const isAllResultsFilled = getIsAllResultsFilled(form, details, exerciseIndex)
 
-  const isAllResultWithoutPenultimateFilled = getIsAllResultWithoutPenultimateFilled(form, exercise, exerciseIndex, isAllResultsFilled)
+  const isAllResultWithoutPenultimateFilled = getIsAllResultWithoutPenultimateFilled(form, details, exerciseIndex, isAllResultsFilled)
 
   const handleTimeOver = () => setIsLastRestOver(isAllResultWithoutPenultimateFilled)
 
@@ -144,7 +152,7 @@ const Exercise: FC<IExerciseProps> = ({
       /> */}
       <Header>
         <div>
-          <ExerciseTitle level={5}>{exercise.title}</ExerciseTitle>
+          <ExerciseTitle level={5}>{details.title}</ExerciseTitle>
           <Typography.Text type="secondary">
             {workouts.input_labels.round_break}: {timeToHms(round_break, {
               hms: [
@@ -174,10 +182,10 @@ const Exercise: FC<IExerciseProps> = ({
         <ImageContainer>
           <img
             style={{ maxHeight: 120, maxWidth: 120 }}
-            src={exercise.image?.url
-              ? exercise.image.url.startsWith('data:image/')
-                ? exercise.image.url
-                : `${routes.base}${exercise.image.url}`
+            src={details.image?.url
+              ? details.image.url.startsWith('data:image/')
+                ? details.image.url
+                : `${routes.base}${details.image.url}`
               : itemImagePlaceholder}
           />
         </ImageContainer>
@@ -186,34 +194,34 @@ const Exercise: FC<IExerciseProps> = ({
           isLoading={isHistoryLoading || !historyByDates}
           exerciseRef={$exercise}
           rounds={rounds}
-          eachSide={exercise.each_side}
-          type={exercise.type}
+          eachSide={details.each_side}
+          type={details.type}
           loaderDictionary={loader}
           isTimeType={isTimeType}
-          hours={exercise.hours}
+          hours={details.hours}
           mode={historyDisplayMode}
         />
       </HistoryContainer>
       <Rounds
         isTimeType={isTimeType}
-        hours={exercise.hours}
+        hours={details.hours}
         onResultClick={handleResultClick}
         isFormItemDisabled={isFormItemDisabled}
         historyDisplayMode={historyDisplayMode}
-        eachSide={exercise.each_side}
+        eachSide={details.each_side}
         isLoading={isHistoryLoading}
         history={historyByRounds}
         loaderDictionary={loader}
         exerciseIndex={exerciseIndex}
         form={form}
-        type={exercise.type}
+        type={details.type}
         rounds={roundResults.rounds}
         cacheFormData={cacheFormData}
       />
       {isRestTimersVisible && (
         <Timers
           id={id}
-          eachSide={exercise.each_side}
+          eachSide={details.each_side}
           timerDictionary={timer}
           totalRounds={rounds}
           durationInSeconds={round_break}
@@ -225,7 +233,7 @@ const Exercise: FC<IExerciseProps> = ({
         <BreakTimer
           isEdit={isEdit}
           id={id}
-          nextExerciseTitle={exerciseList[exerciseIndex + 1]?.exercise.title}
+          nextExerciseTitle={exerciseList[exerciseIndex + 1]?.details.title}
           isLastRestOver={isLastRestOver}
           isAllResultsFilled={isAllResultsFilled}
           workoutsDictionary={workouts}

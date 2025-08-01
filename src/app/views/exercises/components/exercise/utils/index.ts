@@ -5,7 +5,6 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ExerciseForm, Image } from 'app/store/slices/exercise/types'
 import { Dayjs } from 'dayjs'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { secondsToDayjs } from 'app/utils/time'
 import routes from 'app/constants/end_points'
 import { useMounted, useOnPreviousChange } from 'app/hooks'
 
@@ -80,16 +79,6 @@ export const useInitialValues = (
       is_in_workout: _is_in_workout,
       ...exercise
     } = { ..._initialValues }
-
-    let time: number | Dayjs = exercise.time
-    if (time && typeof time !== 'object') {
-      time = secondsToDayjs(time)
-      exercise.time = time
-    }
-
-    if (!exercise.mass_unit) {
-      exercise.mass_unit = 'kg'
-    }
 
     if (exercise.image) {
       const image = exercise.image as Image
@@ -167,9 +156,6 @@ export interface IExercise {
 
 export const clearValues = (values: ExerciseForm) => ({
   ...values,
-  time: values.type === 'weight' || values.type === 'repeats' || values.type === 'distance' ? values.time : null,
-  weight: values.type !== 'weight' ? values.weight : null,
-  repeats: values.type === 'weight' || values.type === 'time' || values.type === 'duration' ? values.repeats : null,
 })
 
 export type PreviewReducerState = { visible: boolean, title: string, url: string }

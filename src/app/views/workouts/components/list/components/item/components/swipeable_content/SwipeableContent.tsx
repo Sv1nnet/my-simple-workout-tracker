@@ -19,6 +19,9 @@ import {
   StyledTagsPanel,
   TagsContainer,
 } from './components'
+import { selectSettings } from 'app/store/slices/settings'
+import { useAppSelector } from 'app/hooks'
+import { toLbs } from 'app/utils/massUnits'
 
 export type SwipeableContentProps = {
   intl: Record<string, any>;
@@ -51,6 +54,7 @@ const SwipeableContent = ({
   setIsSelectionDisabled,
   itemImagePlaceholder,
 }: SwipeableContentProps) => {
+  const { units } = useAppSelector(selectSettings)
   const { isSwiping, direction } = useSwipeableContext()
 
   useEffect(() => {
@@ -87,8 +91,11 @@ const SwipeableContent = ({
           {/* render every exercise */}
           {exercises.map(({
             _id: exerciseId,
-            exercise: { title: exerciseTitle, repeats, time, weight, mass_unit, image, muscle_groups },
+            details: { title: exerciseTitle, image, muscle_groups },
             rounds,
+            repeats,
+            time,
+            weight,
             round_break,
             break: interExercisesBreak,
             break_enabled,
@@ -117,8 +124,8 @@ const SwipeableContent = ({
                     title={exerciseTitle}
                     repeats={repeats}
                     time={time}
-                    weight={weight}
-                    massUnit={mass_unit}
+                    weight={units === 'lb' ? toLbs(weight) : weight}
+                    massUnit={units}
                     payloadDictionary={payloadDictionary}
                   />
                 )}

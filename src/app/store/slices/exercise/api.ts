@@ -9,10 +9,8 @@ import {
   IExerciseFormData,
   ExerciseCopySuccess,
 } from './types'
-import { Dayjs } from 'dayjs'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
-import { secondsToDayjs } from 'app/utils/time'
 import { Lang } from '../settings/types'
 
 export const EXERCISE_TAG_TYPES = {
@@ -32,18 +30,6 @@ export const exerciseApi = createApi({
         url: `${routes.exercise.v1.base.full}/${id}`,
         method: 'GET',
       }),
-      transformResponse: (response: GetExerciseSuccess) => {
-        if (response.success) {
-          const exercise = { ...response.data }
-          let time: number | Dayjs = exercise.time
-          if (time) {
-            time = secondsToDayjs(time as number)
-            exercise.time = time
-            response.data = exercise
-          }
-        }
-        return response
-      },
       providesTags: () => [ EXERCISE_TAG_TYPES.EXERCISE ],
     }),
     create: build.mutation<ExerciseCreateSuccess, { exercise: Omit<ExerciseForm, 'id'> }>({

@@ -1,5 +1,4 @@
 import { IResponse } from 'app/constants/response_types'
-import { Dayjs } from 'dayjs'
 
 export type Image = {
   uid: string,
@@ -11,20 +10,16 @@ export type ExerciseType = 'repeats' | 'time' | 'duration' | 'distance' | 'weigh
 
 export type MassUnit = 'kg' | 'lb'
 
-export type Exercise<T = number | Dayjs> = {
+export type Exercise = {
   _id?: string;
   id?: string;
   is_in_workout: boolean;
   title: string;
   each_side: boolean;
-  mass_unit: MassUnit;
   archived: boolean;
   muscle_groups: MuscleGroup[];
   hours?: boolean;
   type?: ExerciseType;
-  time?: T;
-  repeats?: number;
-  weight?: number;
   description?: string;
   image?: Image;
   is_default?: boolean;
@@ -36,17 +31,17 @@ export type MuscleGroup = {
   archived?: boolean,
 }
 
-export type ExerciseForm<T = number | Dayjs> = Omit<Exercise<T>, 'image' | 'muscle_groups'> & {
+export type ExerciseForm = Omit<Exercise, 'image' | 'muscle_groups'> & {
   muscle_groups: ({ value: string, label: string } | string)[];
   image?: Image | Image[];
 }
 
-export type ExerciseListItem<T = number | Dayjs> = Omit<ExerciseForm<T>, 'id' | 'muscle_groups'> & {
+export type ExerciseListItem = Omit<ExerciseForm, 'id' | 'muscle_groups'> & {
   id: string,
   muscle_groups: MuscleGroup[],
 }
 
-export type ExerciseServerPayload = Omit<Exercise<number>, 'image' | 'muscle_groups'> & {
+export type ExerciseServerPayload = Omit<Exercise, 'image' | 'muscle_groups'> & {
   image?: Image;
   muscle_groups: string[];
 }
@@ -63,11 +58,11 @@ export type ExerciseDeleteError = IResponse<null>
 export type ExerciseCopySuccess = IResponse<null>
 export type ExerciseCopyError = IResponse<null>
 
-export type GetExerciseServerPayload = Omit<ExerciseForm<number>, 'muscle_groups'> & { muscle_groups: MuscleGroup[] }
-export type GetExerciseSuccess = IResponse<ExerciseForm<number | Dayjs> & { is_in_activity?: boolean }>
+export type GetExerciseServerPayload = Omit<ExerciseForm, 'muscle_groups'> & { muscle_groups: MuscleGroup[] }
+export type GetExerciseSuccess = IResponse<ExerciseForm & { is_in_activity?: boolean }>
 export type GetExerciseError = IResponse<null>
 
-export type GetExerciseListSuccess = IResponse<ExerciseListItem<number>[]>
+export type GetExerciseListSuccess = IResponse<ExerciseListItem[]>
 export type GetExerciseListError = IResponse<null>
 
 export type ExerciseError = IResponse

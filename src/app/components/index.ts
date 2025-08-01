@@ -24,6 +24,7 @@ import {
 import SwipeActions from './swipe_actions/SwipeActions'
 import ThemeSwitch from './theme_switch/ThemeSwitch'
 import TopButtonsPanel from './top_buttons_panel/TopButtonsPanel'
+import WeightInputAddon from './weight_input_addon/WeightInputAddon'
 
 export {
   AuthTemplate,
@@ -50,4 +51,5 @@ export {
   SwipeActions,
   ThemeSwitch,
   TopButtonsPanel,
+  WeightInputAddon,
 }

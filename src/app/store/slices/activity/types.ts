@@ -14,10 +14,10 @@ export type Activity<T = string | Dayjs> = {
   date: T,
   workout_id: WorkoutForm['id'];
   results: {
-    _id: Exercise<number | Dayjs>['id'],
+    _id: Exercise['id'],
     hours?: boolean,
     original_id: string,
-    id_in_workout: Exercise<number | Dayjs>['id'],
+    id_in_workout: Exercise['id'],
     type: string,
     rounds: Round[],
     note?: string | null,

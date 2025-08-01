@@ -29,13 +29,13 @@ export const getResultsFromWorkoutList = (workoutList: WorkoutListItem[], workou
   .find(wk => wk.id === workoutId)
 // TODO: on the server - exercise -> details
   ?.exercises
-  ?.map(({ rounds, _id, exercise }) => ({
+  ?.map(({ rounds, _id, details }) => ({
     _id,
-    hours: exercise.hours,
-    original_id: exercise.id,
+    hours: details.hours,
+    original_id: details.id,
     id_in_workout: _id,
-    type: exercise.type,
-    rounds: Array.from({ length: rounds }, () => exercise.each_side ? { left: null, right: null } : null),
+    type: details.type,
+    rounds: Array.from({ length: rounds }, () => details.each_side ? { left: null, right: null } : null),
     note: undefined,
   })) || []
 
@@ -84,14 +84,14 @@ export const getInitialActivityValues = ({
         date: dayjs(cachedFormValues.date),
         results: cachedFormValues.results
           ? cachedFormValues.results.map((results, i) => {
-            const { _id, exercise } = workout.exercises[i]
-            return isExerciseTimeType(exercise.type)
+            const { _id, details } = workout.exercises[i]
+            return isExerciseTimeType(details.type)
               ? {
                 _id,
-                hours: exercise.hours,
-                original_id: exercise.id,
+                hours: details.hours,
+                original_id: details.id,
                 id_in_workout: _id,
-                type: exercise.type,
+                type: details.type,
                 ...results,
                 rounds: results.rounds.map((round: string | { right: string, left: string }) => {
                   if (round === null) return ''
@@ -104,10 +104,10 @@ export const getInitialActivityValues = ({
               : {
                 ...results,
                 _id,
-                hours: exercise.hours,
-                original_id: exercise.id,
+                hours: details.hours,
+                original_id: details.id,
                 id_in_workout: _id,
-                type: exercise.type,
+                type: details.type,
                 rounds: results.rounds.map((round: string | { right: string, left: string }) => {
                   if (round === null) return ''
 
@@ -157,7 +157,7 @@ export const getActivityValuesToSubmit = ({ ...values }, initialValues, workoutL
   values.date = values.date.toJSON()
   values.results = values.results.reduce((acc, { id, rounds, note }, i) => {
     const exercise = workoutList.find(workout => workout.id === values.workout_id).exercises[i]
-    const { exercise: details } = exercise
+    const { details } = exercise
 
     acc.push({
       original_id: id || exercise.id,

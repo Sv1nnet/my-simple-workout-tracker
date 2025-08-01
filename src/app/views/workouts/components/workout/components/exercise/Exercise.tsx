@@ -4,7 +4,7 @@ import TimePicker from 'app/components/time_picker/TimePicker'
 import { DeleteFilled, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Divider, Form, Select } from 'antd'
 import { Rule } from 'antd/lib/form'
-import { Input as CustomInput, NoDataText } from 'app/components'
+import { Input as CustomInput, NoDataText, WeightInputAddon } from 'app/components'
 import {
   ExerciseOption,
   StyledFormItem,
@@ -13,6 +13,7 @@ import {
 } from 'app/views/workouts/components/workout/components'
 import { ExerciseContainer, MoveExerciseButtonContainer, StyledSelect } from './components/styled'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { isExerciseTimeType } from 'app/utils/time'
 
 const Exercise = ({
   exerciseAmount,
@@ -30,6 +31,7 @@ const Exercise = ({
   onExerciseChange,
   remove,
   isInActivity,
+  massUnit,
 }) => {
   const { intl } = useIntlContext()
   const $container = useRef(null)
@@ -42,6 +44,10 @@ const Exercise = ({
   const hasBottomButton = hasButtons && index !== exerciseAmount - 1
 
   const handleChangeOrder = (order: number) => onExerciseChange(index, 'order', order, $container)
+
+  const handleWeightChange = (value: number | null) => form.setFieldsValue({ [`exercises.${index}.weight`]: value })
+
+  const handleRepeatsChange = (value: number | null) => form.setFieldsValue({ [`exercises.${index}.repeats`]: value })
 
   return (
     <ExerciseContainer ref={$container}>
@@ -79,6 +85,67 @@ const Exercise = ({
           ))}
         </StyledSelect>
       </Form.Item>
+
+      
+      <StyledFormItem shouldUpdate noStyle>
+        {({ getFieldValue }) => {
+          const type = getFieldValue([ 'exercises', index, 'type' ]) || exerciseList.data.find(exercise => exercise.id === getFieldValue([ 'exercises', index, 'id' ]))?.type
+
+          if (!type) return null
+
+          const shouldRenderTimeInput = !isExerciseTimeType(type)
+          const shouldRenderWeightInput = type !== 'weight'
+          return (
+            <>
+              {shouldRenderTimeInput
+                ? (
+                  <ShortFormItem $margin name={[ index, 'time' ]} label={dictionary.input_labels.time}>
+                    <TimePicker
+                      disabled={isFormItemDisabled}
+                      inputReadOnly
+                      showNow={false}
+                      size="large"
+                      placeholder=""
+                    />
+                  </ShortFormItem>
+                )
+                : (
+                  <ShortFormItem name={[ index, 'repeats' ]} label={dictionary.input_labels.repeats} $margin>
+                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                  </ShortFormItem>
+                )}
+              {shouldRenderWeightInput
+                ? (
+                  <ShortFormItem name={[ index, 'weight' ]} label={dictionary.input_labels.weight}>
+                    <CustomInput.Number
+                      onlyPositive
+                      disabled={isFormItemDisabled}
+                      onChange={handleWeightChange}
+                      onBlur={handleWeightChange}
+                      size="large"
+                      addonAfter={(
+                        <WeightInputAddon
+                          value={massUnit}
+                          showArrow={false}
+                          mass_unit={{
+                            kg: payload.mass_unit.kg[0],
+                            lb: payload.mass_unit.lb[0],
+                          }}
+                          disabled
+                        />
+                      )}
+                    />
+                  </ShortFormItem>
+                )
+                : (
+                  <ShortFormItem name={[ index, 'repeats' ]} label={dictionary.input_labels.repeats}>
+                    <CustomInput.Number int onlyPositive disabled={isFormItemDisabled} onChange={handleRepeatsChange} onBlur={handleRepeatsChange} size="large" />
+                  </ShortFormItem>
+                )}
+            </>
+          )
+        }}
+      </StyledFormItem>
 
       <StyledFormItem>
         <ShortFormItem

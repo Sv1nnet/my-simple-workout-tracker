@@ -8,6 +8,9 @@ export type PlainWorkoutExercise = Pick<WorkoutExerciseModel,
 'round_break' |
 'break' |
 'break_enabled' |
+'weight' |
+'repeats' |
+'time' |
 'updated_at' |
 'created_at'
 >
@@ -24,6 +27,12 @@ export class WorkoutExerciseModel extends EntityModel {
   public break: number
 
   public break_enabled: boolean
+
+  public weight?: number
+
+  public repeats?: number
+
+  public time?: number
 
   constructor(exercise: WorkoutExerciseModel | PlainWorkoutExercise) {
     super(exercise)

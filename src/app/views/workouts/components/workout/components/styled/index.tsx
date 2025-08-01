@@ -25,6 +25,10 @@ export const ShortFormItem = styled(Form.Item)<{ $fullWidth?: boolean, $checkbox
     justify-content: ${({ $checkbox }) => $checkbox ? 'flex-end' : ''};
     .ant-form-item-control-input {
       min-height: ${({ $checkbox }) => $checkbox ? '40px' : ''};
+
+      .ant-picker {
+        width: 100%;
+      }
     }
   }
 `

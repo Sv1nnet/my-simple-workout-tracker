@@ -1,4 +1,6 @@
 import { Typography } from 'antd'
+import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useFixNumber } from 'app/hooks'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { timeToHms } from 'app/utils/time'
 import { Dayjs } from 'dayjs'
@@ -20,7 +22,9 @@ export type TitleProps = {
 }
 
 const Title = ({ title, repeats, time, weight, massUnit = 'kg', payloadDictionary }: TitleProps) => {
-  repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats)}` : null
+  const fixNumber = useFixNumber({ cutZeroes: true })
+  const { lang } = useIntlContext()
+  repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats, lang)}` : null
   time = time
     ? timeToHms(
       time,
@@ -33,7 +37,7 @@ const Title = ({ title, repeats, time, weight, massUnit = 'kg', payloadDictionar
       },
     )
     : null
-  weight = weight ? `${weight} ${payloadDictionary.mass_unit[massUnit][0]}` : null
+  weight = weight ? `${fixNumber((+weight).toFixed(2))} ${getWordByNumber(payloadDictionary.mass_unit[massUnit], weight, lang)}` : null
 
   const loadType = [ repeats, time, weight ].filter(Boolean).join(' / ')
 
