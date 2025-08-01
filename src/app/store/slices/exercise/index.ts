@@ -16,11 +16,11 @@ export interface IExerciseState {
   isOpen: boolean,
   pageType: ExercisePageType,
   list: {
-    data: ExerciseListItem[];
+    data: ExerciseListItem[] | null;
     status: ApiStatus;
   }
   single: {
-    data: ExerciseForm;
+    data: ExerciseForm | null;
     status: ApiStatus;
   }
 }

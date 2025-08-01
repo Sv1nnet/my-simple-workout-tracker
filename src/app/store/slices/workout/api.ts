@@ -38,6 +38,7 @@ export const workoutApi = createApi({
           workout.exercises = workout.exercises.map(({ id, rounds, details,  round_break, break: exercise_break, break_enabled, weight, repeats, time }) => ({
             id,
             rounds,
+            type: details?.type || null,
             round_break: isNumber(round_break) ? secondsToDayjs(round_break) : round_break,
             break_enabled,
             break: isNumber(exercise_break) ? secondsToDayjs(exercise_break) : exercise_break,

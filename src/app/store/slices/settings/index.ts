@@ -28,7 +28,7 @@ export const units: Units = {
   lb: 'lb',
 } as const
 
-let localLang: SettingsForm['lang'] = langs.eng
+let localLang: SettingsForm['lang'] = navigator.language.toLowerCase().includes('ru') ? langs.ru : langs.eng
 let theme: Theme = themes.light
 let localUnits: Unit = units.kg
 let localTimers: SettingsForm['timers'] = {
@@ -39,7 +39,7 @@ let localTimers: SettingsForm['timers'] = {
 if (!isUndefined(localStorage)) {
   try {
     const settingsFromLocalStorage = JSON.parse(localStorage.getItem('settings')) as ISettingsState['data'] || null
-    localLang = settingsFromLocalStorage?.lang ?? langs.eng
+    localLang = settingsFromLocalStorage?.lang ?? localLang
     theme = settingsFromLocalStorage?.theme ?? (window?.matchMedia
       ? window.matchMedia('(prefers-color-scheme: dark)').matches
         ? themes.dark

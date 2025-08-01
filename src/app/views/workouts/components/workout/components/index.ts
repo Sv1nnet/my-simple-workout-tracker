@@ -1,5 +1,6 @@
 import ExerciseOption from './exercise_option/ExerciseOption'
 import Exercise from './exercise/Exercise'
+import InfoModal from './info_modal/InfoModal'
 import {
   StyledForm,
   StyledFormItem,
@@ -16,4 +17,5 @@ export {
   ShortFormItem,
   CreateEditFormItem,
   DeleteButton,
+  InfoModal,
 }

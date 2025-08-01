@@ -218,11 +218,11 @@
         "eng": "Cancel"
       },
       "error": {
-        "massage":{
+        "massage": {
           "ru": "Произошла ошибка",
           "eng": "An error occurred"
         },
-        "description":{
+        "description": {
           "ru": "Не удалось экспортировать данные",
           "eng": "Failed to export data"
         },
@@ -869,6 +869,28 @@
         }
       },
       "modal": {
+        "info_modal": {
+          "in_activity": {
+            "body": {
+              "ru": "Нельзя изменить это поле в тренировке, с которой уже есть активность. Вы можете скопировать тренировку и внести изменения в копию.",
+              "eng": "Cannot change this field in workout, which is used in activity. You can copy the workout and make changes to the copy."
+            }
+          },
+          "just_copy": {
+            "body": {
+              "ru": "Создать копию тренировки? Текущие изменения будут перенесены в копию.",
+              "eng": "Create copy of workout? Current changes will be transferred to the copy."
+            }
+          },
+          "ok_button_create": {
+            "ru": "Создать",
+            "eng": "Create"
+          },
+          "ok_button": {
+            "ru": "Понятно",
+            "eng": "Got it"
+          }
+        },
         "delete": {
           "title": {
             "ru": "Удаление",

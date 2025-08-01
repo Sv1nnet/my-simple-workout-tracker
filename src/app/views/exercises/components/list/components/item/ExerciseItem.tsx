@@ -24,10 +24,6 @@ const ExerciseItem: FC<IExerciseForm> = ({
   id,
   listEl,
   title,
-  repeats,
-  time,
-  weight,
-  mass_unit,
   muscle_groups,
   image,
   isSelectionEnabled,
@@ -88,10 +84,6 @@ const ExerciseItem: FC<IExerciseForm> = ({
           isSelectionEnabled={isSelectionEnabled}
           setIsSelectionDisabled={setIsSelectionDisabled}
           title={title}
-          repeats={repeats}
-          time={time}
-          weight={weight}
-          mass_unit={mass_unit}
           payloadDictionary={payloadDictionary}
         />
       </Swipeable>

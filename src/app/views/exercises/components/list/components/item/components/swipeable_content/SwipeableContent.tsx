@@ -12,10 +12,6 @@ export type SwipeableContentProps = {
   selected: boolean
   isSelectionEnabled: boolean
   title: string
-  repeats: number
-  time: number
-  weight: number
-  mass_unit: string
   payloadDictionary: Record<string, string>
   setIsSelectionDisabled: (isDisabled: boolean) => void
   itemImagePlaceholder: string;
@@ -27,10 +23,6 @@ const SwipeableContent = ({
   selected,
   isSelectionEnabled,
   title,
-  repeats,
-  time,
-  weight,
-  mass_unit,
   payloadDictionary,
   setIsSelectionDisabled,
   itemImagePlaceholder,
@@ -70,10 +62,6 @@ const SwipeableContent = ({
         title={(
           <Title
             title={title}
-            repeats={repeats}
-            time={time}
-            weight={weight}
-            massUnit={mass_unit}
             payloadDictionary={payloadDictionary}
           />
         )}

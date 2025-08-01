@@ -12,7 +12,7 @@ import EndlessScrollableContainer, { Ref } from 'app/components/endless_scrollab
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 
 export interface IExercises {
-  exercises: ExerciseListItem<number>[];
+  exercises: ExerciseListItem[];
 }
 
 const CREATE_ROUTE = '/exercises/create'

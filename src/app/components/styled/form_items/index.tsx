@@ -20,3 +20,8 @@ export const ToggleEdit = styled(Button)<{ $enable?: boolean }>`
 export const CopyButton = styled(Button)`
   margin-right: 8px;
 `
+
+export const LabelInnerWithIcon = styled.div`
+  display: flex;
+  align-items: flex-end;
+`

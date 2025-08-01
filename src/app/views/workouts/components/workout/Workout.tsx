@@ -5,21 +5,21 @@ import {
   Modal,
   notification,
 } from 'antd'
-import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import dayjs, { Dayjs } from 'dayjs'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import dayjs from 'dayjs'
 import { dayjsToSeconds, secondsToDayjs } from 'app/utils/time'
-import { DeleteEditPanel, ToggleEdit } from 'app/components'
+import { ToggleEdit, TopButtonsPanel } from 'app/components'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { WorkoutForm } from 'app/store/slices/workout/types'
-import { useAppSelector, useMounted } from 'app/hooks'
+import { useAppDispatch, useAppSelector, useMounted, useToggle } from 'app/hooks'
 import { selectList } from 'app/store/slices/exercise'
 import { exerciseApi } from 'app/store/slices/exercise/api'
 import {
   StyledForm,
   CreateEditFormItem,
   Exercise,
+  InfoModal,
 } from './components'
-import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { useAppLoaderContext } from 'app/contexts/loader/AppLoaderContextProvider'
 import { useNavigate, useParams } from 'react-router'
@@ -28,22 +28,14 @@ import { selectSettings } from 'app/store/slices/settings'
 import { toKg, toLbs } from 'app/utils/massUnits'
 import { isObject } from 'app/utils/mergeObjects'
 import { isNumber } from 'app/utils/typeCheckers'
+import { updateSingle } from 'app/store/slices/workout'
 
-export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
-  exercises: {
-    id: TExercise['id'];
-    rounds: number;
-    weight: number | null;
-    repeats: number | null;
-    time: Dayjs | number | null;
-    type: TExercise['type'];
-    round_break: Dayjs | number;
-    break?: Dayjs | number;
-    break_enabled: boolean;
-  }[]
-}
+// export type InitialValues = Omit<WorkoutForm, 'exercises'> & {
+//   exercises: WorkoutExercise<Dayjs>[]
+// } | TWorkout<Dayjs>
+export type InitialValues = WorkoutForm
 
-export interface IWorkout {
+export type WorkoutProps = {
   id?: string;
   isEdit?: boolean;
   isFetching?: boolean;
@@ -68,18 +60,22 @@ const getDefaultExercise = () => ({
   break: dayjs().hour(0).minute(0).second(0),
 })
 
-const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }) => {
+const Workout = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteWorkout, isError, error, errorCode }: WorkoutProps) => {
   const { isMounted, useHandleMounted } = useMounted()
   const params = useParams()
   const navigate = useNavigate()
   const [ fetchExerciseList ] = exerciseApi.useLazyListQuery()
   const { runLoader, stopLoaderById } = useAppLoaderContext()
+  const dispatch = useAppDispatch()
 
   const exerciseList = useAppSelector(selectList)
   const { units } = useAppSelector(selectSettings)
   
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
+
+  const { state: isInfoModalOpen, setTrue: openInfoModal, setFalse: closeInfoModal } = useToggle(false)
+  const [ infoModalType, setInfoModalType ] = useState<null | { isInActivity?: boolean, isJustCopy?: boolean }>(null)
 
   const $container = useRef(null)
 
@@ -101,7 +97,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     }
 
     const workout = { ..._initialValues } as unknown as InitialValues
-    workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled, weight, repeats, time }) => ({
+    workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled, weight, repeats, time, details }) => ({
       id,
       rounds,
       weight: units === 'lb' ? toLbs(weight) : weight,
@@ -111,6 +107,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
       round_break: isObject(round_break) ? round_break : secondsToDayjs(isNumber(round_break) ? round_break : 0),
       break: isObject(exercise_break) ? exercise_break : secondsToDayjs(isNumber(exercise_break) ? exercise_break : 0),
       break_enabled,
+      details,
     }))
 
     if (!workout.exercises.length) workout.exercises.push(getDefaultExercise())
@@ -199,6 +196,22 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     },
   })
 
+  const handleCopyWorkout = async () => {
+    let { ...values } = form.getFieldsValue()
+    dispatch(
+      updateSingle({
+        ...values,
+      }),
+    )
+    
+    navigate('/workouts/create?copy=1')
+  }
+
+  const handleOpenInfoModal = (type: { isInActivity?: boolean, isJustCopy?: boolean }) => () => {
+    openInfoModal()
+    setInfoModalType(type)
+  }
+
   const handleDelete = () => deleteWorkout(initialValues.id).then((res) => {
     setIsModalVisible(false)
     return res
@@ -243,12 +256,14 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
     <div ref={$container}>
       <StyledForm form={form} initialValues={initialValues} onFinish={handleSubmit} layout="vertical">
         {isEdit && (
-          <DeleteEditPanel
-            isEditMode={isEditMode}
+          <TopButtonsPanel
+            buttons={isEditMode ? [ 'copy', 'delete' ] : [ 'edit', 'copy', 'delete' ]}
             onEditClick={() => setEditMode(true)}
-            onDeleteClick={() => setIsModalVisible(true)}
+            onDeleteClick={() => openInfoModal()}
+            onCopyClick={handleOpenInfoModal({ isJustCopy: true })}
             deleteButtonProps={{ disabled: isFetching }}
             editButtonProps={{ disabled: isFetching }}
+            copyButtonProps={{ disabled: isFetching }}
           />
         )}
         <Form.Item label={input_labels.title} name="title" rules={isEditMode ? [ { required: true, message: error_message.common.required } ] : []}>
@@ -276,6 +291,7 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
                   onExerciseChange={handleExerciseChange}
                   remove={remove}
                   massUnit={units}
+                  onInfoClick={handleOpenInfoModal}
                 />
               ))}
               {isEditMode && !initialValues.is_in_activity && (
@@ -324,6 +340,13 @@ const Workout: FC<IWorkout> = ({ initialValues: _initialValues, isEdit, isFetchi
         >
           {modal.delete.body_single}
         </Modal>
+
+        <InfoModal
+          isOpen={isInfoModalOpen}
+          onCancel={closeInfoModal}
+          onOk={infoModalType?.isJustCopy ? handleCopyWorkout : closeInfoModal}
+          {...infoModalType}
+        />
       </StyledForm>
     </div>
   )

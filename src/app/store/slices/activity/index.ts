@@ -20,16 +20,16 @@ export interface IActivityState {
   pageType: ActivityPageType,
   list: {
     total: number,
-    data: ActivityListItem[];
+    data: ActivityListItem[] | null;
     status: ApiStatus;
     query: ListQuery;
   }
   single: {
-    data: ActivityForm<string>;
+    data: ActivityForm<string> | null;
     status: ApiStatus;
   }
   cachedActivity: {
-    data: ActivityForm;
+    data: ActivityForm | null;
   },
   history: {
     data: HistoryResponseData | null;

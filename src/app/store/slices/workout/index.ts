@@ -18,11 +18,11 @@ export interface IWorkoutState {
   isOpen: boolean,
   pageType: WorkoutPageType,
   list: {
-    data: WorkoutListItem[];
+    data: WorkoutListItem[] | null;
     status: ApiStatus;
   }
   single: {
-    data: Workout<Dayjs>;
+    data: Workout<Dayjs | number> | null;
     status: ApiStatus;
   }
 }
@@ -65,7 +65,7 @@ export const workoutSlice = createSlice({
       state.list.data = action.payload
       state.list.status = API_STATUS.LOADED
     },
-    updateSingle: (state, action: PayloadAction<Workout<Dayjs>>) => {
+    updateSingle: (state, action: PayloadAction<Workout<Dayjs | number>>) => {
       state.single.data = action.payload
     },
     resetState: (state) => {

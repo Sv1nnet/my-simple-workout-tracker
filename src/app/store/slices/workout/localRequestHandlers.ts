@@ -200,7 +200,15 @@ const handlers = {
       const lang = settings?.lang || 'eng'
   
       const defaultWorkouts = await (lang === 'ru' ? import('app/constants/base_workouts_ru') : import('app/constants/base_workouts_eng'))
-      const workouts = defaultWorkouts.default.map(workout => new WorkoutModel(workout as PlainWorkoutObject))
+      const defaultWorkoutsFromDB = await WorkoutModel.getManyFromDB(defaultWorkouts.default.map(workout => workout.id))
+      const workouts = defaultWorkouts.default.map((workout) => {
+        const workoutFromDB = defaultWorkoutsFromDB.find(w => w.id === workout.id)
+        return new WorkoutModel({
+          ...workout,
+          is_in_activity: workoutFromDB?.is_in_activity ?? workout.is_in_activity,
+          in_activities: workoutFromDB?.in_activities ?? workout.in_activities,
+        } as PlainWorkoutObject)
+      })
 
       await WorkoutModel.updateMany(workouts)
 

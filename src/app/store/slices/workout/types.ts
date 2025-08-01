@@ -19,11 +19,12 @@ export type WorkoutExercise<T = number | Dayjs> = {
   id: Exercise['id'];
   rounds: number;
   break_enabled: boolean;
-  repeats?: number;
   round_break: T;
+  type: Exercise['type'];
+  repeats?: number;
   weight?: number;
-  details: Exercise;
-  time?: number;
+  details?: Exercise;
+  time?: number | Dayjs;
   break?: T;
   _id?: string;
 }

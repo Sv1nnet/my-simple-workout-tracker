@@ -35,6 +35,7 @@ import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleG
 import style from './utils/modal.module.scss'
 import { updateSingle } from 'app/store/slices/exercise'
 import { isString } from 'app/utils/typeCheckers'
+import { LabelInnerWithIcon } from 'app/components/styled'
 
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
@@ -278,10 +279,10 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
       </Form.Item>
       <Form.Item
         label={
-          <span>
+          <LabelInnerWithIcon>
             {input_labels.type}
             {(isEditMode && (isDefault || isInActivity)) && <Button type="link" size="small" onClick={handleOpenCopyModal({ isDefault, isInActivity })} icon={<QuestionCircleOutlined />} />}
-          </span>
+          </LabelInnerWithIcon>
         }
         name="type"
         required rules={[ { required: true, message: error_message.common.required } ]}

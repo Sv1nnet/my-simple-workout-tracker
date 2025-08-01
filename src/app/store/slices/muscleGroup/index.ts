@@ -6,7 +6,7 @@ import { MuscleGroupListItem } from './types'
 
 export interface IMuscleGroupState {
   list: {
-    data: MuscleGroupListItem[];
+    data: MuscleGroupListItem[] | null;
     status: ApiStatus;
   },
   single: {
