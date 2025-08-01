@@ -1,5 +1,5 @@
 import { FetchArgs } from '@reduxjs/toolkit/dist/query'
-import { WorkoutModel, WorkoutModelConstructorParameter } from './models/WorkoutModel'
+import { PlainWorkoutObject, WorkoutModel, WorkoutModelConstructorParameter } from './models/WorkoutModel'
 import { ExerciseModel } from 'app/store/slices/exercise/models/ExerciseModel'
 import { UUID_REGEX } from 'app/store/utils/baseQueryWithReauth'
 import formatFormData from 'app/store/utils/formatFormData'
@@ -193,6 +193,29 @@ const handlers = {
     await ExerciseModel.updateMany(exercisesToUpdate)
       
     return { data: { data: null, success: true, error: null } }
+  },
+  restore: async () => {
+    try {
+      const settings = JSON.parse(localStorage.getItem('settings') || null)
+      const lang = settings?.lang || 'eng'
+  
+      const defaultWorkouts = await (lang === 'ru' ? import('app/constants/base_workouts_ru') : import('app/constants/base_workouts_eng'))
+      const workouts = defaultWorkouts.default.map(workout => new WorkoutModel(workout as PlainWorkoutObject))
+
+      await WorkoutModel.updateMany(workouts)
+
+      return {
+        data: null,
+        success: true,
+        error: null,
+      }
+    } catch (e) {
+      return {
+        data: null,
+        success: false,
+        error: e.message,
+      }
+    }
   },
   delete: (_args: FetchArgs, url: URL) => {
     const [ id ] = url.pathname.match(UUID_REGEX)

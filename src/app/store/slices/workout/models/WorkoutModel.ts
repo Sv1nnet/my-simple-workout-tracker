@@ -8,14 +8,15 @@ export type WorkoutModelConstructorParameter = WorkoutModel
 
 export type PlainWorkoutObject = Pick<WorkoutModel,
 'title' |
-'exercises' |
 'description' |
 'archived' |
 'is_in_activity' |
 'in_activities' |
 'id' |
 'created_at' |
-'updated_at'>
+'updated_at'> & {
+  exercises: PlainWorkoutExercise[]
+}
 
 // @ts-expect-error
 export class WorkoutModel extends EntityModel {

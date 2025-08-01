@@ -8,6 +8,7 @@ import {
   GetExerciseListSuccess,
   IExerciseFormData,
   ExerciseCopySuccess,
+  ExerciseRestoreSuccess,
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
@@ -47,6 +48,12 @@ export const exerciseApi = createApi({
         body: exercise,
       }),
       invalidatesTags: [ EXERCISE_TAG_TYPES.EXERCISE, EXERCISE_TAG_TYPES.EXERCISE_LIST ],
+    }),
+    restore: build.mutation<ExerciseRestoreSuccess, void>({
+      query: () => ({
+        url: `${routes.exercise.v1.restore.full}`,
+        method: 'POST',
+      }),
     }),
     delete: build.mutation<ExerciseDeleteSuccess, { id: ExerciseForm['id'] }>({
       query: ({ id }) => ({

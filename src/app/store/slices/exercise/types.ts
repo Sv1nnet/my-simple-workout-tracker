@@ -58,6 +58,9 @@ export type ExerciseDeleteError = IResponse<null>
 export type ExerciseCopySuccess = IResponse<null>
 export type ExerciseCopyError = IResponse<null>
 
+export type ExerciseRestoreSuccess = IResponse<null>
+export type ExerciseRestoreError = IResponse<null>
+
 export type GetExerciseServerPayload = Omit<ExerciseForm, 'muscle_groups'> & { muscle_groups: MuscleGroup[] }
 export type GetExerciseSuccess = IResponse<ExerciseForm & { is_in_activity?: boolean }>
 export type GetExerciseError = IResponse<null>

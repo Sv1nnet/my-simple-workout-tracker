@@ -1,6 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { Form, notification, Select, Checkbox, Button } from 'antd'
+import { Form, notification, Select, Checkbox, Button, Modal } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import { useAppDispatch, useAppSelector } from 'app/hooks'
 import { CustomBaseQueryError } from 'store/utils/baseQueryWithReauth'
@@ -13,6 +13,10 @@ import { CheckboxGroupProps } from 'antd/lib/checkbox'
 import { TranslationOutlined } from '@ant-design/icons'
 import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 import { ThemeSwitch } from 'app/components'
+import { exerciseApi } from 'app/store/slices/exercise/api'
+import { workoutApi } from 'app/store/slices/workout/api'
+import { updateSingle as updateExerciseSingle } from 'app/store/slices/exercise'
+import { updateSingle as updateWorkoutSingle } from 'app/store/slices/workout'
 
 const FormWrapper = styled(Form)`
   padding: 12px;
@@ -47,7 +51,13 @@ const ButtonsContainer = styled.div`
   width: 100%;
   flex-grow: 1;
   justify-content: flex-end;
+
+  & > button:first-of-type {
+    margin-bottom: 10px;
+  }
 `
+
+type ModalType = 'exercises' | 'workouts'
 
 const Settings = () => {
   const { styles, theme, changeTheme } = useThemeContext()
@@ -55,6 +65,14 @@ const Settings = () => {
   const dispatch = useAppDispatch()
   const settings = useAppSelector(selectSettings)
   const [ form ] = useForm()
+
+  const [ modalType, setModalType ] = useState<ModalType | null>(null)
+
+  const [ restoreExercises, { isLoading: isRestoringExercises } ] = exerciseApi.useRestoreMutation()
+  const [ restoreWorkouts, { isLoading: isRestoringWorkouts } ] = workoutApi.useRestoreMutation()
+
+  const [ fetchExercises, { isLoading: isFetchingExercises } ] = exerciseApi.useLazyListQuery()
+  const [ fetchWorkouts, { isLoading: isFetchingWorkouts } ] = workoutApi.useLazyListQuery()
 
   const [ updateSettings, { isLoading: isUpdatingSettings, isError: isUpdateSettingsError, error: updateSettingsError, isSuccess: isUpdateSettingsSuccess } ] = settingsApi.useLazyUpdateQuery()
   const initialValues = useMemo(() => ({ ...settings, timers: [ settings.timers.vibration ? 'vibration' : null, settings.timers.sound ? 'sound' : null ].filter(Boolean) }), [ settings ])
@@ -82,13 +100,41 @@ const Settings = () => {
     }))
   }
 
-  const handleRestoreExercises = () => {
-    console.log('restore exercises')
+  const handleRestoreWorkouts = async () => {
+    try {
+      await restoreWorkouts()
+      await fetchWorkouts()
+      dispatch(updateWorkoutSingle(null))
+
+      notification.success({
+        message: intl.pages.settings.modal.restore_workouts.success,
+      })
+    } catch (e) {
+      notification.error({
+        message: intl.modal.common.title.error,
+        description: intl.pages.settings.modal.restore_workouts.error,
+      })
+    }
   }
 
-  const handleRestoreWorkouts = () => {
-    console.log('restore workouts')
+  const handleRestoreExercises = async () => {
+    try {
+      await restoreExercises()
+      await fetchExercises()
+      dispatch(updateExerciseSingle(null))
+
+      notification.success({
+        message: intl.pages.settings.modal.restore_exercises.success,
+      })
+    } catch (e) {
+      notification.error({
+        message: intl.modal.common.title.error,
+        description: intl.pages.settings.modal.restore_exercises.error,
+      })
+    }
   }
+
+  const openRestoreModal = (type: ModalType) => () => setModalType(type)
 
   const handleThemeSwitch = (isLightTheme: boolean) => {
     changeTheme(isLightTheme ? 'light' : 'dark')
@@ -183,16 +229,33 @@ const Settings = () => {
       </TimersThemeContainer>
 
       <ButtonsContainer>
-        <Form.Item>
-          <Button block>
-            Восстановить упражнения
-          </Button>
-        </Form.Item>
+        <Button block onClick={openRestoreModal('exercises')} loading={isRestoringExercises || isFetchingExercises} disabled={isRestoringExercises || isFetchingExercises}>
+          Восстановить упражнения
+        </Button>
 
-        <Button block>
+        <Button block onClick={openRestoreModal('workouts')} loading={isRestoringWorkouts || isFetchingWorkouts} disabled={isRestoringWorkouts || isFetchingWorkouts}>
           Восстановить тренировки
         </Button>
       </ButtonsContainer>
+
+      <Modal
+        open={!!modalType}
+        title={modalType ? intl.pages.settings.modal[`restore_${modalType}`].title : null}
+        okText={intl.common.yes}
+        cancelText={intl.common.cancel}
+        onCancel={() => setModalType(null)}
+        onOk={() => {
+          if (modalType === 'exercises') {
+            handleRestoreExercises()
+            setModalType(null)
+          } else {
+            handleRestoreWorkouts()
+            setModalType(null)
+          }
+        }}
+      >
+        {modalType ? intl.pages.settings.modal[`restore_${modalType}`].message : null}
+      </Modal>
     </FormWrapper>
   )
 }

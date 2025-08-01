@@ -52,7 +52,7 @@ const getMuscleGroupFromList = (currentMuscleGroups: (string | { label: string; 
   const muscleGroupFromList = muscleGroupsItems
     .find(muscleGroup => typeof muscleGroupId === 'string'
       ? muscleGroup.id === muscleGroupId
-      : muscleGroup.id === muscleGroupId.value)
+      : muscleGroup.id === muscleGroupId?.value)
 
   return muscleGroupFromList ? {
     label: muscleGroupFromList.label,

@@ -8,6 +8,7 @@ import {
   GetWorkoutListSuccess,
   WorkoutServerPayload,
   WorkoutListParams,
+  WorkoutRestoreSuccess,
 } from './types'
 import routes from 'constants/end_points'
 import getBaseQueryWithReauth from 'store/utils/baseQueryWithReauth'
@@ -66,6 +67,12 @@ export const workoutApi = createApi({
         body: workout,
       }),
       invalidatesTags: [ WORKOUT_TAG_TYPES.WORKOUT, WORKOUT_TAG_TYPES.WORKOUT_LIST ],
+    }),
+    restore: build.mutation<WorkoutRestoreSuccess, void>({
+      query: () => ({
+        url: `${routes.workout.v1.restore.full}`,
+        method: 'POST',
+      }),
     }),
     delete: build.mutation<WorkoutDeleteSuccess, { id: WorkoutServerPayload['id'] }>({
       query: ({ id }) => ({

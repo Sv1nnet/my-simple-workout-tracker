@@ -18,11 +18,7 @@ export type PlainExerciseObject = Pick<ExerciseModel,
 'in_workouts' |
 'archived' |
 'image' |
-'time' |
-'description' |
-'repeats' |
-'weight' |
-'mass_unit'>
+'description'>
 
 // @ts-expect-error
 export class ExerciseModel extends EntityModel {

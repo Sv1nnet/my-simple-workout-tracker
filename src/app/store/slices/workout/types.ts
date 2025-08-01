@@ -55,6 +55,9 @@ export type WorkoutCreateSuccess = IResponse<WorkoutForm>
 
 export type WorkoutUpdateSuccess = IResponse<WorkoutServerPayload>
 
+export type WorkoutRestoreSuccess = IResponse<null>
+export type WorkoutRestoreError = IResponse<null>
+
 export type WorkoutDeleteSuccess = IResponse<WorkoutServerPayload[]>
 export type WorkoutDeleteError = IResponse<null>
 

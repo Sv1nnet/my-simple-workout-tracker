@@ -65,6 +65,9 @@ export const workoutSlice = createSlice({
       state.list.data = action.payload
       state.list.status = API_STATUS.LOADED
     },
+    updateSingle: (state, action: PayloadAction<Workout<Dayjs>>) => {
+      state.single.data = action.payload
+    },
     resetState: (state) => {
       state.list = initialState.list
       state.single = initialState.single
@@ -117,7 +120,7 @@ export const workoutSlice = createSlice({
   },
 })
 
-export const { updateList, resetListState, resetSingleState, open, close, setPageType, resetState } = workoutSlice.actions
+export const { updateList, resetListState, resetSingleState, open, close, setPageType, resetState, updateSingle } = workoutSlice.actions
 
 export const selectIsOpen = (state: AppState) => state.workout.isOpen
 export const selectPageType = (state: AppState) => state.workout.pageType

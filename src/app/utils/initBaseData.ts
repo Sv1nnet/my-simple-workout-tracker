@@ -1,6 +1,6 @@
 import { IndexedDB, IndexedDBTable } from './IndexedDBUtils'
 
-const importData = (lang: 'ru' | 'eng') => lang === 'ru' ? [
+export const importData = (lang: 'ru' | 'eng') => lang === 'ru' ? [
   import('app/constants/base_muscle_groups_ru'),
   import('app/constants/base_exercises_ru'),
   import('app/constants/base_workouts_ru'),

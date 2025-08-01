@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Button, FormInstance, RadioChangeEvent, Typography } from 'antd'
+import { FormInstance, RadioChangeEvent, Typography } from 'antd'
 import { BreakTimer, Description, History, Note, Rounds, Timers } from './components'
 import routes from 'app/constants/end_points'
 import { useMemo, useRef, useState } from 'react'
@@ -26,8 +26,6 @@ import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
 import { useHistoryContext } from 'app/views/activities/components/activity/contexts'
 import { selectSettings } from 'app/store/slices/settings'
-import { QuestionCircleOutlined, QuestionOutlined } from '@ant-design/icons'
-// import { Timer } from '@/src/app/components'
 
 const modeOptions = [
   { label: <ChartIcon />, value: 'chart' },
@@ -140,17 +138,6 @@ const Exercise: FC<IExerciseProps> = ({
 
   return (
     <div ref={$exercise} style={{ marginBottom: '10px' }}>
-      {/* <Timer
-        // @ts-ignore
-        duration={window.tms || 12}
-        notificationTitle="Test"
-        id={`${id}_test-timer`}
-        webNotificationOptions={{
-          tag: 'test',
-          body: 'Test',
-          icon: '/manifest-icon-192.maskable.png',
-        }}
-      /> */}
       <Header>
         <div>
           <ExerciseTitle level={5}>{details.title}</ExerciseTitle>

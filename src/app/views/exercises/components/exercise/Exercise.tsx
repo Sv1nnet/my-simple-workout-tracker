@@ -34,6 +34,7 @@ import { API_STATUS } from 'app/constants/api_statuses'
 import { ApiGetMuscleGroupError, previewReducer, IExercise, useShowDeleteMuscleGroupError, useInitialValues } from './utils'
 import style from './utils/modal.module.scss'
 import { updateSingle } from 'app/store/slices/exercise'
+import { isString } from 'app/utils/typeCheckers'
 
 
 const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise, isEdit, isFetching, onSubmit, isError, error, errorCode }) => {
@@ -148,13 +149,14 @@ const Exercise: FC<IExercise> = ({ initialValues: _initialValues, deleteExercise
 
   const handleSubmit = async (_values) => {
     let { time, image, muscle_groups, ...values } = _values
+
     values = (() => {
       const formData = new FormData()
       Object
         .entries(values)
         .forEach(([ key, value ]) => value !== undefined && value !== null && formData.append(key, `${value}`))
 
-      formData.append('muscle_groups', JSON.stringify(muscle_groups.map(item => item.value)))
+      formData.append('muscle_groups', JSON.stringify(muscle_groups.map(item => isString(item) ? item : item.value)))
 
       return formData
     })()

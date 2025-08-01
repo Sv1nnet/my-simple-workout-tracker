@@ -171,8 +171,26 @@ const createBaseRoutes = (base: string) => ({
   },
 })
 
-routes.exercise = { v1: createBaseRoutes('exercise') }
-routes.workout = { v1: createBaseRoutes('workout') }
+routes.exercise = {
+  v1: {
+    ...createBaseRoutes('exercise'),
+    get restore() {
+      return {
+        full: `${routes.base}${this.base.path}/restore`,
+        path: `${this.base.path}/restore`,
+      }
+    },
+  },
+}
+routes.workout = { v1: {
+  ...createBaseRoutes('workout'),
+  get restore() {
+    return {
+      full: `${routes.base}${this.base.path}/restore`,
+      path: `${this.base.path}/restore`,
+    }
+  },
+} }
 routes.activity = {
   v1: {
     ...createBaseRoutes('activity'),
@@ -190,10 +208,10 @@ type BaseRoutes = ReturnType<typeof createBaseRoutes>
 
 export default routes as typeof routes & {
   exercise: {
-    v1: BaseRoutes
+    v1: BaseRoutes & { restore: BaseRouteUnit }
   },
   workout: {
-    v1: BaseRoutes
+    v1: BaseRoutes & { restore: BaseRouteUnit }
   },
   activity: {
     v1: BaseRoutes & { history: BaseRouteUnit }

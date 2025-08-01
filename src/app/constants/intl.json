@@ -325,6 +325,44 @@
           "eng": "Settings saved."
         }
       },
+      "modal": {
+        "restore_exercises": {
+          "title": {
+            "ru": "Восстановление упражнений",
+            "eng": "Restoring exercises"
+          },
+          "message": {
+            "ru": "Название, изображение, группы мышц и описание будут восстановлены в базовых упражнениях. Удаленные упражнения будут восстановлены. Продолжить?",
+            "eng": "Name, image, muscle groups and description will be restored in base exercises. Deleted exercises will be restored. Continue?"
+          },
+          "success": {
+            "ru": "Упражнения восстановлены.",
+            "eng": "Exercises restored."
+          },
+          "error": {
+            "ru": "Не удалось восстановить упражнения.",
+            "eng": "Could not restore exercises."
+          }
+        },
+        "restore_workouts": {
+          "title": {
+            "ru": "Восстановление тренировок",
+            "eng": "Restoring workouts"
+          },
+          "message": {
+            "ru": "Название, упражнения, отдых, перерыв, время, повторения, вес, изображение, группы мышц и описание будут восстановлены в базовых тренировках. Удаленные тренировки будут восстановлены. Продолжить?",
+            "eng": "Name, exercises, rest, break, time, repeats, weight, image, muscle groups and description will be restored in base workouts. Deleted workouts will be restored. Continue?"
+          },
+          "success": {
+            "ru": "Тренировки восстановлены.",
+            "eng": "Workouts restored."
+          },
+          "error": {
+            "ru": "Не удалось восстановить тренировки.",
+            "eng": "Could not restore workouts."
+          }
+        }
+      },
       "submit_button": {
         "ru": "Сохранить",
         "eng": "Save"
@@ -653,13 +691,13 @@
           "change_default": {
             "body": {
               "ru": "Нельзя изменить это поле в упражнении по умолчанию. Вы можете скопировать упражнение и внести изменения в копию.",
-              "eng": "Cannot change this field in default exercise. You can copy the exercise and make changes to the copy. Copy? Current changes will be transferred to the copy."
+              "eng": "Cannot change this field in default exercise. You can copy the exercise and make changes to the copy."
             }
           },
           "in_activity": {
             "body": {
               "ru": "Нельзя изменить это поле в упражнении, которое используется в активности. Вы можете скопировать упражнение и внести изменения в копию.",
-              "eng": "Cannot change this field in exercise, which is used in activity. You can copy the exercise and make changes to the copy. Copy? Current changes will be transferred to the copy."
+              "eng": "Cannot change this field in exercise, which is used in activity. You can copy the exercise and make changes to the copy."
             }
           },
           "just_copy": {

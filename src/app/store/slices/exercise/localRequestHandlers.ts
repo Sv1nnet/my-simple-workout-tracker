@@ -263,6 +263,29 @@ const handlers = {
       throw e
     }
   },
+  restore: async () => {
+    try {
+      const settings = JSON.parse(localStorage.getItem('settings') || null)
+      const lang = settings?.lang || 'eng'
+  
+      const defaultExercises = await (lang === 'ru' ? import('app/constants/base_exercises_ru') : import('app/constants/base_exercises_eng'))
+      const exercises = defaultExercises.default.map(exercise => new ExerciseModel(exercise as PlainExerciseObject))
+
+      await ExerciseModel.updateMany(exercises)
+
+      return {
+        data: null,
+        success: true,
+        error: null,
+      }
+    } catch (e) {
+      return {
+        data: null,
+        success: false,
+        error: e.message,
+      }
+    }
+  },
   delete: (_args: FetchArgs, url: URL) => {
     const [ id ] = url.pathname.match(UUID_REGEX)
     return handlers.deleteMany({ body: { ids: [ id ] } })
