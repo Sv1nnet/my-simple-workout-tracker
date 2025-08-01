@@ -8,6 +8,7 @@ import PreviousRoundsHistory from './previous_rounds_history/PreviousRoundsHisto
 import Timers from './timers/Timers'
 import BreakTimer from './break_timer/BreakTimer'
 import Note from './note/Note'
+import Description from './description/Description'
 
 export {
   History,
@@ -20,4 +21,5 @@ export {
   Timers,
   BreakTimer,
   Note,
+  Description,
 }

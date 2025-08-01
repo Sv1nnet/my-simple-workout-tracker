@@ -97,7 +97,7 @@ export const SideTimePicker: FC<ISideTimePicker> = ({ dataSide, roundText, hours
 export const RoundsTable = styled.table`
   table-layout: fixed;
   width: 100%;
-  margin-top: 8px;
+  margin-top: 6px;
 `
 
 export const THeadCell = styled.th<{ $eachSide?: boolean, $previous?: boolean, $isHours?: boolean, $isTimeType?: boolean }>`

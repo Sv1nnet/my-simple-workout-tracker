@@ -964,6 +964,10 @@
         "note": {
           "ru": "Заметка",
           "eng": "Note"
+        },
+        "no_description": {
+          "ru": "Нет описания",
+          "eng": "No description"
         }
       },
       "input_placeholders": {
@@ -977,9 +981,9 @@
           "ru": "Сохранить",
           "eng": "Save"
         },
-        "create": {
-          "ru": "Создать",
-          "eng": "Create"
+        "finish": {
+          "ru": "Завершить",
+          "eng": "Finish"
         },
         "cancel": {
           "ru": "Отмена",

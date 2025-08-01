@@ -291,7 +291,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
           {(isEditMode || !isEdit) && (
             <CreateEditFormItem>
               <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
-                {isEdit ? submit_button.save : submit_button.create}
+                {isEdit ? submit_button.save : submit_button.finish}
               </Button>
               {isEdit && (
                 <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>

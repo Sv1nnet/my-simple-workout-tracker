@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { FormInstance, RadioChangeEvent, Typography } from 'antd'
-import { BreakTimer, History, Note, Rounds, Timers } from './components'
+import { Button, FormInstance, RadioChangeEvent, Typography } from 'antd'
+import { BreakTimer, Description, History, Note, Rounds, Timers } from './components'
 import routes from 'app/constants/end_points'
 import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
@@ -26,6 +26,7 @@ import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
 import { useHistoryContext } from 'app/views/activities/components/activity/contexts'
 import { selectSettings } from 'app/store/slices/settings'
+import { QuestionCircleOutlined, QuestionOutlined } from '@ant-design/icons'
 // import { Timer } from '@/src/app/components'
 
 const modeOptions = [
@@ -202,6 +203,7 @@ const Exercise: FC<IExerciseProps> = ({
           mode={historyDisplayMode}
         />
       </HistoryContainer>
+      <Description description={details.description} />
       <Rounds
         isTimeType={isTimeType}
         hours={details.hours}
