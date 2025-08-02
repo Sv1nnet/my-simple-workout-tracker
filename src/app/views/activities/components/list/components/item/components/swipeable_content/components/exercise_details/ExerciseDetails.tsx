@@ -5,6 +5,7 @@ import { ExerciseResultsDetails } from 'pages/activities/List'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { Typography } from 'antd'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
+import { useFixNumber } from 'app/hooks'
 
 const { Text } = Typography
 
@@ -18,7 +19,8 @@ export type ExerciseDetailsProps = ExerciseResultsDetails & {
   payloadDictionary: any;
 }
 
-const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass_unit, payloadDictionary }) => {
+const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass_unit = 'kg', payloadDictionary }) => {
+  const fixNumber = useFixNumber({ cutZeroes: true })
   const { lang } = useIntlContext()
   const _repeats = repeats ? `${repeats} ${getWordByNumber(payloadDictionary.repeats.short, repeats, lang)}` : null
   const _time = time
@@ -34,7 +36,7 @@ const ExerciseDetails: FC<ExerciseDetailsProps> = ({ repeats, time, weight, mass
     )
     : null
 
-  const _weight = weight ? `${weight} ${getWordByNumber(payloadDictionary.mass_unit?.[mass_unit], weight, lang)}` : null
+  const _weight = weight ? `${fixNumber((+weight).toFixed(2))} ${getWordByNumber(payloadDictionary.mass_unit[mass_unit], weight, lang)}` : null
   return (
     <LoadType>
       <Text type="secondary">{[ _repeats, _time, _weight ].filter(Boolean).join(' / ') || <span />}</Text>
