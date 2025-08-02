@@ -230,11 +230,11 @@ const Settings = () => {
 
       <ButtonsContainer>
         <Button block onClick={openRestoreModal('exercises')} loading={isRestoringExercises || isFetchingExercises} disabled={isRestoringExercises || isFetchingExercises}>
-          Восстановить упражнения
+          {intl.pages.settings.input_labels.restore_exercises}
         </Button>
 
         <Button block onClick={openRestoreModal('workouts')} loading={isRestoringWorkouts || isFetchingWorkouts} disabled={isRestoringWorkouts || isFetchingWorkouts}>
-          Восстановить тренировки
+          {intl.pages.settings.input_labels.restore_workouts}
         </Button>
       </ButtonsContainer>
 

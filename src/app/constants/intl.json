@@ -283,6 +283,14 @@
         "timers": {
           "ru": "Таймеры",
           "eng": "Timers"
+        },
+        "restore_exercises": {
+          "ru": "Восстановить упражнения",
+          "eng": "Restore exercises"
+        },
+        "restore_workouts": {
+          "ru": "Восстановить тренировки",
+          "eng": "Restore workouts"
         }
       },
       "input_options": {

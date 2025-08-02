@@ -1,4 +1,4 @@
-import { FC, ReactNode, useLayoutEffect, useState } from 'react'
+import { FC, ReactNode } from 'react'
 import styled from 'styled-components'
 import { PageHeader } from 'antd'
 import { useLocation } from 'react-router'
@@ -9,8 +9,8 @@ import Content from '../content/Content'
 import { useSearchParams } from 'react-router-dom'
 import { PageHeaderTitle, useHeaderTitleContext } from 'app/contexts/header_title/HeaderTItleContextProvider'
 
-const ContentContainer = styled.div<{ $height?: string }>`
-  height: calc(${({ $height }) => `${$height || '100vh'}`} - 57px - 74px - var(--statusbar-height) - var(--control-buttons-height));
+const ContentContainer = styled.div`
+  flex-grow: 1;
   overflow-y: scroll;
   position: relative;
   background-color: var(--background-color);
@@ -79,26 +79,12 @@ export const PageLayout: FC<{ children: ReactNode }> = ({ children }) => {
 
 export const PageLayoutWithNav: FC<{ route: TabRoutes, children?: ReactNode }> = ({ route, children }) => {
   const { intl } = useIntlContext()
-  const [ height, setHeight ] = useState('100vh')
   const location = useLocation()
   const _title = route ?? ((location.pathname) || 'activities').replace('/', '') as TabRoutes
 
-
-  useLayoutEffect(() => {
-    const setTabsHeight = () => {
-      setHeight(`${document.body.offsetHeight}px`)
-    }
-
-    setTabsHeight()
-
-    window.addEventListener('resize', setTabsHeight)
-
-    return () => window.removeEventListener('resize', setTabsHeight)
-  }, [])
-
   return (
     <WithHeader>
-      <ContentContainer $height={height}>
+      <ContentContainer>
         {children}
       </ContentContainer>
       <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>

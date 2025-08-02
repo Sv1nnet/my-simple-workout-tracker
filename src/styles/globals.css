@@ -189,6 +189,8 @@ html {
   margin: auto;
   background-color: var(--background-color);
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 @media screen and (max-width: 425px) {
