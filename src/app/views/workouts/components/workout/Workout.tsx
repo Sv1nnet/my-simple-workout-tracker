@@ -86,7 +86,7 @@ const Workout = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, 
 
   const [ form ] = Form.useForm<InitialValues>()
   const initialValues = useMemo<InitialValues>(() => {
-    if (isEdit && _initialValues === null) {
+    if ((isEdit && !_initialValues) || !_initialValues) {
       return {
         title: '',
         is_in_activity: false,
@@ -97,7 +97,8 @@ const Workout = ({ initialValues: _initialValues, isEdit, isFetching, onSubmit, 
     }
 
     const workout = { ..._initialValues } as unknown as InitialValues
-    workout.exercises = workout.exercises.map(({ id, rounds, round_break, break: exercise_break, break_enabled, weight, repeats, time, details }) => ({
+
+    workout.exercises = workout?.exercises?.map(({ id, rounds, round_break, break: exercise_break, break_enabled, weight, repeats, time, details }) => ({
       id,
       rounds,
       weight: units === 'lb' ? toLbs(weight) : weight,
