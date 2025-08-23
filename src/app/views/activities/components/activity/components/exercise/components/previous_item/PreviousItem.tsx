@@ -2,6 +2,7 @@ import { timeToHms } from 'app/utils/time'
 import { FC } from 'react'
 import { Container, Diff, Value } from './components/styled'
 import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
+import { isNumber } from 'app/utils/typeCheckers'
 
 
 export interface IPreviousItem {
@@ -17,7 +18,7 @@ export interface IPreviousItem {
   marginTop?: number | string;
 }
 
-const zeroEqualValues = [ null, '', '.', '.-', '-.', '-' ]
+const zeroEqualValues = [ undefined, null, '', '.', '.-', '-.', '-' ]
 
 const PreviousItem: FC<IPreviousItem> = ({ omitValue, comparator, curr, prev, isTimeType, hours, marginTop }) => {
   const theme = useThemeContext()
@@ -37,7 +38,7 @@ const PreviousItem: FC<IPreviousItem> = ({ omitValue, comparator, curr, prev, is
             : curr}
         </Value>
       )}
-      {prev && (
+      {isNumber(prev) && (
         <Diff $color={color}>
         &nbsp;{diff !== 0 ? sign : ''}{
             isTimeType
