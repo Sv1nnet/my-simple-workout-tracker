@@ -123,22 +123,6 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
     ? (
       <Container $eachSide>
         <EachSideContainer $right>
-          <SideLabel type="secondary">{sideLabels.right}</SideLabel>
-          <Timer
-            resetButton
-            id={`${id}_right`}
-            onTimeOver={handleTimeOver(Side.RIGHT)}
-            notificationTitle={`(${timerDictionary.side.right}) ${timerDictionary.round_break.title}`}
-            onPause={handlePause(Side.RIGHT)}
-            onRun={handleRun(Side.RIGHT)}
-            // appNotificationOptions={appNotificationOptions}
-            webNotificationOptions={webNotificationOptions}
-            hoursOn={hoursOn}
-            duration={duration}
-            buttonProps={buttonProps}
-          />
-        </EachSideContainer>
-        <EachSideContainer $left>
           <SideLabel type="secondary">{sideLabels.left}</SideLabel>
           <Timer
             resetButton
@@ -147,6 +131,22 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
             notificationTitle={`(${timerDictionary.side.left}) ${timerDictionary.round_break.title}`}
             onPause={handlePause(Side.LEFT)}
             onRun={handleRun(Side.LEFT)}
+            // appNotificationOptions={appNotificationOptions}
+            webNotificationOptions={webNotificationOptions}
+            hoursOn={hoursOn}
+            duration={duration}
+            buttonProps={buttonProps}
+          />
+        </EachSideContainer>
+        <EachSideContainer $left>
+          <SideLabel type="secondary">{sideLabels.right}</SideLabel>
+          <Timer
+            resetButton
+            id={`${id}_right`}
+            onTimeOver={handleTimeOver(Side.RIGHT)}
+            notificationTitle={`(${timerDictionary.side.right}) ${timerDictionary.round_break.title}`}
+            onPause={handlePause(Side.RIGHT)}
+            onRun={handleRun(Side.RIGHT)}
             // appNotificationOptions={appNotificationOptions}
             webNotificationOptions={webNotificationOptions}
             hoursOn={hoursOn}

@@ -13,6 +13,7 @@ import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { WorkoutForm } from 'app/store/slices/workout/types'
 import { ActivityForm } from 'app/store/slices/activity/types'
 import { Optional } from 'utility-types'
+import { ActivityPlugin } from 'src/plugins'
 
 const StyledButton = styled(Button)`
   margin-top:1px;
@@ -40,6 +41,8 @@ const StyledTimePicker = styled(TimePicker)`
 export type HeaderProps = {
   disabled: boolean
   initialValues: Optional<ActivityForm, 'workout_id'>
+  title: string
+  workoutId: WorkoutForm['id']
   isEdit: boolean
   selectedWorkout: WorkoutForm['id']
   durationTimerRef: RefObject<StopwatchRef>
@@ -53,6 +56,8 @@ const createDate = (duration: number) => dayjs.tz(duration, 'UTC')
 const Header = ({
   disabled,
   initialValues,
+  title,
+  workoutId,
   isEdit,
   selectedWorkout,
   durationTimerRef,
@@ -103,6 +108,21 @@ const Header = ({
     durationTimerRef.current?.setTime(dayjsToTimeArray(date))
   }
 
+  const handleRun = () => {
+    ActivityPlugin.start({
+      id: workoutId,
+      title,
+      startTime: Date.now() - initialValues.duration,
+    })
+  }
+
+  const handleStop = () => {
+    resetDuration()
+    ActivityPlugin.stop({
+      id: workoutId,
+    })
+  }
+
   useEffect(() => () => isTimerInputOpen && abortController.current?.abort(), [ isTimerInputOpen ])
 
   return (
@@ -118,8 +138,9 @@ const Header = ({
             className="activity-timer"
             initialValue={initialValues.duration}
             msOn={false}
+            onRun={handleRun}
             onPause={updateDurationInForm}
-            onReset={resetDuration}
+            onReset={handleStop}
             onChange={handleDurationChange}
           />
           <StyledButton type="text" icon={<EditOutlined />} disabled={disabled} onClick={handleOpenTimerInput} />

@@ -4,6 +4,8 @@ import styled from 'styled-components'
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
 `
 
 export const HistoryContainer = styled.div`
@@ -24,11 +26,9 @@ export const ImageContainer = styled.div`
 
 export const HistoryButtonsContainer = styled.div`
   text-align: right;
-  margin-bottom: 5px;
 `
 
 export const StyledRadio = styled(Radio.Group)`
-
 & > label.ant-radio-button-wrapper {
     background-color: var(--background-color);
     border-color: var(--border-color-base);
@@ -62,12 +62,23 @@ export const StyledRadio = styled(Radio.Group)`
   }
 `
 
-export const ResultTypeButtonsContainer = styled.div`
+export const SubHeader = styled.div`
   text-align: right;
-  min-width: 88px;
+  width: 100%;
+  align-self: flex-end;
+  justify-content: space-between;
+  display: flex;
+  flex-wrap: nowrap;
 `
 
 export const ExerciseTitle = styled(Typography.Title)`
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
+  margin-left: 3px;
   line-height: 1;
+`
+
+export const BreakSection = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 55px;
 `

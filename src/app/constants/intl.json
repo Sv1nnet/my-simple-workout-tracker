@@ -1036,6 +1036,10 @@
         "no_description": {
           "ru": "Нет описания",
           "eng": "No description"
+        },
+        "done": {
+          "ru": "Завершено",
+          "eng": "Done"
         }
       },
       "input_placeholders": {
@@ -1185,8 +1189,14 @@
             "eng": "Something has gone wrong and could not restore activity."
           },
           "ok_button": {
-            "ru": "Грустно, но ок",
-            "eng": "It's sad but ok"
+            "ru": "Понятно",
+            "eng": "Got it"
+          }
+        },
+        "done_info": {
+          "body": {
+            "ru": "Завершение упражнения остановит таймеры отдыха для этого упражнения.",
+            "eng": "Exercise completion will stop the rest timers for this exercise."
           }
         }
       }

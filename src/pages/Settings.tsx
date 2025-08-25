@@ -17,6 +17,7 @@ import { exerciseApi } from 'app/store/slices/exercise/api'
 import { workoutApi } from 'app/store/slices/workout/api'
 import { updateSingle as updateExerciseSingle } from 'app/store/slices/exercise'
 import { updateSingle as updateWorkoutSingle } from 'app/store/slices/workout'
+import SettingsService from 'src/plugins/settings/SettingsPlugin'
 
 const FormWrapper = styled(Form)`
   padding: 12px;
@@ -75,7 +76,7 @@ const Settings = () => {
   const [ fetchWorkouts, { isLoading: isFetchingWorkouts } ] = workoutApi.useLazyListQuery()
 
   const [ updateSettings, { isLoading: isUpdatingSettings, isError: isUpdateSettingsError, error: updateSettingsError, isSuccess: isUpdateSettingsSuccess } ] = settingsApi.useLazyUpdateQuery()
-  const initialValues = useMemo(() => ({ ...settings, timers: [ settings.timers.vibration ? 'vibration' : null, settings.timers.sound ? 'sound' : null ].filter(Boolean) }), [ settings ])
+  const initialValues = useMemo(() => ({ ...settings, timers: [ settings.timers.isVibration ? 'isVibration' : null, settings.timers.isSound ? 'isSound' : null ].filter(Boolean) }), [ settings ])
 
   const handleSubmit = async (values) => {
     try {
@@ -87,6 +88,7 @@ const Settings = () => {
 
   const handleLangChange = (_lang: Lang) => {
     dispatch(changeLang(_lang))
+    SettingsService.updateSettings({ lang: _lang })
   }
 
   const handleUnitsChange = (_units: Unit) => {
@@ -95,9 +97,10 @@ const Settings = () => {
 
   const handleTimersChange: CheckboxGroupProps['onChange'] = (_timers) => {
     dispatch(changeTimers({
-      vibration: _timers.includes('vibration'),
-      sound: _timers.includes('sound'),
+      isVibration: _timers.includes('isVibration'),
+      isSound: _timers.includes('isSound'),
     }))
+    SettingsService.updateSettings({ isVibration: _timers.includes('isVibration'), isSound: _timers.includes('isSound') })
   }
 
   const handleRestoreWorkouts = async () => {
@@ -214,8 +217,8 @@ const Settings = () => {
           name="timers"
         >
           <Checkbox.Group onChange={handleTimersChange}>
-            <Checkbox value="vibration">{intl.pages.settings.input_options.timers.vibration}</Checkbox>
-            <Checkbox value="sound">{intl.pages.settings.input_options.timers.sound}</Checkbox>
+            <Checkbox value="isVibration">{intl.pages.settings.input_options.timers.vibration}</Checkbox>
+            <Checkbox value="isSound">{intl.pages.settings.input_options.timers.sound}</Checkbox>
           </Checkbox.Group>
         </Form.Item>
 

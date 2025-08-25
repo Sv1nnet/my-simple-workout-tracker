@@ -2,7 +2,6 @@ import { Typography } from 'antd'
 import styled from 'styled-components'
 
 export const Container = styled.div<{ $eachSide?: boolean }>`
-  margin-top: ${({ $eachSide }) => $eachSide ? '' : '10px'};
   ${({ $eachSide }) => $eachSide ? `
     display: flex;
     justify-content: flex-start;

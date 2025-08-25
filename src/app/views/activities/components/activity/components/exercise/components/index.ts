@@ -5,10 +5,12 @@ import Rounds from './rounds/Rounds'
 import PreviousItem from './previous_item/PreviousItem'
 import Chart from './chart/Chart'
 import PreviousRoundsHistory from './previous_rounds_history/PreviousRoundsHistory'
-import Timers from './timers/Timers'
+import Timers from './rest/components/timers/Timers'
 import BreakTimer from './break_timer/BreakTimer'
 import Note from './note/Note'
-import Description from './description/Description'
+import Title from './title/Title'
+import Rest from './rest/Rest'
+import DoneInfoModal from './done_info_modal/DoneInfoModal'
 
 export {
   History,
@@ -21,5 +23,7 @@ export {
   Timers,
   BreakTimer,
   Note,
-  Description,
+  Title,
+  Rest,
+  DoneInfoModal,
 }

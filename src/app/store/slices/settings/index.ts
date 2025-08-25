@@ -32,8 +32,8 @@ let localLang: SettingsForm['lang'] = navigator.language.toLowerCase().includes(
 let theme: Theme = themes.light
 let localUnits: Unit = units.kg
 let localTimers: SettingsForm['timers'] = {
-  vibration: true,
-  sound: true,
+  isVibration: true,
+  isSound: true,
 }
 
 if (!isUndefined(localStorage)) {
@@ -47,8 +47,8 @@ if (!isUndefined(localStorage)) {
       : theme)
     localUnits = settingsFromLocalStorage?.units ?? units.kg
     localTimers = settingsFromLocalStorage?.timers ?? {
-      vibration: true,
-      sound: true,
+      isVibration: true,
+      isSound: true,
     }
 
     cookie.set('lang', localLang)

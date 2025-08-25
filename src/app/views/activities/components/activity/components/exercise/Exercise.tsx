@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { FormInstance, RadioChangeEvent, Typography } from 'antd'
-import { BreakTimer, Description, History, Note, Rounds, Timers } from './components'
+import { Button, Checkbox, Divider, FormInstance, RadioChangeEvent, Typography } from 'antd'
+import { BreakTimer, DoneInfoModal, History, Note, Rest, Rounds, Title } from './components'
 import routes from 'app/constants/end_points'
 import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
@@ -10,22 +10,23 @@ import { ActivityForm, HistoryResult, Round } from 'app/store/slices/activity/ty
 import { Dayjs } from 'dayjs'
 import { Exercise as TExercise } from 'app/store/slices/exercise/types'
 import {
+  BreakSection,
   ExerciseTitle,
   Header,
   HistoryButtonsContainer,
   HistoryContainer,
   ImageContainer,
-  ResultTypeButtonsContainer,
   StyledRadio,
+  SubHeader,
 } from './components/styled'
-import { getIsAllResultWithoutPenultimateFilled, getIsAllResultsFilled } from './utils'
 import { WorkoutListExercise } from 'app/store/slices/workout/types'
-import { useAppDispatch, useAppSelector, useFixNumber } from 'app/hooks'
+import { useAppDispatch, useAppSelector, useFixNumber, useToggle } from 'app/hooks'
 import { selectSelectedRoundIndex, setSelectedRound } from 'app/store/slices/activity'
 import { CacheFormData } from 'app/views/activities/components/activity/types'
 import { ChartIcon, TableIcon } from 'src/assets/icons'
 import { useHistoryContext } from 'app/views/activities/components/activity/contexts'
 import { selectSettings } from 'app/store/slices/settings'
+import { QuestionCircleOutlined } from '@ant-design/icons'
 
 const modeOptions = [
   { label: <ChartIcon />, value: 'chart' },
@@ -79,7 +80,6 @@ const Exercise: FC<IExerciseProps> = ({
   const { getByExerciseId, isLoading: isHistoryLoading } = useHistoryContext()
   const fixNumber = useFixNumber({ cutZeroes: true })
 
-  const [ isLastRestOver, setIsLastRestOver ] = useState(false)
   const [ historyDisplayMode, setHistoryDisplayMode ] = useState<'table' | 'chart'>('table')
   const { intl, lang } = useIntlContext()
   const { exercises, activities, workouts } = intl.pages
@@ -88,6 +88,9 @@ const Exercise: FC<IExerciseProps> = ({
   const $exercise = useRef(null)
 
   const historyByDates = getByExerciseId(id)?.results
+
+  const { state: isDone, setState: setIsDone } = useToggle(false)
+  const { state: isDoneInfoOpen, setTrue: openDoneInfo, setFalse: closeDoneInfo } = useToggle(false)
 
   const historyByRounds = useMemo(() => {
     if (isHistoryLoading || !historyByDates) return null
@@ -120,16 +123,9 @@ const Exercise: FC<IExerciseProps> = ({
     )
     : null
   const weightStr = weight ? `${fixNumber((+weight).toFixed(2))} ${getWordByNumber(payload.mass_unit[units], weight, lang)}` : null
-
   const isTimeType = isExerciseTimeType(details.type)
+  const isRestTimersVisible = !!round_break && !isEdit && !isDone
 
-  const isAllResultsFilled = getIsAllResultsFilled(form, details, exerciseIndex)
-
-  const isAllResultWithoutPenultimateFilled = getIsAllResultWithoutPenultimateFilled(form, details, exerciseIndex, isAllResultsFilled)
-
-  const handleTimeOver = () => setIsLastRestOver(isAllResultWithoutPenultimateFilled)
-
-  const isRestTimersVisible = !!round_break && !isEdit && !isAllResultsFilled
   const payloadText = [ repeats, time, weightStr ].filter(Boolean).map((item, i, arr) => (
     <span key={item} style={{ whiteSpace: 'nowrap' }}>
       {item}{`${arr[i + 1] !== undefined ? ' / ' : ''}`}
@@ -137,21 +133,14 @@ const Exercise: FC<IExerciseProps> = ({
   ))
 
   return (
-    <div ref={$exercise} style={{ marginBottom: '10px' }}>
+    <div ref={$exercise} style={{ marginBottom: 0 }}>
       <Header>
-        <div>
+        <Title
+          description={details.description}
+        >
           <ExerciseTitle level={5}>{details.title}</ExerciseTitle>
-          <Typography.Text type="secondary">
-            {workouts.input_labels.round_break}: {timeToHms(round_break, {
-              hms: [
-                payload.time.hour.short,
-                payload.time.minute.short,
-                payload.time.second.short,
-              ],
-            })}
-          </Typography.Text>
-        </div>
-        <ResultTypeButtonsContainer>
+        </Title>
+        <SubHeader>
           <Typography.Text>
             {payloadText.length > 0 ? payloadText : <span>&nbsp;</span>}
           </Typography.Text>
@@ -164,7 +153,7 @@ const Exercise: FC<IExerciseProps> = ({
               optionType="button"
             />
           </HistoryButtonsContainer>
-        </ResultTypeButtonsContainer>
+        </SubHeader>
       </Header>
       <HistoryContainer>
         <ImageContainer>
@@ -190,7 +179,6 @@ const Exercise: FC<IExerciseProps> = ({
           mode={historyDisplayMode}
         />
       </HistoryContainer>
-      <Description description={details.description} />
       <Rounds
         isTimeType={isTimeType}
         hours={details.hours}
@@ -208,28 +196,35 @@ const Exercise: FC<IExerciseProps> = ({
         cacheFormData={cacheFormData}
       />
       {isRestTimersVisible && (
-        <Timers
+        <Rest
           id={id}
-          eachSide={details.each_side}
-          timerDictionary={timer}
-          totalRounds={rounds}
-          durationInSeconds={round_break}
-          sideLabels={side_labels}
-          onTimeOver={handleTimeOver}
+          details={details}
+          timer={timer}
+          rounds={rounds}
+          round_break={round_break}
+          side_labels={side_labels}
         />
       )}
-      {!!exerciseBreak && (
-        <BreakTimer
-          isEdit={isEdit}
-          id={id}
-          nextExerciseTitle={exerciseList[exerciseIndex + 1]?.details.title}
-          isLastRestOver={isLastRestOver}
-          isAllResultsFilled={isAllResultsFilled}
-          workoutsDictionary={workouts}
-          payloadDictionary={payload}
-          exerciseBreak={exerciseBreak}
-        />
-      )}
+      <BreakSection>
+        {!!exerciseBreak && (
+          <BreakTimer
+            id={id}
+            nextExerciseTitle={exerciseList[exerciseIndex + 1]?.details.title}
+            workoutsDictionary={workouts}
+            payloadDictionary={payload}
+            exerciseBreak={exerciseBreak}
+          />
+        )}
+        {!isEdit && (
+          <div style={{ marginBlock: 6 }}>
+            <Checkbox value={isDone} onChange={e => setIsDone(e.target.checked)}>
+              <Typography.Text>{input_labels.done}</Typography.Text>
+              <Button type='link' size="small" icon={<QuestionCircleOutlined />} onClick={openDoneInfo} />
+            </Checkbox>
+          </div>
+        )}
+      </BreakSection>
+      
       <Note
         form={form}
         isFormItemDisabled={isFormItemDisabled}
@@ -237,6 +232,13 @@ const Exercise: FC<IExerciseProps> = ({
         inputLabels={input_labels}
         placeholder={input_placeholders.note}
         cacheFormData={cacheFormData}
+      />
+
+      <Divider style={{ margin: '18px 0 13px' }} />
+
+      <DoneInfoModal
+        isOpen={isDoneInfoOpen}
+        onOk={closeDoneInfo}
       />
     </div>
   )

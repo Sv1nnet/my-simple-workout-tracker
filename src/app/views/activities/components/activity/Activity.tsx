@@ -206,6 +206,8 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
       <HistoryProvider activityId={initialValues.id} historyData={_history?.data} isLoading={isHistoryLoading} loadHistory={getHistory}>
         <Header
           initialValues={initialValues}
+          title={workoutList.find(workout => workout.id === initialValues.workout_id)?.title || ''}
+          workoutId={initialValues.workout_id}
           isEdit={isEdit}
           disabled={isFormItemDisabled || !selectedWorkout}
           selectedWorkout={selectedWorkout}

@@ -17,11 +17,11 @@ export const TIME_WITHOUT_HOUR_IN_CELL_OFFSET = TIME_WITHOUT_HOUR_CELL_WIDTH / 2
 export const colors = [
   {
     line: '#5cbb5c',
-    text: 'green',
+    text: '#00ff00',
   },
   {
     line: '#ff6565',
-    text: 'red',
+    text: '#ff0000',
   },
   {
     line: '#7c7cff',
@@ -41,11 +41,11 @@ export const colors = [
   },
   {
     line: '#ffb988',
-    text: 'chocolate',
+    text: '#d2691e',
   },
   {
     line: '#41fcff',
-    text: 'darkturquoise',
+    text: '#00ced1',
   },
   {
     line: '#c95f7b',
@@ -53,7 +53,7 @@ export const colors = [
   },
   {
     line: '#7d7d7d',
-    text: 'black',
+    text: '#626262',
   },
 ]
 

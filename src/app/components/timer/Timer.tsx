@@ -4,7 +4,7 @@ import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time
 import { defaultAppNotificationOptions, runCountingDown, AppNotificationOptions } from './utils'
 import { TimerView } from 'app/components'
 import { Capacitor } from '@capacitor/core'
-import TimerService from 'src/plugins/timer_service/TimeService'
+import { TimerPlugin } from 'src/plugins'
 
 export const DEFAULT_TIMER_ID = 'default_timer_id'
 
@@ -105,7 +105,7 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     onChange?.([ ...initialValue ], newTimeLeftRef.current)
     onReset?.()
 
-    await TimerService.stopTimer({
+    await TimerPlugin.stopTimer({
       timerId,
     })
 
@@ -119,14 +119,14 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     try {
       if (Capacitor.isNativePlatform()) {    
         if (!isPaused && !isRunning) {
-          await TimerService.startTimer({
+          await TimerPlugin.startTimer({
             duration: Math.floor(newTimeLeftRef.current || duration), // Cut decimal part
             timerId: timerId,
             label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
             body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
           })
         } else if (isPaused) {
-          await TimerService.resumeTimer({
+          await TimerPlugin.resumeTimer({
             timerId: timerId,
             label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
             body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
@@ -149,7 +149,7 @@ const Timer = forwardRef<TimerRef, ITimer>(({
 
     if (Capacitor.isNativePlatform()) {
       try {
-        await TimerService.pauseTimer({
+        await TimerPlugin.pauseTimer({
           timerId: timerId,
           label: appNotificationOptions.paused?.label || defaultAppNotificationOptions.paused.label,
           body: appNotificationOptions.paused?.body || defaultAppNotificationOptions.paused.body,

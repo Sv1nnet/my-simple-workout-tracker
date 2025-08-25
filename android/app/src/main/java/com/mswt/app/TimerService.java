@@ -11,7 +11,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,11 +26,11 @@ public class TimerService extends Service {
     private static final int CONSOLIDATED_NOTIFICATION_ID = 1001;
 
     private static final Map<String, TimerInfo> activeTimers = new HashMap<>();
-    
+
     private final Handler handler = new Handler(Looper.getMainLooper());
     private NotificationManager notificationManager;
 
-    private static class TimerInfo {
+    public static class TimerInfo {
         long endTime;
         long remainingTime;
         Runnable runnable;
@@ -55,9 +57,8 @@ public class TimerService extends Service {
 
         if (hours > 0) {
             return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds);
-        } else {
-            return String.format("%02d:%02d", minutes, remainingSeconds);
         }
+        return String.format("%02d:%02d", minutes, remainingSeconds);
     }
 
     @Override
@@ -72,24 +73,31 @@ public class TimerService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
                 NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Timer Service Channel",
-                    NotificationManager.IMPORTANCE_HIGH
+                        CHANNEL_ID,
+                        "Timer Service Channel",
+                        NotificationManager.IMPORTANCE_HIGH
                 );
                 serviceChannel.setDescription("Shows ongoing timer");
                 serviceChannel.setShowBadge(true);
-                serviceChannel.enableVibration(true);
-                serviceChannel.setVibrationPattern(new long[]{0, 100});
+
+                if (MainActivity.settings.getIsVibration()) {
+                    serviceChannel.enableVibration(true);
+                    serviceChannel.setVibrationPattern(new long[]{0, 100});
+                }
                 notificationManager.createNotificationChannel(serviceChannel);
 
                 NotificationChannel alertsChannel = new NotificationChannel(
-                    CHANNEL_ID_ALERTS,
-                    "Timer Alerts Channel",
-                    NotificationManager.IMPORTANCE_HIGH
+                        CHANNEL_ID_ALERTS,
+                        "Timer Alerts Channel",
+                        NotificationManager.IMPORTANCE_HIGH
                 );
                 alertsChannel.setDescription("Shows timer completion alerts");
-                alertsChannel.enableVibration(true);
-                alertsChannel.setVibrationPattern(new long[]{0, 500, 250, 500});
+
+                if (MainActivity.settings.getIsVibration()) {
+                    alertsChannel.enableVibration(true);
+                    alertsChannel.setVibrationPattern(new long[]{0, 500, 250, 500});
+                }
+
                 notificationManager.createNotificationChannel(alertsChannel);
 
                 Log.d(TAG, "Notification channels created");
@@ -159,8 +167,8 @@ public class TimerService extends Service {
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                    this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
             );
 
             return new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -192,8 +200,8 @@ public class TimerService extends Service {
 
         long duration = intent.getLongExtra("duration", 0L);
         String label = intent.getStringExtra("label") != null ?
-                      intent.getStringExtra("label") :
-                      "Timer " + timerId;
+                intent.getStringExtra("label") :
+                "Timer " + timerId;
 
         if (duration <= 0) {
             Log.e(TAG, "Invalid duration: " + duration);
@@ -230,25 +238,25 @@ public class TimerService extends Service {
     private Notification createConsolidatedNotification() {
         StringBuilder contentBuilder = new StringBuilder();
         int activeTimerCount = TimerService.activeTimers.size();
-        
+
         // Show "Starting timer..." only when we're actually starting a new timer
         String title = activeTimerCount + " Active Timer" + (activeTimerCount > 1 ? "s" : "");
-            for (TimerInfo timer : TimerService.activeTimers.values()) {
-                long remaining = timer.isPaused ? timer.remainingTime : timer.endTime - System.currentTimeMillis();
-                String status = timer.isPaused ? "⏸" : "⏱";
-                contentBuilder.append(status)
-                             .append(" ")
-                             .append(timer.label)
-                             .append(": ")
-                             .append(formatTime(remaining))
-                             .append("\n");
-            }
+        for (TimerInfo timer : TimerService.activeTimers.values()) {
+            long remaining = timer.isPaused ? timer.remainingTime : timer.endTime - System.currentTimeMillis();
+            String status = timer.isPaused ? "⏸" : "⏱";
+            contentBuilder.append(status)
+                    .append(" ")
+                    .append(timer.label)
+                    .append(": ")
+                    .append(formatTime(remaining))
+                    .append("\n");
+        }
 
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                    this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
             );
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -313,7 +321,7 @@ public class TimerService extends Service {
                 handler.removeCallbacks(timer.runnable);
             }
             TimerService.activeTimers.remove(timerId);
-            
+
             if (TimerService.activeTimers.isEmpty()) {
                 stopForeground(true);
                 stopSelf();
@@ -350,7 +358,7 @@ public class TimerService extends Service {
                     if (remaining <= 0) {
                         showTimerFinishedNotification(timer);
                         TimerService.activeTimers.remove(timerId);
-                        
+
                         if (!TimerService.activeTimers.isEmpty()) {
                             updateConsolidatedNotification();
                         } else {
@@ -383,8 +391,8 @@ public class TimerService extends Service {
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, notificationId, notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                    this, notificationId, notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
             );
 
             return new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -413,19 +421,24 @@ public class TimerService extends Service {
 
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                this, completionNotificationId, notificationIntent,
-                PendingIntent.FLAG_IMMUTABLE
+                    this, completionNotificationId, notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
             );
 
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID_ALERTS)
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID_ALERTS)
                     .setContentTitle(timer.label + " Finished!")
                     .setContentText("Your timer has completed")
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setVibrate(new long[]{0, 500, 250, 500})
                     .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
-                    .build();
+                    .setContentIntent(pendingIntent);
+
+
+            if (MainActivity.settings.getIsVibration()) {
+                notificationBuilder.setVibrate(new long[]{0, 500, 250, 500});
+            }
+
+            Notification notification = notificationBuilder.build();
 
             Log.d(TAG, "Showing completion notification for " + timer.label);
             notificationManager.notify(completionNotificationId, notification);

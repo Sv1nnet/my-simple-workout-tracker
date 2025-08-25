@@ -26,8 +26,8 @@ export type SettingsForm = {
   theme: Theme;
   units: Unit;
   timers: {
-    vibration: boolean;
-    sound: boolean;
+    isVibration: boolean;
+    isSound: boolean;
   };
 }
 
