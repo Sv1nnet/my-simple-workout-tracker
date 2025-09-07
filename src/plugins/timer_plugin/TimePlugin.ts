@@ -8,12 +8,6 @@ export interface ITimerPlugin {
 }
 
 export class TimerPluginWeb extends WebPlugin implements ITimerPlugin {
-  constructor() {
-    super({
-      name: 'TimerPlugin',
-    })
-  }
-
   async startTimer(options: { duration: number, timerId: string, label?: string, body?: string, timeOverLabel?: string, timeOverBody?: string }): Promise<void> {
     console.log('startTimer', options)
   }

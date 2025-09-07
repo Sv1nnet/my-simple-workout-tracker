@@ -29,6 +29,10 @@ public class MainActivity extends BridgeActivity {
         stopWatchServiceIntent.putExtra("action", "stopAll");
         startService(stopWatchServiceIntent);
 
+        Intent activityServiceIntent = new Intent(this, ActivityService.class);
+        activityServiceIntent.putExtra("action", "stopAll");
+        startService(activityServiceIntent);
+
         super.onDestroy();
     }
 }

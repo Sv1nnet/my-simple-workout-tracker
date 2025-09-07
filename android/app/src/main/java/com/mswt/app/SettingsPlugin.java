@@ -57,18 +57,20 @@ public class SettingsPlugin extends Plugin {
       object.put("isVibration", isVibration.booleanValue());
     }
     if (isSound != null) {
-      object.put("isVibration", isSound.booleanValue());
+      object.put("isSound", isSound.booleanValue());
     }
     if (lang != null) {
       object.put("lang", lang);
     }
 
-    if (MainActivity.settings == null) {
+    if (MainActivity.settings != null) {
       try {
         MainActivity.settings.update(object);
       } catch (Error error) {
-        MainActivity.initSettings(new Settings(isVibration, isSound, lang == "ru" ? Lang.Ru : Lang.En));
+        MainActivity.initSettings(new Settings(isVibration, isSound, Objects.equals(lang, "ru") ? Lang.Ru : Lang.En));
       }
+    } else {
+      MainActivity.initSettings(new Settings(isVibration, isSound, Objects.equals(lang, "ru") ? Lang.Ru : Lang.En));
     }
 
     call.resolve();

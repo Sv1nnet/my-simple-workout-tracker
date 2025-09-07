@@ -78,8 +78,8 @@ const Header = ({
       setIsTimerInputClose()
       if (isTimerRunningOnInputOpenRef.current) durationTimerRef.current?.runTimer()
     } else {
-      if (Array.isArray(durationTimerRef.current?.value)) {
-        const ms = timeArrayToSeconds(durationTimerRef.current?.value) * 1000
+      if (Array.isArray(durationTimerRef.current?.getValue())) {
+        const ms = timeArrayToSeconds(durationTimerRef.current?.getValue()) * 1000
         handleDurationChange(ms)
         setTime(createDate(ms))
       }
@@ -109,21 +109,45 @@ const Header = ({
   }
 
   const handleRun = () => {
-    ActivityPlugin.start({
+    if (durationTimerRef.current.isPaused) {
+      ActivityPlugin.resumeActivity({
+        id: workoutId,
+        resumeTime: Date.now(),
+      })
+    } else {
+      const currentStopwatchMs = timeArrayToSeconds(durationTimerRef.current.valueRef.current) * 1000
+      const startTime = Date.now() - currentStopwatchMs
+      
+      ActivityPlugin.startActivity({
+        id: workoutId,
+        title,
+        startTime,
+        elapsedMs: currentStopwatchMs,
+      })
+    }
+  }
+
+  const handlePause = (timePassedInMs: number) => {
+    ActivityPlugin.pauseActivity({
       id: workoutId,
-      title,
-      startTime: Date.now() - initialValues.duration,
+      elapsedMs: Math.floor(timePassedInMs),
     })
+    updateDurationInForm(timePassedInMs)
   }
 
   const handleStop = () => {
     resetDuration()
-    ActivityPlugin.stop({
+    ActivityPlugin.stopActivity({
       id: workoutId,
     })
   }
 
   useEffect(() => () => isTimerInputOpen && abortController.current?.abort(), [ isTimerInputOpen ])
+  useEffect(() => () => {
+    ActivityPlugin.stopActivity({
+      id: workoutId,
+    })
+  }, [ workoutId ])
 
   return (
     <PageHeaderTitle>
@@ -139,7 +163,7 @@ const Header = ({
             initialValue={initialValues.duration}
             msOn={false}
             onRun={handleRun}
-            onPause={updateDurationInForm}
+            onPause={handlePause}
             onReset={handleStop}
             onChange={handleDurationChange}
           />

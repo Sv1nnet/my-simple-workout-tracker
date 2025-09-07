@@ -42,7 +42,7 @@ public class Settings {
       isSound = config.getBoolean("isSound", true);
     }
     if (isSound != null) {
-      this.isVibration = isSound;
+      this.isSound = isSound;
     }
 
     Lang lang = this.lang;

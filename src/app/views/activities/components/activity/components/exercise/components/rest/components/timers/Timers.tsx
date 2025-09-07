@@ -109,14 +109,14 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
           newCurrentRound[roundIndex] += 1
           setCurrentRound(newCurrentRound)
         }
-        onTimeOver(...args)
+        onTimeOver?.(...args)
         return
       }
 
       if (newFinishedRounds[currentRound[getSideIndex(Side.NON_SIDE)]]) setCurrentRound([ currentRound[getSideIndex(Side.NON_SIDE)] + 1 ])
     }
 
-    onTimeOver(...args)
+    onTimeOver?.(...args)
   }
 
   return eachSide
