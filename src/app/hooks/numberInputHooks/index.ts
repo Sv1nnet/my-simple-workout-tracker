@@ -5,7 +5,7 @@ import { isNumber } from 'app/utils/typeCheckers'
 /**
  * Formats to number depending on props.
  * Ex. 001 -> 1; -,123 -> -0.123; 123, -> 123; -, -> 0;
- * 
+ *
  * @returns {string}
  */
 export const useFixNumber = ({
@@ -30,13 +30,16 @@ export const useFixNumber = ({
   const fixNumber = useCallback((v: string) => {
     if (!v) return ''
 
+    const decimalPoint = isCommaDecimalPoint ? ',' : '.'
     if (v.length > 1) {
       if (isCommaDecimalPoint && v.includes('.')) {
         return fixNumber(v.replaceAll('.', ','))
       }
+
       if (!isCommaDecimalPoint && v.includes(',')) {
         return fixNumber(v.replaceAll(',', '.'))
       }
+
       if (
         (cutZeroes || cutEndingZeroes) &&
         (v.includes(',') || v.includes('.')) &&
@@ -44,6 +47,7 @@ export const useFixNumber = ({
       ) {
         return fixNumber(v.slice(0, -1))
       }
+
       // 001
       if (
         (cutZeroes || cutLeadingZeroes) &&
@@ -51,6 +55,7 @@ export const useFixNumber = ({
       ) {
         return fixNumber(v.slice(1))
       }
+
       // -0000 or -0 or -0001
       if (
         (cutZeroes || cutLeadingZeroes) &&
@@ -87,21 +92,22 @@ export const useFixNumber = ({
     }
 
     if (!int && /.*[,.].*[,.].*/.test(v)) {
-      const decimalPoint = isCommaDecimalPoint ? ',' : '.'
       const indexOfFirstDecimalPoint = v.indexOf(decimalPoint)
       const indexOfSecondPoint = v.indexOf('.', indexOfFirstDecimalPoint + 1)
       const indexOfSecondComma = v.indexOf(',', indexOfFirstDecimalPoint + 1)
 
       return fixNumber(`${
-        v.slice(0, indexOfFirstDecimalPoint)}
-        ${decimalPoint}
-        ${v.slice(indexOfFirstDecimalPoint + 1, indexOfSecondPoint < indexOfSecondComma ? indexOfSecondPoint : indexOfSecondComma)}
-      `)
+        v.slice(0, indexOfFirstDecimalPoint)
+      }${
+        decimalPoint
+      }${
+        v.slice(indexOfFirstDecimalPoint + 1, indexOfSecondPoint < indexOfSecondComma ? indexOfSecondPoint : indexOfSecondComma)
+      }`)
     }
 
     // cut after maxDigitsAfterPoint
     if (v && !int && maxDigitsAfterPoint > 0 && v.split(isCommaDecimalPoint ? ',' : '.')[1]?.length > maxDigitsAfterPoint) {
-      return fixNumber(v.slice(0, v.indexOf('.') + maxDigitsAfterPoint + 1))
+      return fixNumber(v.slice(0, v.indexOf(decimalPoint) + maxDigitsAfterPoint + 1))
     }
 
     // remove first `-` from string
@@ -127,6 +133,7 @@ export const useFixNumber = ({
     maxDigitsAfterPoint,
     onlyPositive,
     onlyNegative,
+    isCommaDecimalPoint,
   ])
 
   return fixNumber
@@ -154,7 +161,7 @@ export const useValidateNumber = ({
   max?: number,
 }) => useMemo(() => {
   if (shouldUpdate) return (curValue?: any, prevValue?: any): boolean => shouldUpdate(curValue, prevValue)
-  
+
   const _isFloat = isNumber(maxDigitsAfterPoint) &&
       !Number.isNaN(maxDigitsAfterPoint)
     ? isFloat(
@@ -168,16 +175,16 @@ export const useValidateNumber = ({
     : isFloat()
   const isPosFloat = (value?: string | number) => _isFloat(value) && isPos(value)
   const isNegFloat = (value?: string | number) => value !== '-' ? _isFloat(value) && (isZero(value) || !isPos(value)) : true
-  
+
   const withinMax = (v?: string | number) => maxExcluding ? parseFloat(`${v}`) < max : parseFloat(`${v}`) <= max
   const withinMin = (v?: string | number) => minExcluding ? parseFloat(`${v}`) > min : parseFloat(`${v}`) >= min
-  
+
   if (int) {
     if (onlyPositive) return (v?: string | number) => isPosInt(v) && withinMax(v) && withinMin(v)
     if (onlyNegative) return (v?: string | number) => (isNegInt(v) && withinMax(v) && withinMin(v)) || v === '-'
     return (v?: string | number) => (isInt(v) && withinMax(v) && withinMin(v)) || v === '-'
   }
-  
+
   if (onlyPositive) {
     return (v?: string | number) => {
       const valueStr = stringifyValue(v).replace(',', '.')
@@ -374,7 +381,7 @@ export const useNumberInput = <R = HTMLInputElement>({
   useLayoutEffect(() => {
     if (propValue === undefined || propValue === null) return
 
-    let propValueStr = stringifyValue(propValue)
+    const propValueStr = stringifyValue(propValue)
     const stateValueStr = stringifyValue(value)
 
     if (propValueStr !== stateValueStr) {

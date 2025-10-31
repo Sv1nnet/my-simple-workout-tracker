@@ -34,16 +34,16 @@ describe('useFixNumber', () => {
 
     expect(result.current).toBeInstanceOf(Function)
   })
-  
+
   testCases.forEach(({ input, expected, options }) => {
     it(`should format '${input}' to '${expected}' with config: ${JSON.stringify(options)}`, () => {
       const { result } = renderHook(() => useFixNumber(options))
-        
+
       let fixedNumber
       act(() => {
         fixedNumber = result.current(input)
       })
-  
+
       expect(fixedNumber).toBe(expected)
     })
   })
@@ -56,9 +56,11 @@ describe('useValidateNumber', () => {
     { input: '123.45', options: { maxDigitsAfterPoint: 2 }, expected: true },
     { input: '123.456', options: { maxDigitsAfterPoint: 2 }, expected: false },
     { input: '-123', options: { onlyPositive: true }, expected: false },
+    { input: '--123', options: { onlyPositive: true }, expected: false },
     { input: '123', options: { onlyPositive: true }, expected: true },
     { input: '123', options: { onlyNegative: true }, expected: false },
     { input: '-123', options: { onlyNegative: true }, expected: true },
+    { input: '--123', options: { onlyNegative: true }, expected: false },
     { input: '123', options: { max: 100 }, expected: false },
     { input: '99', options: { max: 100 }, expected: true },
     { input: '101', options: { maxExcluding: true, max: 100 }, expected: false },
@@ -82,14 +84,13 @@ describe('useValidateNumber', () => {
   testCases.forEach(({ input, options, expected }) => {
     it(`validates "${input}" with options ${JSON.stringify(options)} as ${expected}`, () => {
       const { result } = renderHook(() => useValidateNumber(options))
-        
+
       let isValid
       act(() => {
         isValid = result.current(input)
       })
-  
+
       expect(isValid).toBe(expected)
     })
   })
 })
-
