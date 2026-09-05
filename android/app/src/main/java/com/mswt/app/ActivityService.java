@@ -13,6 +13,9 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.ServiceCompat;
+
+import android.content.pm.ServiceInfo;
 
 import java.util.HashMap;
 
@@ -24,6 +27,34 @@ public class ActivityService extends Service {
         BREAK,
         DURATION_SET,
         SPEED_SET
+    }
+
+    /** Snapshot of the running activity-duration timer for the combined notification. */
+    public static final class ActivitySnapshot {
+        public final String title;
+        public final long elapsedMs;
+        public final long startTime;
+        public final boolean isPaused;
+
+        public ActivitySnapshot(String title, long elapsedMs, long startTime, boolean isPaused) {
+            this.title = title != null ? title : "";
+            this.elapsedMs = elapsedMs;
+            this.startTime = startTime;
+            this.isPaused = isPaused;
+        }
+    }
+
+    public static ActivitySnapshot getActivitySnapshot() {
+        for (Timer timer : timers.values()) {
+            if (timer.type == NotificationType.ACTIVITY && !timer.isFinished) {
+                long elapsed = timer.elapsedMs;
+                if (timer.isRunning && !timer.isPaused) {
+                    elapsed = System.currentTimeMillis() - timer.startTime - timer.totalPausedTime;
+                }
+                return new ActivitySnapshot(timer.title, Math.max(elapsed, 0), timer.startTime, timer.isPaused);
+            }
+        }
+        return null;
     }
 
     /** True while this service holds the process FGS notification (activity duration). */
@@ -152,6 +183,7 @@ public class ActivityService extends Service {
             
             this.runnable = createTimerRunnable();
             handler.post(runnable);
+            WorkoutNotificationTicker.refreshNow(ActivityService.this);
         }
 
         public void stop() {
@@ -181,7 +213,7 @@ public class ActivityService extends Service {
                     }
                     
                     updateElapsedTime();
-                    updateNotification();
+                    // Notification is refreshed by WorkoutNotificationTicker (1 Hz).
                     handler.postDelayed(this, 1000);
                 }
             };
@@ -261,31 +293,7 @@ public class ActivityService extends Service {
         }
 
         private void updateNotification() {
-            String notificationTitle = createNotificationTitle();
-            String notificationText = createNotificationText();
-
-            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    ActivityService.this,
-                    getNotificationId(),
-                    notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
-            );
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(ActivityService.this, CHANNEL_ID)
-                    .setContentTitle(notificationTitle)
-                    .setContentText(notificationText)
-                    .setSmallIcon(getApplicationInfo().icon)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
-                    .setOngoing(true)
-                    .setSilent(true)
-                    .setAutoCancel(false)
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setContentIntent(pendingIntent);
-
-            Notification notification = builder.build();
-            notificationManager.notify(getNotificationId(), notification);
+            WorkoutNotificationTicker.refreshNow(ActivityService.this);
         }
 
         private String createNotificationTitle() {
@@ -408,13 +416,31 @@ public class ActivityService extends Service {
 
         Timer timer = new Timer(id, title, content, type, resolvedStartTime);
         timer.elapsedMs = resolvedElapsed;
-        timer.start();
         timers.put(id, timer);
+        timer.start();
         
         if (type == NotificationType.ACTIVITY) {
-            startForeground(timer.getNotificationId(), createForegroundNotification());
-            foregroundActive = true;
+            WorkoutOngoingNotification.ensureChannel(this);
+            Notification notification = WorkoutOngoingNotification.build(this);
+            promoteToForeground(notification);
+            WorkoutOngoingNotification.cancelLegacyIds(notificationManager);
+            // Start 1 Hz updates without an extra immediate notify (avoids Samsung throttle).
+            WorkoutNotificationTicker.ensureStarted(this);
         }
+    }
+
+    private void promoteToForeground(Notification notification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ServiceCompat.startForeground(
+                    this,
+                    WorkoutOngoingNotification.ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            );
+        } else {
+            startForeground(WorkoutOngoingNotification.ID, notification);
+        }
+        foregroundActive = true;
     }
 
     public void startTimer(String id, String title, String content, NotificationType type, long startTime) {
@@ -452,26 +478,46 @@ public class ActivityService extends Service {
         Timer timer = timers.get(id);
         if (timer != null) {
             timer.stop();
-            notificationManager.cancel(timer.getNotificationId());
             timers.remove(id);
         }
 
         if (timers.isEmpty()) {
             foregroundActive = false;
-            stopForeground(true);
-            TimerService.requestForegroundPromotion(this);
+            if (TimerService.hasActiveTimers()) {
+                // Keep the combined card; TimerService will take over FGS.
+                stopForeground(false);
+                TimerService.requestForegroundPromotion(this);
+                WorkoutNotificationTicker.refreshNow(this);
+            } else {
+                WorkoutNotificationTicker.stopIfIdle();
+                notificationManager.cancel(WorkoutOngoingNotification.ID);
+                WorkoutOngoingNotification.resetStableWhen();
+                WorkoutOngoingNotification.cancelLegacyIds(notificationManager);
+                stopForeground(true);
+            }
             stopSelf();
+        } else {
+            WorkoutNotificationTicker.refreshNow(this);
         }
     }
 
     public void stopAllTimers() {
         for (Timer timer : timers.values()) {
             timer.stop();
-            notificationManager.cancel(timer.getNotificationId());
         }
         timers.clear();
         foregroundActive = false;
-        stopForeground(true);
+        if (TimerService.hasActiveTimers()) {
+            stopForeground(false);
+            TimerService.requestForegroundPromotion(this);
+            WorkoutNotificationTicker.refreshNow(this);
+        } else {
+            WorkoutNotificationTicker.stopIfIdle();
+            notificationManager.cancel(WorkoutOngoingNotification.ID);
+            WorkoutOngoingNotification.resetStableWhen();
+            WorkoutOngoingNotification.cancelLegacyIds(notificationManager);
+            stopForeground(true);
+        }
         stopSelf();
     }
 
@@ -494,6 +540,9 @@ public class ActivityService extends Service {
                 .setSilent(true)
                 .setAutoCancel(false)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setWhen(0)
+                .setShowWhen(false)
+                .setSortKey("0_activity")
                 .setContentIntent(pendingIntent);
 
         return builder.build();
@@ -564,6 +613,27 @@ public class ActivityService extends Service {
                     type = NotificationType.valueOf(typeStr.toUpperCase());
                 } catch (IllegalArgumentException e) {
                     Log.w("ActivityService", "Unknown notification type: " + typeStr);
+                }
+            }
+
+            if (action == null || action.equals("start") || action.equals("resume")) {
+                // Android 12+ may defer FGS notifications ~10s unless we enter foreground ASAP
+                // with FOREGROUND_SERVICE_IMMEDIATE (set in WorkoutOngoingNotification).
+                if (type == NotificationType.ACTIVITY && !foregroundActive) {
+                    WorkoutOngoingNotification.ensureChannel(this);
+                    String bootstrapTitle = title != null && !title.isEmpty() ? title : "Workout";
+                    Notification bootstrap = new NotificationCompat.Builder(this, WorkoutOngoingNotification.CHANNEL_ID)
+                            .setContentTitle(bootstrapTitle)
+                            .setContentText("\u00A0")
+                            .setSmallIcon(getApplicationInfo().icon)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
+                            .setOngoing(true)
+                            .setSilent(true)
+                            .setOnlyAlertOnce(true)
+                            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+                            .build();
+                    promoteToForeground(bootstrap);
                 }
             }
 
