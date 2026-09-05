@@ -86,7 +86,6 @@ const Round = ({
   cacheFormData,
 }: RoundProps) => {
   const results = Form.useWatch([ 'results', exerciseIndex, 'rounds' ], form)
-
   const handleRepeatsChange = (value, { target }) => {
     const _results = [ ...form.getFieldValue('results') ]
 

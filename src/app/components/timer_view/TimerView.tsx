@@ -10,6 +10,7 @@ export interface TimerViewProps {
   notificationOptions?: NotificationOptions,
   duration?: number,
   msOn?: boolean,
+  secOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
   onReset?: ButtonProps['onClick'],
@@ -20,12 +21,13 @@ export interface TimerViewProps {
   buttonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   },
-  resetButtonProps?: Omit<ButtonProps, 'onClick'> & {
+  stopButtonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   },
   initialValue: number[],
   value: number[],
-  showResetButton: boolean,
+  showRunPauseButton: boolean,
+  showStopButton: boolean,
   isRunning: boolean,
   disabled?: boolean,
   isFinished?: boolean,
@@ -36,11 +38,13 @@ const TimerView = ({
   value,
   duration,
   msOn,
+  secOn = true,
   hoursOn,
   onRun,
   onPause,
-  showResetButton,
-  resetButtonProps,
+  showStopButton = true,
+  showRunPauseButton = true,
+  stopButtonProps,
   onReset,
   disabled,
   buttonProps,
@@ -55,7 +59,7 @@ const TimerView = ({
       onClick: onPause,
     }
     : isFinished
-      ? showResetButton
+      ? showStopButton
         ? {
           icon: <RedoOutlined style={ICON_STYLE} />,
           onClick: (e) => {
@@ -71,22 +75,22 @@ const TimerView = ({
         icon: <CaretRightOutlined style={ICON_STYLE} />,
         onClick: onRun,
       },
-  [ onPause, onReset, onRun, isRunning, isFinished, showResetButton ])
+  [ onPause, onReset, onRun, isRunning, isFinished, showStopButton ])
 
   return (
     <TimerContainer {...rest} $isFinished={isFinished}>
-      <Button disabled={disabled} type="text" size="middle" {...buttonProps} {...buttonAttributes} />
-      <TimeText $disabled={disabled} {...timeElementProps}>
-        {getFinalValue(value, msOn, hoursOn, initialValue, duration === undefined ? 1 : -1)}
+      {showRunPauseButton && <Button disabled={disabled} type="text" size="middle" {...buttonProps} {...buttonAttributes} />}
+      <TimeText $disabled={disabled} $isRunPauseButtonsHidden={!showRunPauseButton} $isStopButtonHidden={!showStopButton} {...timeElementProps}>
+        {getFinalValue(value, msOn, secOn, hoursOn, initialValue, duration === undefined ? 1 : -1)}
       </TimeText>
-      {showResetButton && (
+      {showStopButton && (
         <ResetButton
           type="text"
           size="middle"
           disabled={disabled || duration === timeArrayToSeconds(value) * 1000}
           icon={<StopIcon />}
           style={{ display: 'inline-flex' }}
-          {...resetButtonProps}
+          {...stopButtonProps}
           onClick={onReset}
         />
       )}

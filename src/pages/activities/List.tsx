@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ActivityList } from 'app/views'
 import { ActivityListItem } from 'app/store/slices/activity/types'
 import { activityApi } from 'store/slices/activity/api'
-import { resetListState, selectList, updateList } from 'store/slices/activity'
+import { resetListState, selectCachedActivity, selectList, updateList } from 'store/slices/activity'
 import { ApiGetListError, useAppSelector, useLoadList, useShowListErrorNotification } from 'app/hooks'
 import { SearchPanel } from 'app/components/list_buttons'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -13,6 +13,9 @@ import { useSearchPanelUtils } from 'app/components/list_buttons/search_panel/ut
 import { Ref } from 'app/components/endless_scrollable_container/EndlessScrollableContainer'
 import { useListContext } from 'app/contexts/list/ListContextProvider'
 import { PageHeaderTitle } from 'app/contexts/header_title/HeaderTItleContextProvider'
+import { useActivityInProgressContext } from 'app/contexts/activity/ActivityInProgressContextProvider'
+// import { StyledCaretRightOutlined } from 'app/views/activities/components/list/components'
+import { ArrowRightOutlined } from '@ant-design/icons'
 
 export type ExerciseResultsDetails = {
   weight?: number,
@@ -32,9 +35,11 @@ const Activities = () => {
   const $container = useRef<Ref>(null)
   const { listEl, setListEl } = useListContext($container.current)
   const { intl } = useIntlContext()
-  const { start } = intl.pages.activities.list_buttons
+  const { activity: activityInProgress } = useActivityInProgressContext()
+  const { start, continue: continueText } = intl.pages.activities.list_buttons
   const [ loadActivities, { error, isError, isFetching } ] = activityApi.useLazyListQuery()
   const { data: activitiesInStore = [], total, status } = useAppSelector(selectList)
+  const { data: currentActivity } = useAppSelector(selectCachedActivity)
   const prevRequestRef = useRef<ReturnType<typeof loadActivities>>(null)
 
   const { searchValue, tags, filteredList: activitiesToShow, onSearchInputChange, onRefetchClick } = useSearchPanelUtils(
@@ -106,10 +111,10 @@ const Activities = () => {
   useEffect(() => () => {
     dispatch(resetListState())
   }, [])
-
+// console.log('currentActivity', currentActivity)
   return (
     <>
-      <PageHeaderTitle>{intl.header.activities}</PageHeaderTitle>
+      {!currentActivity?.isRunning && <PageHeaderTitle>{intl.header.activities}</PageHeaderTitle>}
       <EndlessScrollableContainer ref={$container} callOnMount onScroll={handleScroll}>
         <SearchPanel
           shouldShowReloadButton={false}
@@ -117,7 +122,8 @@ const Activities = () => {
           onChange={onSearchInputChange}
           refetch={onRefetchClick}
           href={CREATE_ROUTE}
-          addButtonText={start}
+          addButtonText={activityInProgress ? continueText : start}
+          icon={activityInProgress ? <ArrowRightOutlined /> : undefined}
         />
         <ActivityList
           deleteActivities={handleDeleteActivities}

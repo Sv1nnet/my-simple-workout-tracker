@@ -4,7 +4,7 @@ import dayjs, { Dayjs, isDayjs } from 'dayjs'
 import { InitialValues } from '../types'
 import React, { MutableRefObject, useEffect, useLayoutEffect } from 'react'
 import { FormInstance, Modal } from 'antd'
-import { ActivityForm } from 'app/store/slices/activity/types'
+import { ActivityForm, CachedActivity } from 'app/store/slices/activity/types'
 import { NavigateFunction, useNavigate } from 'react-router'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { Lang } from 'app/store/slices/settings/types'
@@ -39,8 +39,54 @@ export const getResultsFromWorkoutList = (workoutList: WorkoutListItem[], workou
     note: undefined,
   })) || []
 
+/** Merge cached activity results with current workout exercise metadata (ids, types) for the activity form. */
+export const mapCachedResultsToFormInitials = (
+  cachedResults: NonNullable<CachedActivity['results']>,
+  workout: WorkoutListItem,
+): InitialValues<Dayjs>['results'] =>
+  cachedResults.map((results, i) => {
+    const { _id, details } = workout.exercises[i]
+    return isExerciseTimeType(details.type)
+      ? {
+        _id,
+        hours: details.hours,
+        original_id: details.id,
+        id_in_workout: _id,
+        type: details.type,
+        ...results,
+        rounds: results.rounds.map((round: string | { right: string, left: string }) => {
+          if (round === null || round === '') return ''
+
+          return (isObject(round))
+            ? { right: round.right !== null && round.right !== '' ? dayjs(round.right) : '', left: round.left !== null && round.left !== '' ? dayjs(round.left) : '' }
+            : dayjs(round as string)
+        }),
+      }
+      : {
+        ...results,
+        _id,
+        hours: details.hours,
+        original_id: details.id,
+        id_in_workout: _id,
+        type: details.type,
+        rounds: results.rounds.map((round: string | { right: string, left: string }) => {
+          if (round === null || round === '') return ''
+
+          return (isObject(round))
+            ? {
+              right: round.right !== null && round.right !== '' ? +round.right : '',
+              left: round.left !== null && round.left !== '' ? +round.left : '',
+            }
+            : +round
+        }),
+      }
+  })
+
 const defaultInitialValues = {
   _id: undefined,
+  isRunning: false,
+  isPaused: false,
+  isStopped: false,
   workout_id: '',
   duration: 0,
   date: undefined,
@@ -51,18 +97,16 @@ const defaultInitialValues = {
 export const getInitialActivityValues = ({
   initialValues,
   workoutList,
-  cachedFormValues,
+  cachedActivity,
   selectedWorkout,
-  initFromCacheRef,
   form,
   handleRestoreFromCacheError,
   isEdit,
 }: {
   initialValues: InitialValues<string>,
   workoutList: WorkoutListItem[],
-  cachedFormValues: InitialValues | null,
+  cachedActivity: CachedActivity | null,
   selectedWorkout: WorkoutForm['id'],
-  initFromCacheRef: MutableRefObject<boolean>,
   form: FormInstance<ActivityForm>,
   handleRestoreFromCacheError: VoidFunction,
   isEdit?: boolean,
@@ -73,56 +117,34 @@ export const getInitialActivityValues = ({
 
   let newInitialValues: InitialValues<Dayjs>
   try {
-    if (!isEdit && cachedFormValues && selectedWorkout && initFromCacheRef.current && workoutList.length) {
-      const workout = workoutList
-        .find(wk => wk.id === cachedFormValues.workout_id)
+    if (!isEdit && cachedActivity) {
+      const workout = workoutList?.find(wk => wk.id === cachedActivity.workout_id)
+      const canMergeCachedResults = Boolean(
+        workout
+        && cachedActivity.results?.length
+        && cachedActivity.results.length === workout.exercises.length,
+      )
 
       newInitialValues = {
-        duration: 0,
-        ...cachedFormValues,
+        id: initialValues._id,
+        duration: cachedActivity.duration,
+        isRunning: cachedActivity.isRunning,
+        isPaused: cachedActivity.isPaused,
+        isStopped: cachedActivity.isStopped,
+        date: isString(cachedActivity.date) ? dayjs(new Date(cachedActivity.date)) : dayjs(cachedActivity.date),
         workout_id: selectedWorkout,
-        date: dayjs(cachedFormValues.date),
-        results: cachedFormValues.results
-          ? cachedFormValues.results.map((results, i) => {
-            const { _id, details } = workout.exercises[i]
-            return isExerciseTimeType(details.type)
-              ? {
-                _id,
-                hours: details.hours,
-                original_id: details.id,
-                id_in_workout: _id,
-                type: details.type,
-                ...results,
-                rounds: results.rounds.map((round: string | { right: string, left: string }) => {
-                  if (round === null) return ''
-
-                  return (isObject(round))
-                    ? { right: round.right !== null ? dayjs(round.right) : '', left: round.left !== null ? dayjs(round.left) : '' }
-                    : dayjs(round as string)
-                }),
-              }
-              : {
-                ...results,
-                _id,
-                hours: details.hours,
-                original_id: details.id,
-                id_in_workout: _id,
-                type: details.type,
-                rounds: results.rounds.map((round: string | { right: string, left: string }) => {
-                  if (round === null) return ''
-
-                  return (isObject(round))
-                    ? { right: round.right !== null ? +round.right : '', left: round.left !== null ? +round.left : '' }
-                    : +round
-                }),
-              }
-          })
-          : getResultsFromWorkoutList(workoutList, cachedFormValues.workout_id),
+        results: canMergeCachedResults && workout
+          ? mapCachedResultsToFormInitials(cachedActivity.results, workout)
+          : (workoutList && cachedActivity.workout_id ? getResultsFromWorkoutList(workoutList, cachedActivity.workout_id) : []),
+        description: cachedActivity.description || '',
       }
     } else if (!isEdit) {
       newInitialValues = {
         id: initialValues._id,
         duration: 0,
+        isRunning: false,
+        isPaused: false,
+        isStopped: false,
         date: (form.getFieldValue('date') as Dayjs) || dayjs(),
         workout_id: selectedWorkout,
         results: getResultsFromWorkoutList(workoutList, form.getFieldValue('workout_id')),
@@ -141,6 +163,10 @@ export const getInitialActivityValues = ({
               : secondsToDayjs(round as number)),
           }
           : results),
+        // Server payload may echo form fields; session flags must not stay "running" when editing a saved activity.
+        isRunning: false,
+        isPaused: false,
+        isStopped: false,
       }
     }
 
@@ -151,9 +177,9 @@ export const getInitialActivityValues = ({
   }
 }
 
-export const getActivityValuesToSubmit = ({ ...values }, initialValues, workoutList, durationTimerRef) => {
+export const getActivityValuesToSubmit = ({ ...values }, initialValues, workoutList, currentDuration) => {
   values.id = initialValues.id
-  values.duration = timeArrayToMilliseconds(durationTimerRef.current.valueRef.current)
+  values.duration = timeArrayToMilliseconds(currentDuration)
   values.date = values.date.toJSON()
   values.results = values.results.reduce((acc, { id, rounds, note }, i) => {
     const exercise = workoutList.find(workout => workout.id === values.workout_id).exercises[i]
@@ -332,15 +358,23 @@ export const useLoadWorkoutList = ({
 }
 
 export const useRestoreActivityFromCacheOnWorkoutListLoaded = ({
-  form, isEdit, getCachedFormValues, workoutListStatus, setSelectedWorkout, setCachedFormValues, initFromCacheRef, handleRestoreFromCacheError, workoutList,
+  form,
+  isEdit,
+  getCachedFormValues,
+  workoutListStatus,
+  setSelectedWorkout,
+  setCachedFormValues,
+  initFromCacheRef,
+  handleRestoreFromCacheError,
+  workoutList,
 }: {
   form: FormInstance<ActivityForm>,
   isEdit: boolean,
   handleSelectedWorkoutChange: (value: WorkoutForm['id']) => void,
-  getCachedFormValues: () => InitialValues,
+  getCachedFormValues: () => CachedActivity,
   workoutListStatus: ApiStatus,
   setSelectedWorkout: React.Dispatch<React.SetStateAction<WorkoutForm['id']>>,
-  setCachedFormValues: SetValue<InitialValues>,
+  setCachedFormValues: SetValue<CachedActivity>,
   initFromCacheRef: MutableRefObject<boolean>,
   handleRestoreFromCacheError: VoidFunction,
   workoutList: WorkoutListItem[],

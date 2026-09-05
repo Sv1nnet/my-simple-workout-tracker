@@ -33,13 +33,23 @@ export const useHeaderTitleContext = () => {
   return context
 }
 
-export const PageHeaderTitle = ({ children }: { children: React.ReactNode }) => {
+/**
+ * @description PageHeaderTitle is a component that sets the title of the page.
+ * @param children - The title of the page.
+ * @param isPersist - If true, the title will not be reset when the component is unmounted.
+ */
+export type PageHeaderTitleProps = {
+  children: React.ReactNode
+  isPersist?: boolean
+}
+
+export const PageHeaderTitle = ({ children, isPersist = false }: PageHeaderTitleProps) => {
   const { setTitle } = useHeaderTitleContext()
 
   useLayoutEffect(() => {
     setTitle(children)
-    return () => setTitle(undefined)
-  }, [ children ])
+    return () => !isPersist && setTitle(undefined)
+  }, [ children, isPersist ])
 
   return null
 }

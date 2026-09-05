@@ -4,6 +4,7 @@ import styled from 'styled-components'
 export const StyledForm = styled(Form)`
   position: relative;
   padding: 15px;
+  padding-top: 30px;
 `
 export const StyledFormItem = styled(Form.Item)`
   margin-bottom: 0;

@@ -48,7 +48,7 @@ const UserMenu = () => {
             key: 'exercises',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={BASE_ROUTES.EXERCISES}>{`${intl.header.exercises}`}</Link>
+                <Link to={BASE_ROUTES.EXERCISES}>{intl.header.exercises}</Link>
               </Button>
             ),
           },
@@ -56,7 +56,7 @@ const UserMenu = () => {
             key: 'workouts',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={BASE_ROUTES.WORKOUTS}>{`${intl.header.workouts}`}</Link>
+                <Link to={BASE_ROUTES.WORKOUTS}>{intl.header.workouts}</Link>
               </Button>
             ),
           },
@@ -64,7 +64,7 @@ const UserMenu = () => {
             key: 'activities',
             label: (
               <Button type="link" block onClick={closeMenu}>
-                <Link to={BASE_ROUTES.ACTIVITIES}>{`${intl.header.activities}`}</Link>
+                <Link to={BASE_ROUTES.ACTIVITIES}>{intl.header.activities}</Link>
               </Button>
             ),
           },

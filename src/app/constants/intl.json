@@ -1122,6 +1122,10 @@
         "start": {
           "ru": "Начать",
           "eng": "Start"
+        },
+        "continue": {
+          "ru": "Продолжить",
+          "eng": "Continue"
         }
       },
       "error_message": {

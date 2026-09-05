@@ -7,41 +7,70 @@ import { open as openWorkout, close as closeWorkout, WORKOUT_PAGE_TYPE } from 'a
 import { open as openActivity, close as closeActivity, ACTIVITY_PAGE_TYPE } from 'app/store/slices/activity'
 import { TabRoutes } from '../NavTemplate'
 
-const pageHandlers = {
-  exercises: {
-    open: openExercise,
-    close: closeExercise,
-    getType: (isOpen: boolean, isAddType: boolean) => isOpen ? (isAddType ? EXERCISE_PAGE_TYPE.CREATE : EXERCISE_PAGE_TYPE.EDIT) : EXERCISE_PAGE_TYPE.LIST,
-  },
-  workouts: {
-    open: openWorkout,
-    close: closeWorkout,
-    getType: (isOpen: boolean, isAddType: boolean) => isOpen ? (isAddType ? WORKOUT_PAGE_TYPE.CREATE : WORKOUT_PAGE_TYPE.EDIT) : WORKOUT_PAGE_TYPE.LIST,
-  },
-  activities: {
-    open: openActivity,
-    close: closeActivity,
-    getType: (isOpen: boolean, isAddType: boolean) => isOpen ? (isAddType ? ACTIVITY_PAGE_TYPE.CREATE : ACTIVITY_PAGE_TYPE.EDIT) : ACTIVITY_PAGE_TYPE.LIST,
-  },
-  profile: {
-    open: openProfile,
-    close: closeProfile,
-    getType: () => null,
-  },
-  settings: {
-    open: openSettings,
-    close: closeSettings,
-    getType: () => null,
-  },
+type PageHandlerKey = 'exercises' | 'workouts' | 'activities' | 'profile' | 'settings'
+
+const pageHandlerKeys: PageHandlerKey[] = [ 'exercises', 'workouts', 'activities', 'profile', 'settings' ]
+
+type FormInfo = {
+  isFormOpen: boolean
+  isEditType: boolean
+  isAddType: boolean
+}
+
+const isPageHandlerKey = (tab?: string): tab is PageHandlerKey =>
+  pageHandlerKeys.some(key => key === tab)
+
+const getOpenAction = (tab: string | undefined, formInfo: FormInfo) => {
+  const { isFormOpen, isAddType } = formInfo
+  const resolvedTab = isPageHandlerKey(tab) ? tab : 'activities'
+
+  switch (resolvedTab) {
+    case 'exercises':
+      return openExercise({
+        pageType: isFormOpen
+          ? (isAddType ? EXERCISE_PAGE_TYPE.CREATE : EXERCISE_PAGE_TYPE.EDIT)
+          : EXERCISE_PAGE_TYPE.LIST,
+      })
+    case 'workouts':
+      return openWorkout({
+        pageType: isFormOpen
+          ? (isAddType ? WORKOUT_PAGE_TYPE.CREATE : WORKOUT_PAGE_TYPE.EDIT)
+          : WORKOUT_PAGE_TYPE.LIST,
+      })
+    case 'profile':
+      return openProfile(true)
+    case 'settings':
+      return openSettings()
+    case 'activities':
+    default:
+      return openActivity({
+        pageType: isFormOpen
+          ? (isAddType ? ACTIVITY_PAGE_TYPE.CREATE : ACTIVITY_PAGE_TYPE.EDIT)
+          : ACTIVITY_PAGE_TYPE.LIST,
+      })
+  }
+}
+
+const getCloseAction = (tab: string) => {
+  if (!isPageHandlerKey(tab)) return null
+
+  switch (tab) {
+    case 'exercises':
+      return closeExercise()
+    case 'workouts':
+      return closeWorkout()
+    case 'activities':
+      return closeActivity()
+    case 'profile':
+      return closeProfile()
+    case 'settings':
+      return closeSettings()
+  }
 }
 
 const useReduxSetPageInfo = (pageInfo: {
-  activeTab: TabRoutes | string;
-  formInfo: {
-    isFormOpen: boolean;
-    isEditType: boolean;
-    isAddType: boolean;
-  };
+  activeTab: TabRoutes | string
+  formInfo: FormInfo
 }) => {
   const dispatch = useAppDispatch()
 
@@ -49,16 +78,11 @@ const useReduxSetPageInfo = (pageInfo: {
 
   useOnPreviousChange<[typeof pageInfo]>(
     useCallback(([ prev ], [ curr ]) => {
-      let currHandler = pageHandlers[curr.activeTab]
-      if (!currHandler) currHandler = pageHandlers.activities
+      dispatch(getOpenAction(curr.activeTab, curr.formInfo))
 
-      dispatch(currHandler
-        .open({
-          pageType: currHandler.getType(curr.formInfo.isFormOpen, curr.formInfo.isAddType),
-        }))
-
-      if (prev.activeTab && prev.activeTab !== curr.activeTab ) {
-        dispatch(pageHandlers[prev.activeTab].close())
+      if (prev.activeTab && prev.activeTab !== curr.activeTab) {
+        const closeAction = getCloseAction(prev.activeTab)
+        if (closeAction) dispatch(closeAction)
       }
     }, []),
     [ pageInfo ],
@@ -67,18 +91,12 @@ const useReduxSetPageInfo = (pageInfo: {
     },
   )
 
-  const setOpenPageInfo = useCallback((_, [ currentActiveTab, currentFormInfo ]: [ typeof activeTab, typeof formInfo ]) => {
-    let currHandler = pageHandlers[currentActiveTab]
-    if (!currHandler) currHandler = pageHandlers.activities
-
-    dispatch(currHandler
-      .open({
-        pageType: currHandler.getType(currentFormInfo.isFormOpen, currentFormInfo.isAddType),
-      }))
-  }, [])
+  const setOpenPageInfo = useCallback((currentActiveTab: typeof activeTab, currentFormInfo: FormInfo) => {
+    dispatch(getOpenAction(currentActiveTab, currentFormInfo))
+  }, [ dispatch ])
 
   useEffect(() => {
-    setOpenPageInfo(null, [ activeTab, formInfo ])
+    setOpenPageInfo(activeTab, formInfo)
   }, [])
 }
 

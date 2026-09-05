@@ -4,13 +4,13 @@ import styled from 'styled-components'
 export const StyledForm = styled(Form)<{ $isEdit: boolean; }>`
   position: relative;
   padding: 15px;
-  ${({ $isEdit }) => $isEdit ? 'padding-top: 40px' : ''}
+  ${({ $isEdit }) => $isEdit ? 'padding-top: 55px' : ''}
 `
 
 export const StyledDateFormItem = styled(Form.Item)<{ $isEdit: boolean; }>`
   position: absolute;
   right: 7px;
-  top: ${({ $isEdit }) => $isEdit ? '35px' : '10px'};
+  top: ${({ $isEdit }) => $isEdit ? '50px' : '10px'};
   z-index: 100;
   width: 120px;
 `
@@ -77,13 +77,7 @@ export const WorkoutLabelContainer = styled.div`
 `
 
 export const StopwatchContainer = styled.div`
-  margin-left: 32px;
-  display: flex;
-  margin-block: -1px;
-  color: var(--text-color);
-  font-weight: 400;
-
-  & .activity-timer {
-    background-color: var(--background-color);
-  }
+  position: absolute;
+  top: 15px;
+  left: 15px;
 `

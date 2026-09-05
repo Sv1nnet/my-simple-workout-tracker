@@ -3,9 +3,10 @@ import IntlContextProvider from 'app/contexts/intl/IntContextProvider'
 import AppLoaderProvider from 'app/contexts/loader/AppLoaderContextProvider'
 import { ErrorBoundary } from 'app/components'
 import ListContextProvider from 'app/contexts/list/ListContextProvider'
-import HeaderTitleProvider from '../header_title/HeaderTItleContextProvider'
-import ThemeContextProvider from '../theme/ThemeContextProvider'
+import HeaderTitleProvider from 'app/contexts/header_title/HeaderTItleContextProvider'
+import ThemeContextProvider from 'app/contexts/theme/ThemeContextProvider'
 import InitialDataLoader from 'layouts/initial_data_loader/DataLoader'
+import ActivityInProgressContextProvider from 'app/contexts/activity/ActivityInProgressContextProvider'
 
 const RootProvider = ({ children }: PropsWithChildren) => (
   <IntlContextProvider>
@@ -15,7 +16,9 @@ const RootProvider = ({ children }: PropsWithChildren) => (
           <AppLoaderProvider>
             <HeaderTitleProvider>
               <InitialDataLoader>
-                {children}
+                <ActivityInProgressContextProvider>
+                  {children}
+                </ActivityInProgressContextProvider>
               </InitialDataLoader>
             </HeaderTitleProvider>
           </AppLoaderProvider>

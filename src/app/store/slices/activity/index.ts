@@ -2,7 +2,7 @@ import { ApiStatus, API_STATUS } from 'app/constants/api_statuses'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import type { AppState } from 'app/store'
 import { activityApi } from './api'
-import { ActivityForm, ActivityListItem, ActivityListResponseSuccess, HistoryRequestQuery, HistoryResponseData, SelectedRoundPayload } from './types'
+import { ActivityForm, ActivityListItem, ActivityListResponseSuccess, CachedActivity, HistoryRequestQuery, HistoryResponseData, SelectedRoundPayload } from './types'
 import { ListQuery } from 'store/utils/StateResultTypes'
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from 'app/utils/localStorage'
 
@@ -29,7 +29,7 @@ export interface IActivityState {
     status: ApiStatus;
   }
   cachedActivity: {
-    data: ActivityForm | null;
+    data: CachedActivity | null;
   },
   history: {
     data: HistoryResponseData | null;
@@ -88,7 +88,7 @@ export const activitySlice = createSlice({
       state.isOpen = false
       state.pageType = ACTIVITY_PAGE_TYPE.NONE
     },
-    setCachedActivity: (state, { payload }: PayloadAction<{ data: ActivityForm, shouldSaveToLocalStorage?: boolean }>) => {
+    setCachedActivity: (state, { payload }: PayloadAction<{ data: CachedActivity, shouldSaveToLocalStorage?: boolean }>) => {
       state.cachedActivity.data = payload.data
       if (payload.shouldSaveToLocalStorage) {
         setLocalStorageItem('cached_activity', payload.data)

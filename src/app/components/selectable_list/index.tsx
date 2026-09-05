@@ -84,6 +84,7 @@ export interface ISelectableList {
   style?: React.CSSProperties;
   className?: string;
   createTooltipTitle?: string;
+  addButtonIcon?: React.ReactElement;
 }
 
 export type SelectableListRef = {
@@ -115,6 +116,7 @@ ISelectableList & RefAttributes<SelectableListRef>
     style,
     className,
     createTooltipTitle,
+    addButtonIcon,
   },
   ref,
 ) => {
@@ -264,6 +266,7 @@ ISelectableList & RefAttributes<SelectableListRef>
           onCopy={onCopy}
           onDelete={onDelete}
           createTooltipTitle={createTooltipTitle}
+          addButtonIcon={addButtonIcon}
         />
       </ListContainer>
     </SelectableListContext.Provider>

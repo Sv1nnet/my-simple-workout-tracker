@@ -1,0 +1,55 @@
+wing: my_simple_workout_tracker
+rooms:
+- name: temp
+  description: Files from temp/
+  keywords:
+  - temp
+  - temp
+- name: public
+  description: Files from public/
+  keywords:
+  - public
+  - public
+- name: nginx
+  description: Files from nginx/
+  keywords:
+  - nginx
+  - nginx
+- name: android
+  description: Files from android/
+  keywords:
+  - android
+  - android
+- name: scripts
+  description: Files from scripts/
+  keywords:
+  - scripts
+  - scripts
+- name: dev_dist
+  description: Files from dev-dist/
+  keywords:
+  - dev_dist
+  - dev-dist
+- name: temp_files
+  description: Files from temp_files/
+  keywords:
+  - temp_files
+  - temp_files
+- name: src
+  description: Files from src/
+  keywords:
+  - src
+  - src
+- name: design
+  description: Files from assets/
+  keywords:
+  - design
+  - assets
+- name: frontend
+  description: Files from pages/
+  keywords:
+  - frontend
+  - pages
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { Input, Button, Collapse, Select } from 'antd'
+import { StyledLink } from 'app/components/list_buttons/add_button/AddButton'
 
 const transition = 'all .3s cubic-bezier(0.645, 0.045, 0.355, 1)'
 
@@ -29,8 +30,15 @@ export const ButtonsContainer = styled.div`
   display: flex;
   align-items: flex-end;
 
+  & ${StyledLink} {
+    margin-left: 0px;
+  }
+
   & .minified {
-    width: 52px;
+    flex-grow: 0;
+    & ${StyledLink} {
+      margin-left: 26px;
+    }
   }
 `
 
@@ -63,7 +71,9 @@ export const StyledInputGroup = styled(Input.Group)<{ $collapsed: boolean }>`
   display: flex;
   flex-wrap: nowrap;
   transition: ${transition};
-  width: ${({ $collapsed }) => $collapsed ? '50px' : '100%'};
+  width: ${({ $collapsed }) => $collapsed ? '50px' : 'calc(100% - 52px)'};
+  flex-grow: 1;
+  flex-shrink: 0;
 `
 
 export const StyledSearchButton = styled(Button)`

@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Button, Checkbox, Divider, FormInstance, RadioChangeEvent, Typography } from 'antd'
+import { Button, Checkbox, Divider, Form, FormInstance, Input, RadioChangeEvent, Typography } from 'antd'
 import { BreakTimer, DoneInfoModal, History, Note, Rest, Rounds, Title } from './components'
 import routes from 'app/constants/end_points'
 import { useMemo, useRef, useState } from 'react'
@@ -179,6 +179,21 @@ const Exercise: FC<IExerciseProps> = ({
           mode={historyDisplayMode}
         />
       </HistoryContainer>
+      <Form.Item name={[ 'results', exerciseIndex, '_id' ]} hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item name={[ 'results', exerciseIndex, 'hours' ]} valuePropName="checked" hidden>
+        <Checkbox tabIndex={-1} />
+      </Form.Item>
+      <Form.Item name={[ 'results', exerciseIndex, 'original_id' ]} hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item name={[ 'results', exerciseIndex, 'id_in_workout' ]} hidden>
+        <Input />
+      </Form.Item>
+      <Form.Item name={[ 'results', exerciseIndex, 'type' ]} hidden>
+        <Input />
+      </Form.Item>
       <Rounds
         isTimeType={isTimeType}
         hours={details.hours}
@@ -203,6 +218,7 @@ const Exercise: FC<IExerciseProps> = ({
           rounds={rounds}
           round_break={round_break}
           side_labels={side_labels}
+          workoutsDictionary={workouts}
         />
       )}
       <BreakSection>

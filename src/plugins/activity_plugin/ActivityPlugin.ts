@@ -13,7 +13,7 @@ export interface IActivityPlugin {
   startActivity(options: { id: string, title: string, startTime?: number, elapsedMs?: number, content?: string  }): Promise<void>;
   stopActivity(options: { id: string, content?: string  }): Promise<void>;
   pauseActivity(options: { id: string, elapsedMs?: number, content?: string  }): Promise<void>;
-  resumeActivity(options: { id: string, resumeTime?: number, content?: string  }): Promise<void>;
+  resumeActivity(options: { id: string, resumeTime?: number, elapsedMs?: number, title?: string, content?: string  }): Promise<void>;
 
   startDurationSet(options: { id: string, title: string, startTime: number, content?: string }): Promise<void>;
   stopDurationSet(options: { id: string, content?: string  }): Promise<void>;

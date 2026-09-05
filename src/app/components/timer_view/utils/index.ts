@@ -3,7 +3,7 @@ import { getTimeDateUnit } from 'app/utils/time'
 export const MS_TO_SET_STATE_WHEN_MS_OFF = 980
 export const MS_TO_SET_STATE_WHEN_MS_ON = 33
 
-export const getFinalValue = (value: number[], msOn: boolean, hoursOn: boolean, initialValue: number[], direction: number = 1) => {
+export const getFinalValue = (value: number[], msOn: boolean, secOn: boolean, hoursOn: boolean, initialValue: number[], direction: number = 1) => {
   let [ h, m, s, ms ] = value
 
   // if displaying ms is off then we should show ceil seconds
@@ -14,8 +14,10 @@ export const getFinalValue = (value: number[], msOn: boolean, hoursOn: boolean, 
     s = s === 0 && ms === 0 ? 0 : ((s * 1000) + ms) / 1000
   }
 
-  const result = (hoursOn ? [ h, m, s ] : [ m, s ]).map(time => getTimeDateUnit(Math[direction < 0 ? 'ceil' : 'floor'](time), true)).join(':')
-  if (msOn) return `${result}:${getTimeDateUnit(Math.floor(ms / 10), true)}`
+  const resultArr = [ hoursOn ? h : null, m, secOn ? s : null ].filter(timeUnit => timeUnit !== null)
+  // const result = (hoursOn ? [ h, m, s ] : [ m, s ]).map(time => getTimeDateUnit(Math[direction < 0 ? 'ceil' : 'floor'](time), true)).join(':')
+  const result = resultArr.map(time => getTimeDateUnit(Math[direction < 0 ? 'ceil' : 'floor'](time), true)).join(':')
+  if (secOn && msOn) return `${result}:${getTimeDateUnit(Math.floor(ms / 10), true)}`
   return result
 }
 

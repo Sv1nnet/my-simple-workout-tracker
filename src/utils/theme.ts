@@ -1,6 +1,6 @@
 import { Preferences } from '@capacitor/preferences'
 import { Style } from '@capacitor/status-bar'
-import { darkTheme, theme } from 'src/styles/vars'
+import { darkTheme, theme } from 'styles/vars'
 import { useLayoutEffect } from 'react'
 import { useThemeContext } from 'app/contexts/theme/ThemeContextProvider'
 import { Theme } from 'app/store/slices/settings/types'

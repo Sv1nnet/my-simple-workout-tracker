@@ -32,14 +32,13 @@ const MainTemplate: FC = () => {
   )
 
   useEffect(() => {
-    if (isMounted()) {
-      if (location.pathname === '' || location.pathname === '/') {
-        navigate(lastOpenedPage === appRoutes.activities.create() ? lastOpenedPage : BASE_ROUTES.WORKOUTS, { replace: true })
-        return
-      }
-      if (!routes.find(_route => _route === route || _route === '/404')) {
-        navigate(BASE_ROUTES.WORKOUTS, { replace: true })
-      }
+    if (location.pathname === '' || location.pathname === '/') {
+      navigate(lastOpenedPage === appRoutes.activities.create() ? lastOpenedPage : BASE_ROUTES.ACTIVITIES, { replace: true })
+      return
+    }
+    if (!isMounted()) return
+    if (route && !routes.find(_route => _route === route || _route === '/404')) {
+      navigate(BASE_ROUTES.WORKOUTS, { replace: true })
     }
   })
 

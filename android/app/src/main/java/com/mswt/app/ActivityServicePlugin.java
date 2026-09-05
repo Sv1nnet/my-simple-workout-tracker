@@ -20,22 +20,41 @@ public class ActivityServicePlugin extends Plugin {
         }
     }
 
+    /**
+     * JS numbers arrive as Integer or Double; Capacitor getLong() often returns the default.
+     */
+    private static long getLongValue(PluginCall call, String key, long defaultValue) {
+        if (call.getData() == null || !call.getData().has(key) || call.getData().isNull(key)) {
+            return defaultValue;
+        }
+        try {
+            Object raw = call.getData().opt(key);
+            if (raw instanceof Number) {
+                return ((Number) raw).longValue();
+            }
+            if (raw instanceof String && !((String) raw).isEmpty()) {
+                return (long) Double.parseDouble((String) raw);
+            }
+        } catch (Exception e) {
+            Log.e("ActivityServicePlugin", "Failed to parse " + key + ": " + e.getMessage());
+        }
+        return defaultValue;
+    }
+
     // Activity methods
     @PluginMethod()
     public void startActivity(PluginCall call) {
         String id = call.getString("id");
         String title = call.getString("title");
         String content = call.getString("content", "");
-        long startTime = call.getLong("startTime", System.currentTimeMillis());
-        long elapsedMsInt = call.getInt("elapsedMs", 0);
-        long elapsedMsLong = elapsedMsInt == 0 ? call.getLong("elapsedMs", 0L) : (long) elapsedMsInt;
+        long startTime = getLongValue(call, "startTime", System.currentTimeMillis());
+        long elapsedMs = getLongValue(call, "elapsedMs", 0L);
 
-        // Debug logging to see what the plugin receives
         Log.d("ActivityServicePlugin", "Received startActivity call:");
         Log.d("ActivityServicePlugin", "  id: " + id);
         Log.d("ActivityServicePlugin", "  title: " + title);
         Log.d("ActivityServicePlugin", "  startTime: " + startTime);
-        Log.d("ActivityServicePlugin", "  elapsedMs: " + elapsedMsLong);
+        Log.d("ActivityServicePlugin", "  elapsedMs: " + elapsedMs);
         Log.d("ActivityServicePlugin", "  current system time: " + System.currentTimeMillis());
 
         Intent serviceIntent = new Intent(getContext(), ActivityService.class);
@@ -44,7 +63,7 @@ public class ActivityServicePlugin extends Plugin {
         serviceIntent.putExtra("title", title);
         serviceIntent.putExtra("content", content);
         serviceIntent.putExtra("startTime", startTime);
-        serviceIntent.putExtra("elapsedMs", elapsedMsLong);
+        serviceIntent.putExtra("elapsedMs", elapsedMs);
         serviceIntent.putExtra("type", "ACTIVITY");
 
         startServiceWithIntent(serviceIntent);
@@ -66,46 +85,9 @@ public class ActivityServicePlugin extends Plugin {
     @PluginMethod()
     public void pauseActivity(PluginCall call) {
         String id = call.getString("id");
-        
-        // Try different ways to get the elapsedMs value
-        long elapsedMs = 0L;
-        
-        Log.d("ActivityServicePlugin", "hasOption('elapsedMs'): " + call.hasOption("elapsedMs"));
-        
-        // Try to get the value - since getLong fails, try getInt first
-        try {
-            int elapsedMsInt = call.getInt("elapsedMs", -1);
-            if (elapsedMsInt != -1) {
-                elapsedMs = elapsedMsInt;
-                Log.d("ActivityServicePlugin", "getInt success: " + elapsedMs);
-            } else {
-                Log.d("ActivityServicePlugin", "getInt returned default value");
-                
-                // Try getDouble as fallback
-                double elapsedMsDouble = call.getDouble("elapsedMs", -1.0);
-                if (elapsedMsDouble != -1.0) {
-                    elapsedMs = (long) elapsedMsDouble;
-                    Log.d("ActivityServicePlugin", "getDouble success: " + elapsedMs);
-                } else {
-                    Log.d("ActivityServicePlugin", "getDouble returned default value");
-                    
-                    // Try raw value access
-                    Object rawValue = call.getData().opt("elapsedMs");
-                    Log.d("ActivityServicePlugin", "Raw value type: " + (rawValue != null ? rawValue.getClass().getName() : "null"));
-                    Log.d("ActivityServicePlugin", "Raw value: " + rawValue);
-                    
-                    if (rawValue instanceof Number) {
-                        elapsedMs = ((Number) rawValue).longValue();
-                        Log.d("ActivityServicePlugin", "Converted from Number: " + elapsedMs);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            Log.e("ActivityServicePlugin", "All parsing failed: " + e.getMessage());
-        }
+        long elapsedMs = getLongValue(call, "elapsedMs", 0L);
 
         Log.d("ActivityServicePlugin", "Received pauseActivity call - id: " + id + ", elapsedMs: " + elapsedMs);
-        Log.d("ActivityServicePlugin", "Call data: " + call.getData().toString());
 
         Intent serviceIntent = new Intent(getContext(), ActivityService.class);
         serviceIntent.putExtra("action", "pause");
@@ -119,16 +101,23 @@ public class ActivityServicePlugin extends Plugin {
     @PluginMethod()
     public void resumeActivity(PluginCall call) {
         String id = call.getString("id");
-        long resumeTime = call.getLong("resumeTime", System.currentTimeMillis());
+        String title = call.getString("title", "");
+        String content = call.getString("content", "");
+        long resumeTime = getLongValue(call, "resumeTime", System.currentTimeMillis());
+        long elapsedMs = getLongValue(call, "elapsedMs", 0L);
 
-        Log.d("ActivityServicePlugin", "Received resumeActivity call - id: " + id + ", resumeTime: " + resumeTime);
+        Log.d("ActivityServicePlugin", "Received resumeActivity call - id: " + id
+                + ", resumeTime: " + resumeTime + ", elapsedMs: " + elapsedMs);
 
         Intent serviceIntent = new Intent(getContext(), ActivityService.class);
         serviceIntent.putExtra("action", "resume");
         serviceIntent.putExtra("id", id);
+        serviceIntent.putExtra("title", title);
+        serviceIntent.putExtra("content", content);
         serviceIntent.putExtra("resumeTime", resumeTime);
+        serviceIntent.putExtra("elapsedMs", elapsedMs);
 
-        getContext().startService(serviceIntent);
+        startServiceWithIntent(serviceIntent);
         call.resolve();
     }
 

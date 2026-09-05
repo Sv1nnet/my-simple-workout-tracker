@@ -12,6 +12,7 @@ export interface IStopwatch {
   notificationOptions?: NotificationOptions,
   disabled?: boolean,
   msOn?: boolean,
+  secOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
   onChange?: (value: number) => void,
@@ -19,13 +20,14 @@ export interface IStopwatch {
   onPause?: (timeElapsedInMs: number) => void,
   onRun?: (timeElapsedInMs: number) => void,
   onTimeOver?: (duration: number) => void,
-  showResetButton?: boolean,
+  showRunPauseButton?: boolean,
+  showStopButton?: boolean,
   containerProps?: React.HTMLAttributes<HTMLDivElement>,
   timeElementProps?: React.HTMLAttributes<HTMLSpanElement>,
   buttonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   },
-  resetButtonProps?: Omit<ButtonProps, 'onClick'> & {
+  stopButtonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   }
 }
@@ -44,6 +46,7 @@ export type StopwatchRef = {
 const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
   function Stopwatch({
     msOn = true,
+    secOn = true,
     initialValue = 0,
     disabled,
     onChange,
@@ -51,10 +54,11 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
     onPause,
     onRun,
     hoursOn,
-    showResetButton,
+    showRunPauseButton = true,
+    showStopButton = true,
     timeElementProps,
     buttonProps,
-    resetButtonProps,
+    stopButtonProps,
     ...rest
   }, ref) {
     const initialValuesTimeArray = useMemo(() => millisecondsToTimeArray(initialValue), [ initialValue ])
@@ -105,8 +109,8 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
       onChange?.(timeArrayToMilliseconds(value))
       onReset?.()
 
-      if (showResetButton) resetButtonProps?.onClick?.(false, e)
-      if (!showResetButton) buttonProps?.onClick?.(false, e)
+      if (showStopButton) stopButtonProps?.onClick?.(false, e)
+      if (!showStopButton) buttonProps?.onClick?.(false, e)
     }
 
     const handleRunTimer = (e?: React.MouseEvent<HTMLElement>) => {
@@ -159,7 +163,7 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
       diffRef,
       timeoutIdRef,
       onChange,
-    }), [ isRunning, isPaused, msOn ])
+    }), [ isRunning, isPaused, msOn, onChange ])
 
     return (
       <TimerView
@@ -170,10 +174,12 @@ const Stopwatch = forwardRef<StopwatchRef, IStopwatch>(
         initialValue={initialValuesTimeArray}
         value={value}
         msOn={msOn}
+        secOn={secOn}
         hoursOn={hoursOn}
         disabled={disabled}
-        showResetButton={showResetButton}
-        resetButtonProps={resetButtonProps}
+        showRunPauseButton={showRunPauseButton}
+        showStopButton={showStopButton}
+        stopButtonProps={stopButtonProps}
         buttonProps={buttonProps}
         timeElementProps={timeElementProps}
         {...rest}

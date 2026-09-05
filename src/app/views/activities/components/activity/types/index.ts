@@ -1,5 +1,5 @@
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
-import { ActivityForm } from 'app/store/slices/activity/types'
+import { ActivityForm, CachedActivity } from 'app/store/slices/activity/types'
 import { WorkoutForm } from 'app/store/slices/workout/types'
 import { Dayjs } from 'dayjs'
 
@@ -20,6 +20,9 @@ export interface IActivityProps {
 export type InitialValues<T = Dayjs> = Omit<ActivityForm<T>, '_id' | 'workout_id'> & {
   _id?: string,
   workout_id?: WorkoutForm['id'],
+  isRunning?: boolean,
+  isPaused?: boolean,
+  isStopped?: boolean,
 }
 
-export type CacheFormData = (changedValue: string[], values: InitialValues) => void
+export type CacheFormData = (changedValue: string[], values: CachedActivity) => void

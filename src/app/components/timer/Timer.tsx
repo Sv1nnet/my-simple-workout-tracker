@@ -23,12 +23,13 @@ export interface ITimer {
   onRun?: (timeLeftInMs: number) => void,
   onTimeOver?: (duration: number) => void,
   resetButton?: boolean,
+  showRunPauseButton?: boolean,
   containerProps?: React.HTMLAttributes<HTMLDivElement>,
   timeElementProps?: React.HTMLAttributes<HTMLSpanElement>,
   buttonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   },
-  resetButtonProps?: Omit<ButtonProps, 'onClick'> & {
+  stopButtonProps?: Omit<ButtonProps, 'onClick'> & {
     onClick?: (runState: boolean, e: React.MouseEvent<HTMLElement>) => void,
   },
   stopOnUnmount?: boolean,
@@ -59,7 +60,8 @@ const Timer = forwardRef<TimerRef, ITimer>(({
   resetButton,
   timeElementProps,
   buttonProps,
-  resetButtonProps,
+  showRunPauseButton = true,
+  stopButtonProps,
   stopOnUnmount = true,
   ...rest
 }, ref) => {
@@ -110,7 +112,7 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     })
 
     if (e) {
-      if (resetButton) resetButtonProps?.onClick?.(false, e)
+      if (resetButton) stopButtonProps?.onClick?.(false, e)
       if (!resetButton) buttonProps?.onClick?.(false, e)
     }
   }
@@ -219,13 +221,14 @@ const Timer = forwardRef<TimerRef, ITimer>(({
       onReset={handleResetTimer}
       isRunning={isRunning}
       isFinished={isFinished}
+      showRunPauseButton={showRunPauseButton}
       initialValue={initialValue}
       value={value}
       duration={duration}
       msOn={msOn}
       hoursOn={hoursOn}
-      showResetButton={resetButton}
-      resetButtonProps={resetButtonProps}
+      showStopButton={resetButton}
+      stopButtonProps={stopButtonProps}
       buttonProps={buttonProps}
       timeElementProps={timeElementProps}
       {...rest}

@@ -116,12 +116,26 @@ public class ActivityService extends Service {
             }
         }
 
+        public void syncElapsed(long elapsedMs) {
+            long now = System.currentTimeMillis();
+            this.startTime = now - Math.max(elapsedMs, 0);
+            this.totalPausedTime = 0;
+            this.pausedTime = 0;
+            this.elapsedMs = Math.max(elapsedMs, 0);
+            Log.d("ActivityService", "Timer " + id + " - syncElapsed: " + this.elapsedMs + ", startTime: " + this.startTime);
+        }
+
         public void resume(long resumeTime) {
+            resume(resumeTime, 0);
+        }
+
+        public void resume(long resumeTime, long elapsedMs) {
             this.isRunning = true;
             this.isPaused = false;
-            
-            // Add the current pause duration to total paused time
-            if (this.pausedTime != 0) {
+
+            if (elapsedMs > 0) {
+                syncElapsed(elapsedMs);
+            } else if (this.pausedTime != 0) {
                 long pauseDuration = resumeTime - this.pausedTime;
                 this.totalPausedTime += pauseDuration;
                 
@@ -187,7 +201,10 @@ public class ActivityService extends Service {
                     break;
             }
 
-            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            Intent notificationIntent = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
+                notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            }
             PendingIntent pendingIntent = PendingIntent.getActivity(
                     ActivityService.this,
                     getNotificationId() + 1000,
@@ -362,15 +379,28 @@ public class ActivityService extends Service {
     }
 
     public void startTimer(String id, String title, String content, NotificationType type, long startTime, long elapsedMs) {
-        Timer timer = new Timer(id, title, content, type, startTime);
-        
-        // Set the initial elapsed time if provided
-        if (elapsedMs > 0) {
-            // Verify the startTime calculation is correct
-            long expectedStartTime = System.currentTimeMillis() - elapsedMs;
-            Log.d("ActivityService", "Provided startTime: " + startTime + ", Expected: " + expectedStartTime + ", InitialElapsed: " + elapsedMs);
+        Timer existing = timers.get(id);
+        if (existing != null) {
+            existing.stop();
+            timers.remove(id);
         }
-        
+
+        long now = System.currentTimeMillis();
+        long resolvedElapsed = Math.max(elapsedMs, 0);
+        // Capacitor often fails to deliver JS numbers as Long, so startTime can arrive as "now".
+        // elapsedMs from the UI is the source of truth when present.
+        long resolvedStartTime = resolvedElapsed > 0
+                ? now - resolvedElapsed
+                : (startTime > 0 && startTime <= now ? startTime : now);
+
+        Log.d("ActivityService", "startTimer id=" + id
+                + " providedStartTime=" + startTime
+                + " providedElapsed=" + elapsedMs
+                + " resolvedStartTime=" + resolvedStartTime
+                + " resolvedElapsed=" + resolvedElapsed);
+
+        Timer timer = new Timer(id, title, content, type, resolvedStartTime);
+        timer.elapsedMs = resolvedElapsed;
         timer.start();
         timers.put(id, timer);
         
@@ -396,11 +426,18 @@ public class ActivityService extends Service {
         }
     }
 
-    public void resumeTimer(String id, long resumeTime) {
+    public void resumeTimer(String id, String title, String content, long resumeTime, long elapsedMs) {
         Timer timer = timers.get(id);
-        if (timer != null) {
-            timer.resume(resumeTime);
+        if (timer == null) {
+            Log.d("ActivityService", "resumeTimer: no existing timer for " + id + ", starting with elapsedMs=" + elapsedMs);
+            startTimer(id, title != null ? title : "", content != null ? content : "", NotificationType.ACTIVITY, 0, elapsedMs);
+            return;
         }
+        timer.resume(resumeTime, elapsedMs);
+    }
+
+    public void resumeTimer(String id, long resumeTime) {
+        resumeTimer(id, null, null, resumeTime, 0);
     }
 
     public void stopTimer(String id) {
@@ -534,7 +571,7 @@ public class ActivityService extends Service {
                         pauseTimer(id, elapsedMs);
                         return START_STICKY;
                     case "resume":
-                        resumeTimer(id, resumeTime);
+                        resumeTimer(id, title, content, resumeTime, elapsedMs);
                         return START_STICKY;
                     case "stop":
                         stopTimer(id);

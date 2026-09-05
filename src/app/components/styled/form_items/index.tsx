@@ -4,7 +4,7 @@ import styled from 'styled-components'
 export const FormActionButtonsContainer = styled.div`
   position: absolute;
   z-index: 1;
-  top: 6px;
+  top: 15px;
   right: 15px;
   display: flex;
 `

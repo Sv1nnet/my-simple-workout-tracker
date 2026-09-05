@@ -15,6 +15,7 @@ export type IListControls <Selected = any> = {
   onCancel?: Function
   onSelect?: Function
   createTooltipTitle?: string
+  addButtonIcon?: React.ReactElement
 }
 
 const buttonStyle = {
@@ -34,6 +35,7 @@ const ListControls = <Selected = any>(
     onCopy,
     onCancel,
     onSelect,
+    addButtonIcon,
   }: IListControls<Selected>) => {
   const { list_buttons } = useIntlContext().intl.pages.exercises
   const [ expanded, setExpanded ] = useState(false)
@@ -51,7 +53,7 @@ const ListControls = <Selected = any>(
     <MainButtonContainer $expanded={isSelectionActive}>
       {createHref && (
         <CreateButtonContainer>
-          <CreateButton $expanded={isSelectionActive} tooltipTitle={createTooltipTitle ?? list_buttons.add} href={createHref} />
+          <CreateButton icon={addButtonIcon} $expanded={isSelectionActive} tooltipTitle={createTooltipTitle ?? list_buttons.add} href={createHref} />
         </CreateButtonContainer>
       )}
       <MoreOptionsButtonContainer $expanded={isSelectionActive} $items={activeExtraButtons}>

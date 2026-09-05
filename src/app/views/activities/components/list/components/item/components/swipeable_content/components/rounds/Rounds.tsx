@@ -13,6 +13,10 @@ const RoundsUl = styled.ul`
     padding-right: 5px;
     border-right: 2px solid var(--round-divider-color);
     list-style: none;
+
+    &:last-child {
+      border-right: none;
+    }
   }
 `
 const SideRoundsContainer = styled.div`

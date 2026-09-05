@@ -52,7 +52,7 @@ const Rounds: FC<IRounds> = ({
     <RoundsTable>
       <thead>
         <tr>
-          <THeadCell>{rounds_section_headers.rounds}</THeadCell>
+          <THeadCell style={{ width: 50, minWidth: 50 }}>{rounds_section_headers.rounds}</THeadCell>
           <THeadCell $isTimeType={isTimeType} $isHours={hours} $eachSide={eachSide}>{rounds_section_headers.results}</THeadCell>
           <THeadCell $previous>{rounds_section_headers.previous}</THeadCell>
         </tr>

@@ -27,6 +27,7 @@ export type Activity<T = string | Dayjs> = {
 }
 
 export type ActivityForm<T = Dayjs> = Activity<T>
+export type CachedActivity<T = string | Dayjs> = ActivityForm<T> & { isRunning?: boolean, isPaused?: boolean, isStopped?: boolean }
 
 export interface IActivityFormData extends ActivityForm {}
 

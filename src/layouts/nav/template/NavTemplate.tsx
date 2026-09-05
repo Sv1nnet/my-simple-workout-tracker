@@ -196,7 +196,10 @@ const NavTemplate: FC<INavTemplate> = ({ activeTab = 'activities' }) => {
   }, [ exerciseList.status, workoutList.status, activityList.status, activeTab ])
 
   const [ , route, subRoute ] = location.pathname.split('/')
-  const activeKey = !subRoute ? route : 'subRoute'
+  const resolvedRoute = route === 'exercises' || route === 'workouts' || route === 'activities'
+    ? route
+    : (activeTab || 'activities')
+  const activeKey = subRoute && resolvedRoute === route ? 'subRoute' : resolvedRoute
 
   return (
     <StyledTabs

@@ -1,56 +1,22 @@
 import { FC, ReactNode } from 'react'
-import styled from 'styled-components'
-import { PageHeader } from 'antd'
 import { useLocation } from 'react-router'
 import { NavTemplate } from 'layouts/nav'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { TabRoutes } from 'layouts/nav/template/NavTemplate'
 import Content from '../content/Content'
 import { useSearchParams } from 'react-router-dom'
-import { PageHeaderTitle, useHeaderTitleContext } from 'app/contexts/header_title/HeaderTItleContextProvider'
-
-const ContentContainer = styled.div`
-  flex-grow: 1;
-  overflow-y: scroll;
-  position: relative;
-  background-color: var(--background-color);
-`
-
-const StyledPageHeader = styled(PageHeader)`
-  background-color: var(--primary-color);
-
-  .ant-page-header-heading-extra {
-    display: flex;
-    align-items: center;
-    margin: 0;
-  }
-  .ant-page-header-heading {
-    justify-content: center;
-    .ant-page-header-back {
-      position: absolute;
-      left: 15px;
-    }
-  }
-  .ant-page-header-heading-title {
-    color: white;
-    margin-right: 0;
-    position: relative;
-    z-index: 2;
-  }
-  .anticon.anticon-arrow-left > svg {
-    transform: scale(1.5);
-    fill: white;
-  }
-`
+import { useHeaderTitleContext } from 'app/contexts/header_title/HeaderTItleContextProvider'
+import { Header } from './components'
+import { StyledPageHeader, ContentContainer } from './components/styled'
 
 
-const WithHeader = ({ children }) => {
+const WithHeader = ({ children, title: propTitle }) => {
   const { title } = useHeaderTitleContext()
 
-  return (
+  return  (
     <>
       <StyledPageHeader
-        title={title || <span>&nbsp;</span>}
+        title={<Header title={title || propTitle} />}
         ghost={false}
         extra={<Content />}
       />
@@ -70,24 +36,25 @@ export const PageLayout: FC<{ children: ReactNode }> = ({ children }) => {
   if (_title.startsWith('/')) _title = _title.substring(1)
 
   return (
-    <WithHeader>
-      <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
+    <WithHeader title={intl.header[_title]}>
       {children}
     </WithHeader>
   )
 }
 
+const NAV_TABS: TabRoutes[] = [ 'exercises', 'workouts', 'activities' ]
+
 export const PageLayoutWithNav: FC<{ route: TabRoutes, children?: ReactNode }> = ({ route, children }) => {
   const { intl } = useIntlContext()
   const location = useLocation()
-  const _title = route ?? ((location.pathname) || 'activities').replace('/', '') as TabRoutes
+  const pathTab = route || ((location.pathname) || 'activities').replace('/', '') as TabRoutes
+  const _title = NAV_TABS.includes(pathTab) ? pathTab : 'activities'
 
   return (
-    <WithHeader>
+    <WithHeader title={intl.header[_title]}>
       <ContentContainer>
         {children}
       </ContentContainer>
-      <PageHeaderTitle>{intl.header[_title]}</PageHeaderTitle>
       <NavTemplate activeTab={_title} />
     </WithHeader>
   )

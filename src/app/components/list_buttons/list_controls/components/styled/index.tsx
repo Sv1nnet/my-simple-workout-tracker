@@ -70,10 +70,12 @@ unknown,
   </Tooltip>
 ))
 
+const AddIcon = <PlusOutlined />
+
 export const MoreOptionsButton = props => <ListButton isMoreOptions type="text" icon={props.expanded ? <RightOutlined /> : <LeftOutlined />} {...props} />
-export const CreateButton = ({ href, $expanded, ...props }) => (
+export const CreateButton = ({ href, $expanded, icon = AddIcon, ...props }) => (
   <StyledLink to={href} $expanded={$expanded}>
-    <ListButton $isCreate icon={<PlusOutlined />} {...props} />
+    <ListButton $isCreate icon={icon} {...props} />
   </StyledLink>
 )
 export const CancelSelectionButton = props => <ListButton isCancel danger type={undefined} icon={<CloseOutlined />} {...props} />

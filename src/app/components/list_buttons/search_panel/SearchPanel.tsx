@@ -31,11 +31,12 @@ export type SearchPanelProps = {
   refetch: () => unknown,
   loading: boolean,
   shouldShowReloadButton?: boolean,
+  icon?: React.ReactElement,
 }
 
 const VERTICAL_PADDING = 6
 
-const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldShowReloadButton = true }: SearchPanelProps) => {
+const SearchPanel = ({ href, addButtonText, icon, onChange, refetch, loading, shouldShowReloadButton = true }: SearchPanelProps) => {
   const theme = useThemeContext()
   const { intl } = useIntlContext()
   const { state: isOpen, setState: setIsOpen } = useToggle(false)
@@ -134,6 +135,7 @@ const SearchPanel = ({ href, addButtonText, onChange, refetch, loading, shouldSh
             buttonProps={{ htmlType: 'button', className: isOpen ? 'minified' : '', style: { marginLeft: 5 } }}
             href={href}
             text={<AddButtonText $isVisible={!isOpen}>{addButtonText}</AddButtonText>}
+            icon={icon}
           />
           {shouldShowReloadButton && <ReloadButton loading={loading} refetch={refetch} />}
         </ButtonsContainer>

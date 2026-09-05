@@ -2,38 +2,54 @@
 
 import { Form, Input, Button, Modal, Select, notification } from 'antd'
 import { FC, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ToggleEdit, DeleteEditPanel, DatePicker } from 'app/components'
+import { ToggleEdit, DeleteEditPanel, DatePicker, ActivityStopwatch } from 'app/components'
 import dayjs, { Dayjs } from 'dayjs'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 import { ActivityForm } from 'app/store/slices/activity/types'
-import { useAppDispatch, useAppSelector, useLocalStorage, useNotificationPermissionRequest } from 'app/hooks'
-import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem, Header } from './components'
+import { useAppSelector, useNotificationPermissionRequest } from 'app/hooks'
+import { Exercise, StyledForm, CreateEditFormItem, WorkoutFormItem, WorkoutLabelContainer, StyledDateFormItem } from './components'
 import { selectList } from 'app/store/slices/workout'
 import { activityApi } from 'app/store/slices/activity/api'
 import { CustomBaseQueryError } from 'app/store/utils/baseQueryWithReauth'
 import { WorkoutForm, WorkoutListExercise } from 'app/store/slices/workout/types'
 import { API_STATUS } from 'app/constants/api_statuses'
-import { getActivityValuesToSubmit, getInitialActivityValues, getResultsFromWorkoutList, useLoadWorkoutList, useRestoreActivityFromCacheOnWorkoutListLoaded, useShowActivityError } from './utils'
+import { getActivityValuesToSubmit, getInitialActivityValues, useLoadWorkoutList, useRestoreActivityFromCacheOnWorkoutListLoaded, useShowActivityError } from './utils'
 import { CacheFormData, IActivityProps, InitialValues } from './types'
-import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { QueryStatus } from '@reduxjs/toolkit/dist/query'
-import { setCachedActivity } from 'app/store/slices/activity'
 import HistoryProvider from './contexts/history_provider/HistoryProvider'
 import ActivityProvider from './contexts/activity_provider/ActivityProvider'
 import useItemImagePlaceholder from 'app/hooks/useItemImagePlaceholder'
+import { useActivityInProgressContext } from 'app/contexts/activity/ActivityInProgressContextProvider'
+import { dayjsToSeconds } from 'app/utils/time'
+import { StopwatchContainer } from './components/styled'
+import { useNavigate } from 'react-router'
+import { routes } from 'src/router'
 
 export type ErrorModalTypes = 'restoreActivity' | 'history'
+export type RunningActivityForm = ActivityForm & {
+  isRunning?: boolean
+}
+
+const createDate = (duration: number) => dayjs.tz(duration, 'UTC')
 
 const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialValues, isEdit, isFetching, onSubmit, deleteActivity, isError, error, errorCode }) => {
+  const navigate = useNavigate()
+  const {
+    activity: cachedActivity,
+    cacheActivity,
+    removeActivity: removeCachedActivity,
+    getActivity: getCachedActivity,
+    onSelectedWorkoutChange,
+    pauseStopwatch,
+    getCurrentDuration,
+    resetStopwatch,
+  } = useActivityInProgressContext()
   const [ itemImagePlaceholder ] = useItemImagePlaceholder()
-
-  const [ cachedFormValues, setCachedFormValues, removeCachedFormValues, getCachedFormValues ] = useLocalStorage<InitialValues | null>('cached_activity', null)
 
   const [ isEditMode, setEditMode ] = useState(!isEdit && !isFetching)
   const [ isModalVisible, setIsModalVisible ] = useState(false)
   const [ selectedWorkout, setSelectedWorkout ] = useState<WorkoutForm['id']>()
 
-  const dispatch = useAppDispatch()
   const { status: workoutListStatus, data: workoutList } = useAppSelector(selectList)
   const { intl, lang } = useIntlContext()
 
@@ -47,22 +63,15 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
 
   const [ getHistory, { data: _history, isLoading: isHistoryLoading, isError: isHistoryError, error: historyError } ] = activityApi.useLazyGetHistoryQuery()
 
-  const [ form ] = Form.useForm<ActivityForm>()
+  const [ form ] = Form.useForm<RunningActivityForm>()
 
   const initFromCacheRef = useRef(false)
-  const durationTimerRef = useRef<StopwatchRef>(null)
 
   const handleSelectedWorkoutChange = (value: WorkoutForm['id']) => {
     setSelectedWorkout(value)
-    const newCachedValues = {
-      date: dayjs(),
-      description: '',
-      workout_id: value || '',
-      results: getResultsFromWorkoutList(workoutList, value),
-      duration: 0,
-    }
-    setCachedFormValues(newCachedValues)
-    dispatch(setCachedActivity({ data: newCachedValues }))
+    onSelectedWorkoutChange(value)
+    removeCachedActivity()
+    resetStopwatch()
     return value
   }
 
@@ -79,7 +88,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
         form.setFieldsValue({ workout_id: '' })
       },
     })
-    removeCachedFormValues()
+    removeCachedActivity()
     setSelectedWorkout(null)
     form.setFieldsValue({ workout_id: '' })
   }
@@ -90,13 +99,12 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
         isEdit,
         initialValues: _initialValues,
         workoutList,
-        cachedFormValues,
+        cachedActivity,
         selectedWorkout,
-        initFromCacheRef,
         form,
         handleRestoreFromCacheError,
       }),
-    [ _initialValues, selectedWorkout, workoutList ],
+    [ _initialValues, selectedWorkout, workoutList, cachedActivity ],
   )
 
   const handleCancelEditing = () => {
@@ -104,10 +112,15 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
     form.resetFields()
   }
 
-  const handleSubmit = async (values) => {
-    durationTimerRef.current.pauseTimer()
+  const handleCancelActivity = () => {
+    removeCachedActivity()
+    navigate(routes.activities.list())
+  }
 
-    return onSubmit(getActivityValuesToSubmit(values, initialValues, workoutList, durationTimerRef)).then((res) => {
+  const handleSubmit = async (values) => {
+    pauseStopwatch()
+
+    return onSubmit(getActivityValuesToSubmit(values, initialValues, workoutList, getCurrentDuration())).then((res) => {
       if (!res.error && !res.data.error) {
         notification.success({
           message: notifications[isEdit ? 'update' : 'create'].success,
@@ -115,7 +128,7 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
         })
       }
       if (!isEdit && !res.error && !res.data.error) {
-        setCachedFormValues(null)
+        cacheActivity(null)
       }
       if (isEdit && !res.error && !res.data.error) {
         setEditMode(false)
@@ -134,22 +147,19 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
   const cacheFormData: CacheFormData = (changedValues, allValues) => {
     if (isEdit) return
     if ('workout_id' in changedValues && Object.keys(changedValues).length === 1) return
-    setCachedFormValues(allValues)
-    dispatch(setCachedActivity({ data: { ...allValues, workout_id: allValues.workout_id } }))
-  }
-
-  const handleDurationChange = (ms: number) => {
-    cacheFormData([ 'duration' ], { ...form.getFieldsValue(), duration: ms })
+    cacheActivity(allValues)
   }
 
   const updateDurationInForm = (ms: number) => {
     form.setFieldsValue({ duration: ms })
-    handleDurationChange(ms)
   }
 
   const resetDuration = () => {
-    handleDurationChange(0)
     updateDurationInForm(0)
+  }
+
+  const handleOk = (date: Dayjs) => {
+    form.setFieldsValue({ duration: dayjsToSeconds(date) })
   }
 
   useLayoutEffect(() => {
@@ -188,10 +198,10 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
     form,
     isEdit,
     workoutList,
-    getCachedFormValues,
+    getCachedFormValues: getCachedActivity,
     workoutListStatus,
     setSelectedWorkout,
-    setCachedFormValues,
+    setCachedFormValues: cacheActivity,
     handleSelectedWorkoutChange,
     initFromCacheRef,
     handleRestoreFromCacheError,
@@ -199,23 +209,38 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
 
   useNotificationPermissionRequest()
 
+  useEffect(() => {
+    if (cachedActivity?.isRunning) {
+      form.setFieldsValue({ isRunning: true, duration: cachedActivity.duration })
+    }
+  }, [ cachedActivity?.isRunning ])
+
+  useEffect(() => {
+    if (cachedActivity?.isPaused) {
+      form.setFieldsValue({ isRunning: false, duration: cachedActivity.duration })
+      updateDurationInForm(cachedActivity.duration)
+    }
+  }, [ cachedActivity?.isPaused ])
+
+  useEffect(() => {
+    if (cachedActivity?.isStopped) {
+      form.setFieldsValue({ isRunning: false, duration: 0 })
+      resetDuration()
+    }
+  }, [ cachedActivity?.isStopped ])
+
+  useEffect(() => {
+    if (isEdit) return
+    if (initialValues.workout_id) {
+      cacheActivity({ ...initialValues, workout_id: initialValues.workout_id })
+    }
+  }, [ selectedWorkout ])
+
   const isFormItemDisabled = !isEditMode || isFetching
 
   return (
     <ActivityProvider form={form} selectedWorkout={selectedWorkout} activityId={initialValues.id}>
       <HistoryProvider activityId={initialValues.id} historyData={_history?.data} isLoading={isHistoryLoading} loadHistory={getHistory}>
-        <Header
-          initialValues={initialValues}
-          title={workoutList.find(workout => workout.id === initialValues.workout_id)?.title || ''}
-          workoutId={initialValues.workout_id}
-          isEdit={isEdit}
-          disabled={isFormItemDisabled || !selectedWorkout}
-          selectedWorkout={selectedWorkout}
-          durationTimerRef={durationTimerRef}
-          updateDurationInForm={updateDurationInForm}
-          resetDuration={resetDuration}
-          handleDurationChange={updateDurationInForm}
-        />
         <StyledForm
           onValuesChange={cacheFormData}
           preserve={false}
@@ -225,6 +250,20 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
           layout="vertical"
           $isEdit={isEdit}
         >
+          {isEdit && (
+            <StopwatchContainer>
+              <ActivityStopwatch
+                hideEditButton={!isEditMode}
+                time={createDate(initialValues.duration ?? 0)}
+                initialDuration={initialValues.duration}
+                isDisabled={isFormItemDisabled}
+                onOk={handleOk}
+                stopwatchProps={{
+                  showStopButton: false,
+                  showRunPauseButton: false,
+                }}
+              />
+            </StopwatchContainer>)}
           {isEdit && (
             <DeleteEditPanel
               isEditMode={isEditMode}
@@ -290,15 +329,30 @@ const Activity: FC<IActivityProps> = ({ deleteStatus, initialValues: _initialVal
           <Form.Item label={input_labels.description} name="description">
             <Input.TextArea disabled={isFormItemDisabled} showCount maxLength={300} autoSize={{ minRows: 2, maxRows: 8 }} />
           </Form.Item>
+          {/* Hidden form items to track activity status and duration in form.getFieldsValue() */}
+          <Form.Item name="isRunning" hidden />
+          <Form.Item name="isPaused" hidden />
+          <Form.Item name="isStopped" hidden />
+          <Form.Item name="duration" hidden />
           {(isEditMode || !isEdit) && (
-            <CreateEditFormItem>
-              <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
-                {isEdit ? submit_button.save : submit_button.finish}
-              </Button>
-              {isEdit && (
-                <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>
-                  {submit_button.cancel}
-                </ToggleEdit>
+            <CreateEditFormItem shouldUpdate>
+              {({ getFieldValue }) => getFieldValue('workout_id') && (
+                <>
+                  <Button type="primary" htmlType="submit" size="large" block loading={isFetching}>
+                    {isEdit ? submit_button.save : submit_button.finish}
+                  </Button>
+                  {isEdit
+                    ? (
+                      <ToggleEdit onClick={handleCancelEditing} disabled={isFetching} size="large" block>
+                        {submit_button.cancel}
+                      </ToggleEdit>
+                    )
+                    : (
+                      <Button size="large" block loading={isFetching} onClick={handleCancelActivity} style={{ marginTop: '10px' }}>
+                        {submit_button.cancel}
+                      </Button>
+                    )}
+                </>
               )}
             </CreateEditFormItem>
           )}

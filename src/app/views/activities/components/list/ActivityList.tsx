@@ -13,6 +13,9 @@ import { useNavigate } from 'react-router'
 import { selectList } from 'app/store/slices/workout'
 import { API_STATUS } from 'app/constants/api_statuses'
 import { workoutApi } from 'app/store/slices/workout/api'
+import { routes } from 'src/router'
+import { useActivityInProgressContext } from 'app/contexts/activity/ActivityInProgressContextProvider'
+import { ArrowRightOutlined } from '@ant-design/icons'
 
 export type ApiDeleteActivityError = {
   data: ActivityDeleteError;
@@ -36,6 +39,7 @@ export interface IActivityList {
 }
 
 const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error, isLoading, isDeleting, activities }) => {
+  const { activity: activityInProgress } = useActivityInProgressContext()
   const { status: workoutListStatus } = useAppSelector(selectList)
   const [ fetchWorkoutList ] = workoutApi.useLazyListQuery()
   const [ loadItem, { data, isLoading: isItemLoading, isSuccess, error: itemLoadingError } ] = activityApi.useLazyGetQuery()
@@ -88,7 +92,7 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
 
   useEffect(() => {
     if (!isItemLoading && isSuccess && data.success) {
-      navigate(data.data.id)
+      navigate(routes.activities.item(data.data.id)())
     }
   }, [ isSuccess, data ])
 
@@ -135,9 +139,10 @@ const ActivityList: FC<IActivityList> = ({ containerRef, deleteActivities, error
       onCancelSelection={closeModal}
       isLoading={isLoading}
       isDeleting={isDeleting}
-      createTooltipTitle={activityListButtons.start}
+      createTooltipTitle={activityInProgress ? activityListButtons.continue : activityListButtons.start}
       isDisabled={isSelectionDisabled}
-      createHref="/activities/create"
+      createHref={routes.activities.create()}
+      addButtonIcon={activityInProgress ? <ArrowRightOutlined /> : undefined}
     >
       {({
         selected,

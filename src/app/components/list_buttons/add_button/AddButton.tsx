@@ -37,6 +37,14 @@ export const Text = styled.span`
   margin-left: 4px;
 `
 
+export const StyledLink = styled(Link)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  margin-left: 0px;
+`
+
 export interface IAddButton {
   href: string;
   children?: ReactNode;
@@ -51,14 +59,14 @@ const Icon = <PlusOutlined />
 
 const AddButton: FC<IAddButton> = ({ href, text = '', icon = Icon, children, buttonProps, linkProps }) => (
   <StyledButton size="large" type="default" block {...buttonProps}>
-    <Link to={href} {...linkProps}>
+    <StyledLink to={href} {...linkProps}>
       {children || (
         <>
           {icon}
           <Text>&nbsp;{text}</Text>
         </>
       )}
-    </Link>
+    </StyledLink>
   </StyledButton>
 )
 

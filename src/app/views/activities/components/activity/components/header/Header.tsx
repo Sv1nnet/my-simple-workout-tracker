@@ -7,7 +7,7 @@ import { useToggle } from 'app/hooks'
 import styled from 'styled-components'
 import { RefObject, useEffect, useRef, useState } from 'react'
 import './Header.scss'
-import { dayjsToSeconds, dayjsToTimeArray, timeArrayToSeconds } from 'app/utils/time'
+import { dayjsToSeconds, dayjsToTimeArray, timeArrayToMilliseconds, timeArrayToSeconds } from 'app/utils/time'
 import dayjs, { Dayjs } from 'dayjs'
 import { StopwatchRef } from 'app/components/stopwatch/Stopwatch'
 import { WorkoutForm } from 'app/store/slices/workout/types'
@@ -40,6 +40,7 @@ const StyledTimePicker = styled(TimePicker)`
 
 export type HeaderProps = {
   disabled: boolean
+  isRunning: boolean
   initialValues: Optional<ActivityForm, 'workout_id'>
   title: string
   workoutId: WorkoutForm['id']
@@ -48,13 +49,14 @@ export type HeaderProps = {
   durationTimerRef: RefObject<StopwatchRef>
   updateDurationInForm: (ms: number) => void
   resetDuration: () => void
-  handleDurationChange: (ms: number) => void
+  onDurationChange: (ms: number) => void
 }
 
 const createDate = (duration: number) => dayjs.tz(duration, 'UTC')
 
 const Header = ({
   disabled,
+  isRunning,
   initialValues,
   title,
   workoutId,
@@ -63,8 +65,10 @@ const Header = ({
   durationTimerRef,
   updateDurationInForm,
   resetDuration,
-  handleDurationChange,
+  onDurationChange,
 }: HeaderProps) => {
+  console.log('Header render with isRunning:', isRunning)
+  
   const [ time, setTime ] = useState(() => createDate(initialValues.duration))
   const abortController = useRef<AbortController | null>(null)
   const isTimerRunningOnInputOpenRef = useRef(false)
@@ -80,7 +84,7 @@ const Header = ({
     } else {
       if (Array.isArray(durationTimerRef.current?.getValue())) {
         const ms = timeArrayToSeconds(durationTimerRef.current?.getValue()) * 1000
-        handleDurationChange(ms)
+        onDurationChange(ms)
         setTime(createDate(ms))
       }
 
@@ -102,22 +106,28 @@ const Header = ({
   }
 
   const handleOk = (date: Dayjs) => {
-    handleDurationChange(dayjsToSeconds(date))
+    onDurationChange(dayjsToSeconds(date))
     setTime(date)
     setIsTimerInputClose()
     durationTimerRef.current?.setTime(dayjsToTimeArray(date))
   }
 
-  const handleRun = () => {
-    if (durationTimerRef.current.isPaused) {
+  const handleRun = (timeElapsedInMs: number) => {
+    const currentStopwatchMs = Math.floor(
+      typeof timeElapsedInMs === 'number' && !Number.isNaN(timeElapsedInMs)
+        ? timeElapsedInMs
+        : timeArrayToMilliseconds(durationTimerRef.current?.valueRef?.current ?? [ 0, 0, 0, 0 ]),
+    )
+    const startTime = Date.now() - currentStopwatchMs
+
+    if (durationTimerRef.current?.isPaused) {
       ActivityPlugin.resumeActivity({
         id: workoutId,
+        title,
         resumeTime: Date.now(),
+        elapsedMs: currentStopwatchMs,
       })
     } else {
-      const currentStopwatchMs = timeArrayToSeconds(durationTimerRef.current.valueRef.current) * 1000
-      const startTime = Date.now() - currentStopwatchMs
-      
       ActivityPlugin.startActivity({
         id: workoutId,
         title,
@@ -143,21 +153,25 @@ const Header = ({
   }
 
   useEffect(() => () => isTimerInputOpen && abortController.current?.abort(), [ isTimerInputOpen ])
-  useEffect(() => () => {
-    ActivityPlugin.stopActivity({
-      id: workoutId,
-    })
-  }, [ workoutId ])
+  // useEffect(() => {
+  //   ActivityPlugin.stopActivity({
+  //     id: workoutId,
+  //   })
+  // }, [ workoutId ])
+
+  // useOnPreviousChange(([ prevSelectedWorkout ]) => {
+  //   if (!isUndefined(prevSelectedWorkout)) {
+  //     durationTimerRef.current?.resetTimer()
+  //   }
+  // }, [ selectedWorkout ], { callInUseEffect: true })
 
   return (
-    <PageHeaderTitle>
+    <PageHeaderTitle isPersist>
       <Form.Item noStyle name="duration">
         <StopwatchContainer className="activity-timer-container">
           <Stopwatch
-            key={`${selectedWorkout}`}
             ref={durationTimerRef}
             hoursOn
-            showResetButton
             disabled={isEdit || !selectedWorkout}
             className="activity-timer"
             initialValue={initialValues.duration}
@@ -165,7 +179,7 @@ const Header = ({
             onRun={handleRun}
             onPause={handlePause}
             onReset={handleStop}
-            onChange={handleDurationChange}
+            onChange={onDurationChange}
           />
           <StyledButton type="text" icon={<EditOutlined />} disabled={disabled} onClick={handleOpenTimerInput} />
           <StyledTimePicker
