@@ -37,7 +37,10 @@ const BreakTimer: FC<IBreakTimer> = ({ id, exerciseBreak, nextExerciseTitle, wor
       </Typography.Text>
       <Timer
         resetButton
-        id={id}
+        id={`${id}_break`}
+        type="break"
+        groupId={id}
+        exerciseTitle={nextExerciseTitle}
         notificationTitle={timer.break.title}
         appNotificationOptions={{
           running: {

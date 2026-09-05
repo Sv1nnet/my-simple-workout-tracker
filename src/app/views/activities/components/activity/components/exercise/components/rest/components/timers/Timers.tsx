@@ -3,7 +3,6 @@ import { SECONDS_IN_HOUR } from 'app/utils/time'
 import { Container, EachSideContainer, SideLabel } from './components/styled'
 import { useState } from 'react'
 import { ITimer } from 'app/components/timer/Timer'
-// import { AppNotificationData, AppNotificationOptions } from '@/src/app/components/timer/utils'
 
 const DEFAULT_TIMER_ID = 'default_timer_id'
 
@@ -15,6 +14,7 @@ enum Side {
 
 export type TimersProps = {
   id?: string
+  exerciseTitle?: string
   eachSide?: boolean
   durationInSeconds?: number
   totalRounds?: number
@@ -30,40 +30,33 @@ const buttonProps: ITimer['buttonProps'] = {
   size: 'middle',
 }
 
-// type CurrentAppNotificationOptions = {
-//   left: AppNotificationOptions
-//   right: AppNotificationOptions
-//   nonSide: AppNotificationOptions
-// }
-
-// const getDefaultAppNotificationOptions = (): CurrentAppNotificationOptions => ({
-//   left: {},
-//   right: {},
-//   nonSide: {},
-// })
-
 const getSideIndex = (side: Side) => +!!side
 
-const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRounds, sideLabels, onTimeOver, timerDictionary }: TimersProps) => {
+const Timers = ({
+  id = DEFAULT_TIMER_ID,
+  exerciseTitle = '',
+  eachSide,
+  durationInSeconds,
+  totalRounds,
+  sideLabels,
+  onTimeOver,
+  timerDictionary,
+}: TimersProps) => {
   const [ currentRound, setCurrentRound ] = useState(() => eachSide ? [ 1, 1 ] : [ 1 ])
   const [ finishedRounds, setFinishedRounds ] = useState({})
-  // const [ appNotificationOptions, setAppNotificationOptions ] = useState(getDefaultAppNotificationOptions)
   const [ webNotificationOptions, setWebNotificationOptions ] = useState({})
 
   const hoursOn = (durationInSeconds / SECONDS_IN_HOUR) >= 1
   const duration = durationInSeconds * 1000
+  const groupId = id
+
+  const restMeta = {
+    type: 'rest' as const,
+    groupId,
+    exerciseTitle,
+  }
 
   const handlePause = (side: Side) => () => {
-    const roundIndex = getSideIndex(side)
-    console.log('handleRun', side, roundIndex)
-    // setAppNotificationOptions({
-    //   running: {
-    //     label: `${timerDictionary.round_break.title} (paused)`,
-    //     body:  currentRound[roundIndex] < totalRounds
-    //       ? `${timerDictionary.round_break.message} ${currentRound[roundIndex] + 1}.`
-    //       : timerDictionary.round_break.no_more_rounds,
-    //   },
-    // })
     setWebNotificationOptions({
       tag: 'break_timer_left',
       body: currentRound[side] < totalRounds
@@ -73,18 +66,7 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
     })
   }
 
-  const handleRun = (side: Side) => () => {
-    const roundIndex = getSideIndex(side)
-    console.log('handleRun', side, roundIndex)
-    // setAppNotificationOptions({
-    //   running: {
-    //     label: timerDictionary.round_break.title,
-    //     body: currentRound[roundIndex] < totalRounds
-    //       ? `${timerDictionary.round_break.message} ${currentRound[roundIndex] + 1}.`
-    //       : timerDictionary.round_break.no_more_rounds,
-    //   },
-    // })
-  }
+  const handleRun = (_side: Side) => () => {}
 
   const handleTimeOver = (side: Side) => (...args) => {
     const roundIndex = getSideIndex(side)
@@ -126,32 +108,36 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
           <SideLabel type="secondary">{sideLabels.left}</SideLabel>
           <Timer
             resetButton
-            id={`${id}_left`}
+            id={`${id}_rest_left`}
             onTimeOver={handleTimeOver(Side.LEFT)}
             notificationTitle={`(${timerDictionary.side.left}) ${timerDictionary.round_break.title}`}
             onPause={handlePause(Side.LEFT)}
             onRun={handleRun(Side.LEFT)}
-            // appNotificationOptions={appNotificationOptions}
             webNotificationOptions={webNotificationOptions}
             hoursOn={hoursOn}
             duration={duration}
             buttonProps={buttonProps}
+            {...restMeta}
+            side="left"
+            sideLabel={sideLabels.left}
           />
         </EachSideContainer>
         <EachSideContainer $left>
           <SideLabel type="secondary">{sideLabels.right}</SideLabel>
           <Timer
             resetButton
-            id={`${id}_right`}
+            id={`${id}_rest_right`}
             onTimeOver={handleTimeOver(Side.RIGHT)}
             notificationTitle={`(${timerDictionary.side.right}) ${timerDictionary.round_break.title}`}
             onPause={handlePause(Side.RIGHT)}
             onRun={handleRun(Side.RIGHT)}
-            // appNotificationOptions={appNotificationOptions}
             webNotificationOptions={webNotificationOptions}
             hoursOn={hoursOn}
             duration={duration}
             buttonProps={buttonProps}
+            {...restMeta}
+            side="right"
+            sideLabel={sideLabels.right}
           />
         </EachSideContainer>
       </Container>
@@ -160,16 +146,16 @@ const Timers = ({ id = DEFAULT_TIMER_ID, eachSide, durationInSeconds, totalRound
       <Container>
         <Timer
           resetButton
-          id={id}
+          id={`${id}_rest`}
           onTimeOver={handleTimeOver(Side.NON_SIDE)}
           notificationTitle={timerDictionary.round_break.title}
           onPause={handlePause(Side.NON_SIDE)}
           onRun={handleRun(Side.NON_SIDE)}
-          // appNotificationOptions={appNotificationOptions}
           webNotificationOptions={webNotificationOptions}
           hoursOn={hoursOn}
           duration={duration}
           buttonProps={buttonProps}
+          {...restMeta}
         />
       </Container>
     )

@@ -36,6 +36,11 @@ public class TimerServicePlugin extends Plugin {
 
             String label = call.getString("label");
             String timerId = call.getString("timerId");
+            String type = call.getString("type");
+            String groupId = call.getString("groupId");
+            String exerciseTitle = call.getString("exerciseTitle");
+            String side = call.getString("side");
+            String sideLabel = call.getString("sideLabel");
             Log.d(TAG, "Duration in Plugin: " + duration);
             if (duration == 0) {
                 call.reject("Duration is required");
@@ -61,6 +66,21 @@ public class TimerServicePlugin extends Plugin {
             serviceIntent.putExtra("duration", duration);
             if (label != null) {
                 serviceIntent.putExtra("label", label);
+            }
+            if (type != null) {
+                serviceIntent.putExtra("type", type);
+            }
+            if (groupId != null) {
+                serviceIntent.putExtra("groupId", groupId);
+            }
+            if (exerciseTitle != null) {
+                serviceIntent.putExtra("exerciseTitle", exerciseTitle);
+            }
+            if (side != null) {
+                serviceIntent.putExtra("side", side);
+            }
+            if (sideLabel != null) {
+                serviceIntent.putExtra("sideLabel", sideLabel);
             }
             
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

@@ -5,6 +5,7 @@ import { defaultAppNotificationOptions, runCountingDown, AppNotificationOptions 
 import { TimerView } from 'app/components'
 import { Capacitor } from '@capacitor/core'
 import { TimerPlugin } from 'src/plugins'
+import type { TimerType } from 'src/plugins'
 
 export const DEFAULT_TIMER_ID = 'default_timer_id'
 
@@ -17,6 +18,11 @@ export interface ITimer {
   msOn?: boolean,
   hoursOn?: boolean,
   keepPageAwake?: boolean,
+  type?: TimerType,
+  groupId?: string,
+  exerciseTitle?: string,
+  side?: 'left' | 'right' | '',
+  sideLabel?: string,
   onChange?: (value: ReturnType<typeof millisecondsToTimeArray>, timeLeftInMs: number) => void,
   onReset?: VoidFunction,
   onPause?: (timeLeftInMs: number) => void,
@@ -51,6 +57,11 @@ const Timer = forwardRef<TimerRef, ITimer>(({
   id = DEFAULT_TIMER_ID,
   duration = 0,
   msOn = true,
+  type,
+  groupId,
+  exerciseTitle,
+  side,
+  sideLabel,
   onChange,
   onReset,
   onPause,
@@ -83,6 +94,14 @@ const Timer = forwardRef<TimerRef, ITimer>(({
   const notificationCountRef = useRef(0)
   const isNotifiedRef = useRef(false)
   const renotificationTimeoutIdRef = useRef(0 as unknown as NodeJS.Timeout)
+
+  const nativeMeta = {
+    type,
+    groupId,
+    exerciseTitle,
+    side,
+    sideLabel,
+  }
 
   const handleResetTimer = async (e?: MouseEvent<HTMLElement>) => {
     clearTimeout(renotificationTimeoutIdRef.current)
@@ -126,12 +145,14 @@ const Timer = forwardRef<TimerRef, ITimer>(({
             timerId: timerId,
             label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
             body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
+            ...nativeMeta,
           })
         } else if (isPaused) {
           await TimerPlugin.resumeTimer({
             timerId: timerId,
             label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
             body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
+            ...nativeMeta,
           })
         }
       }
@@ -155,6 +176,7 @@ const Timer = forwardRef<TimerRef, ITimer>(({
           timerId: timerId,
           label: appNotificationOptions.paused?.label || defaultAppNotificationOptions.paused.label,
           body: appNotificationOptions.paused?.body || defaultAppNotificationOptions.paused.body,
+          ...nativeMeta,
         })
       } catch (error) {
         console.error('Failed to stop timer service:', error)

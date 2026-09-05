@@ -213,6 +213,7 @@ const Exercise: FC<IExerciseProps> = ({
       {isRestTimersVisible && (
         <Rest
           id={id}
+          exerciseTitle={details.title}
           details={details}
           timer={timer}
           rounds={rounds}

@@ -17,8 +17,8 @@ public class Translation {
             put(Translation.activityTitle, new DictItem("Activity", "Активность"));
             put(Translation.restTitle, new DictItem("Rest", "Отдых"));
             put(Translation.breakTitle, new DictItem("Break", "Перерыв"));
-            put(Translation.restDone, new DictItem("Rest is over", "Отдых закончен"));
-            put(Translation.breakDone, new DictItem("Break is over", "Перерыв закончен"));
+            put(Translation.restDone, new DictItem("Rest finished!", "Отдых завершен!"));
+            put(Translation.breakDone, new DictItem("Break finished!", "Перерыв завершен!"));
             put(Translation.paused, new DictItem("Paused", "На паузе"));
         }
     };

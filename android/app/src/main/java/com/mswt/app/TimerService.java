@@ -14,21 +14,32 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TimerService extends Service {
     private static final String TAG = "TimerService";
     private static final String CHANNEL_ID = "TimerServiceChannel";
     private static final String CHANNEL_ID_ALERTS = "TimerAlertsChannel";
-    private static final String BASE_TIMER_ID = "BaseTimerId";
-    private static final int BASE_NOTIFICATION_ID = 1000;
     private static final int CONSOLIDATED_NOTIFICATION_ID = 1001;
+    private static final int REST_CONSOLIDATED_NOTIFICATION_ID = 1002;
+    private static final int BREAK_CONSOLIDATED_NOTIFICATION_ID = 1003;
 
-    private static final Map<String, TimerInfo> activeTimers = new HashMap<>();
+    private static final String TYPE_REST = "rest";
+    private static final String TYPE_BREAK = "break";
+    private static final String SIDE_LEFT = "left";
+    private static final String SIDE_RIGHT = "right";
+
+    private static final Map<String, TimerInfo> activeTimers = new LinkedHashMap<>();
+    /** Recently finished rest timers by group, so completion can show both sides at 00:00. */
+    private static final Map<String, LinkedHashMap<String, TimerInfo>> finishedRestByGroup = new LinkedHashMap<>();
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private NotificationManager notificationManager;
+    /** Notification id currently bound to this service's startForeground(). */
+    private int foregroundNotificationId = -1;
 
     public static class TimerInfo {
         long endTime;
@@ -38,19 +49,42 @@ public class TimerService extends Service {
         String id;
         int notificationId;
         boolean isPaused;
+        String type;
+        String groupId;
+        String exerciseTitle;
+        String side;
+        String sideLabel;
 
-        TimerInfo(long endTime, String label, String id, int notificationId) {
+        TimerInfo(long endTime, String label, String id, int notificationId,
+                  String type, String groupId, String exerciseTitle, String side, String sideLabel) {
             this.endTime = endTime;
             this.label = label;
             this.id = id;
             this.notificationId = notificationId;
             this.isPaused = false;
             this.remainingTime = 0;
+            this.type = type != null ? type : "";
+            this.groupId = groupId != null ? groupId : id;
+            this.exerciseTitle = exerciseTitle != null ? exerciseTitle : label;
+            this.side = side != null ? side : "";
+            this.sideLabel = sideLabel != null ? sideLabel : "";
+        }
+
+        boolean isRest() {
+            return TYPE_REST.equals(type);
+        }
+
+        boolean isBreak() {
+            return TYPE_BREAK.equals(type);
+        }
+
+        long getRemainingMs() {
+            return isPaused ? remainingTime : endTime - System.currentTimeMillis();
         }
     }
 
     private String formatTime(long milliseconds) {
-        long seconds = milliseconds / 1000;
+        long seconds = Math.max(0, milliseconds) / 1000;
         long hours = seconds / 3600;
         long minutes = (seconds % 3600) / 60;
         long remainingSeconds = seconds % 60;
@@ -80,7 +114,7 @@ public class TimerService extends Service {
                 serviceChannel.setDescription("Shows ongoing timer");
                 serviceChannel.setShowBadge(true);
 
-                if (MainActivity.settings.getIsVibration()) {
+                if (MainActivity.settings != null && MainActivity.settings.getIsVibration()) {
                     serviceChannel.enableVibration(true);
                     serviceChannel.setVibrationPattern(new long[]{0, 100});
                 }
@@ -93,7 +127,7 @@ public class TimerService extends Service {
                 );
                 alertsChannel.setDescription("Shows timer completion alerts");
 
-                if (MainActivity.settings.getIsVibration()) {
+                if (MainActivity.settings != null && MainActivity.settings.getIsVibration()) {
                     alertsChannel.enableVibration(true);
                     alertsChannel.setVibrationPattern(new long[]{0, 500, 250, 500});
                 }
@@ -117,16 +151,6 @@ public class TimerService extends Service {
 
             String action = intent.getStringExtra("action");
             String timerId = intent.getStringExtra("timerId");
-
-            // Only show notification if we're starting a new timer
-            if (action == null || action.equals("start")) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        startForeground(CONSOLIDATED_NOTIFICATION_ID, createInitialNotification());
-                    }
-                }).start();
-            }
 
             if (action != null) {
                 switch (action) {
@@ -163,32 +187,6 @@ public class TimerService extends Service {
         }
     }
 
-    private Notification createInitialNotification() {
-        try {
-            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
-            );
-
-            return new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(getApplicationInfo().icon)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                    .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-                    .setOngoing(true)
-                    .setAutoCancel(false)
-                    .setContentIntent(pendingIntent)
-                    .build();
-        } catch (Exception e) {
-            Log.e(TAG, "Error creating initial notification", e);
-            return new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(getApplicationInfo().icon)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .build();
-        }
-    }
-
     private int startNewTimer(Intent intent) {
         String timerId = intent.getStringExtra("timerId");
         Log.d(TAG, "Timer ID in startNewTimer: " + timerId);
@@ -202,47 +200,257 @@ public class TimerService extends Service {
         String label = intent.getStringExtra("label") != null ?
                 intent.getStringExtra("label") :
                 "Timer " + timerId;
+        String type = intent.getStringExtra("type");
+        String groupId = intent.getStringExtra("groupId");
+        String exerciseTitle = intent.getStringExtra("exerciseTitle");
+        String side = intent.getStringExtra("side");
+        String sideLabel = intent.getStringExtra("sideLabel");
 
         if (duration <= 0) {
             Log.e(TAG, "Invalid duration: " + duration);
             return START_NOT_STICKY;
         }
 
+        int notificationId = TYPE_REST.equals(type)
+                ? REST_CONSOLIDATED_NOTIFICATION_ID
+                : TYPE_BREAK.equals(type)
+                ? BREAK_CONSOLIDATED_NOTIFICATION_ID
+                : CONSOLIDATED_NOTIFICATION_ID;
+
         // Create timer info first
         long endTime = System.currentTimeMillis() + duration;
-        TimerInfo timerInfo = new TimerInfo(endTime, label, timerId, CONSOLIDATED_NOTIFICATION_ID);
+        TimerInfo timerInfo = new TimerInfo(
+                endTime, label, timerId, notificationId,
+                type, groupId, exerciseTitle, side, sideLabel
+        );
         TimerService.activeTimers.put(timerId, timerInfo);
 
-        // Start the timer runnable
-        Runnable timerRunnable = createTimerRunnable(timerId, CONSOLIDATED_NOTIFICATION_ID);
-        timerInfo.runnable = timerRunnable;
+        // Promote the real content notification to FGS immediately (no empty placeholder)
+        updateNotifications();
 
-        // Post the runnable with a very short delay to ensure notification is shown first
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateConsolidatedNotification();
-                handler.post(timerRunnable);
-            }
-        }, 100);
+        // Start the timer runnable
+        Runnable timerRunnable = createTimerRunnable(timerId, notificationId);
+        timerInfo.runnable = timerRunnable;
+        handler.post(timerRunnable);
 
         return START_STICKY;
     }
 
-    private void updateConsolidatedNotification() {
-        if (!TimerService.activeTimers.isEmpty()) {
-            notificationManager.notify(CONSOLIDATED_NOTIFICATION_ID, createConsolidatedNotification());
+    private List<TimerInfo> getTimersByType(String type) {
+        List<TimerInfo> result = new ArrayList<>();
+        for (TimerInfo timer : TimerService.activeTimers.values()) {
+            if (type.equals(timer.type)) {
+                result.add(timer);
+            }
+        }
+        return result;
+    }
+
+    private List<TimerInfo> getOtherTimers() {
+        List<TimerInfo> result = new ArrayList<>();
+        for (TimerInfo timer : TimerService.activeTimers.values()) {
+            if (!timer.isRest() && !timer.isBreak()) {
+                result.add(timer);
+            }
+        }
+        return result;
+    }
+
+    private void updateNotifications() {
+        List<TimerInfo> restTimers = getTimersByType(TYPE_REST);
+        List<TimerInfo> breakTimers = getTimersByType(TYPE_BREAK);
+        List<TimerInfo> otherTimers = getOtherTimers();
+
+        // Prefer rest as the FGS notification so users see one meaningful card, not an empty placeholder.
+        int primaryId = -1;
+        Notification primaryNotification = null;
+
+        if (!restTimers.isEmpty()) {
+            primaryId = REST_CONSOLIDATED_NOTIFICATION_ID;
+            primaryNotification = createRestNotification(restTimers);
+        } else if (!breakTimers.isEmpty()) {
+            primaryId = BREAK_CONSOLIDATED_NOTIFICATION_ID;
+            primaryNotification = createLegacyConsolidatedNotification(
+                    breakTimers, BREAK_CONSOLIDATED_NOTIFICATION_ID
+            );
+        } else if (!otherTimers.isEmpty()) {
+            primaryId = CONSOLIDATED_NOTIFICATION_ID;
+            primaryNotification = createLegacyConsolidatedNotification(
+                    otherTimers, CONSOLIDATED_NOTIFICATION_ID
+            );
+        }
+
+        if (primaryNotification != null) {
+            if (foregroundNotificationId != -1 && foregroundNotificationId != primaryId) {
+                notificationManager.cancel(foregroundNotificationId);
+            }
+            startForeground(primaryId, primaryNotification);
+            foregroundNotificationId = primaryId;
+        }
+
+        // Secondary types (when both rest and break are active) as regular ongoing notifications
+        if (primaryId != REST_CONSOLIDATED_NOTIFICATION_ID) {
+            if (!restTimers.isEmpty()) {
+                notificationManager.notify(REST_CONSOLIDATED_NOTIFICATION_ID, createRestNotification(restTimers));
+            } else {
+                notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
+            }
+        }
+
+        if (primaryId != BREAK_CONSOLIDATED_NOTIFICATION_ID) {
+            if (!breakTimers.isEmpty()) {
+                notificationManager.notify(BREAK_CONSOLIDATED_NOTIFICATION_ID, createLegacyConsolidatedNotification(
+                        breakTimers, BREAK_CONSOLIDATED_NOTIFICATION_ID
+                ));
+            } else {
+                notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
+            }
+        }
+
+        if (primaryId != CONSOLIDATED_NOTIFICATION_ID) {
+            if (!otherTimers.isEmpty()) {
+                notificationManager.notify(CONSOLIDATED_NOTIFICATION_ID, createLegacyConsolidatedNotification(
+                        otherTimers, CONSOLIDATED_NOTIFICATION_ID
+                ));
+            } else {
+                notificationManager.cancel(CONSOLIDATED_NOTIFICATION_ID);
+            }
         }
     }
 
-    private Notification createConsolidatedNotification() {
-        StringBuilder contentBuilder = new StringBuilder();
-        int activeTimerCount = TimerService.activeTimers.size();
+    private Lang getLang() {
+        if (MainActivity.settings != null) {
+            return MainActivity.settings.getLang();
+        }
+        return Lang.En;
+    }
 
-        // Show "Starting timer..." only when we're actually starting a new timer
+    private Notification createRestNotification(List<TimerInfo> restTimers) {
+        String title = Translation.getString(Translation.restTitle, getLang());
+
+        // Preserve insertion order of groups (LinkedHashMap of timers)
+        LinkedHashMap<String, List<TimerInfo>> groups = new LinkedHashMap<>();
+        for (TimerInfo timer : restTimers) {
+            String key = timer.groupId != null && !timer.groupId.isEmpty()
+                    ? timer.groupId
+                    : timer.exerciseTitle;
+            List<TimerInfo> group = groups.get(key);
+            if (group == null) {
+                group = new ArrayList<>();
+                groups.put(key, group);
+            }
+            group.add(timer);
+        }
+
+        StringBuilder bigText = new StringBuilder();
+        String collapsedText = "";
+        boolean firstGroup = true;
+
+        for (Map.Entry<String, List<TimerInfo>> entry : groups.entrySet()) {
+            List<TimerInfo> groupTimers = entry.getValue();
+            String exerciseTitle = groupTimers.get(0).exerciseTitle;
+            if (exerciseTitle == null || exerciseTitle.isEmpty()) {
+                exerciseTitle = groupTimers.get(0).label;
+            }
+
+            TimerInfo left = null;
+            TimerInfo right = null;
+            TimerInfo nonSide = null;
+            for (TimerInfo t : groupTimers) {
+                if (SIDE_LEFT.equals(t.side)) {
+                    left = t;
+                } else if (SIDE_RIGHT.equals(t.side)) {
+                    right = t;
+                } else {
+                    nonSide = t;
+                }
+            }
+
+            String timeLine;
+            if (left != null || right != null) {
+                StringBuilder sides = new StringBuilder();
+                if (left != null) {
+                    String sideName = !left.sideLabel.isEmpty() ? left.sideLabel : left.side;
+                    sides.append(sideName).append(" ").append(formatTime(left.getRemainingMs()));
+                }
+                if (right != null) {
+                    if (sides.length() > 0) {
+                        sides.append(" | ");
+                    }
+                    String sideName = !right.sideLabel.isEmpty() ? right.sideLabel : right.side;
+                    sides.append(sideName).append(" ").append(formatTime(right.getRemainingMs()));
+                }
+                timeLine = sides.toString();
+            } else if (nonSide != null) {
+                timeLine = formatTime(nonSide.getRemainingMs());
+            } else {
+                // Fallback: join all
+                StringBuilder sides = new StringBuilder();
+                for (TimerInfo t : groupTimers) {
+                    if (sides.length() > 0) {
+                        sides.append(" | ");
+                    }
+                    if (!t.sideLabel.isEmpty()) {
+                        sides.append(t.sideLabel).append(" ");
+                    }
+                    sides.append(formatTime(t.getRemainingMs()));
+                }
+                timeLine = sides.toString();
+            }
+
+            if (!firstGroup) {
+                bigText.append("\n\n");
+            }
+            firstGroup = false;
+            bigText.append(exerciseTitle).append("\n").append(timeLine);
+
+            if (collapsedText.isEmpty()) {
+                collapsedText = exerciseTitle + " " + timeLine;
+            }
+        }
+
+        String bigTextStr = bigText.toString().trim();
+        String contentText = collapsedText.isEmpty() ? bigTextStr : collapsedText;
+
+        try {
+            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    this, REST_CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
+                    PendingIntent.FLAG_IMMUTABLE
+            );
+
+            return new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(title)
+                    .setContentText(contentText)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(bigTextStr))
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(NotificationCompat.CATEGORY_ALARM)
+                    .setOngoing(true)
+                    .setSilent(true)
+                    .setAutoCancel(false)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setContentIntent(pendingIntent)
+                    .build();
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating rest notification", e);
+            return new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(title)
+                    .setContentText(contentText)
+                    .setSmallIcon(getApplicationInfo().icon)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setOngoing(true)
+                    .build();
+        }
+    }
+
+    private Notification createLegacyConsolidatedNotification(List<TimerInfo> timers, int notificationId) {
+        StringBuilder contentBuilder = new StringBuilder();
+        int activeTimerCount = timers.size();
+
         String title = activeTimerCount + " Active Timer" + (activeTimerCount > 1 ? "s" : "");
-        for (TimerInfo timer : TimerService.activeTimers.values()) {
-            long remaining = timer.isPaused ? timer.remainingTime : timer.endTime - System.currentTimeMillis();
+        for (TimerInfo timer : timers) {
+            long remaining = timer.getRemainingMs();
             String status = timer.isPaused ? "⏸" : "⏱";
             contentBuilder.append(status)
                     .append(" ")
@@ -252,32 +460,27 @@ public class TimerService extends Service {
                     .append("\n");
         }
 
+        String content = contentBuilder.toString().trim();
+
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this, CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
+                    this, notificationId, notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE
             );
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+            return new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(title)
-                    .setContentText(contentBuilder.toString().trim())
-                    .setStyle(new NotificationCompat.BigTextStyle()
-                            .bigText(contentBuilder.toString().trim()))
+                    .setContentText(content)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setCategory(NotificationCompat.CATEGORY_ALARM)
                     .setOngoing(true)
                     .setAutoCancel(false)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setContentIntent(pendingIntent);
-
-            // Add vibration for initial notification
-            if (activeTimerCount == 0) {
-                builder.setVibrate(new long[]{0, 100});
-            }
-
-            return builder.build();
+                    .setContentIntent(pendingIntent)
+                    .build();
         } catch (Exception e) {
             Log.e(TAG, "Error creating consolidated notification", e);
             return new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -298,7 +501,7 @@ public class TimerService extends Service {
             if (timer.runnable != null) {
                 handler.removeCallbacks(timer.runnable);
             }
-            updateConsolidatedNotification();
+            updateNotifications();
         }
     }
 
@@ -310,7 +513,7 @@ public class TimerService extends Service {
             Runnable timerRunnable = createTimerRunnable(timerId, timer.notificationId);
             timer.runnable = timerRunnable;
             handler.post(timerRunnable);
-            updateConsolidatedNotification();
+            updateNotifications();
         }
     }
 
@@ -323,11 +526,14 @@ public class TimerService extends Service {
             TimerService.activeTimers.remove(timerId);
 
             if (TimerService.activeTimers.isEmpty()) {
+                notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
+                notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
+                notificationManager.cancel(CONSOLIDATED_NOTIFICATION_ID);
+                foregroundNotificationId = -1;
                 stopForeground(true);
                 stopSelf();
             } else {
-                // Update the consolidated notification if there are still active timers
-                updateConsolidatedNotification();
+                updateNotifications();
             }
         }
     }
@@ -339,7 +545,9 @@ public class TimerService extends Service {
             }
         }
         TimerService.activeTimers.clear();
+        finishedRestByGroup.clear();
         notificationManager.cancelAll();
+        foregroundNotificationId = -1;
         stopForeground(true);
         stopSelf();
     }
@@ -356,17 +564,22 @@ public class TimerService extends Service {
                     Log.d(TAG, "Remaining time for " + timer.label + ": " + remaining);
 
                     if (remaining <= 0) {
-                        showTimerFinishedNotification(timer);
                         TimerService.activeTimers.remove(timerId);
+                        showTimerFinishedNotification(timer);
 
                         if (!TimerService.activeTimers.isEmpty()) {
-                            updateConsolidatedNotification();
+                            updateNotifications();
                         } else {
+                            notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
+                            notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
+                            notificationManager.cancel(CONSOLIDATED_NOTIFICATION_ID);
+                            foregroundNotificationId = -1;
                             stopForeground(true);
                             stopSelf();
                         }
                     } else {
-                        updateConsolidatedNotification();
+                        // Re-post every tick so dismissed non-FGS notifications reappear
+                        updateNotifications();
                         handler.postDelayed(this, 1000);
                     }
                 } catch (Exception e) {
@@ -376,48 +589,111 @@ public class TimerService extends Service {
         };
     }
 
-    private void updateNotification(TimerInfo timer, String content) {
-        try {
-            String title = timer.isPaused ? timer.label + " (Paused)" : timer.label;
-            Notification notification = createOngoingNotification(title, content, timer.notificationId);
-            Log.d(TAG, "updateNotification for id: " + timer.label + ". NotificationId: " + timer.notificationId);
-            notificationManager.notify(timer.notificationId, notification);
-        } catch (Exception e) {
-            Log.e(TAG, "Error updating notification", e);
+    private String restGroupKey(TimerInfo timer) {
+        if (timer.groupId != null && !timer.groupId.isEmpty()) {
+            return timer.groupId;
         }
+        if (timer.exerciseTitle != null && !timer.exerciseTitle.isEmpty()) {
+            return timer.exerciseTitle;
+        }
+        return timer.id;
     }
 
-    private Notification createOngoingNotification(String title, String content, int notificationId) {
-        try {
-            Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
-            PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this, notificationId, notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE
-            );
-
-            return new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle(title)
-                    .setContentText(content)
-                    .setSmallIcon(getApplicationInfo().icon)
-                    .setPriority(NotificationCompat.PRIORITY_LOW)
-                    .setOngoing(true)
-                    .setContentIntent(pendingIntent)
-                    .build();
-        } catch (Exception e) {
-            Log.e(TAG, "Error creating ongoing notification", e);
-            return new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle(title)
-                    .setContentText("Running")
-                    .setSmallIcon(getApplicationInfo().icon)
-                    .build();
+    private void rememberFinishedRest(TimerInfo timer) {
+        String groupKey = restGroupKey(timer);
+        LinkedHashMap<String, TimerInfo> group = finishedRestByGroup.get(groupKey);
+        if (group == null) {
+            group = new LinkedHashMap<>();
+            finishedRestByGroup.put(groupKey, group);
         }
+        String slot = timer.side != null && !timer.side.isEmpty() ? timer.side : timer.id;
+        group.put(slot, timer);
+    }
+
+    private boolean hasActiveRestInGroup(String groupKey) {
+        for (TimerInfo t : TimerService.activeTimers.values()) {
+            if (t.isRest() && groupKey.equals(restGroupKey(t))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String formatRestExerciseBlock(String exerciseTitle, List<TimerInfo> finishedInGroup) {
+        StringBuilder block = new StringBuilder();
+        String title = exerciseTitle != null && !exerciseTitle.isEmpty() ? exerciseTitle : "";
+        if (!title.isEmpty()) {
+            block.append(title).append("\n");
+        }
+
+        String zero = formatTime(0);
+        TimerInfo left = null;
+        TimerInfo right = null;
+        TimerInfo nonSide = null;
+        for (TimerInfo t : finishedInGroup) {
+            if (SIDE_LEFT.equals(t.side)) {
+                left = t;
+            } else if (SIDE_RIGHT.equals(t.side)) {
+                right = t;
+            } else {
+                nonSide = t;
+            }
+        }
+
+        if (left != null || right != null) {
+            StringBuilder sides = new StringBuilder();
+            if (left != null) {
+                String name = !left.sideLabel.isEmpty() ? left.sideLabel : left.side;
+                sides.append(name).append(" - ").append(zero);
+            }
+            if (right != null) {
+                if (sides.length() > 0) {
+                    sides.append(" | ");
+                }
+                String name = !right.sideLabel.isEmpty() ? right.sideLabel : right.side;
+                sides.append(name).append(" - ").append(zero);
+            }
+            block.append(sides);
+        } else if (nonSide != null) {
+            block.append(zero);
+        } else if (!finishedInGroup.isEmpty()) {
+            block.append(zero);
+        }
+
+        return block.toString();
+    }
+
+    private String buildRestCompletionText(TimerInfo finishedTimer) {
+        String groupKey = restGroupKey(finishedTimer);
+        rememberFinishedRest(finishedTimer);
+
+        LinkedHashMap<String, TimerInfo> finishedGroup = finishedRestByGroup.get(groupKey);
+        List<TimerInfo> finishedList = finishedGroup != null
+                ? new ArrayList<>(finishedGroup.values())
+                : java.util.Collections.singletonList(finishedTimer);
+
+        String exerciseTitle = finishedTimer.exerciseTitle != null && !finishedTimer.exerciseTitle.isEmpty()
+                ? finishedTimer.exerciseTitle
+                : finishedTimer.label;
+
+        // If siblings still running, show only sides finished so far for this exercise
+        String text = formatRestExerciseBlock(exerciseTitle, finishedList);
+
+        if (!hasActiveRestInGroup(groupKey)) {
+            finishedRestByGroup.remove(groupKey);
+        }
+
+        return text;
     }
 
     private void showTimerFinishedNotification(TimerInfo timer) {
         try {
             Log.d(TAG, "Creating completion notification for " + timer.label);
 
-            int completionNotificationId = timer.hashCode();
+            // Stable id per rest exercise group so left+right updates replace one card
+            int completionNotificationId = timer.isRest()
+                    ? REST_CONSOLIDATED_NOTIFICATION_ID + 1000 + Math.abs(restGroupKey(timer).hashCode()) % 1000
+                    : timer.hashCode();
 
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -425,16 +701,32 @@ public class TimerService extends Service {
                     PendingIntent.FLAG_IMMUTABLE
             );
 
+            String title;
+            String content;
+            if (timer.isRest()) {
+                title = Translation.getString(Translation.restDone, getLang());
+                content = buildRestCompletionText(timer);
+            } else if (timer.isBreak()) {
+                title = Translation.getString(Translation.breakDone, getLang());
+                content = timer.exerciseTitle != null && !timer.exerciseTitle.isEmpty()
+                        ? timer.exerciseTitle
+                        : timer.label;
+            } else {
+                title = timer.label + " Finished!";
+                content = "Your timer has completed";
+            }
+
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID_ALERTS)
-                    .setContentTitle(timer.label + " Finished!")
-                    .setContentText("Your timer has completed")
+                    .setContentTitle(title)
+                    .setContentText(content)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_MAX)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent);
 
 
-            if (MainActivity.settings.getIsVibration()) {
+            if (MainActivity.settings != null && MainActivity.settings.getIsVibration()) {
                 notificationBuilder.setVibrate(new long[]{0, 500, 250, 500});
             }
 
@@ -457,6 +749,7 @@ public class TimerService extends Service {
                 }
             }
             TimerService.activeTimers.clear();
+            finishedRestByGroup.clear();
             stopForeground(true);
         } catch (Exception e) {
             Log.e(TAG, "Error in onDestroy", e);

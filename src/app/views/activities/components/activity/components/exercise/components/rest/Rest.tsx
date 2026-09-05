@@ -3,6 +3,7 @@ import { Timers } from './components'
 
 export type RestProps = {
   id: string
+  exerciseTitle: string
   details: any
   timer: any
   rounds: number
@@ -15,13 +16,14 @@ export type RestProps = {
   }
 }
 
-const Rest = ({ id, details, timer, rounds, round_break, side_labels, workoutsDictionary }: RestProps) => (
+const Rest = ({ id, exerciseTitle, details, timer, rounds, round_break, side_labels, workoutsDictionary }: RestProps) => (
   <div>
     <Typography.Text>
       {workoutsDictionary.input_labels.round_break}:
     </Typography.Text>
     <Timers
       id={id}
+      exerciseTitle={exerciseTitle}
       eachSide={details.each_side}
       timerDictionary={timer}
       totalRounds={rounds}
