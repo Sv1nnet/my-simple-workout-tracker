@@ -26,6 +26,13 @@ public class ActivityService extends Service {
         SPEED_SET
     }
 
+    /** True while this service holds the process FGS notification (activity duration). */
+    private static volatile boolean foregroundActive = false;
+
+    public static boolean isForegroundActive() {
+        return foregroundActive;
+    }
+
     public class Timer {
         public String id;
         public String title;
@@ -406,6 +413,7 @@ public class ActivityService extends Service {
         
         if (type == NotificationType.ACTIVITY) {
             startForeground(timer.getNotificationId(), createForegroundNotification());
+            foregroundActive = true;
         }
     }
 
@@ -449,7 +457,9 @@ public class ActivityService extends Service {
         }
 
         if (timers.isEmpty()) {
+            foregroundActive = false;
             stopForeground(true);
+            TimerService.requestForegroundPromotion(this);
             stopSelf();
         }
     }
@@ -460,6 +470,7 @@ public class ActivityService extends Service {
             notificationManager.cancel(timer.getNotificationId());
         }
         timers.clear();
+        foregroundActive = false;
         stopForeground(true);
         stopSelf();
     }

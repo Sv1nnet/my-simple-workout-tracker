@@ -108,6 +108,7 @@ const Timers = ({
           <SideLabel type="secondary">{sideLabels.left}</SideLabel>
           <Timer
             resetButton
+            stopOnUnmount={false}
             id={`${id}_rest_left`}
             onTimeOver={handleTimeOver(Side.LEFT)}
             notificationTitle={`(${timerDictionary.side.left}) ${timerDictionary.round_break.title}`}
@@ -126,6 +127,7 @@ const Timers = ({
           <SideLabel type="secondary">{sideLabels.right}</SideLabel>
           <Timer
             resetButton
+            stopOnUnmount={false}
             id={`${id}_rest_right`}
             onTimeOver={handleTimeOver(Side.RIGHT)}
             notificationTitle={`(${timerDictionary.side.right}) ${timerDictionary.round_break.title}`}
@@ -146,6 +148,7 @@ const Timers = ({
       <Container>
         <Timer
           resetButton
+          stopOnUnmount={false}
           id={`${id}_rest`}
           onTimeOver={handleTimeOver(Side.NON_SIDE)}
           notificationTitle={timerDictionary.round_break.title}

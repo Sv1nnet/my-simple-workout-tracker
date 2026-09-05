@@ -2,6 +2,7 @@ import { forwardRef, MouseEvent, useEffect, useImperativeHandle, useMemo, useRef
 import { ButtonProps } from 'antd'
 import { millisecondsToTimeArray, timeArrayToMilliseconds } from 'app/utils/time'
 import { defaultAppNotificationOptions, runCountingDown, AppNotificationOptions } from './utils'
+import { timerSessions } from './timerSessions'
 import { TimerView } from 'app/components'
 import { Capacitor } from '@capacitor/core'
 import { TimerPlugin } from 'src/plugins'
@@ -83,13 +84,17 @@ const Timer = forwardRef<TimerRef, ITimer>(({
   const [ isRunning, setIsRunning ] = useState(false)
   const [ isPaused, setIsPaused ] = useState(false)
   const [ isFinished, setIsFinished ] = useState(false)
+  const [ isHydrated, setIsHydrated ] = useState(false)
 
   const valueRef = useRef(value)
   const prevRafMsRef = useRef(0)
   const msLeftFromPrevRafRef = useRef(0)
-  const newTimeLeftRef = useRef(0)
+  const newTimeLeftRef = useRef(duration)
   const diffRef = useRef(0)
   const rafIdRef = useRef(null)
+
+  const isRunningRef = useRef(false)
+  const isPausedRef = useRef(false)
 
   const notificationCountRef = useRef(0)
   const isNotifiedRef = useRef(false)
@@ -103,6 +108,39 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     sideLabel,
   }
 
+  const applyRestoredState = (remainingMs: number, running: boolean, paused: boolean) => {
+    const clamped = Math.max(0, remainingMs)
+    const timeValue = millisecondsToTimeArray(clamped)
+    valueRef.current = timeValue
+    newTimeLeftRef.current = clamped
+    prevRafMsRef.current = 0
+    msLeftFromPrevRafRef.current = 0
+    diffRef.current = 0
+    setValue(timeValue)
+
+    if (clamped <= 0) {
+      setIsRunning(false)
+      setIsPaused(false)
+      setIsFinished(true)
+      isRunningRef.current = false
+      isPausedRef.current = false
+      timerSessions.remove(timerId)
+      return
+    }
+
+    setIsFinished(false)
+    setIsRunning(running)
+    setIsPaused(paused)
+    isRunningRef.current = running
+    isPausedRef.current = paused
+
+    if (running) {
+      timerSessions.markRunning(timerId, duration, clamped)
+    } else if (paused) {
+      timerSessions.markPaused(timerId, duration, clamped)
+    }
+  }
+
   const handleResetTimer = async (e?: MouseEvent<HTMLElement>) => {
     clearTimeout(renotificationTimeoutIdRef.current)
     
@@ -110,6 +148,8 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     setIsFinished(false)
     setIsPaused(false)
     setValue(initialValue)
+    isRunningRef.current = false
+    isPausedRef.current = false
     
     cancelAnimationFrame(rafIdRef.current)
     
@@ -122,6 +162,8 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     prevRafMsRef.current = 0
     msLeftFromPrevRafRef.current = 0
     diffRef.current = 0
+
+    timerSessions.remove(timerId)
     
     onChange?.([ ...initialValue ], newTimeLeftRef.current)
     onReset?.()
@@ -138,10 +180,12 @@ const Timer = forwardRef<TimerRef, ITimer>(({
 
   const handleRun = async (e?: MouseEvent<HTMLElement>) => {
     try {
+      const remaining = Math.floor(newTimeLeftRef.current || duration)
+
       if (Capacitor.isNativePlatform()) {    
         if (!isPaused && !isRunning) {
           await TimerPlugin.startTimer({
-            duration: Math.floor(newTimeLeftRef.current || duration), // Cut decimal part
+            duration: remaining,
             timerId: timerId,
             label: appNotificationOptions.running?.label || defaultAppNotificationOptions.running.label,
             body: appNotificationOptions.running?.body || defaultAppNotificationOptions.running.body,
@@ -156,9 +200,12 @@ const Timer = forwardRef<TimerRef, ITimer>(({
           })
         }
       }
-      
+
+      timerSessions.markRunning(timerId, duration, remaining)
       setIsRunning(true)
       setIsPaused(false)
+      isRunningRef.current = true
+      isPausedRef.current = false
       onRun?.(newTimeLeftRef.current)
       if (e) buttonProps?.onClick?.(true, e)
     } catch (error) {
@@ -169,6 +216,9 @@ const Timer = forwardRef<TimerRef, ITimer>(({
   const handlePauseTimer = async (e?: MouseEvent<HTMLElement>) => {
     setIsRunning(false)
     setIsPaused(true)
+    isRunningRef.current = false
+    isPausedRef.current = true
+    timerSessions.markPaused(timerId, duration, newTimeLeftRef.current)
 
     if (Capacitor.isNativePlatform()) {
       try {
@@ -197,8 +247,56 @@ const Timer = forwardRef<TimerRef, ITimer>(({
     reset: handleResetTimer,
   }), [ isRunning, isPaused, isFinished, handleRun, handlePauseTimer, handleResetTimer ])
 
+  // Restore session / native timer after remount (e.g. tab navigation)
   useEffect(() => {
-    if (duration !== timeArrayToMilliseconds(value)) {
+    let cancelled = false
+
+    const hydrate = async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const native = await TimerPlugin.getTimer({ timerId })
+          if (cancelled) return
+
+          if (native.exists) {
+            applyRestoredState(
+              Math.floor(native.remainingMs ?? 0),
+              !native.isPaused,
+              !!native.isPaused,
+            )
+            setIsHydrated(true)
+            return
+          }
+
+          // Native timer gone — drop stale session
+          const session = timerSessions.get(timerId)
+          if (session?.isRunning || session?.isPaused) {
+            timerSessions.remove(timerId)
+          }
+          setIsHydrated(true)
+          return
+        }
+
+        const remaining = timerSessions.getRemainingMs(timerId)
+        const session = timerSessions.get(timerId)
+        if (session && remaining != null) {
+          applyRestoredState(remaining, session.isRunning, session.isPaused)
+        }
+      } catch (error) {
+        console.error('Failed to restore timer session:', error)
+      } finally {
+        if (!cancelled) setIsHydrated(true)
+      }
+    }
+
+    hydrate()
+    return () => {
+      cancelled = true
+    }
+  }, [ timerId ])
+
+  useEffect(() => {
+    if (!isHydrated) return
+    if (duration !== timeArrayToMilliseconds(value) && !isRunning && !isPaused && !isFinished) {
       valueRef.current = initialValue
       newTimeLeftRef.current = duration
       prevRafMsRef.current = 0
@@ -208,33 +306,63 @@ const Timer = forwardRef<TimerRef, ITimer>(({
       setValue(valueRef.current)
       onChange?.([ ...valueRef.current ], newTimeLeftRef.current)
     }
-  }, [ duration ])
-
-  useEffect(() => runCountingDown({
-    msOn,
-    isRunning,
-    isPaused,
-    valueRef,
-    newTimeLeftRef,
-    duration,
-    isNotifiedRef,
-    setIsRunning,
-    setIsFinished,
-    setValue,
-    prevRafMsRef,
-    diffRef,
-    msLeftFromPrevRafRef,
-    onChange,
-    rafIdRef,
-  }), [ isRunning, isPaused, isFinished, duration, msOn ])
+  }, [ duration, isHydrated ])
 
   useEffect(() => {
-    if (isFinished) onTimeOver?.(duration)
+    if (!isHydrated) return undefined
+    return runCountingDown({
+      msOn,
+      isRunning,
+      isPaused,
+      valueRef,
+      newTimeLeftRef,
+      duration,
+      isNotifiedRef,
+      setIsRunning,
+      setIsFinished,
+      setValue,
+      prevRafMsRef,
+      diffRef,
+      msLeftFromPrevRafRef,
+      onChange,
+      rafIdRef,
+    })
+  }, [ isRunning, isPaused, isFinished, duration, msOn, isHydrated ])
+
+  useEffect(() => {
+    isRunningRef.current = isRunning
+    isPausedRef.current = isPaused
+  }, [ isRunning, isPaused ])
+
+  // Keep session endAt in sync while counting down
+  useEffect(() => {
+    if (!isHydrated || !isRunning || isPaused) return undefined
+    const intervalId = window.setInterval(() => {
+      timerSessions.markRunning(timerId, duration, newTimeLeftRef.current)
+    }, 1000)
+    return () => clearInterval(intervalId)
+  }, [ isRunning, isPaused, isHydrated, timerId, duration ])
+
+  useEffect(() => {
+    if (isFinished) {
+      timerSessions.remove(timerId)
+      onTimeOver?.(duration)
+    }
   }, [ isFinished ])
 
   useEffect(() => () => {
-    if (stopOnUnmount) handleResetTimer()
-  }, [ stopOnUnmount ])
+    if (stopOnUnmount) {
+      handleResetTimer()
+      return
+    }
+
+    // Persist UI session so remount can restore; keep native service running
+    if (isRunningRef.current) {
+      timerSessions.markRunning(timerId, duration, newTimeLeftRef.current)
+    } else if (isPausedRef.current) {
+      timerSessions.markPaused(timerId, duration, newTimeLeftRef.current)
+    }
+  }, [ stopOnUnmount, timerId, duration ])
 
   return (
     <TimerView

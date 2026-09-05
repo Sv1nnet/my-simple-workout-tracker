@@ -1,8 +1,8 @@
-import { FC } from 'react'
+import { FC, useMemo, useRef, useState } from 'react'
 import { Button, Checkbox, Divider, Form, FormInstance, Input, RadioChangeEvent, Typography } from 'antd'
 import { BreakTimer, DoneInfoModal, History, Note, Rest, Rounds, Title } from './components'
+import { stopExerciseRestTimers } from './components/rest/stopExerciseRestTimers'
 import routes from 'app/constants/end_points'
-import { useMemo, useRef, useState } from 'react'
 import { isExerciseTimeType, timeToHms } from 'app/utils/time'
 import getWordByNumber from 'app/utils/getWordByNumber'
 import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
@@ -107,6 +107,14 @@ const Exercise: FC<IExerciseProps> = ({
   const handleResultClick = (e: React.BaseSyntheticEvent<MouseEvent>) => {
     const index = e.currentTarget.dataset.index
     dispatch(setSelectedRound({ chartId: id as string, index: index === selectedRoundIndex ? null : index }))
+  }
+
+  const handleDoneChange = async (e: { target: { checked: boolean } }) => {
+    const checked = e.target.checked
+    setIsDone(checked)
+    if (checked && id != null) {
+      await stopExerciseRestTimers(String(id))
+    }
   }
 
   const repeats = repeatsProps ? `${repeatsProps} ${getWordByNumber(payload.repeats.short, repeatsProps, lang)}` : null
@@ -235,7 +243,7 @@ const Exercise: FC<IExerciseProps> = ({
         )}
         {!isEdit && (
           <div style={{ marginBlock: 6 }}>
-            <Checkbox value={isDone} onChange={e => setIsDone(e.target.checked)}>
+            <Checkbox checked={isDone} onChange={handleDoneChange}>
               <Typography.Text>{input_labels.done}</Typography.Text>
               <Button type='link' size="small" icon={<QuestionCircleOutlined />} onClick={openDoneInfo} />
             </Checkbox>

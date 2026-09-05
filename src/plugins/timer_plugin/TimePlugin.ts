@@ -16,11 +16,23 @@ export type TimerPluginOptions = {
   sideLabel?: string
 }
 
+export type GetTimerResult = {
+  exists: boolean
+  remainingMs?: number
+  isPaused?: boolean
+  type?: string
+  groupId?: string
+  exerciseTitle?: string
+  side?: string
+  sideLabel?: string
+}
+
 export interface ITimerPlugin {
   startTimer(options: TimerPluginOptions & { duration: number }): Promise<void>;
   stopTimer(options: { timerId: string }): Promise<void>;
   pauseTimer(options: TimerPluginOptions): Promise<void>;
   resumeTimer(options: TimerPluginOptions): Promise<void>;
+  getTimer(options: { timerId: string }): Promise<GetTimerResult>;
 }
 
 export class TimerPluginWeb extends WebPlugin implements ITimerPlugin {
@@ -38,6 +50,11 @@ export class TimerPluginWeb extends WebPlugin implements ITimerPlugin {
 
   async resumeTimer(options: TimerPluginOptions): Promise<void> {
     console.log('resumeTimer', options)
+  }
+
+  async getTimer(options: { timerId: string }): Promise<GetTimerResult> {
+    console.log('getTimer', options)
+    return { exists: false }
   }
 }
 

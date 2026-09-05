@@ -21,11 +21,15 @@ import java.util.Map;
 
 public class TimerService extends Service {
     private static final String TAG = "TimerService";
-    private static final String CHANNEL_ID = "TimerServiceChannel";
+    /** Fresh channel id — older builds created TimerServiceChannel as IMPORTANCE_LOW (cannot upgrade). */
+    private static final String CHANNEL_ID = "TimerServiceChannel_v2";
     private static final String CHANNEL_ID_ALERTS = "TimerAlertsChannel";
+    private static final String LEGACY_CHANNEL_ID = "TimerServiceChannel";
     private static final int CONSOLIDATED_NOTIFICATION_ID = 1001;
-    private static final int REST_CONSOLIDATED_NOTIFICATION_ID = 1002;
-    private static final int BREAK_CONSOLIDATED_NOTIFICATION_ID = 1003;
+    /** Single ongoing card for both rest and break (Samsung limits multiple updating notifs). */
+    private static final int REST_BREAK_NOTIFICATION_ID = 1002;
+    /** Legacy break-only id — always cancelled so old installs don't keep a second card. */
+    private static final int LEGACY_BREAK_NOTIFICATION_ID = 1003;
 
     private static final String TYPE_REST = "rest";
     private static final String TYPE_BREAK = "break";
@@ -40,6 +44,10 @@ public class TimerService extends Service {
     private NotificationManager notificationManager;
     /** Notification id currently bound to this service's startForeground(). */
     private int foregroundNotificationId = -1;
+
+    public static TimerInfo getActiveTimer(String timerId) {
+        return activeTimers.get(timerId);
+    }
 
     public static class TimerInfo {
         long endTime;
@@ -106,18 +114,20 @@ public class TimerService extends Service {
     private void createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
+                try {
+                    notificationManager.deleteNotificationChannel(LEGACY_CHANNEL_ID);
+                } catch (Exception ignored) {
+                }
+
+                // Match ActivityService: silent ongoing channel
                 NotificationChannel serviceChannel = new NotificationChannel(
                         CHANNEL_ID,
                         "Timer Service Channel",
-                        NotificationManager.IMPORTANCE_HIGH
+                        NotificationManager.IMPORTANCE_LOW
                 );
-                serviceChannel.setDescription("Shows ongoing timer");
+                serviceChannel.setDescription("Shows ongoing rest and break timers");
                 serviceChannel.setShowBadge(true);
-
-                if (MainActivity.settings != null && MainActivity.settings.getIsVibration()) {
-                    serviceChannel.enableVibration(true);
-                    serviceChannel.setVibrationPattern(new long[]{0, 100});
-                }
+                serviceChannel.setSound(null, null);
                 notificationManager.createNotificationChannel(serviceChannel);
 
                 NotificationChannel alertsChannel = new NotificationChannel(
@@ -141,6 +151,20 @@ public class TimerService extends Service {
         }
     }
 
+    /** Called when ActivityService releases FGS so we can keep rest/break alive. */
+    public static void requestForegroundPromotion(android.content.Context context) {
+        if (activeTimers.isEmpty()) {
+            return;
+        }
+        Intent intent = new Intent(context, TimerService.class);
+        intent.putExtra("action", "promote");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
@@ -151,6 +175,19 @@ public class TimerService extends Service {
 
             String action = intent.getStringExtra("action");
             String timerId = intent.getStringExtra("timerId");
+
+            if ("promote".equals(action)) {
+                ensureForegroundStarted();
+                updateNotifications();
+                return START_STICKY;
+            }
+
+            // Second FGS is delayed on Samsung. If activity duration already holds FGS,
+            // rest/break are posted as silent ongoing notify only (process kept alive by ActivityService).
+            boolean needsOwnFgs = !ActivityService.isForegroundActive();
+            if (needsOwnFgs && (action == null || "start".equals(action) || "resume".equals(action))) {
+                ensureForegroundStarted();
+            }
 
             if (action != null) {
                 switch (action) {
@@ -178,13 +215,31 @@ public class TimerService extends Service {
                 }
             }
 
-            // If no action or it's a start action, start new timer
             return startNewTimer(intent);
 
         } catch (Exception e) {
             Log.e(TAG, "Error in onStartCommand", e);
             return START_NOT_STICKY;
         }
+    }
+
+    private void ensureForegroundStarted() {
+        if (foregroundNotificationId != -1) {
+            return;
+        }
+        Notification bootstrap = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle(Translation.getString(Translation.restTitle, getLang()))
+                .setContentText("…")
+                .setSmallIcon(getApplicationInfo().icon)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
+                .setOngoing(true)
+                .setSilent(true)
+                .setAutoCancel(false)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .build();
+        startForeground(REST_BREAK_NOTIFICATION_ID, bootstrap);
+        foregroundNotificationId = REST_BREAK_NOTIFICATION_ID;
     }
 
     private int startNewTimer(Intent intent) {
@@ -211,10 +266,8 @@ public class TimerService extends Service {
             return START_NOT_STICKY;
         }
 
-        int notificationId = TYPE_REST.equals(type)
-                ? REST_CONSOLIDATED_NOTIFICATION_ID
-                : TYPE_BREAK.equals(type)
-                ? BREAK_CONSOLIDATED_NOTIFICATION_ID
+        int notificationId = (TYPE_REST.equals(type) || TYPE_BREAK.equals(type))
+                ? REST_BREAK_NOTIFICATION_ID
                 : CONSOLIDATED_NOTIFICATION_ID;
 
         // Create timer info first
@@ -261,24 +314,15 @@ public class TimerService extends Service {
         List<TimerInfo> breakTimers = getTimersByType(TYPE_BREAK);
         List<TimerInfo> otherTimers = getOtherTimers();
 
-        // Prefer rest as the FGS notification so users see one meaningful card, not an empty placeholder.
+        // Drop legacy separate break notification if it still exists from older builds
+        notificationManager.cancel(LEGACY_BREAK_NOTIFICATION_ID);
+
         int primaryId = -1;
         Notification primaryNotification = null;
 
-        if (!restTimers.isEmpty()) {
-            primaryId = REST_CONSOLIDATED_NOTIFICATION_ID;
-            primaryNotification = createGroupedTimerNotification(
-                    Translation.getString(Translation.restTitle, getLang()),
-                    restTimers,
-                    REST_CONSOLIDATED_NOTIFICATION_ID
-            );
-        } else if (!breakTimers.isEmpty()) {
-            primaryId = BREAK_CONSOLIDATED_NOTIFICATION_ID;
-            primaryNotification = createGroupedTimerNotification(
-                    Translation.getString(Translation.breakTitle, getLang()),
-                    breakTimers,
-                    BREAK_CONSOLIDATED_NOTIFICATION_ID
-            );
+        if (!restTimers.isEmpty() || !breakTimers.isEmpty()) {
+            primaryId = REST_BREAK_NOTIFICATION_ID;
+            primaryNotification = createRestBreakNotification(restTimers, breakTimers);
         } else if (!otherTimers.isEmpty()) {
             primaryId = CONSOLIDATED_NOTIFICATION_ID;
             primaryNotification = createLegacyConsolidatedNotification(
@@ -287,42 +331,24 @@ public class TimerService extends Service {
         }
 
         if (primaryNotification != null) {
-            if (foregroundNotificationId != -1 && foregroundNotificationId != primaryId) {
-                notificationManager.cancel(foregroundNotificationId);
-            }
-            startForeground(primaryId, primaryNotification);
-            foregroundNotificationId = primaryId;
-        }
-
-        // Secondary types (when both rest and break are active) as regular ongoing notifications
-        if (primaryId != REST_CONSOLIDATED_NOTIFICATION_ID) {
-            if (!restTimers.isEmpty()) {
-                notificationManager.notify(
-                        REST_CONSOLIDATED_NOTIFICATION_ID,
-                        createGroupedTimerNotification(
-                                Translation.getString(Translation.restTitle, getLang()),
-                                restTimers,
-                                REST_CONSOLIDATED_NOTIFICATION_ID
-                        )
-                );
+            if (ActivityService.isForegroundActive()) {
+                // Activity duration already owns FGS — post silent ongoing card immediately via notify
+                if (foregroundNotificationId != -1) {
+                    stopForeground(false);
+                    foregroundNotificationId = -1;
+                }
+                notificationManager.notify(primaryId, primaryNotification);
             } else {
-                notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
+                if (foregroundNotificationId != -1 && foregroundNotificationId != primaryId) {
+                    notificationManager.cancel(foregroundNotificationId);
+                }
+                startForeground(primaryId, primaryNotification);
+                foregroundNotificationId = primaryId;
+                // Same pattern as ActivityService: also notify so content shows without delay
+                notificationManager.notify(primaryId, primaryNotification);
             }
-        }
-
-        if (primaryId != BREAK_CONSOLIDATED_NOTIFICATION_ID) {
-            if (!breakTimers.isEmpty()) {
-                notificationManager.notify(
-                        BREAK_CONSOLIDATED_NOTIFICATION_ID,
-                        createGroupedTimerNotification(
-                                Translation.getString(Translation.breakTitle, getLang()),
-                                breakTimers,
-                                BREAK_CONSOLIDATED_NOTIFICATION_ID
-                        )
-                );
-            } else {
-                notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
-            }
+        } else {
+            notificationManager.cancel(REST_BREAK_NOTIFICATION_ID);
         }
 
         if (primaryId != CONSOLIDATED_NOTIFICATION_ID) {
@@ -343,8 +369,12 @@ public class TimerService extends Service {
         return Lang.En;
     }
 
-    private Notification createGroupedTimerNotification(String title, List<TimerInfo> timers, int notificationId) {
-        // Preserve insertion order of groups (LinkedHashMap of timers)
+    /** Builds exercise blocks for one timer type (grouped by exercise). */
+    private String buildGroupedTimersBody(List<TimerInfo> timers) {
+        if (timers == null || timers.isEmpty()) {
+            return "";
+        }
+
         LinkedHashMap<String, List<TimerInfo>> groups = new LinkedHashMap<>();
         for (TimerInfo timer : timers) {
             String key = timer.groupId != null && !timer.groupId.isEmpty()
@@ -359,7 +389,6 @@ public class TimerService extends Service {
         }
 
         StringBuilder bigText = new StringBuilder();
-        String collapsedText = "";
         boolean firstGroup = true;
 
         for (Map.Entry<String, List<TimerInfo>> entry : groups.entrySet()) {
@@ -400,7 +429,6 @@ public class TimerService extends Service {
             } else if (nonSide != null) {
                 timeLine = formatTime(nonSide.getRemainingMs());
             } else {
-                // Fallback: join all
                 StringBuilder sides = new StringBuilder();
                 for (TimerInfo t : groupTimers) {
                     if (sides.length() > 0) {
@@ -419,9 +447,53 @@ public class TimerService extends Service {
             }
             firstGroup = false;
             bigText.append(exerciseTitle).append("\n").append(timeLine);
+        }
 
+        return bigText.toString().trim();
+    }
+
+    private Notification createRestBreakNotification(List<TimerInfo> restTimers, List<TimerInfo> breakTimers) {
+        Lang lang = getLang();
+        String restTitle = Translation.getString(Translation.restTitle, lang);
+        String breakTitle = Translation.getString(Translation.breakTitle, lang);
+
+        boolean hasRest = restTimers != null && !restTimers.isEmpty();
+        boolean hasBreak = breakTimers != null && !breakTimers.isEmpty();
+
+        String title;
+        if (hasRest && hasBreak) {
+            title = restTitle + " / " + breakTitle;
+        } else if (hasRest) {
+            title = restTitle;
+        } else {
+            title = breakTitle;
+        }
+
+        StringBuilder bigText = new StringBuilder();
+        String collapsedText = "";
+
+        if (hasRest) {
+            String restBody = buildGroupedTimersBody(restTimers);
+            if (hasBreak) {
+                bigText.append(restTitle).append("\n").append(restBody);
+            } else {
+                bigText.append(restBody);
+            }
+            collapsedText = restTitle + ": " + restBody.replace('\n', ' ');
+        }
+
+        if (hasBreak) {
+            String breakBody = buildGroupedTimersBody(breakTimers);
+            if (bigText.length() > 0) {
+                bigText.append("\n\n");
+            }
+            if (hasRest) {
+                bigText.append(breakTitle).append("\n").append(breakBody);
+            } else {
+                bigText.append(breakBody);
+            }
             if (collapsedText.isEmpty()) {
-                collapsedText = exerciseTitle + " " + timeLine;
+                collapsedText = breakTitle + ": " + breakBody.replace('\n', ' ');
             }
         }
 
@@ -431,7 +503,7 @@ public class TimerService extends Service {
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this, notificationId, notificationIntent,
+                    this, REST_BREAK_NOTIFICATION_ID, notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE
             );
 
@@ -441,7 +513,7 @@ public class TimerService extends Service {
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(bigTextStr))
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setCategory(NotificationCompat.CATEGORY_ALARM)
+                    .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
                     .setOngoing(true)
                     .setSilent(true)
                     .setAutoCancel(false)
@@ -449,13 +521,16 @@ public class TimerService extends Service {
                     .setContentIntent(pendingIntent)
                     .build();
         } catch (Exception e) {
-            Log.e(TAG, "Error creating grouped timer notification", e);
+            Log.e(TAG, "Error creating rest/break notification", e);
             return new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(contentText)
                     .setSmallIcon(getApplicationInfo().icon)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setCategory(NotificationCompat.CATEGORY_STOPWATCH)
                     .setOngoing(true)
+                    .setSilent(true)
+                    .setAutoCancel(false)
                     .build();
         }
     }
@@ -542,8 +617,8 @@ public class TimerService extends Service {
             TimerService.activeTimers.remove(timerId);
 
             if (TimerService.activeTimers.isEmpty()) {
-                notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
-                notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
+                notificationManager.cancel(REST_BREAK_NOTIFICATION_ID);
+                notificationManager.cancel(LEGACY_BREAK_NOTIFICATION_ID);
                 notificationManager.cancel(CONSOLIDATED_NOTIFICATION_ID);
                 foregroundNotificationId = -1;
                 stopForeground(true);
@@ -586,8 +661,8 @@ public class TimerService extends Service {
                         if (!TimerService.activeTimers.isEmpty()) {
                             updateNotifications();
                         } else {
-                            notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
-                            notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
+                            notificationManager.cancel(REST_BREAK_NOTIFICATION_ID);
+                            notificationManager.cancel(LEGACY_BREAK_NOTIFICATION_ID);
                             notificationManager.cancel(CONSOLIDATED_NOTIFICATION_ID);
                             foregroundNotificationId = -1;
                             stopForeground(true);
@@ -718,10 +793,10 @@ public class TimerService extends Service {
             // Stable id per exercise group so left+right rest updates replace one card
             int completionNotificationId;
             if (timer.isRest()) {
-                completionNotificationId = REST_CONSOLIDATED_NOTIFICATION_ID + 1000
+                completionNotificationId = REST_BREAK_NOTIFICATION_ID + 1000
                         + Math.abs(timerGroupKey(timer).hashCode()) % 1000;
             } else if (timer.isBreak()) {
-                completionNotificationId = BREAK_CONSOLIDATED_NOTIFICATION_ID + 1000
+                completionNotificationId = LEGACY_BREAK_NOTIFICATION_ID + 1000
                         + Math.abs(timerGroupKey(timer).hashCode()) % 1000;
             } else {
                 completionNotificationId = timer.hashCode();

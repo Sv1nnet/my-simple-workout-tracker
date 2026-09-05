@@ -38,6 +38,7 @@ const BreakTimer: FC<IBreakTimer> = ({ id, exerciseTitle, exerciseBreak, nextExe
       </Typography.Text>
       <Timer
         resetButton
+        stopOnUnmount={false}
         id={`${id}_break`}
         type="break"
         groupId={id}
