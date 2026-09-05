@@ -5,6 +5,7 @@ import { useIntlContext } from 'app/contexts/intl/IntContextProvider'
 
 export interface IBreakTimer {
   id?: string;
+  exerciseTitle?: string;
   exerciseBreak: number;
   nextExerciseTitle: string;
   workoutsDictionary: {
@@ -27,7 +28,7 @@ export interface IBreakTimer {
   };
 }
 
-const BreakTimer: FC<IBreakTimer> = ({ id, exerciseBreak, nextExerciseTitle, workoutsDictionary }) => {
+const BreakTimer: FC<IBreakTimer> = ({ id, exerciseTitle, exerciseBreak, nextExerciseTitle, workoutsDictionary }) => {
   const { timer } = useIntlContext().intl.pages.activities
 
   return (
@@ -40,7 +41,7 @@ const BreakTimer: FC<IBreakTimer> = ({ id, exerciseBreak, nextExerciseTitle, wor
         id={`${id}_break`}
         type="break"
         groupId={id}
-        exerciseTitle={nextExerciseTitle}
+        exerciseTitle={exerciseTitle || nextExerciseTitle || ''}
         notificationTitle={timer.break.title}
         appNotificationOptions={{
           running: {

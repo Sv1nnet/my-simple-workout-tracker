@@ -226,6 +226,7 @@ const Exercise: FC<IExerciseProps> = ({
         {!!exerciseBreak && (
           <BreakTimer
             id={id}
+            exerciseTitle={details.title}
             nextExerciseTitle={exerciseList[exerciseIndex + 1]?.details.title}
             workoutsDictionary={workouts}
             payloadDictionary={payload}

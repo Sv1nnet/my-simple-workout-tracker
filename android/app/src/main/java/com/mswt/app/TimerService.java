@@ -267,11 +267,17 @@ public class TimerService extends Service {
 
         if (!restTimers.isEmpty()) {
             primaryId = REST_CONSOLIDATED_NOTIFICATION_ID;
-            primaryNotification = createRestNotification(restTimers);
+            primaryNotification = createGroupedTimerNotification(
+                    Translation.getString(Translation.restTitle, getLang()),
+                    restTimers,
+                    REST_CONSOLIDATED_NOTIFICATION_ID
+            );
         } else if (!breakTimers.isEmpty()) {
             primaryId = BREAK_CONSOLIDATED_NOTIFICATION_ID;
-            primaryNotification = createLegacyConsolidatedNotification(
-                    breakTimers, BREAK_CONSOLIDATED_NOTIFICATION_ID
+            primaryNotification = createGroupedTimerNotification(
+                    Translation.getString(Translation.breakTitle, getLang()),
+                    breakTimers,
+                    BREAK_CONSOLIDATED_NOTIFICATION_ID
             );
         } else if (!otherTimers.isEmpty()) {
             primaryId = CONSOLIDATED_NOTIFICATION_ID;
@@ -291,7 +297,14 @@ public class TimerService extends Service {
         // Secondary types (when both rest and break are active) as regular ongoing notifications
         if (primaryId != REST_CONSOLIDATED_NOTIFICATION_ID) {
             if (!restTimers.isEmpty()) {
-                notificationManager.notify(REST_CONSOLIDATED_NOTIFICATION_ID, createRestNotification(restTimers));
+                notificationManager.notify(
+                        REST_CONSOLIDATED_NOTIFICATION_ID,
+                        createGroupedTimerNotification(
+                                Translation.getString(Translation.restTitle, getLang()),
+                                restTimers,
+                                REST_CONSOLIDATED_NOTIFICATION_ID
+                        )
+                );
             } else {
                 notificationManager.cancel(REST_CONSOLIDATED_NOTIFICATION_ID);
             }
@@ -299,9 +312,14 @@ public class TimerService extends Service {
 
         if (primaryId != BREAK_CONSOLIDATED_NOTIFICATION_ID) {
             if (!breakTimers.isEmpty()) {
-                notificationManager.notify(BREAK_CONSOLIDATED_NOTIFICATION_ID, createLegacyConsolidatedNotification(
-                        breakTimers, BREAK_CONSOLIDATED_NOTIFICATION_ID
-                ));
+                notificationManager.notify(
+                        BREAK_CONSOLIDATED_NOTIFICATION_ID,
+                        createGroupedTimerNotification(
+                                Translation.getString(Translation.breakTitle, getLang()),
+                                breakTimers,
+                                BREAK_CONSOLIDATED_NOTIFICATION_ID
+                        )
+                );
             } else {
                 notificationManager.cancel(BREAK_CONSOLIDATED_NOTIFICATION_ID);
             }
@@ -325,12 +343,10 @@ public class TimerService extends Service {
         return Lang.En;
     }
 
-    private Notification createRestNotification(List<TimerInfo> restTimers) {
-        String title = Translation.getString(Translation.restTitle, getLang());
-
+    private Notification createGroupedTimerNotification(String title, List<TimerInfo> timers, int notificationId) {
         // Preserve insertion order of groups (LinkedHashMap of timers)
         LinkedHashMap<String, List<TimerInfo>> groups = new LinkedHashMap<>();
-        for (TimerInfo timer : restTimers) {
+        for (TimerInfo timer : timers) {
             String key = timer.groupId != null && !timer.groupId.isEmpty()
                     ? timer.groupId
                     : timer.exerciseTitle;
@@ -415,7 +431,7 @@ public class TimerService extends Service {
         try {
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                    this, REST_CONSOLIDATED_NOTIFICATION_ID, notificationIntent,
+                    this, notificationId, notificationIntent,
                     PendingIntent.FLAG_IMMUTABLE
             );
 
@@ -433,7 +449,7 @@ public class TimerService extends Service {
                     .setContentIntent(pendingIntent)
                     .build();
         } catch (Exception e) {
-            Log.e(TAG, "Error creating rest notification", e);
+            Log.e(TAG, "Error creating grouped timer notification", e);
             return new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setContentTitle(title)
                     .setContentText(contentText)
@@ -589,7 +605,7 @@ public class TimerService extends Service {
         };
     }
 
-    private String restGroupKey(TimerInfo timer) {
+    private String timerGroupKey(TimerInfo timer) {
         if (timer.groupId != null && !timer.groupId.isEmpty()) {
             return timer.groupId;
         }
@@ -600,7 +616,7 @@ public class TimerService extends Service {
     }
 
     private void rememberFinishedRest(TimerInfo timer) {
-        String groupKey = restGroupKey(timer);
+        String groupKey = timerGroupKey(timer);
         LinkedHashMap<String, TimerInfo> group = finishedRestByGroup.get(groupKey);
         if (group == null) {
             group = new LinkedHashMap<>();
@@ -612,14 +628,14 @@ public class TimerService extends Service {
 
     private boolean hasActiveRestInGroup(String groupKey) {
         for (TimerInfo t : TimerService.activeTimers.values()) {
-            if (t.isRest() && groupKey.equals(restGroupKey(t))) {
+            if (t.isRest() && groupKey.equals(timerGroupKey(t))) {
                 return true;
             }
         }
         return false;
     }
 
-    private String formatRestExerciseBlock(String exerciseTitle, List<TimerInfo> finishedInGroup) {
+    private String formatCompletionExerciseBlock(String exerciseTitle, List<TimerInfo> finishedInGroup) {
         StringBuilder block = new StringBuilder();
         String title = exerciseTitle != null && !exerciseTitle.isEmpty() ? exerciseTitle : "";
         if (!title.isEmpty()) {
@@ -664,7 +680,7 @@ public class TimerService extends Service {
     }
 
     private String buildRestCompletionText(TimerInfo finishedTimer) {
-        String groupKey = restGroupKey(finishedTimer);
+        String groupKey = timerGroupKey(finishedTimer);
         rememberFinishedRest(finishedTimer);
 
         LinkedHashMap<String, TimerInfo> finishedGroup = finishedRestByGroup.get(groupKey);
@@ -676,8 +692,7 @@ public class TimerService extends Service {
                 ? finishedTimer.exerciseTitle
                 : finishedTimer.label;
 
-        // If siblings still running, show only sides finished so far for this exercise
-        String text = formatRestExerciseBlock(exerciseTitle, finishedList);
+        String text = formatCompletionExerciseBlock(exerciseTitle, finishedList);
 
         if (!hasActiveRestInGroup(groupKey)) {
             finishedRestByGroup.remove(groupKey);
@@ -686,14 +701,31 @@ public class TimerService extends Service {
         return text;
     }
 
+    private String buildBreakCompletionText(TimerInfo finishedTimer) {
+        String exerciseTitle = finishedTimer.exerciseTitle != null && !finishedTimer.exerciseTitle.isEmpty()
+                ? finishedTimer.exerciseTitle
+                : finishedTimer.label;
+        return formatCompletionExerciseBlock(
+                exerciseTitle,
+                java.util.Collections.singletonList(finishedTimer)
+        );
+    }
+
     private void showTimerFinishedNotification(TimerInfo timer) {
         try {
             Log.d(TAG, "Creating completion notification for " + timer.label);
 
-            // Stable id per rest exercise group so left+right updates replace one card
-            int completionNotificationId = timer.isRest()
-                    ? REST_CONSOLIDATED_NOTIFICATION_ID + 1000 + Math.abs(restGroupKey(timer).hashCode()) % 1000
-                    : timer.hashCode();
+            // Stable id per exercise group so left+right rest updates replace one card
+            int completionNotificationId;
+            if (timer.isRest()) {
+                completionNotificationId = REST_CONSOLIDATED_NOTIFICATION_ID + 1000
+                        + Math.abs(timerGroupKey(timer).hashCode()) % 1000;
+            } else if (timer.isBreak()) {
+                completionNotificationId = BREAK_CONSOLIDATED_NOTIFICATION_ID + 1000
+                        + Math.abs(timerGroupKey(timer).hashCode()) % 1000;
+            } else {
+                completionNotificationId = timer.hashCode();
+            }
 
             Intent notificationIntent = getPackageManager().getLaunchIntentForPackage(getPackageName());
             PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -708,9 +740,7 @@ public class TimerService extends Service {
                 content = buildRestCompletionText(timer);
             } else if (timer.isBreak()) {
                 title = Translation.getString(Translation.breakDone, getLang());
-                content = timer.exerciseTitle != null && !timer.exerciseTitle.isEmpty()
-                        ? timer.exerciseTitle
-                        : timer.label;
+                content = buildBreakCompletionText(timer);
             } else {
                 title = timer.label + " Finished!";
                 content = "Your timer has completed";
