@@ -16,6 +16,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(TimerServicePlugin.class);  // Make sure this line is before super.onCreate()
         registerPlugin(ActivityServicePlugin.class);  // Make sure this line is before super.onCreate()
         registerPlugin(SettingsPlugin.class);
+        registerPlugin(FileSavePlugin.class);
         super.onCreate(savedInstanceState);
     }
 

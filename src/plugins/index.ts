@@ -7,3 +7,6 @@ export { default as SettingsPlugin } from './settings/SettingsPlugin'
 
 export * from './activity_plugin/ActivityPlugin'
 export { default as ActivityPlugin } from './activity_plugin/ActivityPlugin'
+
+export * from './file_save/FileSavePlugin'
+export { default as FileSavePlugin } from './file_save/FileSavePlugin'

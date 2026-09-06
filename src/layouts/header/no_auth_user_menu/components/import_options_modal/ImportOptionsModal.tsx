@@ -3,7 +3,7 @@ import { useToggle } from 'app/hooks'
 import { Checkbox, Divider, Typography, notification } from 'antd'
 import { MouseEvent, MouseEventHandler, useState } from 'react'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
-import downloadFile from 'js-file-download'
+import saveTextFile from 'app/utils/saveTextFile'
 import browserDB from 'app/store/utils/BrowserDB'
 import { InputContainer, NoteTextContainer, StyledModal } from './components/styled'
 import styled from 'styled-components'
@@ -45,12 +45,16 @@ const ImportOptionsModal = ({ isOpen, onOk, close }: ImportOptionsProps) => {
       if (db) {
         setIsDownloading()
 
-        downloadFile(JSON.stringify({
-          muscleGroups: listToExport.muscleGroups ? await db.getAll(tables.muscleGroupsTable) : [],
-          exercises: listToExport.exercises ? await db.getAll(tables.exercisesTable) : [],
-          workouts: listToExport.workouts ? await db.getAll(tables.workoutsTable) : [],
-          activities: listToExport.activities ? await db.getAll(tables.activitiesTable) : [],
-        }), 'my-simple-workout-tracker-data.txt', 'plain/text')
+        await saveTextFile({
+          data: JSON.stringify({
+            muscleGroups: listToExport.muscleGroups ? await db.getAll(tables.muscleGroupsTable) : [],
+            exercises: listToExport.exercises ? await db.getAll(tables.exercisesTable) : [],
+            workouts: listToExport.workouts ? await db.getAll(tables.workoutsTable) : [],
+            activities: listToExport.activities ? await db.getAll(tables.activitiesTable) : [],
+          }),
+          fileName: 'my-simple-workout-tracker-data.txt',
+          dialogTitle: header.import_options_modal.export,
+        })
       } else {
         throw new Error('Local DB is not initialized')
       }
