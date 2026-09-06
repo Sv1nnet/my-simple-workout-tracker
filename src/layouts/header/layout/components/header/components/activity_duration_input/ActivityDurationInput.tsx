@@ -193,7 +193,7 @@ const ActivityDurationInput = () => {
   }, [])
 
   return (
-    <div style={{ marginLeft: 32 }}>
+    <div className="header-activity-timer">
       <Form.Item noStyle name="duration">
         <ActivityStopwatch
           durationTimerRef={durationTimerRef}
